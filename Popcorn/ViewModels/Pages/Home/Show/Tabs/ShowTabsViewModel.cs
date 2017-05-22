@@ -333,7 +333,8 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
             Logger.Info(
                 "Stop loading shows.");
 
-            CancellationLoadingShows.Cancel(true);
+            CancellationLoadingShows.Cancel();
+            CancellationLoadingShows.Dispose();
             CancellationLoadingShows = new CancellationTokenSource();
         }
 

@@ -327,7 +327,8 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
             Logger.Info(
                 "Stop loading movies.");
 
-            CancellationLoadingMovies.Cancel(true);
+            CancellationLoadingMovies.Cancel();
+            CancellationLoadingMovies.Dispose();
             CancellationLoadingMovies = new CancellationTokenSource();
         }
 

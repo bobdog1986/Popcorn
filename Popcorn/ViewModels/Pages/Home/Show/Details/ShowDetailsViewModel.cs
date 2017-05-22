@@ -187,7 +187,8 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Details
                 $"Stop loading show's trailer: {Show.Title}.");
 
             IsTrailerLoading = false;
-            CancellationLoadingTrailerToken.Cancel(true);
+            CancellationLoadingTrailerToken.Cancel();
+            CancellationLoadingTrailerToken.Dispose();
             CancellationLoadingTrailerToken = new CancellationTokenSource();
             StopPlayingTrailer();
         }

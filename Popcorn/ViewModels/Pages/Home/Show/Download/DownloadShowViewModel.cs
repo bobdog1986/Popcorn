@@ -158,7 +158,8 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Download
                 $"Stop downloading the episode {Episode.Title}");
 
             IsDownloadingEpisode = false;
-            CancellationDownloadingEpisode.Cancel(true);
+            CancellationDownloadingEpisode.Cancel();
+            CancellationDownloadingEpisode.Dispose();
             CancellationDownloadingEpisode = new CancellationTokenSource();
 
             if (!string.IsNullOrEmpty(Episode?.FilePath))

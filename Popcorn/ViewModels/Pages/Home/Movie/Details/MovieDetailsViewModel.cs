@@ -529,7 +529,8 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
                 $"Stop loading movie: {Movie.Title}.");
 
             IsMovieLoading = false;
-            CancellationLoadingToken.Cancel(true);
+            CancellationLoadingToken.Cancel();
+            CancellationLoadingToken.Dispose();
             CancellationLoadingToken = new CancellationTokenSource();
         }
 
@@ -542,7 +543,8 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
                 $"Stop loading movie's trailer: {Movie.Title}.");
 
             IsTrailerLoading = false;
-            CancellationLoadingTrailerToken.Cancel(true);
+            CancellationLoadingTrailerToken.Cancel();
+            CancellationLoadingTrailerToken.Dispose();
             CancellationLoadingTrailerToken = new CancellationTokenSource();
             StopPlayingTrailer();
         }

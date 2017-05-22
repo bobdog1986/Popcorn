@@ -80,7 +80,8 @@ namespace Popcorn.ViewModels.Dialogs
             TorrentPath = torrentPath;
             CancelCommand = new RelayCommand(() =>
             {
-                CancellationDownloadingToken.Cancel(true);
+                CancellationDownloadingToken.Cancel();
+                CancellationDownloadingToken.Dispose();
             });
 
             Messenger.Default.Register<StopPlayMediaMessage>(this, e =>

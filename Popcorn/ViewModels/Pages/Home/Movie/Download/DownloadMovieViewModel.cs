@@ -161,7 +161,8 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Download
                 $"Stop downloading the movie {Movie.Title}.");
 
             IsDownloadingMovie = false;
-            CancellationDownloadingMovie.Cancel(true);
+            CancellationDownloadingMovie.Cancel();
+            CancellationDownloadingMovie.Dispose();
             CancellationDownloadingMovie = new CancellationTokenSource();
 
             if (!string.IsNullOrEmpty(Movie?.FilePath))
