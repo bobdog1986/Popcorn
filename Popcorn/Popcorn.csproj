@@ -1,0 +1,828 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{5BFADF51-CE11-45CF-8E36-DC9DC061C274}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Popcorn</RootNamespace>
+    <AssemblyName>Popcorn</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+    <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>CODE_ANALYSIS;DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AsyncEnumerable, Version=2.1.0.0, Culture=neutral, PublicKeyToken=0426b068161bd1d1, processorArchitecture=MSIL">
+      <HintPath>..\packages\AsyncEnumerator.2.1.0\lib\net45\AsyncEnumerable.dll</HintPath>
+    </Reference>
+    <Reference Include="BouncyCastle.Crypto, Version=1.8.1.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
+      <HintPath>..\packages\BouncyCastle.1.8.1\lib\BouncyCastle.Crypto.dll</HintPath>
+    </Reference>
+    <Reference Include="DeltaCompressionDotNet, Version=1.1.0.0, Culture=neutral, PublicKeyToken=1d14d6e5194e7f4a, processorArchitecture=MSIL">
+      <HintPath>..\packages\DeltaCompressionDotNet.1.1.0\lib\net20\DeltaCompressionDotNet.dll</HintPath>
+    </Reference>
+    <Reference Include="DeltaCompressionDotNet.MsDelta, Version=1.1.0.0, Culture=neutral, PublicKeyToken=46b2138a390abf55, processorArchitecture=MSIL">
+      <HintPath>..\packages\DeltaCompressionDotNet.1.1.0\lib\net20\DeltaCompressionDotNet.MsDelta.dll</HintPath>
+    </Reference>
+    <Reference Include="DeltaCompressionDotNet.PatchApi, Version=1.1.0.0, Culture=neutral, PublicKeyToken=3e8888ee913ed789, processorArchitecture=MSIL">
+      <HintPath>..\packages\DeltaCompressionDotNet.1.1.0\lib\net20\DeltaCompressionDotNet.PatchApi.dll</HintPath>
+    </Reference>
+    <Reference Include="EdgeJs, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Edge.js.7.10.1\lib\net40\EdgeJs.dll</HintPath>
+    </Reference>
+    <Reference Include="GalaSoft.MvvmLight, Version=5.3.0.19026, Culture=neutral, PublicKeyToken=e7570ab207bcb616, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvvmLightLibs.5.3.0.0\lib\net45\GalaSoft.MvvmLight.dll</HintPath>
+    </Reference>
+    <Reference Include="GalaSoft.MvvmLight.Extras, Version=5.3.0.19032, Culture=neutral, PublicKeyToken=669f0b5e8f868abf, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvvmLightLibs.5.3.0.0\lib\net45\GalaSoft.MvvmLight.Extras.dll</HintPath>
+    </Reference>
+    <Reference Include="GalaSoft.MvvmLight.Platform, Version=5.3.0.19032, Culture=neutral, PublicKeyToken=5f873c45e98af8a1, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvvmLightLibs.5.3.0.0\lib\net45\GalaSoft.MvvmLight.Platform.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Protobuf, Version=3.3.0.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Protobuf.3.3.0\lib\net45\Google.Protobuf.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\squirrel.windows.1.6.0\lib\Net45\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="ltnet, Version=0.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\libtorrent-net.1.3.0\lib\net45\ltnet.dll</HintPath>
+    </Reference>
+    <Reference Include="MahApps.Metro, Version=1.5.0.23, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
+      <HintPath>..\packages\MahApps.Metro.1.5.0\lib\net45\MahApps.Metro.dll</HintPath>
+    </Reference>
+    <Reference Include="MahApps.Metro.IconPacks, Version=1.9.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MahApps.Metro.IconPacks.1.9.0\lib\net46\MahApps.Metro.IconPacks.dll</HintPath>
+    </Reference>
+    <Reference Include="Meta.Vlc, Version=16.5.1.0, Culture=neutral, PublicKeyToken=721a8c5379fa4056, processorArchitecture=x86">
+      <HintPath>..\packages\Meta.Vlc.16.11.19\lib\net45\x86\Meta.Vlc.dll</HintPath>
+    </Reference>
+    <Reference Include="Meta.Vlc.Wpf, Version=16.5.1.0, Culture=neutral, PublicKeyToken=721a8c5379fa4056, processorArchitecture=x86">
+      <HintPath>..\packages\Meta.Vlc.Wpf.16.11.19\lib\net45\x86\Meta.Vlc.Wpf.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ApplicationInsights, Version=2.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.2.3.0\lib\net46\Microsoft.ApplicationInsights.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ApplicationInsights.NLogTarget, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.NLogTarget.2.2.0\lib\net45\Microsoft.ApplicationInsights.NLogTarget.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Threading.Tasks, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Threading.Tasks.Extensions, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Threading.Tasks.Extensions.Desktop, Version=1.0.168.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.Desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Win32.Primitives, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Win32.Primitives.4.3.0\lib\net46\Microsoft.Win32.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="MimeKit, Version=1.16.0.0, Culture=neutral, PublicKeyToken=bede1c8a46c66814, processorArchitecture=MSIL">
+      <HintPath>..\packages\MimeKit.1.16.1\lib\net451\MimeKit.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mono.Cecil.0.9.6.4\lib\net45\Mono.Cecil.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Mdb, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mono.Cecil.0.9.6.4\lib\net45\Mono.Cecil.Mdb.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Pdb, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mono.Cecil.0.9.6.4\lib\net45\Mono.Cecil.Pdb.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Rocks, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mono.Cecil.0.9.6.4\lib\net45\Mono.Cecil.Rocks.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.4.4.9\lib\net45\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Squirrel, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\squirrel.windows.1.6.0\lib\Net45\NuGet.Squirrel.dll</HintPath>
+    </Reference>
+    <Reference Include="protobuf-net, Version=2.0.0.668, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\protobuf-net-sharpcaster.2.0.0.668\lib\portable46-net451+win81+wpa81\protobuf-net.dll</HintPath>
+    </Reference>
+    <Reference Include="RestSharp, Version=105.2.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RestSharp.105.2.3\lib\net46\RestSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Rssdp, Version=3.5.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Rssdp.3.5.4\lib\net45\Rssdp.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpCaster, Version=0.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpCaster.0.4.0\lib\portable151-net451+netcore451+wpa81\SharpCaster.dll</HintPath>
+    </Reference>
+    <Reference Include="Sockets.Plugin, Version=2.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Sharpcaster.SocketsForPCL.2.0.4\lib\net45\Sockets.Plugin.dll</HintPath>
+    </Reference>
+    <Reference Include="Sockets.Plugin.Abstractions, Version=2.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Sharpcaster.SocketsForPCL.2.0.4\lib\net45\Sockets.Plugin.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Splat, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Splat.2.0.0\lib\Net45\Splat.dll</HintPath>
+    </Reference>
+    <Reference Include="Squirrel, Version=1.6.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\squirrel.windows.1.6.0\lib\Net45\Squirrel.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Diagnostics.DiagnosticSource, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.4.3.1\lib\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Net.Http, Version=4.1.1.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Net.Http.4.3.2\lib\net46\System.Net.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Extensions, Version=2.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net45\System.Net.Http.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Primitives, Version=4.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net45\System.Net.Http.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System.Runtime, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.4.3.0\lib\net462\System.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security" />
+    <Reference Include="System.Security.Cryptography.Algorithms, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Algorithms.4.3.0\lib\net461\System.Security.Cryptography.Algorithms.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Encoding, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Encoding.4.3.0\lib\net46\System.Security.Cryptography.Encoding.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Primitives.4.3.0\lib\net46\System.Security.Cryptography.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.X509Certificates, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.X509Certificates.4.3.0\lib\net461\System.Security.Cryptography.X509Certificates.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.3.1\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\MvvmLightLibs.5.3.0.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="TMDbLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TMDbLib.1.0.0\lib\net46\TMDbLib.dll</HintPath>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="WPFLocalizeExtension, Version=2.3.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WpfLocalizeExtension.2.3.2\lib\net35\WPFLocalizeExtension.dll</HintPath>
+    </Reference>
+    <Reference Include="XAMLMarkupExtensions, Version=1.2.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\XAMLMarkupExtensions.1.2.2\lib\net40\XAMLMarkupExtensions.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Compile Include="AttachedProperties\ImageAsyncHelper.cs" />
+    <Compile Include="AttachedProperties\RippleAssist.cs" />
+    <Compile Include="AttachedProperties\TextParenthesis.cs" />
+    <Compile Include="Comparers\ShowComparer.cs" />
+    <Compile Include="Comparers\MovieComparer.cs" />
+    <Compile Include="Controls\RatingStar.xaml.cs">
+      <DependentUpon>RatingStar.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Ripple.cs" />
+    <Compile Include="Controls\Show\EpisodeDetail.xaml.cs">
+      <DependentUpon>EpisodeDetail.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Show\SeasonDetail.xaml.cs">
+      <DependentUpon>SeasonDetail.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Show\ShowNumberSummary.xaml.cs">
+      <DependentUpon>ShowNumberSummary.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Converters\BoolToInverseBoolConverter.cs" />
+    <Compile Include="Converters\BoolToInverseVisibilityConverter.cs" />
+    <Compile Include="Converters\BoolToVisibilityConverter.cs" />
+    <Compile Include="Converters\MultiBooleanToBoolConverter.cs" />
+    <Compile Include="Converters\MultiBooleanToVisibilityConverter.cs" />
+    <Compile Include="Converters\NullAsBoolConverter.cs" />
+    <Compile Include="Converters\NullAsVisibilityConverter.cs" />
+    <Compile Include="Converters\RatingPercentageToNormalizedRatingConverter.cs" />
+    <Compile Include="Converters\RatioConverter.cs" />
+    <Compile Include="Converters\TorrentHealthToLabelConverter.cs" />
+    <Compile Include="Converters\ValueToBrushConverter.cs" />
+    <Compile Include="Converters\WindowStateToBooleanConverter.cs" />
+    <Compile Include="Controls\CapitalizeText.xaml.cs">
+      <DependentUpon>CapitalizeText.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\DownloadProgress.xaml.cs">
+      <DependentUpon>DownloadProgress.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\GenresLabel.xaml.cs">
+      <DependentUpon>GenresLabel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Movie\MovieRuntime.xaml.cs">
+      <DependentUpon>MovieRuntime.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Movie\MovieNumberSummary.xaml.cs">
+      <DependentUpon>MovieNumberSummary.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\CastDialog.xaml.cs">
+      <DependentUpon>CastDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\DropTorrentDialog.xaml.cs">
+      <DependentUpon>DropTorrentDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\ExceptionDialog.xaml.cs">
+      <DependentUpon>ExceptionDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\HelpDialog.xaml.cs">
+      <DependentUpon>HelpDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\UpdateDialog.xaml.cs">
+      <DependentUpon>UpdateDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\AnimatedScrollViewer.cs" />
+    <Compile Include="Dialogs\AboutDialog.xaml.cs">
+      <DependentUpon>AboutDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Events\SelectedSeasonChangedEventArgs.cs" />
+    <Compile Include="Extensions\MessengerExtensions.cs" />
+    <Compile Include="Extensions\SortExtensions.cs" />
+    <Compile Include="Helpers\AsyncSynchronizationContext.cs" />
+    <Compile Include="AttachedProperties\EnableDragHelper.cs" />
+    <Compile Include="Helpers\FileHelper.cs" />
+    <Compile Include="Helpers\FindVisualChildHelper.cs" />
+    <Compile Include="AttachedProperties\MaximizeDoubleClickHelper.cs" />
+    <Compile Include="Helpers\ObservableRangeCollection.cs" />
+    <Compile Include="Messaging\Async\AsyncMessage.cs" />
+    <Compile Include="Messaging\Async\AsyncMessageReceiver.cs" />
+    <Compile Include="Messaging\CastMediaMessage.cs" />
+    <Compile Include="Messaging\ChangeFavoriteMovieMessage.cs" />
+    <Compile Include="Messaging\ChangeFavoriteShowMessage.cs" />
+    <Compile Include="Messaging\ChangeSeenMovieMessage.cs" />
+    <Compile Include="Messaging\CustomSubtitleMessage.cs" />
+    <Compile Include="Messaging\DropFileMessage.cs" />
+    <Compile Include="Messaging\LoadShowMessage.cs" />
+    <Compile Include="Messaging\DownloadShowEpisodeMessage.cs" />
+    <Compile Include="Messaging\PlayEpisodeShowMessage.cs" />
+    <Compile Include="Messaging\PlayMediaMessage.cs" />
+    <Compile Include="Messaging\PlayTrailerMessage.cs" />
+    <Compile Include="Messaging\SearchShowMessage.cs" />
+    <Compile Include="Messaging\StopPlayingEpisodeMessage.cs" />
+    <Compile Include="Messaging\StopPlayMediaMessage.cs" />
+    <Compile Include="Messaging\UnhandledExceptionMessage.cs" />
+    <Compile Include="Models\Version\VersionInfo.cs" />
+    <Compile Include="Services\Application\ApplicationService.cs" />
+    <Compile Include="Services\Application\IApplicationService.cs" />
+    <Compile Include="Models\Bandwidth\BandwidthRate.cs" />
+    <Compile Include="Models\Genres\Genre.cs" />
+    <Compile Include="Models\Media\IMediaFile.cs" />
+    <Compile Include="Models\Media\MediaFile.cs" />
+    <Compile Include="Models\Movie\MovieJson.cs" />
+    <Compile Include="Models\Movie\MovieResponse.cs" />
+    <Compile Include="Models\Rating\RatingJson.cs" />
+    <Compile Include="Models\Episode\EpisodeShowJson.cs" />
+    <Compile Include="Models\Image\ImageShowJson.cs" />
+    <Compile Include="Models\Shows\ShowJson.cs" />
+    <Compile Include="Models\Shows\ShowResponse.cs" />
+    <Compile Include="Models\Torrent\Show\TorrentShowJson.cs" />
+    <Compile Include="Models\Torrent\Show\TorrentShowNodeJson.cs" />
+    <Compile Include="Models\Trailer\TrailerResponse.cs" />
+    <Compile Include="Models\User\LanguageJson.cs" />
+    <Compile Include="Models\User\MovieHistoryJson.cs" />
+    <Compile Include="Models\User\ShowHistoryJson.cs" />
+    <Compile Include="Models\User\UserJson.cs" />
+    <Compile Include="Pages\HomePage.xaml.cs">
+      <DependentUpon>HomePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\PlayerPage.xaml.cs">
+      <DependentUpon>PlayerPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Panels\ElasticWrapPanel.cs" />
+    <Compile Include="Events\WindowStateChangedEventArgs.cs" />
+    <Compile Include="Helpers\DownloadFileHelper.cs" />
+    <Compile Include="Extensions\FrameworkElementExtensions.cs" />
+    <Compile Include="Helpers\LocalizationProviderHelper.cs" />
+    <Compile Include="Messaging\ChangeLanguageMessage.cs" />
+    <Compile Include="Messaging\ManageExceptionMessage.cs" />
+    <Compile Include="Messaging\DownloadMovieMessage.cs" />
+    <Compile Include="Messaging\LoadMovieMessage.cs" />
+    <Compile Include="Messaging\SearchMovieMessage.cs" />
+    <Compile Include="Messaging\StopPlayingTrailerMessage.cs" />
+    <Compile Include="Models\Cast\CastJson.cs" />
+    <Compile Include="Models\Localization\CustomLanguage.cs" />
+    <Compile Include="Models\Localization\EnglishLanguage.cs" />
+    <Compile Include="Models\Localization\FrenchLanguage.cs" />
+    <Compile Include="Models\Localization\ILanguage.cs" />
+    <Compile Include="AttachedProperties\TabContent.cs" />
+    <Compile Include="Messaging\PlayMovieMessage.cs" />
+    <Compile Include="Messaging\StopPlayingMovieMessage.cs" />
+    <Compile Include="Models\Localization\Language.cs" />
+    <Compile Include="Models\Subtitles\Subtitle.cs" />
+    <Compile Include="Models\Trailer\Trailer.cs" />
+    <Compile Include="Services\Download\DownloadMediaService.cs" />
+    <Compile Include="Services\Download\DownloadMovieService.cs" />
+    <Compile Include="Services\Download\DownloadService.cs" />
+    <Compile Include="Services\Download\DownloadShowService.cs" />
+    <Compile Include="Services\Download\IDownloadService.cs" />
+    <Compile Include="Services\FileServer\FileServerService.cs" />
+    <Compile Include="Services\FileServer\IFileServerService.cs" />
+    <Compile Include="Services\Genres\GenreService.cs" />
+    <Compile Include="Services\Genres\IGenreService.cs" />
+    <Compile Include="Services\Shows\Trailer\IShowTrailerService.cs" />
+    <Compile Include="Services\Shows\Trailer\ShowTrailerService.cs" />
+    <Compile Include="Services\User\IUserService.cs" />
+    <Compile Include="Services\User\UserService.cs" />
+    <Compile Include="Services\Movies\Movie\IMovieService.cs" />
+    <Compile Include="Services\Movies\Movie\MovieService.cs" />
+    <Compile Include="Models\Torrent\Movie\TorrentJson.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.fr.Designer.cs">
+      <DependentUpon>Resources.fr.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Properties\Resources.en.Designer.cs">
+      <DependentUpon>Resources.en.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\RatingFiltering.xaml.cs">
+      <DependentUpon>RatingFiltering.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Services\Movies\Trailer\IMovieTrailerService.cs" />
+    <Compile Include="Services\Shows\Show\IShowService.cs" />
+    <Compile Include="Services\Shows\Show\ShowService.cs" />
+    <Compile Include="Services\Subtitles\ISubtitlesService.cs" />
+    <Compile Include="Services\Subtitles\SubtitlesService.cs" />
+    <Compile Include="UserControls\Home\Movie\Download\DownloadMovieUserControl.xaml.cs">
+      <DependentUpon>DownloadMovieUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\Home\Movie\Details\MovieDetailsUserControl.xaml.cs">
+      <DependentUpon>MovieDetailsUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\Home\Movie\MovieUserControl.xaml.cs">
+      <DependentUpon>MovieUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\Home\Show\Details\ShowDetailsUserControl.xaml.cs">
+      <DependentUpon>ShowDetailsUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\Home\Show\Download\DownloadShowUserControl.xaml.cs">
+      <DependentUpon>DownloadShowUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\Home\Show\ShowUserControl.xaml.cs">
+      <DependentUpon>ShowUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\Home\Show\Tabs\ShowTab.xaml.cs">
+      <DependentUpon>ShowTab.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\Player\PlayerUserControl.xaml.cs">
+      <DependentUpon>PlayerUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\Home\Search\SearchUserControl.xaml.cs">
+      <DependentUpon>SearchUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\Window\Settings\WindowSettingsUserControl.xaml.cs">
+      <DependentUpon>WindowSettingsUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\Home\Movie\Tabs\MovieTab.xaml.cs">
+      <DependentUpon>MovieTab.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\Home\Movie\Trailer\Trailer.xaml.cs">
+      <DependentUpon>Trailer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModels\Dialogs\ChromecastDialogViewModel.cs" />
+    <Compile Include="ViewModels\Dialogs\DropTorrentDialogViewModel.cs" />
+    <Compile Include="ViewModels\Dialogs\AboutDialogViewModel.cs" />
+    <Compile Include="ViewModels\Dialogs\HelpDialogViewModel.cs" />
+    <Compile Include="ViewModels\Pages\Home\IPageViewModel.cs" />
+    <Compile Include="ViewModels\Pages\Home\Movie\Download\DownloadMovieViewModel.cs" />
+    <Compile Include="ViewModels\Pages\Home\Genres\GenreViewModel.cs" />
+    <Compile Include="ViewModels\Pages\Home\Show\Details\ShowDetailsViewModel.cs" />
+    <Compile Include="ViewModels\Pages\Home\Show\Download\DownloadShowViewModel.cs" />
+    <Compile Include="ViewModels\Pages\Home\Show\Search\SearchShowViewModel.cs" />
+    <Compile Include="ViewModels\Pages\Home\Show\Tabs\FavoritesShowTabViewModel.cs" />
+    <Compile Include="ViewModels\Pages\Home\Show\Tabs\GreatestShowTabViewModel.cs" />
+    <Compile Include="ViewModels\Pages\Home\Show\Tabs\PopularShowTabViewModel.cs" />
+    <Compile Include="ViewModels\Pages\Home\Show\Tabs\RecentShowTabViewModel.cs" />
+    <Compile Include="ViewModels\Pages\Home\Show\Tabs\SearchShowTabViewModel.cs" />
+    <Compile Include="ViewModels\Pages\Home\Show\Tabs\ShowTabsViewModel.cs" />
+    <Compile Include="ViewModels\Windows\WindowViewModel.cs" />
+    <Compile Include="ViewModels\Pages\Home\Movie\MoviePageViewModel.cs" />
+    <Compile Include="ViewModels\Pages\Home\PagesViewModel.cs" />
+    <Compile Include="ViewModels\Pages\Home\Show\ShowPageViewModel.cs" />
+    <Compile Include="ViewModels\Pages\Player\MediaPlayerViewModel.cs" />
+    <Compile Include="ViewModels\Pages\Home\Movie\Tabs\FavoritesMovieTabViewModel.cs" />
+    <Compile Include="ViewModels\Pages\Home\Movie\Tabs\GreatestMovieTabViewModel.cs" />
+    <Compile Include="ViewModels\Pages\Home\Movie\Tabs\SearchMovieTabViewModel.cs" />
+    <Compile Include="ViewModels\Pages\Home\Movie\Tabs\PopularMovieTabViewModel.cs" />
+    <Compile Include="ViewModels\Pages\Home\Movie\Tabs\RecentMovieTabViewModel.cs" />
+    <Compile Include="ViewModels\Pages\Home\Movie\Details\MovieDetailsViewModel.cs" />
+    <Compile Include="ViewModels\Pages\Home\Movie\Search\SearchMovieViewModel.cs" />
+    <Compile Include="ViewModels\Windows\Settings\ApplicationSettingsViewModel.cs" />
+    <Compile Include="ViewModels\Pages\Home\Movie\Tabs\SeenMovieTabViewModel.cs" />
+    <Compile Include="Services\Movies\Trailer\MovieTrailerService.cs" />
+    <Compile Include="ViewModels\ViewModelLocator.cs" />
+    <Compile Include="ViewModels\Pages\Home\Movie\Tabs\MovieTabsViewModel.cs" />
+    <Compile Include="Windows\SplashScreen.xaml.cs">
+      <DependentUpon>SplashScreen.xaml</DependentUpon>
+    </Compile>
+    <Page Include="Controls\CapitalizeText.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\DownloadProgress.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\GenresLabel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\RatingStar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Movie\MovieRuntime.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Movie\MovieNumberSummary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Show\EpisodeDetail.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Show\SeasonDetail.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Show\ShowNumberSummary.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\CastDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\DropTorrentDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\ExceptionDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\HelpDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\UpdateDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\AboutDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\HomePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\PlayerPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\AnimatedScrollViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\CustomTabControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\FlyoutHeader.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Icons.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\ImageLoading.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Markdown.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Ripple.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Shadows.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\SplitView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\Home\Movie\MovieUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\Home\Show\Details\ShowDetailsUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\Home\Show\Download\DownloadShowUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\Home\Show\ShowUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\Home\Show\Tabs\ShowTab.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Windows\MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Page Include="Controls\RatingFiltering.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Skins\MainSkin.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UserControls\Home\Movie\Download\DownloadMovieUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\Home\Movie\Details\MovieDetailsUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\Player\PlayerUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\Home\Search\SearchUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\Window\Settings\WindowSettingsUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\Home\Movie\Tabs\MovieTab.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\Home\Movie\Trailer\Trailer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\SplashScreen.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <AppDesigner Include="Properties\" />
+    <EmbeddedResource Include="Markdown\Versions.md" />
+    <EmbeddedResource Include="Markdown\License.md" />
+    <EmbeddedResource Include="Markdown\About.md" />
+    <EmbeddedResource Include="Markdown\Help.md" />
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.fr.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.fr.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.en.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.en.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5.1">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.5.1 %28x86 et x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\icon.ico" />
+    <Resource Include="icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Popcorn.Spinner\Popcorn.Spinner.csproj">
+      <Project>{e49229cc-d702-478f-90e0-6e1a284272f6}</Project>
+      <Name>Popcorn.Spinner</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Popcorn.OSDB\Popcorn.OSDB.csproj">
+      <Project>{49c78f88-912b-49a2-935d-b9aebe07011a}</Project>
+      <Name>Popcorn.OSDB</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Popcorn.Utils\Popcorn.Utils.csproj">
+      <Project>{094a69ce-c69e-4ef0-9321-ba16f7a89080}</Project>
+      <Name>Popcorn.Utils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Popcorn.Markdown\Popcorn.Markdown.csproj">
+      <Project>{34186c3b-c308-4cae-b462-db7b5f5e378c}</Project>
+      <Name>Popcorn.Markdown</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Popcorn.YTVideoProvider\Popcorn.YTVideoProvider.csproj">
+      <Project>{5617bef3-671d-4705-ad37-eb2c290c6e04}</Project>
+      <Name>Popcorn.YTVideoProvider</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>Ce projet fait référence à des packages NuGet qui sont manquants sur cet ordinateur. Activez l'option de restauration des packages NuGet pour les télécharger. Pour plus d'informations, consultez http://go.microsoft.com/fwlink/?LinkID=322105. Le fichier manquant est le suivant : {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />
+  </Target>
+  <PropertyGroup>
+    <PreBuildEvent>if not exist "$(TargetDir)edge" xcopy /s /i "$(SolutionDir)packages\Edge.js.7.10.1\content\edge\*.*" "$(TargetDir)edge"
+     </PreBuildEvent>
+    <PostBuildEvent>if not exist "$(TargetDir)libvlc" xcopy /s /i "$(SolutionDir)packages\VlcLibs.2.2.5.1\lib\net45\libvlc\*.*" "$(TargetDir)libvlc"
+if not exist "$(TargetDir)concrt140.dll" xcopy /s /y "$(SolutionDir)packages\libtorrent-net.1.3.0\content\concrt140.dll" "$(TargetDir)"
+if not exist "$(TargetDir)msvcp140.dll" xcopy /s /y "$(SolutionDir)packages\libtorrent-net.1.3.0\content\msvcp140.dll" "$(TargetDir)"
+if not exist "$(TargetDir)vccorlib140.dll" xcopy /s /y "$(SolutionDir)packages\libtorrent-net.1.3.0\content\vccorlib140.dll" "$(TargetDir)"
+if not exist "$(TargetDir)vcruntime140.dll" xcopy /s /y "$(SolutionDir)packages\libtorrent-net.1.3.0\content\vcruntime140.dll" "$(TargetDir)"</PostBuildEvent>
+  </PropertyGroup>
+  <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release'">
+    <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
+      <Output TaskParameter="Assemblies" ItemName="Popcorn" />
+    </GetAssemblyIdentity>
+    <PropertyGroup>
+      <Version>@(Popcorn->'%(Version)')</Version>
+    </PropertyGroup>
+    <ItemGroup>
+      <Version Include="$(Version)" />
+      <Major Include="$(Version.Split('.')[0])" />
+      <Minor Include="$(Version.Split('.')[1])" />
+      <Build Include="$(Version.Split('.')[2])" />
+      <Revision Include="$(Version.Split('.')[3])" />
+    </ItemGroup>
+    <Exec Command="$(SolutionDir)\.nuget\NuGet.exe pack $(SolutionDir)\Popcorn.nuspec -Version @(Major).@(Minor).@(Build) -Properties Configuration=Release -OutputDirectory $(OutDir) -BasePath $(OutDir)" />
+    <Exec Command="$(SolutionDir)\packages\squirrel.windows.1.6.0\tools\Squirrel.exe --releasify $(OutDir)Popcorn.@(Major).@(Minor).@(Build).nupkg -g $(SolutionDir)\Popcorn\InstallLoader.gif --no-msi --setupIcon $(SolutionDir)\Popcorn\icon.ico" />
+    <Move SourceFiles="$(SolutionDir)\Popcorn\Releases\Setup.exe" DestinationFiles="$(SolutionDir)\Popcorn\Releases\PopcornInstaller.exe" />
+  </Target>
+  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

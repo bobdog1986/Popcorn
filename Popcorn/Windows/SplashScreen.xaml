@@ -1,0 +1,29 @@
+﻿<Window
+    x:Class="Popcorn.Windows.SplashScreen"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:wpf="clr-namespace:Popcorn.Spinner;assembly=Popcorn.Spinner"
+    Title="SplashScreen"
+    AllowsTransparency="True"
+    Background="Transparent"
+    WindowStartupLocation="CenterScreen"
+    WindowStyle="None"
+    mc:Ignorable="d">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Popcorn.Spinner;component/Colors.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Popcorn.Spinner;component/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid>
+        <wpf:LoadingIndicator Style="{DynamicResource LoadingIndicatorArcsStyle}">
+            <wpf:LoadingIndicator.RenderTransform>
+                <ScaleTransform ScaleX="2" ScaleY="2" />
+            </wpf:LoadingIndicator.RenderTransform>
+        </wpf:LoadingIndicator>
+    </Grid>
+</Window>

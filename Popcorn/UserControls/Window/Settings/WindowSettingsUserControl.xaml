@@ -1,0 +1,196 @@
+﻿<UserControl
+    x:Class="Popcorn.UserControls.Window.Settings.WindowSettingsUserControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:command="http://www.galasoft.ch/mvvmlight"
+    xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:lex="http://wpflocalizeextension.codeplex.com"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="300"
+    d:DesignWidth="300"
+    lex:LocalizeDictionary.DesignCulture="en"
+    lex:ResxLocalizationProvider.DefaultAssembly="Popcorn"
+    lex:ResxLocalizationProvider.DefaultDictionary="Resources"
+    Background="Transparent"
+    DataContext="{Binding ApplicationSettings, Source={StaticResource Locator}}"
+    mc:Ignorable="d">
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="GotFocus">
+            <command:EventToCommand Command="{Binding Mode=OneWay, Path=UpdateCacheSizeCommand}" PassEventArgsToCommand="False" />
+        </i:EventTrigger>
+        <i:EventTrigger EventName="Loaded">
+            <command:EventToCommand Command="{Binding Mode=OneWay, Path=InitializeAsyncCommand}" PassEventArgsToCommand="False" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
+    <Grid Width="400" Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="LabelCol" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="{lex:LocText LanguageLabel}" />
+            <ComboBox
+                Grid.Column="1"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                DisplayMemberPath="Name"
+                ItemsSource="{Binding Language.Languages}"
+                SelectedItem="{Binding Language.CurrentLanguage}" />
+        </Grid>
+        <Grid
+            Grid.Row="1"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Margin="0,10,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="LabelCol" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock
+                Grid.Column="0"
+                VerticalAlignment="Center"
+                Text="{lex:LocText DownloadLimitLabel}" />
+            <controls:NumericUpDown
+                Grid.Column="1"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Interval="50"
+                Maximum="100000"
+                Minimum="0"
+                Value="{Binding DownloadLimit}" />
+        </Grid>
+        <Grid
+            Grid.Row="2"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Margin="0,10,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="LabelCol" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock
+                Grid.Column="0"
+                VerticalAlignment="Center"
+                Text="{lex:LocText UploadLimitLabel}" />
+            <controls:NumericUpDown
+                Grid.Column="1"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Interval="50"
+                Maximum="10000"
+                Minimum="0"
+                Value="{Binding UploadLimit}" />
+        </Grid>
+        <Grid
+            Grid.Row="3"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Margin="0,10,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="LabelCol" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock
+                Grid.Column="0"
+                VerticalAlignment="Center"
+                Text="{lex:LocText DefaultQualityLabel}" />
+            <controls:ToggleSwitch
+                Grid.Column="2"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                IsChecked="{Binding DefaultHdQuality}"
+                OffLabel="SD"
+                OnLabel="HD"
+                Style="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}" />
+        </Grid>
+        <Grid
+            Grid.Row="4"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Margin="0,10,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="LabelCol" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock
+                Grid.Column="0"
+                VerticalAlignment="Center"
+                Text="{lex:LocText DefaultSubtitleLanguageLabel}" />
+            <controls:SplitButton
+                Grid.Column="2"
+                Width="130"
+                Height="35"
+                Margin="20,10,0,0"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                HorizontalContentAlignment="Left"
+                ItemsSource="{Binding AvailableSubtitlesLanguages}"
+                SelectedItem="{Binding DefaultSubtitleLanguage}">
+                <controls:SplitButton.Icon>
+                    <iconPacks:PackIconMaterial Margin="6" Kind="Translate" />
+                </controls:SplitButton.Icon>
+            </controls:SplitButton>
+        </Grid>
+        <Grid
+            Grid.Row="5"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Margin="0,10,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="LabelCol" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock
+                Grid.Column="0"
+                VerticalAlignment="Center"
+                Text="{lex:LocText CacheSizeLabel}" />
+            <StackPanel Grid.Column="2" Orientation="Horizontal">
+                <TextBlock
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Text="{Binding CacheSize}" />
+                <Button
+                    Width="100"
+                    Height="30"
+                    Margin="10,0,0,0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Command="{Binding ClearCacheCommand}"
+                    Content="{lex:LocText ClearButton}" />
+            </StackPanel>
+
+        </Grid>
+        <Grid Grid.Row="6" Grid.Column="1">
+            <StackPanel
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Orientation="Horizontal">
+                <TextBlock VerticalAlignment="Center" Text="{Binding Version}" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

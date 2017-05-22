@@ -1,0 +1,338 @@
+﻿<UserControl
+    x:Class="Popcorn.UserControls.Home.Show.Details.ShowDetailsUserControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:attachedProperties="clr-namespace:Popcorn.AttachedProperties"
+    xmlns:controls="clr-namespace:Popcorn.Controls"
+    xmlns:controls1="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:converters="clr-namespace:Popcorn.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:download="clr-namespace:Popcorn.ViewModels.Pages.Home.Show.Download"
+    xmlns:download1="clr-namespace:Popcorn.UserControls.Home.Show.Download"
+    xmlns:episode="clr-namespace:Popcorn.Models.Episode"
+    xmlns:lex="http://wpflocalizeextension.codeplex.com"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:show="clr-namespace:Popcorn.Controls.Show"
+    d:DesignHeight="300"
+    d:DesignWidth="300"
+    DataContext="{Binding ShowDetails, Source={StaticResource Locator}}"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <converters:RatingPercentageToNormalizedRatingConverter x:Key="RatingPercentageToNormalizedRatingConverter" />
+        <converters:NullAsVisibilityConverter x:Key="NullAsVisibilityConverter" />
+        <converters:BoolToInverseVisibilityConverter x:Key="BoolToInverseVisibilityConverter" />
+        <converters:MultiBooleanToBoolConverter x:Key="MultiBooleanToBoolConverter" />
+
+        <Style x:Key="AnimationContentOnMediaLoading" TargetType="{x:Type Grid}">
+            <Style.Triggers>
+                <DataTrigger Value="True">
+                    <DataTrigger.Binding>
+                        <MultiBinding Converter="{StaticResource MultiBooleanToBoolConverter}">
+                            <Binding Path="DownloadShow.IsDownloadingEpisode" />
+                            <Binding Path="IsPlayingTrailer" />
+                        </MultiBinding>
+                    </DataTrigger.Binding>
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation
+                                    Storyboard.TargetProperty="Opacity"
+                                    To="0.0"
+                                    Duration="0:0:0.5" />
+                                <ObjectAnimationUsingKeyFrames BeginTime="0:0:0.5" Storyboard.TargetProperty="Visibility">
+                                    <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Collapsed}" />
+                                </ObjectAnimationUsingKeyFrames>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation
+                                    Storyboard.TargetProperty="Opacity"
+                                    To="1.0"
+                                    Duration="0:0:0.5" />
+                                <ObjectAnimationUsingKeyFrames BeginTime="0:0:0" Storyboard.TargetProperty="Visibility">
+                                    <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}" />
+                                </ObjectAnimationUsingKeyFrames>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="{x:Type ListViewItem}">
+            <Style.Triggers>
+                <Trigger Property="ItemsControl.AlternationIndex" Value="0">
+                    <Setter Property="Background" Value="#2D2D2D" />
+                </Trigger>
+                <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                    <Setter Property="Background" Value="#4B4B4B" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <DataTemplate DataType="{x:Type download:DownloadShowViewModel}">
+            <download1:DownloadShowUserControl />
+        </DataTemplate>
+
+        <Style x:Key="AnimationContentGridVisibility">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=IsVisible}" Value="True">
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation
+                                    Storyboard.TargetProperty="Opacity"
+                                    To="1.0"
+                                    Duration="0:0:0.3" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation
+                                    Storyboard.TargetProperty="Opacity"
+                                    To="0.0"
+                                    Duration="0:0:0.5" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    <Grid Background="#252525">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="3*" />
+            <RowDefinition Height="2*" />
+        </Grid.RowDefinitions>
+        <Image
+            Grid.Row="0"
+            Grid.RowSpan="2"
+            Opacity="0.3"
+            RenderOptions.BitmapScalingMode="Fant"
+            Source="{Binding Show.Images.Banner, IsAsync=True}"
+            Stretch="UniformToFill" />
+        <Grid
+            Grid.Row="0"
+            Grid.RowSpan="2"
+            Visibility="{Binding DownloadShow.IsDownloadingEpisode, Converter={StaticResource BoolToInverseVisibilityConverter}}">
+            <Image
+                Opacity="0.3"
+                RenderOptions.BitmapScalingMode="Fant"
+                Source="{Binding Show.Images.Banner, IsAsync=True}"
+                Stretch="UniformToFill" />
+            <ContentControl
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Content="{Binding DownloadShow}" />
+        </Grid>
+        <Grid Grid.Row="0" Style="{StaticResource AnimationContentOnMediaLoading}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="20" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="20" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="50" />
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Row="1" Grid.Column="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Image
+                    Grid.Column="1"
+                    Width="300"
+                    Margin="0,10,0,0"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Top"
+                    RenderOptions.BitmapScalingMode="Fant"
+                    Source="{Binding Show.Images.Poster, IsAsync=True}">
+                    <Image.Effect>
+                        <DropShadowEffect
+                            BlurRadius="35"
+                            Direction="270"
+                            ShadowDepth="13"
+                            Color="Black" />
+                    </Image.Effect>
+                </Image>
+            </Grid>
+            <Grid Grid.Row="1" Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Orientation="Horizontal">
+                    <TextBlock
+                        FontSize="30"
+                        Foreground="White"
+                        Text="{Binding Show.Title}" />
+                    <TextBlock
+                        Margin="15,10,0,0"
+                        attachedProperties:TextParenthesis.Text="{Binding Show.Year}"
+                        FontSize="18"
+                        Foreground="White" />
+                    <controls:RatingStar
+                        Width="80"
+                        Margin="20,5,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        RatingValue="{Binding Show.Rating.Percentage, Converter={StaticResource RatingPercentageToNormalizedRatingConverter}}" />
+                </StackPanel>
+                <TextBlock
+                    Grid.Row="1"
+                    Width="400"
+                    Margin="0,10,0,0"
+                    HorizontalAlignment="Left"
+                    FontSize="16"
+                    Foreground="WhiteSmoke">
+                    <controls:GenresLabel Genres="{Binding Show.Genres}" />
+                </TextBlock>
+                <Button
+                    Grid.Row="2"
+                    Width="100"
+                    Height="30"
+                    Margin="0,15,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Command="{Binding PlayTrailerCommand}"
+                    Content="{lex:LocText TrailerButton}"
+                    IsTabStop="False" />
+                <controls:AnimatedScrollViewer
+                    Grid.Row="3"
+                    Margin="0,15,0,0"
+                    HorizontalScrollBarVisibility="Disabled"
+                    VerticalScrollBarVisibility="Auto">
+                    <TextBlock
+                        FontSize="18"
+                        Foreground="White"
+                        Text="{Binding Show.Synopsis}"
+                        TextAlignment="Justify"
+                        TextTrimming="WordEllipsis"
+                        TextWrapping="Wrap" />
+                </controls:AnimatedScrollViewer>
+            </Grid>
+        </Grid>
+        <Grid
+            Grid.Row="1"
+            Background="#252525"
+            Style="{StaticResource AnimationContentOnMediaLoading}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="80" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="40" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="20" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="15" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="20" />
+            </Grid.ColumnDefinitions>
+            <Grid
+                Grid.Row="0"
+                Grid.Column="1"
+                Grid.ColumnSpan="3">
+                <Grid HorizontalAlignment="Stretch">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock
+                        Grid.Column="1"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        FontSize="22"
+                        FontWeight="Thin"
+                        Foreground="#616161"
+                        Text="Episodes" />
+                    <show:SeasonDetail
+                        Grid.Column="3"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        SelectedSeasonChanged="OnSelectedSeasonChanged"
+                        Show="{Binding Show}" />
+                </Grid>
+            </Grid>
+            <Grid
+                Grid.Row="1"
+                Grid.Column="1"
+                HorizontalAlignment="Stretch">
+                <ListView x:Name="EpisodesDetails">
+                    <ListView.Template>
+                        <ControlTemplate>
+                            <controls:AnimatedScrollViewer>
+                                <ItemsPresenter />
+                            </controls:AnimatedScrollViewer>
+                        </ControlTemplate>
+                    </ListView.Template>
+                    <ListView.ItemTemplate>
+                        <DataTemplate DataType="{x:Type episode:EpisodeShowJson}">
+                            <StackPanel Margin="10,15" Orientation="Horizontal">
+                                <TextBlock
+                                    FontSize="16"
+                                    FontWeight="Light"
+                                    Foreground="White"
+                                    Text="{Binding EpisodeNumber}" />
+                                <TextBlock
+                                    Margin="10,0,0,0"
+                                    FontSize="16"
+                                    FontWeight="Light"
+                                    Foreground="White"
+                                    Text="{Binding Title}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
+            <Grid
+                Grid.Row="1"
+                Grid.Column="3"
+                Background="#2D2D2D"
+                Opacity="0"
+                Style="{StaticResource AnimationContentGridVisibility}"
+                Visibility="{Binding ElementName=EpisodesDetails, Path=SelectedItem, Converter={StaticResource NullAsVisibilityConverter}}">
+                <show:EpisodeDetail Margin="15,20" Episode="{Binding ElementName=EpisodesDetails, Path=SelectedItem}" />
+            </Grid>
+        </Grid>
+        <Grid Grid.Row="0" Grid.RowSpan="2">
+            <StackPanel
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Orientation="Vertical">
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Bottom"
+                    FontSize="36"
+                    Foreground="White"
+                    Text="{lex:LocText LoadingTrailerLabel}"
+                    TextTrimming="CharacterEllipsis"
+                    Visibility="{Binding IsTrailerLoading, Converter={StaticResource BoolToInverseVisibilityConverter}}" />
+                <controls1:ProgressRing
+                    Margin="0,30,0,0"
+                    Foreground="{DynamicResource AccentColorBrush}"
+                    IsActive="True"
+                    Visibility="{Binding IsTrailerLoading, Converter={StaticResource BoolToInverseVisibilityConverter}}" />
+                <Button
+                    Width="100"
+                    Height="30"
+                    Margin="0,30,0,0"
+                    Command="{Binding StopLoadingTrailerCommand}"
+                    Content="{lex:LocText CancelButton}"
+                    Visibility="{Binding IsTrailerLoading, Converter={StaticResource BoolToInverseVisibilityConverter}}" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>
