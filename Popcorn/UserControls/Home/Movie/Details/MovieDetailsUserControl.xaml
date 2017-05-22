@@ -135,7 +135,7 @@
         <controls:MetroProgressBar
             Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}, Path=ActualWidth, Mode=OneWay}"
             EllipseDiameter="6"
-            Foreground="{DynamicResource AccentColorBrush}"
+            Foreground="{StaticResource AccentColorBrush}"
             IsIndeterminate="True"
             Style="{StaticResource ProgressBarOnMovieLoading}" />
         <Grid
@@ -151,7 +151,7 @@
                 Grid.Row="0"
                 Grid.RowSpan="3"
                 Opacity="0.3"
-                RenderOptions.BitmapScalingMode="Fant"
+                RenderOptions.BitmapScalingMode="HighQuality"
                 Source="{Binding Movie.BackdropImage, IsAsync=True}"
                 Stretch="UniformToFill" />
             <TextBlock
@@ -190,7 +190,7 @@
                     Grid.Column="1"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
-                    RenderOptions.BitmapScalingMode="Fant"
+                    RenderOptions.BitmapScalingMode="HighQuality"
                     Source="{Binding Movie.PosterImage, IsAsync=True}">
                     <Image.Effect>
                         <DropShadowEffect
@@ -469,7 +469,7 @@
                                                                     Width="60"
                                                                     Height="60"
                                                                     HorizontalAlignment="Left"
-                                                                    RenderOptions.BitmapScalingMode="Fant"
+                                                                    RenderOptions.BitmapScalingMode="HighQuality"
                                                                     Source="{Binding SmallImage, IsAsync=True}" />
                                                             </StackPanel>
                                                         </Grid>
@@ -627,7 +627,7 @@
                                                     HorizontalAlignment="Center"
                                                     VerticalAlignment="Center"
                                                     attachedProperties:ImageAsyncHelper.ImagePath="{Binding PosterImage, IsAsync=True}"
-                                                    RenderOptions.BitmapScalingMode="Fant" />
+                                                    RenderOptions.BitmapScalingMode="HighQuality" />
                                                 <Grid
                                                     x:Name="PlayCanvas"
                                                     Grid.Row="0"
@@ -692,7 +692,7 @@
                     <controls:ProgressRing
                         Grid.Row="1"
                         VerticalAlignment="Center"
-                        Foreground="{DynamicResource AccentColorBrush}"
+                        Foreground="{StaticResource AccentColorBrush}"
                         IsActive="True"
                         Visibility="{Binding LoadingSimilar, Converter={StaticResource BoolToInverseVisibilityConverter}}" />
                     <TextBlock
@@ -715,7 +715,7 @@
             <controls:ProgressRing
                 Grid.Row="1"
                 VerticalAlignment="Center"
-                Foreground="{DynamicResource AccentColorBrush}"
+                Foreground="{StaticResource AccentColorBrush}"
                 IsActive="True"
                 Visibility="{Binding IsTrailerLoading, Converter={StaticResource BoolToInverseVisibilityConverter}}" />
             <Button

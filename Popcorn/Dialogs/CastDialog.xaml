@@ -74,7 +74,7 @@
                 controls:ControlsHelper.ContentCharacterCasing="Normal"
                 Command="{Binding Path=CloseCommand}"
                 Content="{lex:LocText CancelLabel}"
-                Style="{DynamicResource AccentedSquareButtonStyle}" />
+                Style="{StaticResource AccentedSquareButtonStyle}" />
         </StackPanel>
 
         <Grid Visibility="{Binding ConnectingToChromecast, Converter={StaticResource BoolToInverseVisibilityConverter}}">
@@ -137,7 +137,7 @@
                         <Button
                             Margin="5,0,5,0"
                             Command="MediaCommands.Pause"
-                            Style="{DynamicResource ChromelessButtonStyle}">
+                            Style="{StaticResource ChromelessButtonStyle}">
                             <Canvas Width="15" Height="15">
                                 <Path
                                     Width="15"
@@ -155,7 +155,7 @@
                         <Button
                             Margin="5,0,5,0"
                             Command="MediaCommands.Play"
-                            Style="{DynamicResource ChromelessButtonStyle}">
+                            Style="{StaticResource ChromelessButtonStyle}">
                             <Canvas Width="15" Height="15">
                                 <Path
                                     Width="15"
@@ -179,7 +179,7 @@
                                 HorizontalAlignment="Stretch"
                                 IsMoveToPointEnabled="True"
                                 Opacity="0.7"
-                                Style="{DynamicResource FlatSlider}"
+                                Style="{StaticResource FlatSlider}"
                                 Thumb.DragCompleted="MediaPlayerSliderProgress_OnDragCompleted"
                                 Thumb.DragStarted="MediaPlayerSliderProgress_OnDragStarted"
                                 ValueChanged="MediaPlayerSliderProgress_OnValueChanged" />
@@ -196,7 +196,7 @@
                             Maximum="100"
                             Minimum="0"
                             SmallChange="1"
-                            Style="{DynamicResource FlatSlider}"
+                            Style="{StaticResource FlatSlider}"
                             Value="{Binding Path=Volume}" />
                     </StatusBarItem>
                 </StatusBar>
@@ -207,7 +207,7 @@
                     controls:ControlsHelper.ContentCharacterCasing="Normal"
                     Command="{Binding Path=CancelCommand}"
                     Content="{lex:LocText StopLabel}"
-                    Style="{DynamicResource AccentedSquareButtonStyle}" />
+                    Style="{StaticResource AccentedSquareButtonStyle}" />
             </StackPanel>
         </Grid>
         <Grid>
@@ -252,7 +252,7 @@
                 controls:ControlsHelper.ContentCharacterCasing="Normal"
                 Command="{Binding Path=CloseCommand}"
                 Content="{lex:LocText CancelLabel}"
-                Style="{DynamicResource AccentedSquareButtonStyle}" />
+                Style="{StaticResource AccentedSquareButtonStyle}" />
         </Grid>
     </Grid>
 </dialogs:CustomDialog>

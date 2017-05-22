@@ -8,9 +8,9 @@
     xmlns:helpers="clr-namespace:Popcorn.Helpers">
 
     <SolidColorBrush x:Key="TabItemPanelBackgroundBrush" Color="#273440" />
-    <SolidColorBrush x:Key="TabItemBackgroundIsSelectedBrush" Color="{DynamicResource Gray2}" />
-    <SolidColorBrush x:Key="TabItemBackgroundIsMouseOverBrush" Color="{DynamicResource Gray5}" />
-    <SolidColorBrush x:Key="TabItemForegroundIsSelectedBrush" Color="{DynamicResource IdealForegroundColor}" />
+    <SolidColorBrush x:Key="TabItemBackgroundIsSelectedBrush" Color="{StaticResource Gray2}" />
+    <SolidColorBrush x:Key="TabItemBackgroundIsMouseOverBrush" Color="{StaticResource Gray5}" />
+    <SolidColorBrush x:Key="TabItemForegroundIsSelectedBrush" Color="{StaticResource IdealForegroundColor}" />
     <SolidColorBrush x:Key="TabItemSelectorBrush" Color="DarkRed" />
     <SolidColorBrush x:Key="TabControlBackgroundBrush" Color="WhiteSmoke" />
 

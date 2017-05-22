@@ -72,7 +72,7 @@
                 Height="7"
                 Margin="0,15,0,0"
                 VerticalAlignment="Center"
-                Foreground="{DynamicResource AccentColorBrush}"
+                Foreground="{StaticResource AccentColorBrush}"
                 Maximum="4.0"
                 Minimum="0.0"
                 Value="{Binding DownloadProgress}" />
@@ -85,7 +85,7 @@
                 controls:ControlsHelper.ContentCharacterCasing="Normal"
                 Command="{Binding CancelCommand}"
                 Content="{lex:LocText CancelButton}"
-                Style="{DynamicResource AccentedSquareButtonStyle}" />
+                Style="{StaticResource AccentedSquareButtonStyle}" />
         </StackPanel>
     </Grid>
 </dialogs:CustomDialog>
