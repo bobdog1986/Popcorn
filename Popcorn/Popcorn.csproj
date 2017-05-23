@@ -364,6 +364,7 @@
     <Compile Include="Messaging\StopPlayMediaMessage.cs" />
     <Compile Include="Messaging\UnhandledExceptionMessage.cs" />
     <Compile Include="Models\Version\VersionInfo.cs" />
+    <Compile Include="Panels\VirtualizingTilePanel.cs" />
     <Compile Include="Services\Application\ApplicationService.cs" />
     <Compile Include="Services\Application\IApplicationService.cs" />
     <Compile Include="Models\Bandwidth\BandwidthRate.cs" />
@@ -390,7 +391,6 @@
     <Compile Include="Pages\PlayerPage.xaml.cs">
       <DependentUpon>PlayerPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Panels\ElasticWrapPanel.cs" />
     <Compile Include="Events\WindowStateChangedEventArgs.cs" />
     <Compile Include="Helpers\DownloadFileHelper.cs" />
     <Compile Include="Extensions\FrameworkElementExtensions.cs" />
