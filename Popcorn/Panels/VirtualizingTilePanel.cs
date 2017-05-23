@@ -185,7 +185,7 @@ namespace Popcorn.Panels
 
             // See how big we are
             return new Size(childrenPerRow * ChildWidth,
-                ChildWidth * Math.Ceiling((double) itemCount / childrenPerRow));
+                ChildHeight * Math.Ceiling((double) itemCount / childrenPerRow));
         }
 
         /// <summary>
