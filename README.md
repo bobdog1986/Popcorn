@@ -55,7 +55,7 @@ At this time, only Windows 7+ is supported (Windows 7, 8, 8.1, 10).
 Of course yes! Any pull-request will be considered.
 
 ## Installer
-Download full installer [here](https://github.com/bbougot/Popcorn/releases/download/v2.2.0/PopcornInstaller.exe)
+Download full installer [here](https://github.com/bbougot/Popcorn/releases/download/v2.3.0/PopcornInstaller.exe)
 
 ## History version
 See history [here](https://github.com/bbougot/Popcorn/blob/master/Popcorn/Markdown/Versions.md)

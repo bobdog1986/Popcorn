@@ -1,4 +1,12 @@
-﻿# 2.2.0 - 21/05/2017 #
+﻿# 2.3.0 - 23/05/2017 #
+***
+Improve performances.
+
+### Details ###
+
+* Drastically improved UI performances
+
+# 2.2.0 - 21/05/2017 #
 ***
 Improve UI.
 
