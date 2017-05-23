@@ -18,7 +18,7 @@ An application which aims to provide a simple interface to watch any movie.
 ![Screenshot1](https://github.com/bbougot/Popcorn/blob/master/Screenshots/Screen1.jpg)
 
 ## Supported platforms
-At this time, only Windows 7+ is supported (Windows 7, 8, 8.1, 10).
+Windows 7+ is supported (Windows 7, 8, 8.1, 10).
 
 ## Installer
 Download full installer [here](https://github.com/bbougot/Popcorn/releases/download/v2.3.0/PopcornInstaller.exe) 
