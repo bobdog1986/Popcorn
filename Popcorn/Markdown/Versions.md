@@ -1,4 +1,12 @@
-﻿# 2.3.1 - 23/05/2017 #
+﻿# 2.3.2 - 23/05/2017 #
+***
+Fixed issue.
+
+### Details ###
+
+* Fix issue with scroller ([#62](https://github.com/bbougot/Popcorn/issues/62)).
+
+# 2.3.1 - 23/05/2017 #
 ***
 Optimized executable size.
 
