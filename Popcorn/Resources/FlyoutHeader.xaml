@@ -37,9 +37,7 @@
                 Margin="15,0,0,0"
                 VerticalAlignment="Center"
                 FontSize="24"
-                FontWeight="Light"
                 Text="{Binding}"
-                Typography.Capitals="SmallCaps"
                 Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:Flyout}}, Path=TitleVisibility}" />
         </DockPanel>
         <DataTemplate.Triggers>

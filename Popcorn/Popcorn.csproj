@@ -126,7 +126,7 @@
       <HintPath>..\packages\squirrel.windows.1.6.0\lib\Net45\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
     <Reference Include="ltnet, Version=0.0.0.0, Culture=neutral, processorArchitecture=x86">
-      <HintPath>..\packages\libtorrent-net.1.3.0\lib\net45\ltnet.dll</HintPath>
+      <HintPath>..\packages\libtorrent-net.1.5.0\lib\net45\ltnet.dll</HintPath>
     </Reference>
     <Reference Include="MahApps.Metro, Version=1.5.0.23, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.1.5.0\lib\net45\MahApps.Metro.dll</HintPath>
@@ -792,10 +792,10 @@
     <PreBuildEvent>if not exist "$(TargetDir)edge" xcopy /s /i "$(SolutionDir)packages\Edge.js.7.10.1\content\edge\*.*" "$(TargetDir)edge"
      </PreBuildEvent>
     <PostBuildEvent>if not exist "$(TargetDir)libvlc" xcopy /s /i "$(SolutionDir)packages\VlcLibs.2.2.5.1\lib\net45\libvlc\*.*" "$(TargetDir)libvlc"
-if not exist "$(TargetDir)concrt140.dll" xcopy /s /y "$(SolutionDir)packages\libtorrent-net.1.3.0\content\concrt140.dll" "$(TargetDir)"
-if not exist "$(TargetDir)msvcp140.dll" xcopy /s /y "$(SolutionDir)packages\libtorrent-net.1.3.0\content\msvcp140.dll" "$(TargetDir)"
-if not exist "$(TargetDir)vccorlib140.dll" xcopy /s /y "$(SolutionDir)packages\libtorrent-net.1.3.0\content\vccorlib140.dll" "$(TargetDir)"
-if not exist "$(TargetDir)vcruntime140.dll" xcopy /s /y "$(SolutionDir)packages\libtorrent-net.1.3.0\content\vcruntime140.dll" "$(TargetDir)"</PostBuildEvent>
+if not exist "$(TargetDir)concrt140.dll" xcopy /s /y "$(SolutionDir)packages\libtorrent-net.1.5.0\tools\concrt140.dll" "$(TargetDir)"
+if not exist "$(TargetDir)msvcp140.dll" xcopy /s /y "$(SolutionDir)packages\libtorrent-net.1.5.0\tools\msvcp140.dll" "$(TargetDir)"
+if not exist "$(TargetDir)vccorlib140.dll" xcopy /s /y "$(SolutionDir)packages\libtorrent-net.1.5.0\tools\vccorlib140.dll" "$(TargetDir)"
+if not exist "$(TargetDir)vcruntime140.dll" xcopy /s /y "$(SolutionDir)packages\libtorrent-net.1.5.0\tools\vcruntime140.dll" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>
   <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release'">
     <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
