@@ -23,7 +23,7 @@ namespace Popcorn.Panels
 
         public static readonly DependencyProperty ChildHeightProperty
             = DependencyProperty.RegisterAttached("ChildHeight", typeof(double), typeof(VirtualizingTilePanel),
-                new FrameworkPropertyMetadata(350d, FrameworkPropertyMetadataOptions.AffectsMeasure |
+                new FrameworkPropertyMetadata(385d, FrameworkPropertyMetadataOptions.AffectsMeasure |
                                                     FrameworkPropertyMetadataOptions.AffectsArrange));
 
         // Accessor for the child size dependency property
@@ -36,7 +36,7 @@ namespace Popcorn.Panels
         public double ChildHeight
         {
             get => (double) GetValue(ChildHeightProperty);
-            set => SetValue(ChildWidthProperty, value);
+            set => SetValue(ChildHeightProperty, value);
         }
 
         /// <summary>
