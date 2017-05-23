@@ -21,7 +21,7 @@ Windows 7+ is supported (Windows 7, 8, 8.1, 10).
 ## Installer
 Download installer [here](https://github.com/bbougot/Popcorn/releases/download/v2.3.1/PopcornInstaller.exe) 
 
-## Licence
+## License
 If you distribute a copy or make a fork of the project, you have to credit this project as source.
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
