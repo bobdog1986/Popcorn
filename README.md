@@ -13,8 +13,6 @@
 [![Quality Gate](https://sonarqube.com/api/badges/gate?key=Popcorn)](https://sonarqube.com/dashboard/index/Popcorn)
 [![Coverage Status](https://coveralls.io/repos/github/bbougot/Popcorn/badge.svg?branch=master)](https://coveralls.io/github/bbougot/Popcorn?branch=master) 
 
-An application which aims to provide a simple interface to watch any movie.
-
 ![Screenshot1](https://github.com/bbougot/Popcorn/blob/master/Screenshots/Screen1.jpg)
 
 ## Supported platforms
