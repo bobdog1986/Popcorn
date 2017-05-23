@@ -47,244 +47,290 @@
                 </MultiBinding>
             </TextBlock.Visibility>
         </TextBlock>
-        <controls:AnimatedScrollViewer
-            ScrollChanged="ScrollViewerScrollChanged"
-            VerticalScrollBarVisibility="Auto"
+        <ItemsControl
+            VerticalAlignment="Top"
+            ItemsSource="{Binding Shows, Mode=OneTime}"
+            ScrollViewer.CanContentScroll="True"
+            VirtualizingStackPanel.IsVirtualizing="True"
+            VirtualizingStackPanel.VirtualizationMode="Recycling"
             Visibility="{Binding Window.ApplicationService.IsConnectionInError, Converter={StaticResource BoolToVisibilityConverter}, Source={StaticResource Locator}}">
-            <ItemsControl
-                VerticalAlignment="Top"
-                ItemsSource="{Binding Shows}"
-                ScrollViewer.CanContentScroll="True"
-                VirtualizingStackPanel.IsVirtualizing="True"
-                VirtualizingStackPanel.VirtualizationMode="Recycling">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel
-                            Margin="0,15,0,15"
-                            HorizontalAlignment="Left"
-                            Orientation="Vertical">
-                            <controls1:Tile
-                                Margin="0,0,0,5"
-                                Background="#FF2F2F2F"
-                                Command="{Binding ShowDetails.LoadShowCommand, Source={StaticResource Locator}}"
-                                CommandParameter="{Binding}"
-                                Style="{StaticResource LargeTileStyle}">
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="65" />
-                                        <RowDefinition Height="170" />
-                                        <RowDefinition Height="65" />
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="10" />
-                                        <ColumnDefinition Width="180" />
-                                        <ColumnDefinition Width="10" />
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.Triggers>
-                                        <EventTrigger RoutedEvent="Grid.MouseEnter">
-                                            <EventTrigger.Actions>
-                                                <BeginStoryboard>
-                                                    <Storyboard>
-                                                        <DoubleAnimation
-                                                            AccelerationRatio="0.05"
-                                                            AutoReverse="False"
-                                                            DecelerationRatio="0.95"
-                                                            FillBehavior="HoldEnd"
-                                                            Storyboard.TargetName="BackgroundImage"
-                                                            Storyboard.TargetProperty="Opacity"
-                                                            From="1.0"
-                                                            To="0.4"
-                                                            Duration="0:0:01" />
-                                                        <DoubleAnimation
-                                                            AccelerationRatio="0.05"
-                                                            AutoReverse="False"
-                                                            DecelerationRatio="0.95"
-                                                            FillBehavior="HoldEnd"
-                                                            Storyboard.TargetName="PlayCanvas"
-                                                            Storyboard.TargetProperty="Opacity"
-                                                            From="0.0"
-                                                            To="1.0"
-                                                            Duration="0:0:01" />
-                                                        <DoubleAnimation
-                                                            AccelerationRatio="0.05"
-                                                            AutoReverse="False"
-                                                            DecelerationRatio="0.95"
-                                                            FillBehavior="HoldEnd"
-                                                            Storyboard.TargetName="Rating"
-                                                            Storyboard.TargetProperty="Opacity"
-                                                            From="0.0"
-                                                            To="1.0"
-                                                            Duration="0:0:01" />
-                                                        <DoubleAnimation
-                                                            AccelerationRatio="0.05"
-                                                            AutoReverse="False"
-                                                            DecelerationRatio="0.95"
-                                                            FillBehavior="HoldEnd"
-                                                            Storyboard.TargetName="Like"
-                                                            Storyboard.TargetProperty="Opacity"
-                                                            From="0.0"
-                                                            To="1.0"
-                                                            Duration="0:0:01" />
-                                                    </Storyboard>
-                                                </BeginStoryboard>
-                                            </EventTrigger.Actions>
-                                        </EventTrigger>
-                                        <EventTrigger RoutedEvent="Grid.MouseLeave">
-                                            <EventTrigger.Actions>
-                                                <BeginStoryboard>
-                                                    <Storyboard>
-                                                        <DoubleAnimation
-                                                            AccelerationRatio="0.05"
-                                                            AutoReverse="False"
-                                                            DecelerationRatio="0.95"
-                                                            Storyboard.TargetName="BackgroundImage"
-                                                            Storyboard.TargetProperty="Opacity"
-                                                            From="1.0"
-                                                            To="1.0" />
-                                                        <DoubleAnimation
-                                                            AccelerationRatio="0.05"
-                                                            AutoReverse="False"
-                                                            DecelerationRatio="0.95"
-                                                            Storyboard.TargetName="PlayCanvas"
-                                                            Storyboard.TargetProperty="Opacity"
-                                                            From="0.0"
-                                                            To="0.0" />
-                                                        <DoubleAnimation
-                                                            AccelerationRatio="0.05"
-                                                            AutoReverse="False"
-                                                            DecelerationRatio="0.95"
-                                                            Storyboard.TargetName="Rating"
-                                                            Storyboard.TargetProperty="Opacity"
-                                                            From="0.0"
-                                                            To="0.0" />
-                                                        <DoubleAnimation
-                                                            AccelerationRatio="0.05"
-                                                            AutoReverse="False"
-                                                            DecelerationRatio="0.95"
-                                                            Storyboard.TargetName="Like"
-                                                            Storyboard.TargetProperty="Opacity"
-                                                            From="0.0"
-                                                            To="0.0" />
-                                                    </Storyboard>
-                                                </BeginStoryboard>
-                                            </EventTrigger.Actions>
-                                        </EventTrigger>
-                                    </Grid.Triggers>
-                                    <Image
-                                        x:Name="BackgroundImage"
-                                        Grid.Row="0"
-                                        Grid.RowSpan="3"
-                                        Grid.Column="0"
-                                        Grid.ColumnSpan="3"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        attachedProperties:ImageAsyncHelper.ImagePath="{Binding Images.Poster, IsAsync=True}"
-                                        RenderOptions.BitmapScalingMode="Fant" />
-                                    <Grid
-                                        x:Name="PlayCanvas"
-                                        Grid.Row="0"
-                                        Grid.RowSpan="3"
-                                        Grid.Column="1"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        Opacity="0.0">
-                                        <Path
-                                            Width="20.5832"
-                                            Height="31.6667"
-                                            Data="F1 M 30.0833,22.1667L 50.6665,37.6043L 50.6665,38.7918L 30.0833,53.8333L 30.0833,22.1667 Z "
-                                            Fill="White"
-                                            Stretch="Fill" />
-                                        <Ellipse
-                                            x:Name="PlayEllipse"
-                                            Width="60"
-                                            Height="60"
-                                            Fill="#00000000"
-                                            Opacity=".6"
-                                            Stretch="Fill"
-                                            Stroke="#FFFFFF"
-                                            StrokeLineJoin="Round"
-                                            StrokeThickness="4" />
-                                    </Grid>
-                                    <controls:RatingStar
-                                        x:Name="Rating"
-                                        Grid.Row="2"
-                                        Grid.Column="1"
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel
+                        Margin="0,15,0,15"
+                        HorizontalAlignment="Left"
+                        Orientation="Vertical"
+                        RenderOptions.BitmapScalingMode="HighQuality"
+                        RenderOptions.ClearTypeHint="Enabled"
+                        TextOptions.TextRenderingMode="ClearType">
+                        <controls1:Tile
+                            Margin="0,0,0,5"
+                            Background="#FF2F2F2F"
+                            Command="{Binding ShowDetails.LoadShowCommand, Source={StaticResource Locator}, Mode=OneTime}"
+                            CommandParameter="{Binding Mode=OneTime}"
+                            Style="{StaticResource LargeTileStyle}">
+                            <controls1:Tile.Triggers>
+                                <EventTrigger RoutedEvent="controls1:Tile.MouseEnter">
+                                    <EventTrigger.Actions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation
+                                                    AccelerationRatio="0.05"
+                                                    AutoReverse="False"
+                                                    DecelerationRatio="0.95"
+                                                    FillBehavior="HoldEnd"
+                                                    Storyboard.TargetName="BackgroundImage"
+                                                    Storyboard.TargetProperty="Opacity"
+                                                    From="1.0"
+                                                    To="0.4"
+                                                    Duration="0:0:01" />
+                                                <DoubleAnimation
+                                                    AccelerationRatio="0.05"
+                                                    AutoReverse="False"
+                                                    DecelerationRatio="0.95"
+                                                    FillBehavior="HoldEnd"
+                                                    Storyboard.TargetName="PlayCanvas"
+                                                    Storyboard.TargetProperty="Opacity"
+                                                    From="0.0"
+                                                    To="1.0"
+                                                    Duration="0:0:01" />
+                                                <DoubleAnimation
+                                                    AccelerationRatio="0.05"
+                                                    AutoReverse="False"
+                                                    DecelerationRatio="0.95"
+                                                    FillBehavior="HoldEnd"
+                                                    Storyboard.TargetName="Rating"
+                                                    Storyboard.TargetProperty="Opacity"
+                                                    From="0.0"
+                                                    To="1.0"
+                                                    Duration="0:0:01" />
+                                                <DoubleAnimation
+                                                    AccelerationRatio="0.05"
+                                                    AutoReverse="False"
+                                                    DecelerationRatio="0.95"
+                                                    FillBehavior="HoldEnd"
+                                                    Storyboard.TargetName="Like"
+                                                    Storyboard.TargetProperty="Opacity"
+                                                    From="0.0"
+                                                    To="1.0"
+                                                    Duration="0:0:01" />
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Rating" Storyboard.TargetProperty="Visibility">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PlayCanvas" Storyboard.TargetProperty="Visibility">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Like" Storyboard.TargetProperty="Visibility">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger.Actions>
+                                </EventTrigger>
+                                <EventTrigger RoutedEvent="controls1:Tile.MouseLeave">
+                                    <EventTrigger.Actions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation
+                                                    AccelerationRatio="0.05"
+                                                    AutoReverse="False"
+                                                    DecelerationRatio="0.95"
+                                                    Storyboard.TargetName="BackgroundImage"
+                                                    Storyboard.TargetProperty="Opacity"
+                                                    From="1.0"
+                                                    To="1.0" />
+                                                <DoubleAnimation
+                                                    AccelerationRatio="0.05"
+                                                    AutoReverse="False"
+                                                    DecelerationRatio="0.95"
+                                                    Storyboard.TargetName="PlayCanvas"
+                                                    Storyboard.TargetProperty="Opacity"
+                                                    From="0.0"
+                                                    To="0.0" />
+                                                <DoubleAnimation
+                                                    AccelerationRatio="0.05"
+                                                    AutoReverse="False"
+                                                    DecelerationRatio="0.95"
+                                                    Storyboard.TargetName="Rating"
+                                                    Storyboard.TargetProperty="Opacity"
+                                                    From="0.0"
+                                                    To="0.0" />
+                                                <DoubleAnimation
+                                                    AccelerationRatio="0.05"
+                                                    AutoReverse="False"
+                                                    DecelerationRatio="0.95"
+                                                    Storyboard.TargetName="Like"
+                                                    Storyboard.TargetProperty="Opacity"
+                                                    From="0.0"
+                                                    To="0.0" />
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Rating" Storyboard.TargetProperty="Visibility">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Collapsed}" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PlayCanvas" Storyboard.TargetProperty="Visibility">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Collapsed}" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Like" Storyboard.TargetProperty="Visibility">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Collapsed}" />
+                                                </ObjectAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger.Actions>
+                                </EventTrigger>
+                            </controls1:Tile.Triggers>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="65" />
+                                    <RowDefinition Height="170" />
+                                    <RowDefinition Height="65" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="10" />
+                                    <ColumnDefinition Width="180" />
+                                    <ColumnDefinition Width="10" />
+                                </Grid.ColumnDefinitions>
+
+                                <Image
+                                    x:Name="BackgroundImage"
+                                    Grid.Row="0"
+                                    Grid.RowSpan="3"
+                                    Grid.Column="0"
+                                    Grid.ColumnSpan="3"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    attachedProperties:ImageAsyncHelper.ImagePath="{Binding Images.Poster, IsAsync=True, Mode=OneTime}"
+                                    RenderOptions.BitmapScalingMode="HighQuality" />
+                                <Grid
+                                    x:Name="PlayCanvas"
+                                    Grid.Row="0"
+                                    Grid.RowSpan="3"
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Opacity="0.0"
+                                    Visibility="Collapsed">
+                                    <Path
+                                        Width="20.5832"
+                                        Height="31.6667"
+                                        Data="F1 M 30.0833,22.1667L 50.6665,37.6043L 50.6665,38.7918L 30.0833,53.8333L 30.0833,22.1667 Z "
+                                        Fill="White"
+                                        Stretch="Fill" />
+                                    <Ellipse
+                                        x:Name="PlayEllipse"
                                         Width="60"
-                                        HorizontalAlignment="Left"
-                                        VerticalAlignment="Center"
-                                        Opacity="0.0"
-                                        RatingValue="{Binding Rating.Percentage, Converter={StaticResource RatingPercentageToNormalizedRatingConverter}}" />
-                                    <ToggleButton
-                                        x:Name="Like"
-                                        Grid.Row="2"
-                                        Grid.Column="1"
-                                        Width="50"
-                                        Height="50"
-                                        HorizontalAlignment="Right"
-                                        VerticalAlignment="Center"
-                                        Command="{Binding DataContext.SetFavoriteShowCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type tabs:ShowTab}}}"
-                                        CommandParameter="{Binding}"
-                                        IsChecked="{Binding IsFavorite}"
-                                        Opacity="0.0"
-                                        Style="{DynamicResource MetroCircleToggleButtonStyle}">
-                                        <Rectangle
-                                            Width="20"
-                                            Height="20"
-                                            Fill="White">
-                                            <Rectangle.OpacityMask>
-                                                <VisualBrush Stretch="Fill">
-                                                    <VisualBrush.Visual>
-                                                        <Canvas
-                                                            x:Name="appbar_heart"
-                                                            Width="76"
-                                                            Height="76"
-                                                            Clip="F1 M 0,0L 76,0L 76,76L 0,76L 0,0">
-                                                            <Path
-                                                                Canvas.Left="21.2717"
-                                                                Canvas.Top="25.733"
-                                                                Width="33.4542"
-                                                                Height="28.4779"
-                                                                Data="F1 M 52.2716,27.8072C 48.9356,24.164 42.0671,25.7204 38.0992,31.3618C 33.0737,25.3024 27.0713,24.164 23.7257,27.8072C 14.4142,37.9485 34.3451,52.5246 37.9599,54.1634L 38.0438,54.2109L 38.0438,54.1634C 41.6554,52.5246 61.5832,37.9485 52.2716,27.8072 Z "
-                                                                Fill="Red"
-                                                                Stretch="Fill" />
-                                                        </Canvas>
-                                                    </VisualBrush.Visual>
-                                                </VisualBrush>
-                                            </Rectangle.OpacityMask>
-                                        </Rectangle>
-                                    </ToggleButton>
+                                        Height="60"
+                                        Fill="#00000000"
+                                        Opacity=".6"
+                                        Stretch="Fill"
+                                        Stroke="#FFFFFF"
+                                        StrokeLineJoin="Round"
+                                        StrokeThickness="4" />
                                 </Grid>
-                            </controls1:Tile>
-                            <TextBlock
-                                Name="Title"
-                                Width="200"
-                                HorizontalAlignment="Left"
-                                FontSize="14"
-                                Text="{Binding Title}"
-                                TextTrimming="CharacterEllipsis" />
-                            <TextBlock
-                                Width="200"
-                                HorizontalAlignment="Left"
-                                FontSize="12"
-                                Foreground="Gray">
-                                <controls:GenresLabel Genres="{Binding Genres}" />
-                            </TextBlock>
-                            <TextBlock
-                                Width="200"
-                                HorizontalAlignment="Left"
-                                FontSize="12"
-                                Foreground="Gray"
-                                Text="{Binding Year}" />
-                        </StackPanel>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <panels:ElasticWrapPanel DesiredColumnWidth="220" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
-        </controls:AnimatedScrollViewer>
+                                <controls:RatingStar
+                                    x:Name="Rating"
+                                    Grid.Row="2"
+                                    Grid.Column="1"
+                                    Width="60"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    Opacity="0.0"
+                                    RatingValue="{Binding Rating.Percentage, Converter={StaticResource RatingPercentageToNormalizedRatingConverter}, Mode=OneTime}"
+                                    Visibility="Collapsed" />
+                                <ToggleButton
+                                    x:Name="Like"
+                                    Grid.Row="2"
+                                    Grid.Column="1"
+                                    Width="50"
+                                    Height="50"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    Command="{Binding DataContext.SetFavoriteShowCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type tabs:ShowTab}}, Mode=OneTime}"
+                                    CommandParameter="{Binding Mode=OneTime}"
+                                    IsChecked="{Binding IsFavorite}"
+                                    Opacity="0.0"
+                                    Style="{StaticResource MetroCircleToggleButtonStyle}"
+                                    Visibility="Collapsed">
+                                    <Rectangle
+                                        Width="20"
+                                        Height="20"
+                                        Fill="White">
+                                        <Rectangle.OpacityMask>
+                                            <VisualBrush Stretch="Fill">
+                                                <VisualBrush.Visual>
+                                                    <Canvas
+                                                        x:Name="appbar_heart"
+                                                        Width="76"
+                                                        Height="76"
+                                                        Clip="F1 M 0,0L 76,0L 76,76L 0,76L 0,0">
+                                                        <Path
+                                                            Canvas.Left="21.2717"
+                                                            Canvas.Top="25.733"
+                                                            Width="33.4542"
+                                                            Height="28.4779"
+                                                            Data="F1 M 52.2716,27.8072C 48.9356,24.164 42.0671,25.7204 38.0992,31.3618C 33.0737,25.3024 27.0713,24.164 23.7257,27.8072C 14.4142,37.9485 34.3451,52.5246 37.9599,54.1634L 38.0438,54.2109L 38.0438,54.1634C 41.6554,52.5246 61.5832,37.9485 52.2716,27.8072 Z "
+                                                            Fill="Red"
+                                                            Stretch="Fill" />
+                                                    </Canvas>
+                                                </VisualBrush.Visual>
+                                            </VisualBrush>
+                                        </Rectangle.OpacityMask>
+                                    </Rectangle>
+                                </ToggleButton>
+                            </Grid>
+                        </controls1:Tile>
+                        <TextBlock
+                            Name="Title"
+                            Width="200"
+                            HorizontalAlignment="Left"
+                            FontSize="14"
+                            Text="{Binding Title, Mode=OneTime}"
+                            TextOptions.TextHintingMode="Fixed"
+                            TextTrimming="CharacterEllipsis" />
+                        <TextBlock
+                            Width="200"
+                            HorizontalAlignment="Left"
+                            FontSize="12"
+                            Foreground="Gray"
+                            TextOptions.TextHintingMode="Fixed">
+                            <controls:GenresLabel Genres="{Binding Genres, Mode=OneTime}" />
+                        </TextBlock>
+                        <TextBlock
+                            Width="200"
+                            HorizontalAlignment="Left"
+                            FontSize="12"
+                            Foreground="Gray"
+                            Text="{Binding Year, Mode=OneTime}"
+                            TextOptions.TextHintingMode="Fixed" />
+                    </StackPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+            <ItemsControl.Template>
+                <ControlTemplate>
+                    <Border
+                        Padding="{TemplateBinding Control.Padding}"
+                        Background="{TemplateBinding Panel.Background}"
+                        BorderBrush="{TemplateBinding Border.BorderBrush}"
+                        BorderThickness="{TemplateBinding Border.BorderThickness}"
+                        SnapsToDevicePixels="True">
+                        <controls:AnimatedScrollViewer
+                            Padding="{TemplateBinding Control.Padding}"
+                            Focusable="False"
+                            ScrollChanged="ScrollViewerScrollChanged"
+                            VerticalScrollBarVisibility="Auto">
+                            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
+                        </controls:AnimatedScrollViewer>
+                    </Border>
+                </ControlTemplate>
+            </ItemsControl.Template>
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <panels:VirtualizingTilePanel
+                        ChildHeight="385"
+                        ChildWidth="220"
+                        IsVirtualizing="True"
+                        VirtualizationMode="Recycling" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
         <Button
             Width="140"
             Height="40"
@@ -294,7 +340,7 @@
             Command="{Binding ReloadShows}"
             Content="{lex:LocText ReloadLabel}"
             FontSize="18"
-            Style="{DynamicResource AccentedSquareButtonStyle}">
+            Style="{StaticResource AccentedSquareButtonStyle}">
             <Button.Visibility>
                 <MultiBinding Converter="{StaticResource MultiBooleanToVisibilityConverter}" ConverterParameter="OR">
                     <Binding Path="Window.ApplicationService.IsConnectionInError" Source="{StaticResource Locator}" />

@@ -45,7 +45,7 @@
                                             </Grid.RowDefinitions>
                                             <TextBlock
                                                 Grid.Row="0"
-                                                FontSize="{DynamicResource DialogTitleFontSize}"
+                                                FontSize="{StaticResource DialogTitleFontSize}"
                                                 Foreground="{TemplateBinding Foreground}"
                                                 Text="{TemplateBinding Title}"
                                                 TextWrapping="Wrap" />
@@ -171,7 +171,7 @@
                     controls:ControlsHelper.ContentCharacterCasing="Normal"
                     Command="{Binding CloseCommand}"
                     Content="{lex:LocText CloseLabel}"
-                    Style="{DynamicResource AccentedSquareButtonStyle}" />
+                    Style="{StaticResource AccentedSquareButtonStyle}" />
             </Grid>
         </Grid>
     </Grid>

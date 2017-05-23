@@ -4,13 +4,12 @@
     xmlns:attachedProperties="clr-namespace:Popcorn.AttachedProperties"
     xmlns:behaviours="http://metro.mahapps.com/winfx/xaml/shared"
     xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
-    xmlns:controls1="clr-namespace:Popcorn.Controls"
-    xmlns:helpers="clr-namespace:Popcorn.Helpers">
+    xmlns:controls1="clr-namespace:Popcorn.Controls">
 
     <SolidColorBrush x:Key="TabItemPanelBackgroundBrush" Color="#273440" />
-    <SolidColorBrush x:Key="TabItemBackgroundIsSelectedBrush" Color="{DynamicResource Gray2}" />
-    <SolidColorBrush x:Key="TabItemBackgroundIsMouseOverBrush" Color="{DynamicResource Gray5}" />
-    <SolidColorBrush x:Key="TabItemForegroundIsSelectedBrush" Color="{DynamicResource IdealForegroundColor}" />
+    <SolidColorBrush x:Key="TabItemBackgroundIsSelectedBrush" Color="{StaticResource Gray2}" />
+    <SolidColorBrush x:Key="TabItemBackgroundIsMouseOverBrush" Color="{StaticResource Gray5}" />
+    <SolidColorBrush x:Key="TabItemForegroundIsSelectedBrush" Color="{StaticResource IdealForegroundColor}" />
     <SolidColorBrush x:Key="TabItemSelectorBrush" Color="DarkRed" />
     <SolidColorBrush x:Key="TabControlBackgroundBrush" Color="WhiteSmoke" />
 
@@ -20,8 +19,6 @@
         <Setter Property="Margin" Value="0" />
         <Setter Property="MinWidth" Value="100" />
         <Setter Property="FontSize" Value="20" />
-        <Setter Property="FontWeight" Value="Light" />
-        <Setter Property="Typography.Capitals" Value="SmallCaps" />
         <Setter Property="Foreground" Value="White" />
         <Setter Property="Height" Value="50" />
         <Setter Property="Template">

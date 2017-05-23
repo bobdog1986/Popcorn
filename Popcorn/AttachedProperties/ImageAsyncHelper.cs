@@ -101,7 +101,21 @@ namespace Popcorn.AttachedProperties
                                 });
 
                                 var path = e.NewValue as string;
-                                if (string.IsNullOrEmpty(path)) return;
+                                if (string.IsNullOrEmpty(path))
+                                {
+                                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                                    {
+                                        var errorThumbnail = resourceDictionary["ImageError"] as DrawingImage;
+                                        errorThumbnail.Freeze();
+                                        image.RenderTransformOrigin = new Point(0.5d, 0.5d);
+                                        var transformGroup = new TransformGroup();
+                                        transformGroup.Children.Add(new ScaleTransform(0.5d, 0.5d));
+                                        image.RenderTransform = transformGroup;
+                                        image.Source = errorThumbnail;
+                                    });
+                                    return;
+                                }
+
                                 string localFile;
                                 var fileName =
                                     path.Substring(path.LastIndexOf("/images/", StringComparison.InvariantCulture) +
@@ -162,8 +176,10 @@ namespace Popcorn.AttachedProperties
                                 {
                                     var errorThumbnail = resourceDictionary["ImageError"] as DrawingImage;
                                     errorThumbnail.Freeze();
-                                    image.RenderTransformOrigin = new Point(0, 0);
-                                    image.RenderTransform = new TransformGroup();
+                                    image.RenderTransformOrigin = new Point(0.5d, 0.5d);
+                                    var transformGroup = new TransformGroup();
+                                    transformGroup.Children.Add(new ScaleTransform(0.5d, 0.5d));
+                                    image.RenderTransform = transformGroup;
                                     image.Source = errorThumbnail;
                                 });
                             }

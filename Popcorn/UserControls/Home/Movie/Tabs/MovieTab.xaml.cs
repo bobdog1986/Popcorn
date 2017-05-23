@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System;
+using System.Threading;
+using System.Windows;
 using System.Windows.Controls;
 using Popcorn.ViewModels.Pages.Home.Movie.Tabs;
 
@@ -9,6 +11,8 @@ namespace Popcorn.UserControls.Home.Movie.Tabs
     /// </summary>
     public partial class MovieTab
     {
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+
         /// <summary>
         /// Initializes a new instance of the MovieTab class.
         /// </summary>
@@ -50,9 +54,24 @@ namespace Popcorn.UserControls.Home.Movie.Tabs
         private async void ScrollViewerScrollChanged(object sender, ScrollChangedEventArgs e)
         {
             var totalHeight = e.VerticalOffset + e.ViewportHeight;
-            if (totalHeight < 2d / 3d * e.ExtentHeight) return;
+            if (e.VerticalChange < 0 || totalHeight < 2d / 3d * e.ExtentHeight)
+            {
+                return;
+            }
+
+            if (_semaphore.CurrentCount == 0)
+            {
+                return;
+            }
+
+            await _semaphore.WaitAsync();
             var vm = DataContext as MovieTabsViewModel;
-            if (vm == null) return;
+            if (vm == null)
+            {
+                _semaphore.Release();
+                return;
+            }
+
             if (vm is PopularMovieTabViewModel || vm is GreatestMovieTabViewModel || vm is RecentMovieTabViewModel ||
                 vm is FavoritesMovieTabViewModel || vm is SeenMovieTabViewModel)
             {
@@ -65,6 +84,8 @@ namespace Popcorn.UserControls.Home.Movie.Tabs
                 if (!searchVm.IsLoadingMovies)
                     await searchVm.LoadMoviesAsync().ConfigureAwait(false);
             }
+
+            _semaphore.Release();
         }
     }
 }

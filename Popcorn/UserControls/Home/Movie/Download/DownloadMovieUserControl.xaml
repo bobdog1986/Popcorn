@@ -113,7 +113,7 @@
                 Height="7"
                 Margin="0"
                 VerticalAlignment="Center"
-                Foreground="{DynamicResource AccentColorBrush}"
+                Foreground="{StaticResource AccentColorBrush}"
                 Maximum="4.0"
                 Minimum="0.0"
                 Value="{Binding MovieDownloadProgress}" />

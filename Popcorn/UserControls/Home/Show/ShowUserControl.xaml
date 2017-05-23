@@ -44,7 +44,7 @@
             <Style x:Key="FlatButton" TargetType="{x:Type RadioButton}">
                 <Setter Property="Background" Value="#11171c" />
                 <Setter Property="Foreground" Value="White" />
-                <Setter Property="FontSize" Value="{DynamicResource FlatButtonFontSize}" />
+                <Setter Property="FontSize" Value="{StaticResource FlatButtonFontSize}" />
                 <Setter Property="Padding" Value="0" />
                 <Setter Property="BorderThickness" Value="0" />
                 <Setter Property="Template">
@@ -72,7 +72,7 @@
                                     <Setter Property="Foreground" Value="White" />
                                 </Trigger>
                                 <Trigger Property="IsEnabled" Value="False">
-                                    <Setter Property="Foreground" Value="{DynamicResource GrayBrush2}" />
+                                    <Setter Property="Foreground" Value="{StaticResource GrayBrush2}" />
                                 </Trigger>
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter Property="Background" Value="#1c242b" />
@@ -161,7 +161,7 @@
                                                     Height="18"
                                                     Fill="White">
                                                     <Rectangle.OpacityMask>
-                                                        <VisualBrush Stretch="Fill" Visual="{DynamicResource appbar_medical_pulse}" />
+                                                        <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_medical_pulse}" />
                                                     </Rectangle.OpacityMask>
                                                 </Rectangle>
                                                 <TextBlock
@@ -197,7 +197,7 @@
                                                     Height="19"
                                                     Fill="White">
                                                     <Rectangle.OpacityMask>
-                                                        <VisualBrush Stretch="Fill" Visual="{DynamicResource appbar_star}" />
+                                                        <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_star}" />
                                                     </Rectangle.OpacityMask>
                                                 </Rectangle>
                                                 <TextBlock
@@ -234,7 +234,7 @@
                                                     VerticalAlignment="Center"
                                                     Fill="White">
                                                     <Rectangle.OpacityMask>
-                                                        <VisualBrush Stretch="Fill" Visual="{DynamicResource appbar_calendar}" />
+                                                        <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_calendar}" />
                                                     </Rectangle.OpacityMask>
                                                 </Rectangle>
                                                 <TextBlock
@@ -271,7 +271,7 @@
                                                     VerticalAlignment="Center"
                                                     Fill="White">
                                                     <Rectangle.OpacityMask>
-                                                        <VisualBrush Stretch="Fill" Visual="{DynamicResource appbar_page_search}" />
+                                                        <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_page_search}" />
                                                     </Rectangle.OpacityMask>
                                                 </Rectangle>
                                                 <TextBlock
@@ -318,7 +318,7 @@
                                                     Height="18"
                                                     Fill="White">
                                                     <Rectangle.OpacityMask>
-                                                        <VisualBrush Stretch="Fill" Visual="{DynamicResource appbar_heart}" />
+                                                        <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_heart}" />
                                                     </Rectangle.OpacityMask>
                                                 </Rectangle>
                                                 <TextBlock
@@ -417,7 +417,7 @@
                             Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}, Path=ActualWidth, Mode=OneWay}"
                             Margin="10,10,0,10"
                             EllipseDiameter="5"
-                            Foreground="{DynamicResource AccentColorBrush}"
+                            Foreground="{StaticResource AccentColorBrush}"
                             IsIndeterminate="True"
                             Maximum="100"
                             Minimum="0">
