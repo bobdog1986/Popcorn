@@ -1,4 +1,12 @@
-﻿# 2.3.2 - 23/05/2017 #
+﻿# 2.3.3 - 23/05/2017 #
+***
+Improved stability
+
+### Details ###
+
+* Improved scroller stability.
+
+# 2.3.2 - 23/05/2017 #
 ***
 Fixed issue.
 
