@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Threading;
+using System.Windows;
 using System.Windows.Controls;
 using Popcorn.ViewModels.Pages.Home.Show.Tabs;
 
@@ -9,6 +10,8 @@ namespace Popcorn.UserControls.Home.Show.Tabs
     /// </summary>
     public partial class ShowTab
     {
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+
         public ShowTab()
         {
             InitializeComponent();
@@ -47,9 +50,24 @@ namespace Popcorn.UserControls.Home.Show.Tabs
         private async void ScrollViewerScrollChanged(object sender, ScrollChangedEventArgs e)
         {
             var totalHeight = e.VerticalOffset + e.ViewportHeight;
-            if (totalHeight < 2d / 3d * e.ExtentHeight) return;
+            if (totalHeight < 2d / 3d * e.ExtentHeight)
+            {
+                return;
+            }
+
+            if (_semaphore.CurrentCount == 0)
+            {
+                return;
+            }
+
+            await _semaphore.WaitAsync();
             var vm = DataContext as ShowTabsViewModel;
-            if (vm == null) return;
+            if (vm == null)
+            {
+                _semaphore.Release();
+                return;
+            }
+
             if (vm is PopularShowTabViewModel || vm is GreatestShowTabViewModel || vm is RecentShowTabViewModel ||
                 vm is FavoritesShowTabViewModel)
             {
@@ -62,6 +80,8 @@ namespace Popcorn.UserControls.Home.Show.Tabs
                 if (!searchVm.IsLoadingShows)
                     await searchVm.LoadShowsAsync().ConfigureAwait(false);
             }
+
+            _semaphore.Release();
         }
     }
 }
