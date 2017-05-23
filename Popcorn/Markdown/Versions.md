@@ -1,4 +1,12 @@
-﻿# 2.3.0 - 23/05/2017 #
+﻿# 2.3.1 - 23/05/2017 #
+***
+Optimized executable size.
+
+### Details ###
+
+* Cleaned resources.
+
+# 2.3.0 - 23/05/2017 #
 ***
 Improve performances.
 
