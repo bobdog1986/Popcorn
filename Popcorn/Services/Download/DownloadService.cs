@@ -53,7 +53,6 @@ namespace Popcorn.Services.Download
             await Task.Run(async () =>
             {
                 var settings = new settings_pack();
-                settings.set_bool(67, true);
                 using (var session = new session(settings))
                 {
                     downloadProgress.Report(0d);
