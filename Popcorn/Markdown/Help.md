@@ -1,11 +1,26 @@
 # Knowledge
 ***
-## Interface
-* Double click on top bar to enter fullscreen.
-* While playing a video, you can also double click on player to enter fullscreen.
+## UI
+### Search
+* Hit F3 or Ctrl + F key to jump to search.
 
-## Subtitle sync
-* Use F and G keys to move the audio backward and forward.
+### About
+* Hit I key to open about window.
+
+### Help
+* Hit F1 key to open help window.
+
+## Player
+### Fullscreen
+* Hit F key to toggle fullscreen.
+* Double click on screen to enter fullscreen.
+
+### Pause
+* Click on screen to pause or resume the media.
+
+### Subtitle Sync
+* Use G and H keys to move the audio backward and forward by 0.1 second step.
+* Use Shift + G/H to move the audio backward and forward by 1 second step.
 
 ## Chromecast
 * Use the cast button while playing a video to start casting to a device.

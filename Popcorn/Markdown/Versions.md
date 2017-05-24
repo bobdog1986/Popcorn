@@ -1,4 +1,12 @@
-﻿# 2.3.3 - 23/05/2017 #
+﻿# 2.3.4 - 23/05/2017 #
+***
+Hotkeys improved.
+
+### Details ###
+
+* Fixed issue [#63](https://github.com/bbougot/Popcorn/issues/63).
+
+# 2.3.3 - 23/05/2017 #
 ***
 Improved stability
 
