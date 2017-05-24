@@ -51,9 +51,6 @@ namespace Popcorn.Panels
         /// <returns>Size desired</returns>
         protected override Size MeasureOverride(Size availableSize)
         {
-            if (availableSize.Height.Equals(0))
-                availableSize.Height = MaxHeight;
-
             _columns = (int) (availableSize.Width / ChildWidth);
 
             UpdateScrollInfo(availableSize);
