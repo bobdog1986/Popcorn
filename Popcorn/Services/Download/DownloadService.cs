@@ -52,8 +52,7 @@ namespace Popcorn.Services.Download
                 $"Start downloading : {torrentPath}");
             await Task.Run(async () =>
             {
-                var settings = new settings_pack();
-                using (var session = new session(settings))
+                using (var session = new session())
                 {
                     downloadProgress.Report(0d);
                     bandwidthRate.Report(new BandwidthRate
