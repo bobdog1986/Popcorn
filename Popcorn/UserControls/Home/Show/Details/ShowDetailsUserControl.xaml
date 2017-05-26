@@ -106,8 +106,8 @@
     </UserControl.Resources>
     <Grid Background="#252525">
         <Grid.RowDefinitions>
-            <RowDefinition Height="3*" />
-            <RowDefinition Height="2*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Image
             Grid.Row="0"
@@ -239,31 +239,28 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="20" />
             </Grid.ColumnDefinitions>
-            <Grid
-                Grid.Row="0"
-                Grid.Column="1"
-                Grid.ColumnSpan="3">
+            <Grid Grid.Row="0" Grid.Column="1">
                 <Grid HorizontalAlignment="Stretch">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
+                    <show:SeasonDetail
+                        Grid.Column="0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        SelectedSeasonChanged="OnSelectedSeasonChanged"
+                        Show="{Binding Show}" />
                     <TextBlock
-                        Grid.Column="1"
+                        Grid.Column="2"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
                         FontSize="22"
                         FontWeight="Thin"
                         Foreground="#616161"
                         Text="Episodes" />
-                    <show:SeasonDetail
-                        Grid.Column="3"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        SelectedSeasonChanged="OnSelectedSeasonChanged"
-                        Show="{Binding Show}" />
                 </Grid>
             </Grid>
             <Grid
