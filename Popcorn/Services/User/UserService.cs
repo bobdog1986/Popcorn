@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight.Messaging;
 using NLog;
@@ -49,6 +50,12 @@ namespace Popcorn.Services.User
         /// </summary>
         private UserJson User { get; set; }
 
+        private readonly SemaphoreSlim _semaphoreGet = new SemaphoreSlim(1, 1);
+
+        private readonly SemaphoreSlim _semaphoreUpdate = new SemaphoreSlim(1, 1);
+
+        private bool _needSync = true;
+
         /// <summary>
         /// <see cref="IRestClient"/>
         /// </summary>
@@ -74,13 +81,23 @@ namespace Popcorn.Services.User
         /// <returns></returns>
         private async Task GetHistoryAsync()
         {
-            var request = new RestRequest("/{segment}/{userId}", Method.GET);
-            request.AddUrlSegment("segment", "user");
-            request.AddUrlSegment("userId", UserId);
-            var response = await RestClient.ExecuteTaskAsync<UserJson>(request);
-            if (response.ErrorException != null)
-                throw response.ErrorException;
-            User = response.Data;
+            await _semaphoreGet.WaitAsync();
+            try
+            {
+                if (!_needSync) return;
+                var request = new RestRequest("/{segment}/{userId}", Method.GET);
+                request.AddUrlSegment("segment", "user");
+                request.AddUrlSegment("userId", UserId);
+                var response = await RestClient.ExecuteTaskAsync<UserJson>(request);
+                if (response.ErrorException != null)
+                    throw response.ErrorException;
+                User = response.Data;
+                _needSync = false;
+            }
+            finally
+            {
+                _semaphoreGet.Release();
+            }
         }
 
         /// <summary>
@@ -89,13 +106,22 @@ namespace Popcorn.Services.User
         /// <returns></returns>
         private async Task UpdateHistoryAsync()
         {
-            var request = new RestRequest("/{segment}", Method.POST);
-            request.AddUrlSegment("segment", "user");
-            request.AddJsonBody(User);
-            var response = await RestClient.ExecuteTaskAsync<UserJson>(request);
-            if (response.ErrorException != null)
-                throw response.ErrorException;
-            User = response.Data;
+            await _semaphoreUpdate.WaitAsync();
+            try
+            {
+                var request = new RestRequest("/{segment}", Method.POST);
+                request.AddUrlSegment("segment", "user");
+                request.AddJsonBody(User);
+                var response = await RestClient.ExecuteTaskAsync<UserJson>(request);
+                if (response.ErrorException != null)
+                    throw response.ErrorException;
+                User = response.Data;
+                _needSync = true;
+            }
+            finally
+            {
+                _semaphoreUpdate.Release();
+            }
         }
 
         /// <summary>

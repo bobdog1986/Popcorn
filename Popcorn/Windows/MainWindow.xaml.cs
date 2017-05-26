@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using GalaSoft.MvvmLight.Messaging;
+using Popcorn.Extensions;
 using Popcorn.Messaging;
 using Popcorn.ViewModels.Windows;
 
@@ -67,7 +70,30 @@ namespace Popcorn.Windows
 
         private void OnStateChanged(object sender, EventArgs e)
         {
-            MovieDetailsUc.Margin = WindowState == WindowState.Maximized ? new Thickness(0, 0, 16, 0) : new Thickness(0, 0, 0, 0);
+            MovieDetailsUc.Margin = WindowState == WindowState.Maximized
+                ? new Thickness(0, 0, 16, 0)
+                : new Thickness(0, 0, 0, 0);
+        }
+
+        private void OnKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.I)
+            {
+                var vm = DataContext as WindowViewModel;
+                vm?.OpenAboutCommand.Execute(null);
+            }
+            else if (e.Key == Key.F1)
+            {
+                var vm = DataContext as WindowViewModel;
+                vm?.OpenHelpCommand.Execute(null);
+            }
+            else if (e.Key == Key.F3 || (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift &&
+                     e.Key == Key.F)
+            {
+                var searchBox =
+                    this.FindChild<TextBox>("SearchBox");
+                searchBox.Focus();
+            }
         }
     }
 }

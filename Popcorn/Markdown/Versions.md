@@ -1,4 +1,44 @@
-﻿# 2.2.0 - 21/05/2017 #
+﻿# 2.3.4 - 23/05/2017 #
+***
+Hotkeys improved.
+
+### Details ###
+
+* Fixed issue [#63](https://github.com/bbougot/Popcorn/issues/63).
+
+# 2.3.3 - 23/05/2017 #
+***
+Improved stability
+
+### Details ###
+
+* Improved scroller stability.
+
+# 2.3.2 - 23/05/2017 #
+***
+Fixed issue.
+
+### Details ###
+
+* Fix issue with scroller ([#62](https://github.com/bbougot/Popcorn/issues/62)).
+
+# 2.3.1 - 23/05/2017 #
+***
+Optimized executable size.
+
+### Details ###
+
+* Cleaned resources.
+
+# 2.3.0 - 23/05/2017 #
+***
+Improve performances.
+
+### Details ###
+
+* Drastically improved UI performances
+
+# 2.2.0 - 21/05/2017 #
 ***
 Improve UI.
 

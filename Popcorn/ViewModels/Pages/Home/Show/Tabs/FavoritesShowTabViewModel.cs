@@ -96,7 +96,21 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
                                             genre => genre.ToLowerInvariant() ==
                                                      Genre.EnglishName.ToLowerInvariant())
                                         : a.Genres.TrueForAll(b => true)) && a.Rating.Percentage >= Rating * 10);
-                    Shows.AddRange(updatedShows.Except(Shows.ToList(), new ShowComparer()));
+                    foreach (var show in updatedShows.Except(Shows.ToList(), new ShowComparer()))
+                    {
+                        var pair = Shows
+                            .Select((value, index) => new { value, index })
+                            .FirstOrDefault(x => string.CompareOrdinal(x.value.Title, show.Title) > 0);
+
+                        if (pair == null)
+                        {
+                            Shows.Add(show);
+                        }
+                        else
+                        {
+                            Shows.Insert(pair.index, show);
+                        }
+                    }
                 }
                 else
                 {
@@ -108,6 +122,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
                     }
 
                     var shows = showsToAdd.ToList();
+                    var showsToAddAndToOrder = new List<ShowJson>();
                     await shows.ParallelForEachAsync(async imdbId =>
                         {
                             var show = await ShowService.GetShowAsync(imdbId);
@@ -117,12 +132,25 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
                                                  Genre.EnglishName.ToLowerInvariant())
                                     : show.Genres.TrueForAll(b => true)) && show.Rating.Percentage >= Rating * 10)
                             {
-                                DispatcherHelper.CheckBeginInvokeOnUI(() =>
-                                {
-                                    Shows.Add(show);
-                                });
+                                showsToAddAndToOrder.Add(show);
                             }
                         });
+
+                    foreach (var show in showsToAddAndToOrder.Except(Shows.ToList(), new ShowComparer()))
+                    {
+                        var pair = Shows
+                            .Select((value, index) => new { value, index })
+                            .FirstOrDefault(x => string.CompareOrdinal(x.value.Title, show.Title) > 0);
+
+                        if (pair == null)
+                        {
+                            Shows.Add(show);
+                        }
+                        else
+                        {
+                            Shows.Insert(pair.index, show);
+                        }
+                    }
                 }
 
                 IsLoadingShows = false;
@@ -141,7 +169,6 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
             }
             finally
             {
-                Shows.Sort((a, b) => String.Compare(a.Title, b.Title, StringComparison.Ordinal));
                 NeedSync = false;
                 watch.Stop();
                 var elapsedMs = watch.ElapsedMilliseconds;
