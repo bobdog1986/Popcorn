@@ -10,6 +10,7 @@ namespace Popcorn.Utils
     {
         Movie,
         Show,
+        Trailer,
         Unkown
     }
 }

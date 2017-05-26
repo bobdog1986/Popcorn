@@ -260,7 +260,7 @@
                         FontSize="22"
                         FontWeight="Thin"
                         Foreground="#616161"
-                        Text="Episodes" />
+                        Text="{lex:LocText EpisodesLabel}" />
                 </Grid>
             </Grid>
             <Grid

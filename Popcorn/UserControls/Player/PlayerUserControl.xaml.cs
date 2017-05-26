@@ -130,8 +130,9 @@ namespace Popcorn.UserControls.Player
             if (vm?.MediaPath == null)
                 return;
 
+            vm.SubtitleChosen += OnSubtitleChosen;
             // start the timer used to report time on MediaPlayerSliderProgress
-            MediaPlayerTimer = new DispatcherTimer {Interval = TimeSpan.FromMilliseconds(10)};
+            MediaPlayerTimer = new DispatcherTimer {Interval = TimeSpan.FromMilliseconds(200)};
             MediaPlayerTimer.Tick += MediaPlayerTimerTick;
             MediaPlayerTimer.Start();
 
@@ -166,7 +167,7 @@ namespace Popcorn.UserControls.Player
                 Player.LoadMedia(vm.MediaPath);
             }
 
-            if (vm.MediaType == MediaType.Unkown)
+            if (vm.MediaType == MediaType.Trailer)
             {
                 DownloadProgress.Visibility = Visibility.Collapsed;
             }
@@ -177,6 +178,16 @@ namespace Popcorn.UserControls.Player
             Title.Text = vm.MediaName;
             await Task.Delay(500);
             PlayMedia();
+        }
+
+        /// <summary>
+        /// On Subtitle Chosen
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnSubtitleChosen(object sender, Events.SubtitleChangedEventArgs e)
+        {
+            Player.VlcMediaPlayer.SetSubtitleFile(e.SubtitlePath);
         }
 
         /// <summary>
@@ -677,6 +688,7 @@ namespace Popcorn.UserControls.Player
             var vm = DataContext as MediaPlayerViewModel;
             if (vm != null)
             {
+                vm.SubtitleChosen -= OnSubtitleChosen;
                 vm.StoppedMedia -= OnStoppedMedia;
                 vm.ResumedMedia -= OnResumedMedia;
                 vm.PausedMedia -= OnPausedMedia;

@@ -330,6 +330,9 @@
     <Compile Include="Dialogs\HelpDialog.xaml.cs">
       <DependentUpon>HelpDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dialogs\SubtitleDialog.xaml.cs">
+      <DependentUpon>SubtitleDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Dialogs\UpdateDialog.xaml.cs">
       <DependentUpon>UpdateDialog.xaml</DependentUpon>
     </Compile>
@@ -338,6 +341,7 @@
       <DependentUpon>AboutDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Events\SelectedSeasonChangedEventArgs.cs" />
+    <Compile Include="Events\SubtitleChangedEventArgs.cs" />
     <Compile Include="Extensions\MessengerExtensions.cs" />
     <Compile Include="Extensions\SortExtensions.cs" />
     <Compile Include="Helpers\AsyncSynchronizationContext.cs" />
@@ -360,6 +364,7 @@
     <Compile Include="Messaging\PlayMediaMessage.cs" />
     <Compile Include="Messaging\PlayTrailerMessage.cs" />
     <Compile Include="Messaging\SearchShowMessage.cs" />
+    <Compile Include="Messaging\ShowSubtitleDialogMessage.cs" />
     <Compile Include="Messaging\StopPlayingEpisodeMessage.cs" />
     <Compile Include="Messaging\StopPlayMediaMessage.cs" />
     <Compile Include="Messaging\UnhandledExceptionMessage.cs" />
@@ -497,6 +502,7 @@
     <Compile Include="ViewModels\Dialogs\DropTorrentDialogViewModel.cs" />
     <Compile Include="ViewModels\Dialogs\AboutDialogViewModel.cs" />
     <Compile Include="ViewModels\Dialogs\HelpDialogViewModel.cs" />
+    <Compile Include="ViewModels\Dialogs\SubtitleDialogViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\IPageViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\Movie\Download\DownloadMovieViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\Genres\GenreViewModel.cs" />
@@ -578,6 +584,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Dialogs\HelpDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\SubtitleDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

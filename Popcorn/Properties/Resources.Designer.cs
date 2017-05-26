@@ -178,6 +178,15 @@ namespace Popcorn.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Choose a subtitle.
+        /// </summary>
+        public static string ChooseSubtitleLabel {
+            get {
+                return ResourceManager.GetString("ChooseSubtitleLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Clear.
         /// </summary>
         public static string ClearButton {
@@ -345,6 +354,15 @@ namespace Popcorn.Properties {
         public static string EmptyShowSearchLabel {
             get {
                 return ResourceManager.GetString("EmptyShowSearchLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Episodes.
+        /// </summary>
+        public static string EpisodesLabel {
+            get {
+                return ResourceManager.GetString("EpisodesLabel", resourceCulture);
             }
         }
         

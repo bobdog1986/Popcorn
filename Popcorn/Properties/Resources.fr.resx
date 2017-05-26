@@ -399,4 +399,10 @@
   <data name="HelpLabel" xml:space="preserve">
     <value>Aide</value>
   </data>
+  <data name="EpisodesLabel" xml:space="preserve">
+    <value>Episodes</value>
+  </data>
+  <data name="ChooseSubtitleLabel" xml:space="preserve">
+    <value>Choisissez un sous-titre</value>
+  </data>
 </root>

@@ -31,6 +31,7 @@ using Popcorn.ViewModels.Pages.Home.Show;
 using Popcorn.ViewModels.Pages.Player;
 using Squirrel;
 using Popcorn.ViewModels.Windows.Settings;
+using Popcorn.Services.Subtitles;
 
 namespace Popcorn.ViewModels.Windows
 {
@@ -53,6 +54,11 @@ namespace Popcorn.ViewModels.Windows
         /// Holds the async message relative to <see cref="CustomSubtitleMessage"/>
         /// </summary>
         private IDisposable _customSubtitleMessage;
+
+        /// <summary>
+        /// Holds the async message relative to <see cref="ShowSubtitleDialogMessage"/>
+        /// </summary>
+        private IDisposable _showSubtitleDialogMessage;
 
         /// <summary>
         /// Holds the async message relative to <see cref="CastMediaMessage"/>
@@ -95,6 +101,11 @@ namespace Popcorn.ViewModels.Windows
         private readonly IFileServerService _fileServerService;
 
         /// <summary>
+        /// Subtitles service
+        /// </summary>
+        private readonly ISubtitlesService _subtitlesService;
+
+        /// <summary>
         /// The movie history service
         /// </summary>
         private readonly IUserService _userService;
@@ -120,8 +131,10 @@ namespace Popcorn.ViewModels.Windows
         /// <param name="applicationService">Instance of Application state</param>
         /// <param name="userService">Instance of movie history service</param>
         /// <param name="fileServerService">Instance of file server service</param>
-        public WindowViewModel(IApplicationService applicationService, IUserService userService, IFileServerService fileServerService)
+        /// <param name="subtitlesService">Instance of subtitles service</param>
+        public WindowViewModel(IApplicationService applicationService, IUserService userService, IFileServerService fileServerService, ISubtitlesService subtitlesService)
         {
+            _subtitlesService = subtitlesService;
             _fileServerService = fileServerService;
             _userService = userService;
             _dialogCoordinator = DialogCoordinator.Instance;
@@ -250,7 +263,7 @@ namespace Popcorn.ViewModels.Windows
             Messenger.Default.Register<PlayShowEpisodeMessage>(this, message => DispatcherHelper.CheckBeginInvokeOnUI(
                 async () =>
                 {
-                    MediaPlayer = new MediaPlayerViewModel(_applicationService, message.Episode.FilePath,
+                    MediaPlayer = new MediaPlayerViewModel(_subtitlesService, _applicationService, message.Episode.FilePath,
                         message.Episode.Title,
                         MediaType.Show,
                         () =>
@@ -263,7 +276,8 @@ namespace Popcorn.ViewModels.Windows
                         },
                         message.BufferProgress,
                         message.BandwidthRate,
-                        message.Episode.SelectedSubtitle?.FilePath);
+                        message.Episode.SelectedSubtitle?.FilePath,
+                        message.Episode.AvailableSubtitles);
 
                     ApplicationService.IsMediaPlaying = true;
                     IsShowFlyoutOpen = false;
@@ -283,7 +297,7 @@ namespace Popcorn.ViewModels.Windows
 
             Messenger.Default.Register<PlayMediaMessage>(this, message => DispatcherHelper.CheckBeginInvokeOnUI(async () =>
             {
-                MediaPlayer = new MediaPlayerViewModel(_applicationService, message.MediaPath, message.MediaPath,
+                MediaPlayer = new MediaPlayerViewModel(_subtitlesService, _applicationService, message.MediaPath, message.MediaPath,
                     MediaType.Unkown,
                     () =>
                     {
@@ -314,7 +328,7 @@ namespace Popcorn.ViewModels.Windows
 
             Messenger.Default.Register<PlayMovieMessage>(this, message => DispatcherHelper.CheckBeginInvokeOnUI(async () =>
             {
-                MediaPlayer = new MediaPlayerViewModel(_applicationService, message.Movie.FilePath, message.Movie.Title,
+                MediaPlayer = new MediaPlayerViewModel(_subtitlesService, _applicationService, message.Movie.FilePath, message.Movie.Title,
                     MediaType.Movie,
                     () =>
                     {
@@ -328,7 +342,8 @@ namespace Popcorn.ViewModels.Windows
                     },
                     message.BufferProgress,
                     message.BandwidthRate,
-                    message.Movie.SelectedSubtitle?.FilePath);
+                    message.Movie.SelectedSubtitle?.FilePath,
+                    message.Movie.AvailableSubtitles);
 
                 ApplicationService.IsMediaPlaying = true;
                 IsMovieFlyoutOpen = false;
@@ -347,8 +362,8 @@ namespace Popcorn.ViewModels.Windows
 
             Messenger.Default.Register<PlayTrailerMessage>(this, message => DispatcherHelper.CheckBeginInvokeOnUI(async () =>
             {
-                MediaPlayer = new MediaPlayerViewModel(_applicationService, message.TrailerUrl, message.MovieTitle,
-                    MediaType.Unkown,
+                MediaPlayer = new MediaPlayerViewModel(_subtitlesService, _applicationService, message.TrailerUrl, message.MovieTitle,
+                    MediaType.Trailer,
                     message.TrailerStoppedAction, message.TrailerEndedAction);
                 ApplicationService.IsMediaPlaying = true;
                 IsMovieFlyoutOpen = false;
@@ -466,6 +481,25 @@ namespace Popcorn.ViewModels.Windows
                     cts.TrySetResult(null);
                 };
                 await _dialogCoordinator.ShowMetroDialogAsync(this, castDialog);
+                await cts.Task;
+            });
+
+            _showSubtitleDialogMessage = Messenger.Default.RegisterAsyncMessage<ShowSubtitleDialogMessage>(async message =>
+            {
+                var vm = new SubtitleDialogViewModel(message.Subtitles);
+                var subtitleDialog = new SubtitleDialog
+                {
+                    DataContext = vm
+                };
+
+                var cts = new TaskCompletionSource<object>();
+                vm.OnCloseAction = async () =>
+                {
+                    message.SelectedSubtitle = vm.SelectedSubtitle.Sub;
+                    await _dialogCoordinator.HideMetroDialogAsync(this, subtitleDialog);
+                    cts.TrySetResult(null);
+                };
+                await _dialogCoordinator.ShowMetroDialogAsync(this, subtitleDialog);
                 await cts.Task;
             });
 

@@ -8,6 +8,13 @@ using Popcorn.Messaging;
 using Popcorn.Models.Bandwidth;
 using Popcorn.Services.Application;
 using Popcorn.Utils;
+using System.Collections.Generic;
+using Popcorn.Models.Subtitles;
+using System.Windows.Input;
+using Popcorn.Helpers;
+using System.IO;
+using Popcorn.Services.Subtitles;
+using Popcorn.Events;
 
 namespace Popcorn.ViewModels.Pages.Player
 {
@@ -22,14 +29,24 @@ namespace Popcorn.ViewModels.Pages.Player
         private static Logger Logger { get; } = LogManager.GetCurrentClassLogger();
 
         /// <summary>
+        /// Show subtitle button
+        /// </summary>
+        private bool _showSubtitleButton;
+
+        /// <summary>
         /// Command used to stop playing the media
         /// </summary>
-        public RelayCommand StopPlayingMediaCommand { get; set; }
+        public ICommand StopPlayingMediaCommand { get; set; }
 
         /// <summary>
         /// Command used to cast media
         /// </summary>
-        public RelayCommand CastCommand { get; set; }
+        public ICommand CastCommand { get; set; }
+
+        /// <summary>
+        /// Command used to select subtitles
+        /// </summary>
+        public ICommand SelectSubtitlesCommand { get; set; }
 
         /// <summary>
         /// Event fired on stopped playing the media
@@ -45,6 +62,11 @@ namespace Popcorn.ViewModels.Pages.Player
         /// Event fired on resume playing the media
         /// </summary>
         public event EventHandler<EventArgs> ResumedMedia;
+
+        /// <summary>
+        /// Event fired on subtitle chosen
+        /// </summary>
+        public event EventHandler<SubtitleChangedEventArgs> SubtitleChosen;
 
         /// <summary>
         /// The media path
@@ -92,9 +114,34 @@ namespace Popcorn.ViewModels.Pages.Player
         public readonly MediaType MediaType;
 
         /// <summary>
+        /// Show subtitle button
+        /// </summary>
+        public bool ShowSubtitleButton
+        {
+            get { return _showSubtitleButton; }
+            set { Set(ref _showSubtitleButton, value);
+            }
+        }
+
+        /// <summary>
         /// Application service
         /// </summary>
         private readonly IApplicationService _applicationService;
+
+        /// <summary>
+        /// Subtitle service
+        /// </summary>
+        private readonly ISubtitlesService _subtitlesService;
+
+        /// <summary>
+        /// Subtitles
+        /// </summary>
+        private IEnumerable<Subtitle> _subtitles;
+
+        /// <summary>
+        /// Custom subtitle
+        /// </summary>
+        public string CustomSubtitlePath { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the MediaPlayerViewModel class.
@@ -108,14 +155,16 @@ namespace Popcorn.ViewModels.Pages.Player
         /// <param name="bufferProgress">The buffer progress</param>
         /// <param name="bandwidthRate">THe bandwidth rate</param>
         /// <param name="subtitleFilePath">Subtitle file path</param>
-        public MediaPlayerViewModel(IApplicationService applicationService, string mediaPath,
+        /// <param name="subtitles">Subtitles</param>
+        public MediaPlayerViewModel(ISubtitlesService subtitlesService,IApplicationService applicationService, string mediaPath,
             string mediaName, MediaType type, Action mediaStoppedAction,
             Action mediaEndedAction, Progress<double> bufferProgress = null,
-            Progress<BandwidthRate> bandwidthRate = null, string subtitleFilePath = null)
+            Progress<BandwidthRate> bandwidthRate = null, string subtitleFilePath = null, IEnumerable<Subtitle> subtitles = null)
         {
             Logger.Info(
                 $"Loading media : {mediaPath}.");
             RegisterCommands();
+            _subtitlesService = subtitlesService;
             _applicationService = applicationService;
             MediaPath = mediaPath;
             MediaName = mediaName;
@@ -125,7 +174,8 @@ namespace Popcorn.ViewModels.Pages.Player
             SubtitleFilePath = subtitleFilePath;
             BufferProgress = bufferProgress;
             BandwidthRate = bandwidthRate;
-
+            ShowSubtitleButton = MediaType == MediaType.Trailer ? false : true;
+            _subtitles = subtitles;
             // Prevent windows from sleeping
             _applicationService.EnableConstantDisplayAndPower(true);
         }
@@ -151,6 +201,37 @@ namespace Popcorn.ViewModels.Pages.Player
         /// </summary>
         private void RegisterCommands()
         {
+            SelectSubtitlesCommand = new RelayCommand(async () =>
+            {
+                OnPausedMedia(new EventArgs());
+                var message = new ShowSubtitleDialogMessage(_subtitles);
+                await Messenger.Default.SendAsync(message);
+
+                OnResumedMedia(new EventArgs());
+                if (message.SelectedSubtitle != null &&
+                    message.SelectedSubtitle.LanguageName !=
+                    LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel") && message.SelectedSubtitle.SubtitleId != "custom")
+                {
+                    var path = Path.Combine(Constants.Subtitles + message.SelectedSubtitle.ImdbId);
+                    Directory.CreateDirectory(path);
+                    var subtitlePath = await
+                        _subtitlesService.DownloadSubtitleToPath(path,
+                            message.SelectedSubtitle);
+                    OnSubtitleChosen(new SubtitleChangedEventArgs(subtitlePath));
+                }
+                else if (message.SelectedSubtitle != null &&
+                    message.SelectedSubtitle.LanguageName !=
+                    LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel") && message.SelectedSubtitle.SubtitleId == "custom")
+                {
+                    var subMessage = new CustomSubtitleMessage();
+                    await Messenger.Default.SendAsync(subMessage);
+                    if (!subMessage.Error && !string.IsNullOrEmpty(subMessage.FileName))
+                    {
+                        OnSubtitleChosen(new SubtitleChangedEventArgs(subMessage.FileName));
+                    }
+                }
+            });
+
             StopPlayingMediaCommand =
                 new RelayCommand(() =>
                 {
@@ -186,6 +267,19 @@ namespace Popcorn.ViewModels.Pages.Player
                 "Resumed playing a media");
 
             var handler = ResumedMedia;
+            handler?.Invoke(this, e);
+        }
+
+        /// <summary>
+        /// Fire OnSubtitleChosen event
+        /// </summary>
+        /// <param name="e">Event args</param>
+        private void OnSubtitleChosen(SubtitleChangedEventArgs e)
+        {
+            Logger.Debug(
+                "Subtitle chosen");
+
+            var handler = SubtitleChosen;
             handler?.Invoke(this, e);
         }
 
