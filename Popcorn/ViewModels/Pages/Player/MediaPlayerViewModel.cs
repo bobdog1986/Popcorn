@@ -203,32 +203,39 @@ namespace Popcorn.ViewModels.Pages.Player
         {
             SelectSubtitlesCommand = new RelayCommand(async () =>
             {
-                OnPausedMedia(new EventArgs());
-                var message = new ShowSubtitleDialogMessage(_subtitles);
-                await Messenger.Default.SendAsync(message);
+                try
+                {
+                    OnPausedMedia(new EventArgs());
+                    var message = new ShowSubtitleDialogMessage(_subtitles);
+                    await Messenger.Default.SendAsync(message);
 
-                OnResumedMedia(new EventArgs());
-                if (message.SelectedSubtitle != null &&
-                    message.SelectedSubtitle.LanguageName !=
-                    LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel") && message.SelectedSubtitle.SubtitleId != "custom")
-                {
-                    var path = Path.Combine(Constants.Subtitles + message.SelectedSubtitle.ImdbId);
-                    Directory.CreateDirectory(path);
-                    var subtitlePath = await
-                        _subtitlesService.DownloadSubtitleToPath(path,
-                            message.SelectedSubtitle);
-                    OnSubtitleChosen(new SubtitleChangedEventArgs(subtitlePath));
-                }
-                else if (message.SelectedSubtitle != null &&
-                    message.SelectedSubtitle.LanguageName !=
-                    LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel") && message.SelectedSubtitle.SubtitleId == "custom")
-                {
-                    var subMessage = new CustomSubtitleMessage();
-                    await Messenger.Default.SendAsync(subMessage);
-                    if (!subMessage.Error && !string.IsNullOrEmpty(subMessage.FileName))
+                    OnResumedMedia(new EventArgs());
+                    if (message.SelectedSubtitle != null &&
+                        message.SelectedSubtitle.LanguageName !=
+                        LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel") && message.SelectedSubtitle.SubtitleId != "custom")
                     {
-                        OnSubtitleChosen(new SubtitleChangedEventArgs(subMessage.FileName));
+                        var path = Path.Combine(Constants.Subtitles + message.SelectedSubtitle.ImdbId);
+                        Directory.CreateDirectory(path);
+                        var subtitlePath = await
+                            _subtitlesService.DownloadSubtitleToPath(path,
+                                message.SelectedSubtitle);
+                        OnSubtitleChosen(new SubtitleChangedEventArgs(subtitlePath));
                     }
+                    else if (message.SelectedSubtitle != null &&
+                        message.SelectedSubtitle.LanguageName !=
+                        LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel") && message.SelectedSubtitle.SubtitleId == "custom")
+                    {
+                        var subMessage = new CustomSubtitleMessage();
+                        await Messenger.Default.SendAsync(subMessage);
+                        if (!subMessage.Error && !string.IsNullOrEmpty(subMessage.FileName))
+                        {
+                            OnSubtitleChosen(new SubtitleChangedEventArgs(subMessage.FileName));
+                        }
+                    }
+                }
+                catch(Exception ex)
+                {
+                    Logger.Trace(ex);
                 }
             });
 
