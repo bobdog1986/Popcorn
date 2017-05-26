@@ -9,9 +9,11 @@ using System.Windows.Threading;
 using GalaSoft.MvvmLight.Threading;
 using Popcorn.ViewModels.Pages.Player;
 using System.Threading;
+using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using Popcorn.Messaging;
 using Popcorn.Models.Bandwidth;
+using Popcorn.Services.Application;
 using Popcorn.Utils;
 using Popcorn.Utils.Exceptions;
 
@@ -173,7 +175,8 @@ namespace Popcorn.UserControls.Player
             Player.VlcMediaPlayer.Playing += OnPlaying;
             Player.VlcMediaPlayer.Stoped += OnStopped;
             Title.Text = vm.MediaName;
-            await PlayMedia();
+            await Task.Delay(500);
+            PlayMedia();
         }
 
         /// <summary>
@@ -222,6 +225,14 @@ namespace Popcorn.UserControls.Player
             Player.Pause();
         }
 
+        private void OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (MediaPlayerIsPlaying)
+                PauseMedia();
+            else
+                PlayMedia();
+        }
+
         /// <summary>
         /// On key down
         /// </summary>
@@ -229,14 +240,42 @@ namespace Popcorn.UserControls.Player
         /// <param name="e"></param>
         private async void OnKeyDown(object sender, KeyEventArgs e)
         {
+            if (e.Key == Key.F)
+            {
+                var applicationService = SimpleIoc.Default.GetInstance<IApplicationService>();
+                applicationService.IsFullScreen = !applicationService.IsFullScreen;
+            }
+
+            if (e.Key == Key.Space)
+            {
+                if (MediaPlayerIsPlaying)
+                    PauseMedia();
+                else
+                    PlayMedia();
+            }
+
             if (Player.VlcMediaPlayer.SubtitleCount == 0) return;
             switch (e.Key)
             {
-                case Key.G:
-                    SubtitleDelay += 100000;
+                case Key.H:
+                    if ((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
+                    {
+                        SubtitleDelay += 1000000;
+                    }
+                    else
+                    {
+                        SubtitleDelay += 100000;
+                    }
                     break;
-                case Key.F:
-                    SubtitleDelay -= 100000;
+                case Key.G:
+                    if ((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
+                    {
+                        SubtitleDelay -= 1000000;
+                    }
+                    else
+                    {
+                        SubtitleDelay -= 100000;
+                    }
                     break;
                 default:
                     return;
@@ -388,13 +427,12 @@ namespace Popcorn.UserControls.Player
         /// <summary>
         /// Play the movie
         /// </summary>
-        private async Task PlayMedia()
+        private void PlayMedia()
         {
             MediaPlayerIsPlaying = true;
 
             MediaPlayerStatusBarItemPlay.Visibility = Visibility.Collapsed;
             MediaPlayerStatusBarItemPause.Visibility = Visibility.Visible;
-            await Task.Delay(500);
             Player.Play();
         }
 
@@ -504,7 +542,7 @@ namespace Popcorn.UserControls.Player
         /// </summary>
         /// <param name="sender">Sender object</param>
         /// <param name="e">ExecutedRoutedEventArgs</param>
-        private async void MediaPlayerPlayExecuted(object sender, ExecutedRoutedEventArgs e) => await PlayMedia();
+        private void MediaPlayerPlayExecuted(object sender, ExecutedRoutedEventArgs e) => PlayMedia();
 
         /// <summary>
         /// Pause media

@@ -6,9 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
-using NuGet;
 using Popcorn.Comparers;
-using Popcorn.Extensions;
 using Popcorn.Helpers;
 using Popcorn.Messaging;
 using Popcorn.Models.Movie;
@@ -96,7 +94,21 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                                             genre => genre.ToLowerInvariant() ==
                                                      Genre.EnglishName.ToLowerInvariant())
                                         : a.Genres.TrueForAll(b => true)) && a.Rating >= Rating);
-                    Movies.AddRange(updatedMovies.Except(Movies.ToList(), new MovieComparer()));
+                    foreach (var movie in updatedMovies.Except(Movies.ToList(), new MovieComparer()))
+                    {
+                        var pair = Movies
+                            .Select((value, index) => new {value, index})
+                            .FirstOrDefault(x => string.CompareOrdinal(x.value.Title, movie.Title) > 0);
+
+                        if (pair == null)
+                        {
+                            Movies.Add(movie);
+                        }
+                        else
+                        {
+                            Movies.Insert(pair.index, movie);
+                        }
+                    }
                 }
                 else
                 {
@@ -108,21 +120,35 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                     }
 
                     var movies = moviesToAdd.ToList();
+                    var moviesToAddAndToOrder = new List<MovieJson>();
                     await movies.ParallelForEachAsync(async imdbId =>
+                    {
+                        var movie = await MovieService.GetMovieAsync(imdbId);
+                        if ((Genre != null
+                                ? movie.Genres.Any(
+                                    genre => genre.ToLowerInvariant() ==
+                                             Genre.EnglishName.ToLowerInvariant())
+                                : movie.Genres.TrueForAll(b => true)) && movie.Rating >= Rating)
                         {
-                            var movie = await MovieService.GetMovieAsync(imdbId);
-                            if ((Genre != null
-                                    ? movie.Genres.Any(
-                                        genre => genre.ToLowerInvariant() ==
-                                                 Genre.EnglishName.ToLowerInvariant())
-                                    : movie.Genres.TrueForAll(b => true)) && movie.Rating >= Rating)
-                            {
-                                DispatcherHelper.CheckBeginInvokeOnUI(() =>
-                                {
-                                    Movies.Add(movie);
-                                });
-                            }
-                        });
+                            moviesToAddAndToOrder.Add(movie);
+                        }
+                    });
+
+                    foreach (var movie in moviesToAddAndToOrder.Except(Movies.ToList(), new MovieComparer()))
+                    {
+                        var pair = Movies
+                            .Select((value, index) => new { value, index })
+                            .FirstOrDefault(x => string.CompareOrdinal(x.value.Title, movie.Title) > 0);
+
+                        if (pair == null)
+                        {
+                            Movies.Add(movie);
+                        }
+                        else
+                        {
+                            Movies.Insert(pair.index, movie);
+                        }
+                    }
                 }
 
                 IsLoadingMovies = false;
@@ -141,7 +167,6 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
             }
             finally
             {
-                Movies.Sort((a, b) => String.Compare(a.Title, b.Title, StringComparison.Ordinal));
                 NeedSync = false;
                 watch.Stop();
                 var elapsedMs = watch.ElapsedMilliseconds;

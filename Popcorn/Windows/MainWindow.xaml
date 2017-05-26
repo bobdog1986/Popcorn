@@ -33,6 +33,7 @@
     IconBitmapScalingMode="HighQuality"
     IconEdgeMode="Aliased"
     IgnoreTaskbarOnMaximize="{Binding IgnoreTaskbarOnMaximize}"
+    KeyDown="OnKeyDown"
     NonActiveBorderBrush="Transparent"
     NonActiveGlowBrush="Transparent"
     ShowIconOnTitleBar="True"
