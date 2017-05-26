@@ -54,8 +54,6 @@ namespace Popcorn.Services.Download
             {
                 using (var session = new session())
                 {
-                    var settings = session.settings();
-                    settings.anonymous_mode = true;
                     downloadProgress.Report(0d);
                     bandwidthRate.Report(new BandwidthRate
                     {
@@ -64,7 +62,6 @@ namespace Popcorn.Services.Download
                     });
                     nbSeeds.Report(0);
                     nbPeers.Report(0);
-                    session.listen_on(Constants.TorrentMinPort, Constants.TorrentMaxPort);
                     string savePath = string.Empty;
                     switch (mediaType)
                     {
