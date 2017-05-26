@@ -155,8 +155,8 @@ namespace Popcorn.AttachedProperties
                                     var bitmapImage = new BitmapImage();
                                     bitmapImage.BeginInit();
                                     bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                                    bitmapImage.DecodePixelWidth = 200;
-                                    bitmapImage.DecodePixelHeight = 300;
+                                    bitmapImage.DecodePixelWidth = 400;
+                                    bitmapImage.DecodePixelHeight = 600;
                                     bitmapImage.StreamSource = stream;
                                     bitmapImage.EndInit();
                                     bitmapImage.Freeze();

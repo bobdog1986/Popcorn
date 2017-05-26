@@ -188,7 +188,6 @@
                                     <ColumnDefinition Width="180" />
                                     <ColumnDefinition Width="10" />
                                 </Grid.ColumnDefinitions>
-
                                 <Image
                                     x:Name="BackgroundImage"
                                     Grid.Row="0"
