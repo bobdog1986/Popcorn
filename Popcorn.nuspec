@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>Popcorn</id>
-        <version>2.4.1</version>
+        <version>2.4.2</version>
         <title>Popcorn</title>
         <authors>bbougot</authors>
         <projectUrl>https://github.com/bbougot/Popcorn</projectUrl>
@@ -374,6 +374,7 @@
         <file src="System.Security.Cryptography.X509Certificates.dll" target="lib\net45\System.Security.Cryptography.X509Certificates.dll" />
         <file src="System.Windows.Interactivity.dll" target="lib\net45\System.Windows.Interactivity.dll" />
         <file src="TMDbLib.dll" target="lib\net45\TMDbLib.dll" />
+        <file src="None.srt" target="lib\net45\None.srt" />
         <file src="vccorlib140.dll" target="lib\net45\vccorlib140.dll" />
         <file src="vcruntime140.dll" target="lib\net45\vcruntime140.dll" />
         <file src="WPFLocalizeExtension.dll" target="lib\net45\WPFLocalizeExtension.dll" />

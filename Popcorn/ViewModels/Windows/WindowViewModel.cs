@@ -495,7 +495,7 @@ namespace Popcorn.ViewModels.Windows
                 var cts = new TaskCompletionSource<object>();
                 vm.OnCloseAction = async () =>
                 {
-                    message.SelectedSubtitle = vm.SelectedSubtitle.Sub;
+                    message.SelectedSubtitle = vm.SelectedSubtitle?.Sub;
                     await _dialogCoordinator.HideMetroDialogAsync(this, subtitleDialog);
                     cts.TrySetResult(null);
                 };

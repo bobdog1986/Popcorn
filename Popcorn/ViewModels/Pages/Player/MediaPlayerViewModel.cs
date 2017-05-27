@@ -13,6 +13,7 @@ using Popcorn.Models.Subtitles;
 using System.Windows.Input;
 using Popcorn.Helpers;
 using System.IO;
+using System.Reflection;
 using Popcorn.Services.Subtitles;
 using Popcorn.Events;
 
@@ -119,8 +120,7 @@ namespace Popcorn.ViewModels.Pages.Player
         public bool ShowSubtitleButton
         {
             get { return _showSubtitleButton; }
-            set { Set(ref _showSubtitleButton, value);
-            }
+            set { Set(ref _showSubtitleButton, value); }
         }
 
         /// <summary>
@@ -156,10 +156,12 @@ namespace Popcorn.ViewModels.Pages.Player
         /// <param name="bandwidthRate">THe bandwidth rate</param>
         /// <param name="subtitleFilePath">Subtitle file path</param>
         /// <param name="subtitles">Subtitles</param>
-        public MediaPlayerViewModel(ISubtitlesService subtitlesService,IApplicationService applicationService, string mediaPath,
+        public MediaPlayerViewModel(ISubtitlesService subtitlesService, IApplicationService applicationService,
+            string mediaPath,
             string mediaName, MediaType type, Action mediaStoppedAction,
             Action mediaEndedAction, Progress<double> bufferProgress = null,
-            Progress<BandwidthRate> bandwidthRate = null, string subtitleFilePath = null, IEnumerable<Subtitle> subtitles = null)
+            Progress<BandwidthRate> bandwidthRate = null, string subtitleFilePath = null,
+            IEnumerable<Subtitle> subtitles = null)
         {
             Logger.Info(
                 $"Loading media : {mediaPath}.");
@@ -208,12 +210,12 @@ namespace Popcorn.ViewModels.Pages.Player
                     OnPausedMedia(new EventArgs());
                     var message = new ShowSubtitleDialogMessage(_subtitles);
                     await Messenger.Default.SendAsync(message);
-
-                    OnResumedMedia(new EventArgs());
                     if (message.SelectedSubtitle != null &&
                         message.SelectedSubtitle.LanguageName !=
-                        LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel") && message.SelectedSubtitle.SubtitleId != "custom")
+                        LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel") &&
+                        message.SelectedSubtitle.SubtitleId != "custom")
                     {
+                        OnResumedMedia(new EventArgs());
                         var path = Path.Combine(Constants.Subtitles + message.SelectedSubtitle.ImdbId);
                         Directory.CreateDirectory(path);
                         var subtitlePath = await
@@ -222,8 +224,9 @@ namespace Popcorn.ViewModels.Pages.Player
                         OnSubtitleChosen(new SubtitleChangedEventArgs(subtitlePath));
                     }
                     else if (message.SelectedSubtitle != null &&
-                        message.SelectedSubtitle.LanguageName !=
-                        LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel") && message.SelectedSubtitle.SubtitleId == "custom")
+                             message.SelectedSubtitle.LanguageName !=
+                             LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel") &&
+                             message.SelectedSubtitle.SubtitleId == "custom")
                     {
                         var subMessage = new CustomSubtitleMessage();
                         await Messenger.Default.SendAsync(subMessage);
@@ -231,9 +234,23 @@ namespace Popcorn.ViewModels.Pages.Player
                         {
                             OnSubtitleChosen(new SubtitleChangedEventArgs(subMessage.FileName));
                         }
+
+                        OnResumedMedia(new EventArgs());
+                    }
+                    else if (message.SelectedSubtitle != null && message.SelectedSubtitle.LanguageName ==
+                             LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"))
+                    {
+                        var path = Assembly.GetExecutingAssembly().Location;
+                        var directory = Directory.GetParent(path);
+                        OnSubtitleChosen(new SubtitleChangedEventArgs($@"{directory}\None.srt"));
+                        OnResumedMedia(new EventArgs());
+                    }
+                    else
+                    {
+                        OnResumedMedia(new EventArgs());
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Logger.Trace(ex);
                 }

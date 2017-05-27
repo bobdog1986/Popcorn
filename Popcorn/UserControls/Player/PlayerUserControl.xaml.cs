@@ -157,16 +157,7 @@ namespace Popcorn.UserControls.Player
             }
 
             Player.VlcMediaPlayer.EndReached += MediaPlayerEndReached;
-
-            if (!string.IsNullOrEmpty(vm.SubtitleFilePath))
-            {
-                Player.LoadMediaWithOptions(vm.MediaPath, $@":sub-file={vm.SubtitleFilePath}");
-            }
-            else
-            {
-                Player.LoadMedia(vm.MediaPath);
-            }
-
+            Player.LoadMedia(vm.MediaPath);
             if (vm.MediaType == MediaType.Trailer)
             {
                 DownloadProgress.Visibility = Visibility.Collapsed;
@@ -178,6 +169,10 @@ namespace Popcorn.UserControls.Player
             Title.Text = vm.MediaName;
             await Task.Delay(500);
             PlayMedia();
+            if (!string.IsNullOrEmpty(vm.SubtitleFilePath))
+            {
+                Player.VlcMediaPlayer.SetSubtitleFile(vm.SubtitleFilePath);
+            }
         }
 
         /// <summary>

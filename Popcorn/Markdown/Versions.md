@@ -1,4 +1,12 @@
-﻿# 2.4.1 - 27/05/2017 #
+﻿# 2.4.2 - 27/05/2017 #
+***
+Fix issue
+
+### Details ###
+
+* Fixed issue with subtitles.
+
+# 2.4.1 - 27/05/2017 #
 ***
 Fix issue
 
