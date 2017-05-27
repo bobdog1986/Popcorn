@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Threading;
@@ -226,6 +227,11 @@ namespace Popcorn.ViewModels.Windows.Settings
         /// Update size cache
         /// </summary>
         public RelayCommand UpdateCacheSizeCommand { get; private set; }
+
+        /// <summary>
+        /// Subtitles color
+        /// </summary>
+        public Color SubtitlesColor { get; set; }
 
         /// <summary>
         /// Load asynchronously the languages of the application

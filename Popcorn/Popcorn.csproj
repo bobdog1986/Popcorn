@@ -771,6 +771,14 @@
     <Resource Include="icon.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Popcorn.ColorPickerControls\Popcorn.ColorPickerControls.csproj">
+      <Project>{02e6c16f-757f-44ac-be66-c0d79c0ebe0b}</Project>
+      <Name>Popcorn.ColorPickerControls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Popcorn.ColorPicker\Popcorn.ColorPicker.csproj">
+      <Project>{059dc6c7-59c6-4adf-8960-976a02e7498e}</Project>
+      <Name>Popcorn.ColorPicker</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Popcorn.Spinner\Popcorn.Spinner.csproj">
       <Project>{e49229cc-d702-478f-90e0-6e1a284272f6}</Project>
       <Name>Popcorn.Spinner</Name>
@@ -802,6 +810,7 @@
   <PropertyGroup>
     <PreBuildEvent>if not exist "$(TargetDir)edge" xcopy /s /i "$(SolutionDir)packages\Edge.js.7.10.1\content\edge\*.*" "$(TargetDir)edge"
 if not exist "$(TargetDir)None.srt" xcopy /s /i "$(SolutionDir)Popcorn\Resources\Subtitles\*.*" "$(TargetDir)"
+if not exist "$(TargetDir)WPFToolkit.dll" xcopy /s /i "$(SolutionDir)packages\WPFToolkit.3.5.50211.1\lib\*.*" "$(TargetDir)"
 </PreBuildEvent>
     <PostBuildEvent>if not exist "$(TargetDir)libvlc" xcopy /s /i "$(SolutionDir)packages\VlcLibs.2.2.5.1\lib\net45\libvlc\*.*" "$(TargetDir)libvlc"
 if not exist "$(TargetDir)concrt140.dll" xcopy /s /y "$(SolutionDir)packages\libtorrent-net.2.0.0\tools\concrt140.dll" "$(TargetDir)"

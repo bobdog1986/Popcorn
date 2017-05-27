@@ -9,13 +9,16 @@ using System.Windows.Threading;
 using GalaSoft.MvvmLight.Threading;
 using Popcorn.ViewModels.Pages.Player;
 using System.Threading;
+using System.Windows.Media;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
+using NLog;
 using Popcorn.Messaging;
 using Popcorn.Models.Bandwidth;
 using Popcorn.Services.Application;
 using Popcorn.Utils;
 using Popcorn.Utils.Exceptions;
+using Popcorn.ViewModels.Windows.Settings;
 
 namespace Popcorn.UserControls.Player
 {
@@ -24,6 +27,11 @@ namespace Popcorn.UserControls.Player
     /// </summary>
     public partial class PlayerUserControl : IDisposable
     {
+        /// <summary>
+        /// Logger of the class
+        /// </summary>
+        private static Logger Logger { get; } = LogManager.GetCurrentClassLogger();
+
         /// <summary>
         /// If control is disposed
         /// </summary>
@@ -83,6 +91,18 @@ namespace Popcorn.UserControls.Player
         /// </summary>
         public PlayerUserControl()
         {
+            int HexConverter(Color c)
+            {
+                var hex = c.R.ToString("X2") + c.G.ToString("X2") + c.B.ToString("X2");
+                return Convert.ToInt32(hex, 16);
+            }
+
+            var applicationSettings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
+            VlcOptions = new[]
+            {
+                "-I", "--dummy-quiet", "--no-video-title", "--no-sub-autodetect-file", "--sub-filter=freetype",
+                $"--freetype-color={HexConverter(applicationSettings.SubtitlesColor)}"
+            };
             InitializeComponent();
             Loaded += OnLoaded;
         }
@@ -106,6 +126,8 @@ namespace Popcorn.UserControls.Player
 
             set => SetValue(VolumeProperty, value);
         }
+
+        public string[] VlcOptions { get; set; }
 
         /// <summary>
         /// Free resources

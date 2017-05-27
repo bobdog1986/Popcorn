@@ -2,14 +2,14 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>Popcorn</id>
-        <version>2.4.2</version>
+        <version>2.4.3</version>
         <title>Popcorn</title>
         <authors>bbougot</authors>
         <projectUrl>https://github.com/bbougot/Popcorn</projectUrl>
         <iconUrl>https://raw.githubusercontent.com/bbougot/Popcorn/master/Popcorn/icon.ico</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>Popcorn Windows native app made in .NET/WPF</description>
-        <releaseNotes>Fixed issue.</releaseNotes>
+        <releaseNotes>Add color option for subtitles.</releaseNotes>
     </metadata>
     <files>
         <file src="en\Popcorn.resources.dll" target="lib\net45\en\Popcorn.resources.dll" />
@@ -406,5 +406,10 @@
         <file src="Sockets.Plugin.dll" target="lib\net45\Sockets.Plugin.dll" />
         <file src="Popcorn.Markdown.dll" target="lib\net45\Popcorn.Markdown.dll" />
         <file src="Sockets.Plugin.Abstractions.dll" target="lib\net45\Sockets.Plugin.Abstractions.dll" />
+        <file src="Popcorn.ColorPicker.dll" target="lib\net45\Popcorn.ColorPicker.dll" />
+        <file src="Popcorn.ColorPickerControls.dll" target="lib\net45\Popcorn.ColorPickerControls.dll" />
+        <file src="WPFToolkit.dll" target="lib\net45\WPFToolkit.dll" />
+        <file src="System.Windows.Controls.Input.Toolkit.dll" target="lib\net45\System.Windows.Controls.Input.Toolkit.dll" />
+        <file src="System.Windows.Controls.Layout.Toolkit.dll" target="lib\net45\System.Windows.Controls.Layout.Toolkit.dll" />
     </files>
 </package>

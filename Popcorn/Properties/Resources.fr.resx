@@ -405,4 +405,7 @@
   <data name="ChooseSubtitleLabel" xml:space="preserve">
     <value>Choisissez un sous-titre</value>
   </data>
+  <data name="SubtitlesColorLabel" xml:space="preserve">
+    <value>Couleur des sous-titres</value>
+  </data>
 </root>

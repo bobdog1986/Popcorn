@@ -1,4 +1,12 @@
-﻿# 2.4.2 - 27/05/2017 #
+﻿# 2.4.3 - 27/05/2017 #
+***
+Add feature
+
+### Details ###
+
+* Add color option for subtitles
+
+# 2.4.2 - 27/05/2017 #
 ***
 Fix issue
 

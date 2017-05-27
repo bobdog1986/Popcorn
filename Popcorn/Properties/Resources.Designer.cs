@@ -817,6 +817,15 @@ namespace Popcorn.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Subtitles color.
+        /// </summary>
+        public static string SubtitlesColorLabel {
+            get {
+                return ResourceManager.GetString("SubtitlesColorLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Subtitles.
         /// </summary>
         public static string SubtitlesLabel {

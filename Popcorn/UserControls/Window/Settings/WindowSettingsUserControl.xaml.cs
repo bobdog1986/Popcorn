@@ -1,4 +1,7 @@
-﻿namespace Popcorn.UserControls.Window.Settings
+﻿using System;
+using Popcorn.ViewModels.Windows.Settings;
+
+namespace Popcorn.UserControls.Window.Settings
 {
     /// <summary>
     /// Interaction logic for Settings.xaml
@@ -11,6 +14,13 @@
         public WindowSettingsUserControl()
         {
             InitializeComponent();
+        }
+
+        private void OnColorChanged(object sender, EventArgs e)
+        {
+            var vm = DataContext as ApplicationSettingsViewModel;
+            if (vm == null) return;
+            vm.SubtitlesColor = ColorPicker.Color;
         }
     }
 }
