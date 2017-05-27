@@ -1,4 +1,12 @@
-﻿# 2.4.0 - 26/05/2017 #
+﻿# 2.4.1 - 27/05/2017 #
+***
+Fix issue
+
+### Details ###
+
+* Fixed issue [#66](https://github.com/bbougot/Popcorn/issues/66).
+
+# 2.4.0 - 26/05/2017 #
 ***
 Fix issues
 
