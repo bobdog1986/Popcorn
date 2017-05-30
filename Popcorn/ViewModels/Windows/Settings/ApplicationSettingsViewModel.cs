@@ -71,6 +71,11 @@ namespace Popcorn.ViewModels.Windows.Settings
         private string _defaultSubtitleLanguage;
 
         /// <summary>
+        /// Subtitles color
+        /// </summary>
+        private Color _subtitlesColor;
+
+        /// <summary>
         /// Initializes a new instance of the ApplicationSettingsViewModel class.
         /// </summary>
         /// <param name="userService">User service</param>
@@ -82,6 +87,7 @@ namespace Popcorn.ViewModels.Windows.Settings
 
             RefreshCacheSize();
             RegisterCommands();
+            SubtitlesColor = Color.FromRgb(255, 255, 255);
 
             Task.Run(async () =>
             {
@@ -231,7 +237,11 @@ namespace Popcorn.ViewModels.Windows.Settings
         /// <summary>
         /// Subtitles color
         /// </summary>
-        public Color SubtitlesColor { get; set; }
+        public Color SubtitlesColor
+        {
+            get => _subtitlesColor;
+            set { Set(() => SubtitlesColor, ref _subtitlesColor, value); }
+        }
 
         /// <summary>
         /// Load asynchronously the languages of the application

@@ -172,14 +172,12 @@
                 Text="{lex:LocText SubtitlesColorLabel}" />
             <StackPanel Grid.Column="2" Orientation="Horizontal">
                 <chips:ColorChip
-                    x:Name="ColorPicker"
                     Width="30"
                     Height="28"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    ColorChanged="OnColorChanged"
                     ColorDialog="Standard"
-                    Color="White" />
+                    Color="{Binding SubtitlesColor}" />
             </StackPanel>
         </Grid>
         <Grid
