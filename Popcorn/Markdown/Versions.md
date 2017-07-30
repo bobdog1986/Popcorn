@@ -1,4 +1,12 @@
-﻿# 2.4.4 - 27/05/2017 #
+﻿# 2.4.5 - 30/07/2017 #
+***
+Update packages
+
+### Details ###
+
+* Updated Meta.Vlc, AI, Squirrel, MimeKit, Newtonsoft.Json, NLog, RSSDP, System.Diagnostics.DiagnosticSource
+
+# 2.4.4 - 27/05/2017 #
 ***
 Fix issue
 

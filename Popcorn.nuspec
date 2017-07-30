@@ -343,7 +343,6 @@
         <file src="GalaSoft.MvvmLight.dll" target="lib\net45\GalaSoft.MvvmLight.dll" />
         <file src="GalaSoft.MvvmLight.Extras.dll" target="lib\net45\GalaSoft.MvvmLight.Extras.dll" />
         <file src="GalaSoft.MvvmLight.Platform.dll" target="lib\net45\GalaSoft.MvvmLight.Platform.dll" />
-        <file src="ICSharpCode.SharpZipLib.dll" target="lib\net45\ICSharpCode.SharpZipLib.dll" />
         <file src="ltnet.dll" target="lib\net45\ltnet.dll" />
         <file src="MahApps.Metro.dll" target="lib\net45\MahApps.Metro.dll" />
         <file src="MahApps.Metro.IconPacks.dll" target="lib\net45\MahApps.Metro.IconPacks.dll" />
