@@ -191,8 +191,8 @@
                     Grid.Column="1"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
-                    attachedProperties:ImageAsyncHelper.ImagePath="{Binding Movie.PosterImage}"
-                    RenderOptions.BitmapScalingMode="HighQuality">
+                    Source="{Binding Movie.PosterImage}"
+                    RenderOptions.BitmapScalingMode="Linear">
                     <Image.Effect>
                         <DropShadowEffect
                             BlurRadius="35"
