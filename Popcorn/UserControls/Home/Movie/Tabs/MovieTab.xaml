@@ -217,8 +217,8 @@
                                     Grid.ColumnSpan="3"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    attachedProperties:ImageAsyncHelper.ImagePath="{Binding PosterImage, Mode=OneTime, IsAsync=True}"
-                                    RenderOptions.BitmapScalingMode="HighQuality" />
+                                    attachedProperties:ImageAsyncHelper.Type="Thumbnail"
+                                    attachedProperties:ImageAsyncHelper.ImagePath="{Binding PosterImage, Mode=OneTime, IsAsync=True}" />
                                 <Grid
                                     x:Name="PlayCanvas"
                                     Grid.Row="0"

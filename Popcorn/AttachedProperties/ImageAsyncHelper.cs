@@ -14,6 +14,13 @@ using Popcorn.Utils;
 
 namespace Popcorn.AttachedProperties
 {
+    public enum ImageType
+    {
+        Thumbnail,
+        Poster,
+        Backdrop
+    }
+
     /// <summary>
     /// Image async
     /// </summary>
@@ -23,6 +30,35 @@ namespace Popcorn.AttachedProperties
         /// Logger of the class
         /// </summary>
         private static Logger Logger { get; } = LogManager.GetCurrentClassLogger();
+
+        /// <summary>
+        /// Get ImageType
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static ImageType GetType(DependencyObject obj)
+        {
+            return (ImageType)obj.GetValue(TypeProperty);
+        }
+
+        /// <summary>
+        /// Set ImageType
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="value"></param>
+        public static void SetType(DependencyObject obj, ImageType value)
+        {
+            obj.SetValue(TypeProperty, value);
+        }
+
+        /// <summary>
+        /// ImageType property
+        /// </summary>
+        public static readonly DependencyProperty TypeProperty =
+            DependencyProperty.RegisterAttached("Type",
+                typeof(ImageType),
+                typeof(ImageAsyncHelper),
+                new PropertyMetadata(ImageType.Backdrop));
 
         /// <summary>
         /// Get source uri
@@ -56,6 +92,7 @@ namespace Popcorn.AttachedProperties
                     PropertyChangedCallback = async (obj, e) =>
                     {
                         var image = (Image)obj;
+                        var imageType = GetType(obj);
                         var resourceDictionary = new ResourceDictionary
                         {
                             Source = new Uri("Popcorn;component/Resources/ImageLoading.xaml", UriKind.Relative)
@@ -66,13 +103,18 @@ namespace Popcorn.AttachedProperties
                             var path = e.NewValue as string;
                             if (string.IsNullOrEmpty(path))
                             {
-                                var errorThumbnail = resourceDictionary["ImageError"] as DrawingImage;
-                                errorThumbnail.Freeze();
-                                var transformGroup = new TransformGroup();
-                                transformGroup.Children.Add(new ScaleTransform(0.5d, 0.5d));
-                                image.RenderTransformOrigin = new Point(0.5d, 0.5d);
-                                image.RenderTransform = transformGroup;
-                                image.Source = errorThumbnail;
+                                if (imageType == ImageType.Thumbnail)
+                                {
+                                    var errorThumbnail = resourceDictionary["ImageError"] as DrawingImage;
+                                    errorThumbnail.Freeze();
+                                    image.RenderTransformOrigin = new Point(0.5d, 0.5d);
+                                    image.Stretch = Stretch.None;
+                                    image.Source = errorThumbnail;
+                                }
+                                else
+                                {
+                                    image.Source = new BitmapImage();
+                                }
 
                                 return;
                             }
@@ -90,37 +132,37 @@ namespace Popcorn.AttachedProperties
                             }
                             else
                             {
-                                var loadingImage = resourceDictionary["ImageLoading"] as DrawingImage;
-                                loadingImage.Freeze();
+                                if (imageType == ImageType.Thumbnail)
+                                {
+                                    var loadingImage = resourceDictionary["ImageLoading"] as DrawingImage;
+                                    loadingImage.Freeze();
 
-                                #region Create Loading Animation
+                                    #region Create Loading Animation
 
-                                var scaleTransform = new ScaleTransform(0.5, 0.5);
-                                var skewTransform = new SkewTransform(0, 0);
-                                var rotateTransform = new RotateTransform(0);
-                                var translateTransform = new TranslateTransform(0, 0);
+                                    var scaleTransform = new ScaleTransform(0.5, 0.5);
+                                    var rotateTransform = new RotateTransform(0);
 
-                                var group = new TransformGroup();
-                                group.Children.Add(scaleTransform);
-                                group.Children.Add(skewTransform);
-                                group.Children.Add(rotateTransform);
-                                group.Children.Add(translateTransform);
+                                    var group = new TransformGroup();
+                                    group.Children.Add(scaleTransform);
+                                    group.Children.Add(rotateTransform);
 
-                                var doubleAnimation =
-                                    new DoubleAnimation(0, 359, new TimeSpan(0, 0, 0, 1))
-                                    {
-                                        RepeatBehavior = RepeatBehavior.Forever
-                                    };
+                                    var doubleAnimation =
+                                        new DoubleAnimation(0, 359, new TimeSpan(0, 0, 0, 1))
+                                        {
+                                            RepeatBehavior = RepeatBehavior.Forever
+                                        };
 
-                                rotateTransform.BeginAnimation(RotateTransform.AngleProperty, doubleAnimation);
+                                    rotateTransform.BeginAnimation(RotateTransform.AngleProperty, doubleAnimation);
 
-                                var loadingAnimationTransform = group;
+                                    var loadingAnimationTransform = group;
 
-                                #endregion
+                                    #endregion
 
-                                image.Source = loadingImage;
-                                image.RenderTransformOrigin = new Point(0.5, 0.5);
-                                image.RenderTransform = loadingAnimationTransform;
+                                    image.Source = loadingImage;
+                                    image.Stretch = Stretch.Uniform;
+                                    image.RenderTransformOrigin = new Point(0.5, 0.5);
+                                    image.RenderTransform = loadingAnimationTransform;
+                                }
 
                                 using (var client = new HttpClient())
                                 {
@@ -149,15 +191,35 @@ namespace Popcorn.AttachedProperties
                                     var bitmapImage = new BitmapImage();
                                     bitmapImage.BeginInit();
                                     bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                                    bitmapImage.DecodePixelWidth = 400;
-                                    bitmapImage.DecodePixelHeight = 600;
+                                    if (imageType == ImageType.Thumbnail)
+                                    {
+                                        bitmapImage.DecodePixelWidth = 400;
+                                        bitmapImage.DecodePixelHeight = 600;
+                                    }
+                                    else if(imageType == ImageType.Poster)
+                                    {
+                                        bitmapImage.DecodePixelWidth = 800;
+                                        bitmapImage.DecodePixelHeight = 1200;
+                                    }
+                                    else
+                                    {
+                                        bitmapImage.DecodePixelWidth = 1920;
+                                        bitmapImage.DecodePixelHeight = 1080;
+                                    }
+
                                     bitmapImage.StreamSource = fs;
                                     bitmapImage.EndInit();
                                     bitmapImage.Freeze();
                                     DispatcherHelper.CheckBeginInvokeOnUI(() =>
                                     {
                                         image.RenderTransformOrigin = new Point(0, 0);
+                                        if (imageType != ImageType.Poster)
+                                        {
+                                            image.Stretch = Stretch.UniformToFill;
+                                        }
+
                                         image.RenderTransform = new TransformGroup();
+                                        RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.HighQuality);
                                         image.Source = bitmapImage;
                                     });
                                 }
@@ -166,13 +228,18 @@ namespace Popcorn.AttachedProperties
                         catch (Exception ex)
                         {
                             Logger.Error(ex);
-                            var errorThumbnail = resourceDictionary["ImageError"] as DrawingImage;
-                            errorThumbnail.Freeze();
-                            var transformGroup = new TransformGroup();
-                            transformGroup.Children.Add(new ScaleTransform(0.5d, 0.5d));
-                            image.RenderTransformOrigin = new Point(0.5d, 0.5d);
-                            image.RenderTransform = transformGroup;
-                            image.Source = errorThumbnail;
+                            if (imageType == ImageType.Thumbnail)
+                            {
+                                var errorThumbnail = resourceDictionary["ImageError"] as DrawingImage;
+                                errorThumbnail.Freeze();
+                                image.RenderTransformOrigin = new Point(0.5d, 0.5d);
+                                image.Stretch = Stretch.None;
+                                image.Source = errorThumbnail;
+                            }
+                            else
+                            {
+                                image.Source = new BitmapImage();
+                            }
                         }
                     }
                 }

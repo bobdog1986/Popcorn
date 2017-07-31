@@ -113,18 +113,16 @@
             Grid.Row="0"
             Grid.RowSpan="2"
             Opacity="0.3"
-            RenderOptions.BitmapScalingMode="HighQuality"
-            Source="{Binding Show.Images.Banner, IsAsync=True}"
-            Stretch="UniformToFill" />
+            attachedProperties:ImageAsyncHelper.Type="Backdrop"
+            attachedProperties:ImageAsyncHelper.ImagePath="{Binding Show.Images.Banner, IsAsync=True}" />
         <Grid
             Grid.Row="0"
             Grid.RowSpan="2"
             Visibility="{Binding DownloadShow.IsDownloadingEpisode, Converter={StaticResource BoolToInverseVisibilityConverter}}">
             <Image
                 Opacity="0.3"
-                RenderOptions.BitmapScalingMode="HighQuality"
-                Source="{Binding Show.Images.Banner, IsAsync=True}"
-                Stretch="UniformToFill" />
+                attachedProperties:ImageAsyncHelper.Type="Backdrop"
+                attachedProperties:ImageAsyncHelper.ImagePath="{Binding Show.Images.Banner, IsAsync=True}" />
             <ContentControl
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
@@ -155,7 +153,7 @@
                     HorizontalAlignment="Center"
                     VerticalAlignment="Top"
                     attachedProperties:ImageAsyncHelper.ImagePath="{Binding Show.Images.Poster, IsAsync=True}"
-                    RenderOptions.BitmapScalingMode="HighQuality">
+                    attachedProperties:ImageAsyncHelper.Type="Poster">
                     <Image.Effect>
                         <DropShadowEffect
                             BlurRadius="35"
