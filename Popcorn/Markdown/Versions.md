@@ -1,4 +1,12 @@
-﻿# 2.4.6 - 31/07/2017 #
+﻿# 2.4.7 - 31/07/2017 #
+***
+Fix issues
+
+### Details ###
+
+* Fixed issue with update system
+
+# 2.4.6 - 31/07/2017 #
 ***
 Fix issues
 
