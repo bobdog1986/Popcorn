@@ -1,4 +1,12 @@
-﻿# 2.4.7 - 31/07/2017 #
+﻿# 2.4.8- 31/07/2017 #
+***
+Fix issues
+
+### Details ###
+
+* Improve image loading performances
+
+# 2.4.7 - 31/07/2017 #
 ***
 Fix issues
 

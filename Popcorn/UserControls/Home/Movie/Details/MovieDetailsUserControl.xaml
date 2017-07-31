@@ -152,8 +152,7 @@
                 Grid.RowSpan="3"
                 Opacity="0.3"
                 RenderOptions.BitmapScalingMode="HighQuality"
-                attachedProperties:ImageAsyncHelper.ImagePath="{Binding Movie.BackdropImage}"
-                attachedProperties:ImageAsyncHelper.IsBackdropImage="True"
+                Source="{Binding Movie.BackdropImage, IsAsync=True}"                
                 Stretch="UniformToFill" />
             <TextBlock
                 Grid.Row="0"
@@ -191,8 +190,8 @@
                     Grid.Column="1"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
-                    Source="{Binding Movie.PosterImage}"
-                    RenderOptions.BitmapScalingMode="Linear">
+                    Source="{Binding Movie.PosterImage, IsAsync=True}"
+                    RenderOptions.BitmapScalingMode="HighQuality">
                     <Image.Effect>
                         <DropShadowEffect
                             BlurRadius="35"
@@ -471,7 +470,7 @@
                                                                     Height="60"
                                                                     HorizontalAlignment="Left"
                                                                     RenderOptions.BitmapScalingMode="HighQuality"
-                                                                    Source="{Binding SmallImage}" />
+                                                                    Source="{Binding SmallImage, IsAsync=True}" />
                                                             </StackPanel>
                                                         </Grid>
                                                     </Border>
@@ -627,7 +626,7 @@
                                                     Grid.ColumnSpan="3"
                                                     HorizontalAlignment="Center"
                                                     VerticalAlignment="Center"
-                                                    attachedProperties:ImageAsyncHelper.ImagePath="{Binding PosterImage}"
+                                                    attachedProperties:ImageAsyncHelper.ImagePath="{Binding PosterImage, IsAsync=True}"
                                                     RenderOptions.BitmapScalingMode="HighQuality" />
                                                 <Grid
                                                     x:Name="PlayCanvas"
