@@ -68,11 +68,12 @@ namespace Popcorn.AttachedProperties
                             {
                                 var errorThumbnail = resourceDictionary["ImageError"] as DrawingImage;
                                 errorThumbnail.Freeze();
-                                image.RenderTransformOrigin = new Point(0.5d, 0.5d);
                                 var transformGroup = new TransformGroup();
                                 transformGroup.Children.Add(new ScaleTransform(0.5d, 0.5d));
+                                image.RenderTransformOrigin = new Point(0.5d, 0.5d);
                                 image.RenderTransform = transformGroup;
                                 image.Source = errorThumbnail;
+
                                 return;
                             }
 
@@ -120,6 +121,7 @@ namespace Popcorn.AttachedProperties
                                 image.Source = loadingImage;
                                 image.RenderTransformOrigin = new Point(0.5, 0.5);
                                 image.RenderTransform = loadingAnimationTransform;
+
                                 using (var client = new HttpClient())
                                 {
                                     using (var ms = await client.GetStreamAsync(path))
@@ -140,29 +142,35 @@ namespace Popcorn.AttachedProperties
                                 localFile = Constants.Assets + fileName;
                             }
 
-                            var bitmapImage = new BitmapImage();
-                            bitmapImage.BeginInit();
-                            bitmapImage.CacheOption = BitmapCacheOption.OnDemand;
-                            bitmapImage.CreateOptions = BitmapCreateOptions.DelayCreation;
-                            bitmapImage.DecodePixelWidth = 400;
-                            bitmapImage.DecodePixelHeight = 600;
-                            bitmapImage.UriSource = new Uri(localFile);
-
-                            bitmapImage.EndInit();
-                            bitmapImage.Freeze();
-
-                            image.RenderTransformOrigin = new Point(0, 0);
-                            image.RenderTransform = new TransformGroup();
-                            image.Source = bitmapImage;
+                            await Task.Run(() =>
+                            {
+                                using (var fs = new MemoryStream(File.ReadAllBytes(localFile)))
+                                {
+                                    var bitmapImage = new BitmapImage();
+                                    bitmapImage.BeginInit();
+                                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                                    bitmapImage.DecodePixelWidth = 400;
+                                    bitmapImage.DecodePixelHeight = 600;
+                                    bitmapImage.StreamSource = fs;
+                                    bitmapImage.EndInit();
+                                    bitmapImage.Freeze();
+                                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                                    {
+                                        image.RenderTransformOrigin = new Point(0, 0);
+                                        image.RenderTransform = new TransformGroup();
+                                        image.Source = bitmapImage;
+                                    });
+                                }
+                            });
                         }
                         catch (Exception ex)
                         {
                             Logger.Error(ex);
                             var errorThumbnail = resourceDictionary["ImageError"] as DrawingImage;
                             errorThumbnail.Freeze();
-                            image.RenderTransformOrigin = new Point(0.5d, 0.5d);
                             var transformGroup = new TransformGroup();
                             transformGroup.Children.Add(new ScaleTransform(0.5d, 0.5d));
+                            image.RenderTransformOrigin = new Point(0.5d, 0.5d);
                             image.RenderTransform = transformGroup;
                             image.Source = errorThumbnail;
                         }
