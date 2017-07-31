@@ -1,4 +1,7 @@
-﻿using NLog;
+﻿using GalaSoft.MvvmLight.Messaging;
+using NLog;
+using Popcorn.Messaging;
+using Popcorn.Utils.Exceptions;
 using System;
 using System.Diagnostics;
 using System.Windows.Input;
@@ -35,6 +38,9 @@ namespace Popcorn.Dialogs
             catch (Exception ex)
             {
                 Logger.Error(ex);
+                Messenger.Default.Send(
+                    new UnhandledExceptionMessage(
+                        new PopcornException(ex.Message)));
             }
         }
     }
