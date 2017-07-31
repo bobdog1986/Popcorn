@@ -25,6 +25,34 @@ namespace Popcorn.AttachedProperties
         private static Logger Logger { get; } = LogManager.GetCurrentClassLogger();
 
         /// <summary>
+        /// Get IsBackdropImage
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static bool GetIsBackdropImage(DependencyObject obj)
+        {
+            return (bool)obj.GetValue(IsBackdropImageProperty);
+        }
+
+        /// <summary>
+        /// Set IsBackdropImage
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="value"></param>
+        public static void SetIsBackdropImage(DependencyObject obj, bool value)
+        {
+            obj.SetValue(IsBackdropImageProperty, value);
+        }
+
+        /// <summary>
+        /// Image pIsBackdropImage
+        /// </summary>
+        public static readonly DependencyProperty IsBackdropImageProperty =
+            DependencyProperty.RegisterAttached("IsBackdropImage",
+                typeof(bool),
+                typeof(ImageAsyncHelper));
+
+        /// <summary>
         /// Get source uri
         /// </summary>
         /// <param name="obj"></param>
@@ -149,25 +177,34 @@ namespace Popcorn.AttachedProperties
                                     localFile = Constants.Assets + fileName;
                                 }
 
-                                using (var stream = File.Open(localFile, FileMode.OpenOrCreate, FileAccess.ReadWrite,
-                                    FileShare.ReadWrite))
+                                DispatcherHelper.CheckBeginInvokeOnUI(() =>
                                 {
-                                    var bitmapImage = new BitmapImage();
-                                    bitmapImage.BeginInit();
-                                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                                    bitmapImage.DecodePixelWidth = 400;
-                                    bitmapImage.DecodePixelHeight = 600;
-                                    bitmapImage.StreamSource = stream;
-                                    bitmapImage.EndInit();
-                                    bitmapImage.Freeze();
-
-                                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                                    using (var stream = File.Open(localFile, FileMode.OpenOrCreate, FileAccess.ReadWrite,
+                                        FileShare.ReadWrite))
                                     {
+                                        var bitmapImage = new BitmapImage();
+                                        bitmapImage.BeginInit();
+                                        bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                                        if (!GetIsBackdropImage(obj))
+                                        {
+                                            bitmapImage.DecodePixelWidth = 400;
+                                            bitmapImage.DecodePixelHeight = 600;
+                                        }
+                                        else
+                                        {
+                                            bitmapImage.DecodePixelWidth = 1920;
+                                            bitmapImage.DecodePixelHeight = 1080;
+                                        }
+                                    
+                                        bitmapImage.StreamSource = stream;
+                                        bitmapImage.EndInit();
+                                        bitmapImage.Freeze();
+                                    
                                         image.RenderTransformOrigin = new Point(0, 0);
                                         image.RenderTransform = new TransformGroup();
                                         image.Source = bitmapImage;
-                                    });
-                                }
+                                    }
+                                });
                             }
                             catch (Exception ex)
                             {

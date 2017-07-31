@@ -152,7 +152,8 @@
                 Grid.RowSpan="3"
                 Opacity="0.3"
                 RenderOptions.BitmapScalingMode="HighQuality"
-                Source="{Binding Movie.BackdropImage}"
+                attachedProperties:ImageAsyncHelper.ImagePath="{Binding Movie.BackdropImage}"
+                attachedProperties:ImageAsyncHelper.IsBackdropImage="True"
                 Stretch="UniformToFill" />
             <TextBlock
                 Grid.Row="0"

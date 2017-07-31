@@ -1,4 +1,13 @@
-﻿# 2.4.5 - 30/07/2017 #
+﻿# 2.4.6 - 31/07/2017 #
+***
+Fix issues
+
+### Details ###
+
+* Fixed issue [#76](https://github.com/bbougot/Popcorn/issues/76).
+* Fixed issue with seekbar
+
+# 2.4.5 - 30/07/2017 #
 ***
 Update packages
 

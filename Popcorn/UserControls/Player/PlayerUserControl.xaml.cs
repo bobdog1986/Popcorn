@@ -19,13 +19,15 @@ using Popcorn.Services.Application;
 using Popcorn.Utils;
 using Popcorn.Utils.Exceptions;
 using Popcorn.ViewModels.Windows.Settings;
+using System.Runtime.CompilerServices;
+using System.ComponentModel;
 
 namespace Popcorn.UserControls.Player
 {
     /// <summary>
     /// Interaction logic for PlayerUserControl.xaml
     /// </summary>
-    public partial class PlayerUserControl : IDisposable
+    public partial class PlayerUserControl : IDisposable, INotifyPropertyChanged
     {
         /// <summary>
         /// Logger of the class
@@ -53,16 +55,6 @@ namespace Popcorn.UserControls.Player
         private Point InactiveMousePosition { get; set; } = new Point(0, 0);
 
         /// <summary>
-        /// Indicate if user is manipulating the timeline player
-        /// </summary>
-        private bool UserIsDraggingMediaPlayerSlider { get; set; }
-
-        /// <summary>
-        /// Timer used for report time on the timeline
-        /// </summary>
-        private DispatcherTimer MediaPlayerTimer { get; set; }
-
-        /// <summary>
         /// Subtitle delay
         /// </summary>
         private int SubtitleDelay { get; set; }
@@ -74,7 +66,6 @@ namespace Popcorn.UserControls.Player
         /// <param name="e">DragStartedEventArgs</param>
         private void MediaSliderProgressDragStarted(object sender, DragStartedEventArgs e)
         {
-            UserIsDraggingMediaPlayerSlider = true;
             MediaPlayerIsPlaying = false;
             Player.Pause();
         }
@@ -118,6 +109,22 @@ namespace Popcorn.UserControls.Player
         private static readonly SemaphoreSlim SubtitleDelaySemaphore = new SemaphoreSlim(1, 1);
 
         /// <summary>
+        /// Represents the player current time in milliseconds
+        /// </summary>
+        public double TimeInMilliseconds
+        {
+            get
+            {
+                return Player.Time.TotalMilliseconds;
+            }
+            set
+            {
+                Player.Time = TimeSpan.FromMilliseconds(value);
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
         /// Get or set the media volume
         /// </summary>
         public int Volume
@@ -153,10 +160,7 @@ namespace Popcorn.UserControls.Player
                 return;
 
             vm.SubtitleChosen += OnSubtitleChosen;
-            // start the timer used to report time on MediaPlayerSliderProgress
-            MediaPlayerTimer = new DispatcherTimer {Interval = TimeSpan.FromMilliseconds(200)};
-            MediaPlayerTimer.Tick += MediaPlayerTimerTick;
-            MediaPlayerTimer.Start();
+            Player.TimeChanged += OnTimeChanged;
 
             // start the activity timer used to manage visibility of the PlayerStatusBar
             ActivityTimer = new DispatcherTimer {Interval = TimeSpan.FromSeconds(2)};
@@ -195,6 +199,18 @@ namespace Popcorn.UserControls.Player
             {
                 Player.VlcMediaPlayer.SetSubtitleFile(vm.SubtitleFilePath);
             }
+        }
+
+        /// <summary>
+        /// Report the playing progress on the timeline
+        /// </summary>
+        /// <param name="sender">Sender object</param>
+        /// <param name="e">EventArgs</param>
+        private void OnTimeChanged(object sender, EventArgs e)
+        {
+            MediaPlayerSliderProgress.Minimum = 0;
+            MediaPlayerSliderProgress.Maximum = Player.Length.TotalMilliseconds;
+            OnPropertyChanged("TimeInMilliseconds");
         }
 
         /// <summary>
@@ -458,7 +474,6 @@ namespace Popcorn.UserControls.Player
         private void PlayMedia()
         {
             MediaPlayerIsPlaying = true;
-
             MediaPlayerStatusBarItemPlay.Visibility = Visibility.Collapsed;
             MediaPlayerStatusBarItemPause.Visibility = Visibility.Visible;
             Player.Play();
@@ -482,19 +497,6 @@ namespace Popcorn.UserControls.Player
         /// <param name="sender">Sender object</param>
         /// <param name="e">EventArgs</param>
         private void OnStoppedMedia(object sender, EventArgs e) => Dispose();
-
-        /// <summary>
-        /// Report the playing progress on the timeline
-        /// </summary>
-        /// <param name="sender">Sender object</param>
-        /// <param name="e">EventArgs</param>
-        private void MediaPlayerTimerTick(object sender, EventArgs e)
-        {
-            if ((Player == null) || (UserIsDraggingMediaPlayerSlider)) return;
-            MediaPlayerSliderProgress.Minimum = 0;
-            MediaPlayerSliderProgress.Maximum = Player.Length.TotalMilliseconds;
-            MediaPlayerSliderProgress.Value = Player.Time.TotalMilliseconds;
-        }
 
         /// <summary>
         /// Each time the CanExecute play command change, update the visibility of Play/Pause buttons in the player
@@ -545,8 +547,6 @@ namespace Popcorn.UserControls.Player
         /// <param name="e">DragCompletedEventArgs</param>
         private void MediaSliderProgressDragCompleted(object sender, DragCompletedEventArgs e)
         {
-            UserIsDraggingMediaPlayerSlider = false;
-            Player.Time = TimeSpan.FromMilliseconds(MediaPlayerSliderProgress.Value);
             Player.Resume();
             MediaPlayerIsPlaying = true;
         }
@@ -673,6 +673,13 @@ namespace Popcorn.UserControls.Player
             MouseActivitySemaphore.Release();
         }
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
         /// <summary>
         /// Dispose the control
         /// </summary>
@@ -683,15 +690,12 @@ namespace Popcorn.UserControls.Player
                 return;
 
             Loaded -= OnLoaded;
-
-            MediaPlayerTimer.Tick -= MediaPlayerTimerTick;
-            MediaPlayerTimer.Stop();
-
             ActivityTimer.Tick -= OnInactivity;
             ActivityTimer.Stop();
 
             InputManager.Current.PreProcessInput -= OnActivity;
 
+            Player.TimeChanged -= OnTimeChanged;
             Player.VlcMediaPlayer.EncounteredError -= EncounteredError;
             Player.VlcMediaPlayer.EndReached -= MediaPlayerEndReached;
             MediaPlayerIsPlaying = false;

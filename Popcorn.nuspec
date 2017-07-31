@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>Popcorn</id>
-        <version>2.4.4</version>
+        <version>2.4.6</version>
         <title>Popcorn</title>
         <authors>bbougot</authors>
         <projectUrl>https://github.com/bbougot/Popcorn</projectUrl>
@@ -356,6 +356,7 @@
         <file src="msvcp140.dll" target="lib\net45\msvcp140.dll" />
         <file src="Newtonsoft.Json.dll" target="lib\net45\Newtonsoft.Json.dll" />
         <file src="NLog.dll" target="lib\net45\NLog.dll" />
+        <file src="Zeroconf.dll" target="lib\net45\Zeroconf.dll" />
         <file src="NuGet.Squirrel.dll" target="lib\net45\NuGet.Squirrel.dll" />
         <file src="Popcorn.OSDB.dll" target="lib\net45\Popcorn.OSDB.dll" />
         <file src="Popcorn.exe" target="lib\net45\Popcorn.exe" />
@@ -400,8 +401,14 @@
         <file src="BouncyCastle.Crypto.dll" target="lib\net45\BouncyCastle.Crypto.dll" />
         <file src="protobuf-net.dll" target="lib\net45\protobuf-net.dll" />
         <file src="Rssdp.dll" target="lib\net45\Rssdp.dll" />
+        <file src="System.IO.dll" target="lib\net45\System.IO.dll" />
+        <file src="System.Reactive.Core.dll" target="lib\net45\System.Reactive.Core.dll" />
+        <file src="System.Reactive.Interfaces.dll" target="lib\net45\System.Reactive.Interfaces.dll" />
+        <file src="System.Reactive.Linq.dll" target="lib\net45\System.Reactive.Linq.dll" />
         <file src="Google.Protobuf.dll" target="lib\net45\Google.Protobuf.dll" />
-        <file src="SharpCaster.dll" target="lib\net45\SharpCaster.dll" />
+        <file src="System.Reflection.dll" target="lib\net45\System.Reflection.dll" />
+        <file src="System.Runtime.Extensions.dll" target="lib\net45\System.Runtime.Extensions.dll" />
+        <file src="Popcorn.Chromecast.dll" target="lib\net45\Popcorn.Chromecast.dll" />
         <file src="Sockets.Plugin.dll" target="lib\net45\Sockets.Plugin.dll" />
         <file src="Popcorn.Markdown.dll" target="lib\net45\Popcorn.Markdown.dll" />
         <file src="Sockets.Plugin.Abstractions.dll" target="lib\net45\Sockets.Plugin.Abstractions.dll" />

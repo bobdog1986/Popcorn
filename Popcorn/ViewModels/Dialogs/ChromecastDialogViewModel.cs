@@ -17,12 +17,12 @@ using Popcorn.Helpers;
 using Popcorn.Messaging;
 using Popcorn.Services.FileServer;
 using Popcorn.Utils.Exceptions;
-using SharpCaster.Controllers;
-using SharpCaster.Models;
-using SharpCaster.Models.ChromecastStatus;
-using SharpCaster.Models.MediaStatus;
-using SharpCaster.Models.Metadata;
-using SharpCaster.Services;
+using Popcorn.Chromecast.Controllers;
+using Popcorn.Chromecast.Models;
+using Popcorn.Chromecast.Models.ChromecastStatus;
+using Popcorn.Chromecast.Models.MediaStatus;
+using Popcorn.Chromecast.Models.Metadata;
+using Popcorn.Chromecast.Services;
 
 namespace Popcorn.ViewModels.Dialogs
 {
@@ -41,13 +41,13 @@ namespace Popcorn.ViewModels.Dialogs
 
         private bool _loadingChromecasts;
 
-        private ObservableCollection<Chromecast> _chromecasts;
+        private ObservableCollection<ChromeCast> _chromecasts;
 
         private ICommand _cancelCommand;
 
         private ICommand _closeCommand;
 
-        private Chromecast _selectedDevice;
+        private ChromeCast _selectedDevice;
 
         private bool _anyChromecast;
 
@@ -72,7 +72,7 @@ namespace Popcorn.ViewModels.Dialogs
             _fileServerService = fileServerService;
             _mediaPath = mediaPath;
             Title = title;
-            Chromecasts = new ObservableCollection<Chromecast>();
+            Chromecasts = new ObservableCollection<ChromeCast>();
             _chromecastService.ChromeCastClient.ApplicationStarted += ApplicationStarted;
             _chromecastService.ChromeCastClient.VolumeChanged += VolumeChanged;
             _chromecastService.ChromeCastClient.MediaStatusChanged += MediaStatusChanged;
@@ -341,7 +341,7 @@ namespace Popcorn.ViewModels.Dialogs
 
         private bool _connectedToChromecast;
 
-        public Chromecast SelectedDevice
+        public ChromeCast SelectedDevice
         {
             get => _selectedDevice;
             set
@@ -420,7 +420,7 @@ namespace Popcorn.ViewModels.Dialogs
 
         private string _title;
 
-        public ObservableCollection<Chromecast> Chromecasts
+        public ObservableCollection<ChromeCast> Chromecasts
         {
             get => _chromecasts;
             set => Set(ref _chromecasts, value);

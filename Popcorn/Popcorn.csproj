@@ -119,9 +119,6 @@
     <Reference Include="GalaSoft.MvvmLight.Platform, Version=5.3.0.19032, Culture=neutral, PublicKeyToken=5f873c45e98af8a1, processorArchitecture=MSIL">
       <HintPath>..\packages\MvvmLightLibs.5.3.0.0\lib\net45\GalaSoft.MvvmLight.Platform.dll</HintPath>
     </Reference>
-    <Reference Include="Google.Protobuf, Version=3.3.0.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Protobuf.3.3.0\lib\net45\Google.Protobuf.dll</HintPath>
-    </Reference>
     <Reference Include="ltnet, Version=0.0.0.0, Culture=neutral, processorArchitecture=x86">
       <HintPath>..\packages\libtorrent-net.2.0.0\lib\net45\ltnet.dll</HintPath>
     </Reference>
@@ -191,17 +188,8 @@
     <Reference Include="Rssdp, Version=3.5.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Rssdp.3.5.5\lib\net45\Rssdp.dll</HintPath>
     </Reference>
-    <Reference Include="SharpCaster, Version=0.4.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpCaster.0.4.0\lib\portable151-net451+netcore451+wpa81\SharpCaster.dll</HintPath>
-    </Reference>
     <Reference Include="SharpCompress, Version=0.17.1.0, Culture=neutral, PublicKeyToken=afb0a02973931d96, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpCompress.0.17.1\lib\net45\SharpCompress.dll</HintPath>
-    </Reference>
-    <Reference Include="Sockets.Plugin, Version=2.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Sharpcaster.SocketsForPCL.2.0.4\lib\net45\Sockets.Plugin.dll</HintPath>
-    </Reference>
-    <Reference Include="Sockets.Plugin.Abstractions, Version=2.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Sharpcaster.SocketsForPCL.2.0.4\lib\net45\Sockets.Plugin.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="Splat, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Splat.2.0.0\lib\Net45\Splat.dll</HintPath>
@@ -771,6 +759,10 @@
     <Resource Include="icon.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Popcorn.Chromecast\Popcorn.Chromecast.csproj">
+      <Project>{21b07e87-7990-42e2-9717-b538e3388137}</Project>
+      <Name>Popcorn.Chromecast</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Popcorn.ColorPickerControls\Popcorn.ColorPickerControls.csproj">
       <Project>{02e6c16f-757f-44ac-be66-c0d79c0ebe0b}</Project>
       <Name>Popcorn.ColorPickerControls</Name>

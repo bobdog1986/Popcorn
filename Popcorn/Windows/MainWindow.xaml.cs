@@ -77,7 +77,9 @@ namespace Popcorn.Windows
 
         private void OnKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.I)
+            var searchBox =
+                this.FindChild<TextBox>("SearchBox");
+            if (e.Key == Key.I && !searchBox.IsFocused)
             {
                 var vm = DataContext as WindowViewModel;
                 vm?.OpenAboutCommand.Execute(null);
@@ -90,8 +92,6 @@ namespace Popcorn.Windows
             else if (e.Key == Key.F3 || (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift &&
                      e.Key == Key.F)
             {
-                var searchBox =
-                    this.FindChild<TextBox>("SearchBox");
                 searchBox.Focus();
             }
         }

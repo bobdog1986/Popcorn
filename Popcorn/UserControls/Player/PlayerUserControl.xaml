@@ -186,9 +186,10 @@
                         HorizontalAlignment="Stretch"
                         IsMoveToPointEnabled="True"
                         Opacity="0.7"
+                        Value="{Binding TimeInMilliseconds, Mode=TwoWay, ElementName=PlayerUc}"
                         Style="{StaticResource FlatSlider}"
                         Thumb.DragCompleted="MediaSliderProgressDragCompleted"
-                        Thumb.DragStarted="MediaSliderProgressDragStarted"
+                        Thumb.DragStarted="MediaSliderProgressDragStarted"                        
                         ValueChanged="MediaSliderProgressValueChanged" />
                 </Grid>
             </StatusBarItem>
