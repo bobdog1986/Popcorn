@@ -335,7 +335,6 @@
         <file src="libvlc\libvlc.dll" target="lib\net45\libvlc\libvlc.dll" />
         <file src="libvlc\libvlccore.dll" target="lib\net45\libvlc\libvlccore.dll" />
         <file src="AsyncEnumerable.dll" target="lib\net45\AsyncEnumerable.dll" />
-        <file src="concrt140.dll" target="lib\net45\concrt140.dll" />
         <file src="CookComputing.XmlRpcV2.dll" target="lib\net45\CookComputing.XmlRpcV2.dll" />
         <file src="DeltaCompressionDotNet.dll" target="lib\net45\DeltaCompressionDotNet.dll" />
         <file src="DeltaCompressionDotNet.MsDelta.dll" target="lib\net45\DeltaCompressionDotNet.MsDelta.dll" />
@@ -410,9 +409,7 @@
         <file src="System.Reflection.dll" target="lib\net45\System.Reflection.dll" />
         <file src="System.Runtime.Extensions.dll" target="lib\net45\System.Runtime.Extensions.dll" />
         <file src="Popcorn.Chromecast.dll" target="lib\net45\Popcorn.Chromecast.dll" />
-        <file src="Sockets.Plugin.dll" target="lib\net45\Sockets.Plugin.dll" />
         <file src="Popcorn.Markdown.dll" target="lib\net45\Popcorn.Markdown.dll" />
-        <file src="Sockets.Plugin.Abstractions.dll" target="lib\net45\Sockets.Plugin.Abstractions.dll" />
         <file src="Popcorn.ColorPicker.dll" target="lib\net45\Popcorn.ColorPicker.dll" />
         <file src="Popcorn.ColorPickerControls.dll" target="lib\net45\Popcorn.ColorPickerControls.dll" />
         <file src="WPFToolkit.dll" target="lib\net45\WPFToolkit.dll" />

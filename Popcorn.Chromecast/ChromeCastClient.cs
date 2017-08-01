@@ -157,10 +157,10 @@ namespace Popcorn.Chromecast
             await ChromecastSocketService.Initialize(uri.Host, ChromecastPort, ConnectionChannel, HeartbeatChannel, ReadPacket, CancellationTokenSource.Token);
         }
 
-        public async Task DisconnectChromecast()
+        public void DisconnectChromecast()
         {
             CancellationTokenSource.Cancel();
-            await ChromecastSocketService.Disconnect();
+            ChromecastSocketService.Disconnect();
             CurrentApplicationSessionId = "";
             CurrentApplicationTransportId = "";
         }

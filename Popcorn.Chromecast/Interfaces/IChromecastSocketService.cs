@@ -10,6 +10,6 @@ namespace Popcorn.Chromecast.Interfaces
     {
         Task Initialize(string host, string port, ConnectionChannel connectionChannel, HeartbeatChannel heartbeatChannel, Action<Stream,bool,CancellationToken> packetReader, CancellationToken cancellationToken);
         Task Write(byte[] bytes, CancellationToken cancellationToken);
-        Task Disconnect();
+        void Disconnect();
     }
 }

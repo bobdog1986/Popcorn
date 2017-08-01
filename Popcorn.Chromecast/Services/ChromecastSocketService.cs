@@ -4,19 +4,19 @@ using System.Threading;
 using System.Threading.Tasks;
 using Popcorn.Chromecast.Channels;
 using Popcorn.Chromecast.Interfaces;
-using Sockets.Plugin;
+using System.Net.Sockets;
 
 namespace Popcorn.Chromecast.Services
 {
     public class ChromecastSocketService : IChromecastSocketService
     {
         private static readonly object LockObject = new object();
-        private TcpSocketClient _client;
+        private TcpClient _client;
 
         public async Task Initialize(string host, string port, ConnectionChannel connectionChannel, HeartbeatChannel heartbeatChannel, Action<Stream, bool, CancellationToken> packetReader, CancellationToken cancellationToken)
         {
-            if (_client == null) _client = new TcpSocketClient();
-            await _client.ConnectAsync(host, int.Parse(port), true, cancellationToken, true);
+            if (_client == null) _client = new TcpClient();
+            await _client.ConnectAsync(host, int.Parse(port));
 
             await connectionChannel.OpenConnection();
             heartbeatChannel.StartHeartbeat();
@@ -27,14 +27,14 @@ namespace Popcorn.Chromecast.Services
                 {
                     var sizeBuffer = new byte[4];
                     // First message should contain the size of message
-                    await _client.ReadStream.ReadAsync(sizeBuffer, 0, sizeBuffer.Length, cancellationToken);
+                    await _client.GetStream().ReadAsync(sizeBuffer, 0, sizeBuffer.Length, cancellationToken);
                     // The message is little-endian (that is, little end first),
                     // reverse the byte array.
                     Array.Reverse(sizeBuffer);
                     //Retrieve the size of message
                     var messageSize = BitConverter.ToInt32(sizeBuffer, 0);
                     var messageBuffer = new byte[messageSize];
-                    await _client.ReadStream.ReadAsync(messageBuffer, 0, messageBuffer.Length, cancellationToken);
+                    await _client.GetStream().ReadAsync(messageBuffer, 0, messageBuffer.Length, cancellationToken);
                     var answer = new MemoryStream(messageBuffer.Length);
                     await answer.WriteAsync(messageBuffer, 0, messageBuffer.Length, cancellationToken);
                     answer.Position = 0;
@@ -54,7 +54,7 @@ namespace Popcorn.Chromecast.Services
                 if (cancellationToken.IsCancellationRequested) return;
                 try
                 {
-                    _client.WriteStream.Write(bytes, 0, bytes.Length);
+                    _client.GetStream().Write(bytes, 0, bytes.Length);
                 }
                 catch (IOException)
                 {
@@ -64,9 +64,10 @@ namespace Popcorn.Chromecast.Services
             }
         }
 
-        public async Task Disconnect()
+        public void Disconnect()
         {
-            await _client.DisconnectAsync();
+            _client.Close();
+            _client.Dispose();
             _client = null;
         }
     }
