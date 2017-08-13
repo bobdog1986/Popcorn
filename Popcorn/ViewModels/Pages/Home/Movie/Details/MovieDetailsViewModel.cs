@@ -433,27 +433,29 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
         private async Task LoadMovie(MovieJson movie)
         {
             var watch = Stopwatch.StartNew();
-
             Messenger.Default.Send(new LoadMovieMessage());
             IsMovieLoading = true;
             Movie = movie;
             IsMovieLoading = false;
             Movie.FullHdAvailable = movie.Torrents.Any(torrent => torrent.Quality == "1080p");
-            Task.Run(async () =>
-            {
-                await LoadSubtitles(Movie);
-            });
-
             var applicationSettings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
             Movie.WatchInFullHdQuality = Movie.FullHdAvailable && applicationSettings.DefaultHdQuality;
             ComputeTorrentHealth();
             try
             {
                 LoadingSimilar = true;
-                SimilarMovies =
-                    new ObservableCollection<MovieJson>(await _movieService.GetMoviesSimilarAsync(Movie));
-                AnySimilar = SimilarMovies.Any();
-                LoadingSimilar = false;
+                await Task.Run(async () =>
+                {
+                    var similars = await _movieService.GetMoviesSimilarAsync(Movie).ConfigureAwait(false);
+                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                    {
+                        SimilarMovies =
+                            new ObservableCollection<MovieJson>(similars);
+                        AnySimilar = SimilarMovies.Any();
+                        LoadingSimilar = false;
+                    });
+                    await LoadSubtitles(Movie).ConfigureAwait(false);
+                }).ConfigureAwait(false);
             }
             catch (Exception ex)
             {

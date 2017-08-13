@@ -2,6 +2,8 @@
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -120,12 +122,9 @@ namespace Popcorn.AttachedProperties
                             }
 
                             string localFile;
-                            var fileName =
-                                path.Substring(path.LastIndexOf("/images/", StringComparison.InvariantCulture) +
-                                               1);
-                            fileName = fileName.Replace('/', '_');
+                            var hash = Convert.ToBase64String(Encoding.UTF8.GetBytes(path));
                             var files = FastDirectoryEnumerator.EnumerateFiles(Constants.Assets);
-                            var file = files.FirstOrDefault(a => a.Name.Contains(fileName));
+                            var file = files.FirstOrDefault(a => a.Name.Contains(hash));
                             if (file != null)
                             {
                                 localFile = file.Path;
@@ -172,7 +171,7 @@ namespace Popcorn.AttachedProperties
                                         {
                                             await ms.CopyToAsync(stream);
                                             using (var fs =
-                                                new FileStream(Constants.Assets + fileName, FileMode.OpenOrCreate,
+                                                new FileStream(Constants.Assets + hash, FileMode.OpenOrCreate,
                                                     FileAccess.ReadWrite, FileShare.ReadWrite))
                                             {
                                                 stream.WriteTo(fs);
@@ -181,7 +180,7 @@ namespace Popcorn.AttachedProperties
                                     }
                                 }
 
-                                localFile = Constants.Assets + fileName;
+                                localFile = Constants.Assets + hash;
                             }
 
                             await Task.Run(() =>

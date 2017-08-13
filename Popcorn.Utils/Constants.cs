@@ -81,15 +81,5 @@ namespace Popcorn.Utils
         /// Subtitles directory
         /// </summary>
         public static string Subtitles { get; } = Path.GetTempPath() + "Popcorn\\Subtitles\\";
-
-        /// <summary>
-        /// Begin range of torrent ports
-        /// </summary>
-        public static int TorrentMinPort { get; } = 6881;
-
-        /// <summary>
-        /// End range of torrent ports
-        /// </summary>
-        public static int TorrentMaxPort { get; } = 6889;
     }
 }

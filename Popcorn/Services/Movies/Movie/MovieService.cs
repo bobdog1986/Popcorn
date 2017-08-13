@@ -225,8 +225,8 @@ namespace Popcorn.Services.Movies.Movie
             var result = wrapper?.Movies ?? new List<MovieJson>();
             Task.Run(async () =>
             {
-                await ProcessTranslations(result);
-            });
+                await ProcessTranslations(result).ConfigureAwait(false);
+            }).ConfigureAwait(false);
 
             var nbResult = wrapper?.TotalMovies ?? 0;
             return (result, nbResult);
@@ -309,8 +309,9 @@ namespace Popcorn.Services.Movies.Movie
             var result = wrapper?.Movies ?? new List<MovieJson>();
             Task.Run(async () =>
             {
-                await ProcessTranslations(result);
-            });
+                await ProcessTranslations(result).ConfigureAwait(false);
+            }).ConfigureAwait(false);
+
             var nbResult = wrapper?.TotalMovies ?? 0;
             return (result, nbResult);
         }

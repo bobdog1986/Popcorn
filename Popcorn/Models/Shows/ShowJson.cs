@@ -72,7 +72,11 @@ namespace Popcorn.Models.Shows
         public string Title
         {
             get => _title;
-            set => Set(ref _title, value);
+            set
+            {
+                var newTitle = value.Replace("&amp;", "&");
+                Set(ref _title, newTitle);
+            }
         }
 
         [DeserializeAs(Name = "year")]

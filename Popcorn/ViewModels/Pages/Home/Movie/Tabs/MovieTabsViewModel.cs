@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Messaging;
+using GalaSoft.MvvmLight.Threading;
 using NLog;
 using NuGet;
 using Popcorn.Comparers;
@@ -255,59 +256,67 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
         /// </summary>
         public virtual async Task LoadMoviesAsync(bool reset = false)
         {
-            await LoadingSemaphore.WaitAsync();
-            if (reset)
+            await Task.Run(async () =>
             {
-                Movies.Clear();
-                Page = 0;
-            }
+                await LoadingSemaphore.WaitAsync();
+                if (reset)
+                {
+                    Movies.Clear();
+                    Page = 0;
+                }
 
-            var watch = Stopwatch.StartNew();
-            Page++;
-            if (Page > 1 && Movies.Count == MaxNumberOfMovies)
-            {
-                Page--;
-                LoadingSemaphore.Release();
-                return;
-            }
+                var watch = Stopwatch.StartNew();
+                Page++;
+                if (Page > 1 && Movies.Count == MaxNumberOfMovies)
+                {
+                    Page--;
+                    LoadingSemaphore.Release();
+                    return;
+                }
 
-            StopLoadingMovies();
-            Logger.Info(
-                $"Loading page {Page}...");
-            HasLoadingFailed = false;
-            try
-            {
-                IsLoadingMovies = true;
-                var result =
-                    await MovieService.GetMoviesAsync(Page,
-                        MaxMoviesPerPage,
-                        Rating,
-                        SortBy,
-                        CancellationLoadingMovies.Token,
-                        Genre);
-                Movies.AddRange(result.movies.Except(Movies, new MovieComparer()));
-                IsLoadingMovies = false;
-                IsMovieFound = Movies.Any();
-                CurrentNumberOfMovies = Movies.Count;
-                MaxNumberOfMovies = result.nbMovies;
-                await UserService.SyncMovieHistoryAsync(Movies);
-            }
-            catch (Exception exception)
-            {
-                Page--;
-                Logger.Error(
-                    $"Error while loading page {Page}: {exception.Message}");
-                HasLoadingFailed = true;
-                Messenger.Default.Send(new ManageExceptionMessage(exception));
-            }
-            finally
-            {
-                watch.Stop();
-                var elapsedMs = watch.ElapsedMilliseconds;
+                StopLoadingMovies();
                 Logger.Info(
-                    $"Loaded page {Page} in {elapsedMs} milliseconds.");
-                LoadingSemaphore.Release();
-            }
+                    $"Loading page {Page}...");
+                HasLoadingFailed = false;
+                try
+                {
+                    IsLoadingMovies = true;
+                    var result =
+                        await MovieService.GetMoviesAsync(Page,
+                            MaxMoviesPerPage,
+                            Rating,
+                            SortBy,
+                            CancellationLoadingMovies.Token,
+                            Genre).ConfigureAwait(false);
+                    DispatcherHelper.CheckBeginInvokeOnUI(async () =>
+                    {
+                        Movies.AddRange(result.movies.Except(Movies, new MovieComparer()));
+                        IsLoadingMovies = false;
+                        IsMovieFound = Movies.Any();
+                        CurrentNumberOfMovies = Movies.Count;
+                        MaxNumberOfMovies = result.nbMovies;
+                        await UserService.SyncMovieHistoryAsync(Movies).ConfigureAwait(false);
+                    });
+        
+                }
+                catch (Exception exception)
+                {
+                    Page--;
+                    Logger.Error(
+                        $"Error while loading page {Page}: {exception.Message}");
+                    HasLoadingFailed = true;
+                    Messenger.Default.Send(new ManageExceptionMessage(exception));
+                }
+                finally
+                {
+                    watch.Stop();
+                    var elapsedMs = watch.ElapsedMilliseconds;
+                    Logger.Info(
+                        $"Loaded page {Page} in {elapsedMs} milliseconds.");
+                    LoadingSemaphore.Release();
+                }
+            }).ConfigureAwait(false);
+            
         }
 
         /// <summary>

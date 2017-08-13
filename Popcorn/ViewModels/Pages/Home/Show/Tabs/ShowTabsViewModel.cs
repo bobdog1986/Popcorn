@@ -256,64 +256,67 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
         /// </summary>
         public virtual async Task LoadShowsAsync(bool reset = false)
         {
-            await LoadingSemaphore.WaitAsync();
-            if (reset)
+            await Task.Run(async () =>
             {
-                Shows.Clear();
-                Page = 0;
-            }
-
-            var watch = Stopwatch.StartNew();
-            Page++;
-            if (Page > 1 && Shows.Count == MaxNumberOfShows)
-            {
-                Page--;
-                LoadingSemaphore.Release();
-                return;
-            }
-
-            StopLoadingShows();
-            Logger.Info(
-                $"Loading page {Page}...");
-            HasLoadingFailed = false;
-            try
-            {
-                IsLoadingShows = true;
-                var result =
-                    await ShowService.GetShowsAsync(Page,
-                            MaxShowsPerPage,
-                            Rating * 10,
-                            SortBy,
-                            CancellationLoadingShows.Token,
-                            Genre)
-                        .ConfigureAwait(false);
-
-                DispatcherHelper.CheckBeginInvokeOnUI(async () =>
+                await LoadingSemaphore.WaitAsync();
+                if (reset)
                 {
-                    Shows.AddRange(result.shows.Except(Shows, new ShowComparer()));
-                    IsLoadingShows = false;
-                    IsShowFound = Shows.Any();
-                    CurrentNumberOfShows = Shows.Count;
-                    MaxNumberOfShows = result.nbShows;
-                    await UserService.SyncShowHistoryAsync(Shows).ConfigureAwait(false);
-                });
-            }
-            catch (Exception exception)
-            {
-                Page--;
-                Logger.Error(
-                    $"Error while loading page {Page}: {exception.Message}");
-                HasLoadingFailed = true;
-                Messenger.Default.Send(new ManageExceptionMessage(exception));
-            }
-            finally
-            {
-                watch.Stop();
-                var elapsedMs = watch.ElapsedMilliseconds;
+                    Shows.Clear();
+                    Page = 0;
+                }
+
+                var watch = Stopwatch.StartNew();
+                Page++;
+                if (Page > 1 && Shows.Count == MaxNumberOfShows)
+                {
+                    Page--;
+                    LoadingSemaphore.Release();
+                    return;
+                }
+
+                StopLoadingShows();
                 Logger.Info(
-                    $"Loaded page {Page} in {elapsedMs} milliseconds.");
-                LoadingSemaphore.Release();
-            }
+                    $"Loading page {Page}...");
+                HasLoadingFailed = false;
+                try
+                {
+                    IsLoadingShows = true;
+                    var result =
+                        await ShowService.GetShowsAsync(Page,
+                                MaxShowsPerPage,
+                                Rating * 10,
+                                SortBy,
+                                CancellationLoadingShows.Token,
+                                Genre)
+                            .ConfigureAwait(false);
+
+                    DispatcherHelper.CheckBeginInvokeOnUI(async () =>
+                    {
+                        Shows.AddRange(result.shows.Except(Shows, new ShowComparer()));
+                        IsLoadingShows = false;
+                        IsShowFound = Shows.Any();
+                        CurrentNumberOfShows = Shows.Count;
+                        MaxNumberOfShows = result.nbShows;
+                        await UserService.SyncShowHistoryAsync(Shows).ConfigureAwait(false);
+                    });
+                }
+                catch (Exception exception)
+                {
+                    Page--;
+                    Logger.Error(
+                        $"Error while loading page {Page}: {exception.Message}");
+                    HasLoadingFailed = true;
+                    Messenger.Default.Send(new ManageExceptionMessage(exception));
+                }
+                finally
+                {
+                    watch.Stop();
+                    var elapsedMs = watch.ElapsedMilliseconds;
+                    Logger.Info(
+                        $"Loaded page {Page} in {elapsedMs} milliseconds.");
+                    LoadingSemaphore.Release();
+                }
+            }).ConfigureAwait(false);
         }
 
         /// <summary>
