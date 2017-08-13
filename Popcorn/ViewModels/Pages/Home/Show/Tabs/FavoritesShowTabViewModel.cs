@@ -59,8 +59,11 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
                 StopLoadingShows();
                 if (reset)
                 {
-                    Shows.Clear();
-                    Page = 0;
+                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                    {
+                        Shows.Clear();
+                        Page = 0;
+                    });
                 }
 
                 var watch = Stopwatch.StartNew();

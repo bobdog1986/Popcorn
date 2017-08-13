@@ -261,8 +261,11 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
                 await LoadingSemaphore.WaitAsync();
                 if (reset)
                 {
-                    Shows.Clear();
-                    Page = 0;
+                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                    {
+                        Shows.Clear();
+                        Page = 0;
+                    });
                 }
 
                 var watch = Stopwatch.StartNew();

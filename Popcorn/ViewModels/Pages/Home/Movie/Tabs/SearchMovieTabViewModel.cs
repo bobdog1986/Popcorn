@@ -48,8 +48,11 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                 StopLoadingMovies();
                 if (reset)
                 {
-                    Movies.Clear();
-                    Page = 0;
+                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                    {
+                        Movies.Clear();
+                        Page = 0;
+                    });
                 }
 
                 var watch = Stopwatch.StartNew();

@@ -261,8 +261,11 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                 await LoadingSemaphore.WaitAsync();
                 if (reset)
                 {
-                    Movies.Clear();
-                    Page = 0;
+                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                    {
+                        Movies.Clear();
+                        Page = 0;
+                    });
                 }
 
                 var watch = Stopwatch.StartNew();
