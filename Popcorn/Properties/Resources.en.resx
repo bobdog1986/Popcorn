@@ -129,7 +129,7 @@
   <data name="ConnectionErrorDescriptionPopup" xml:space="preserve">
     <value>You seem to have an internet connection error. Please retry.</value>
   </data>
-  <data name="ConnectionErrorTitlePopup" xml:space="preserve">
+  <data name="ConnectionErrorLabel" xml:space="preserve">
     <value>Internet connection error</value>
   </data>
   <data name="CurrentlyPlayingLabel" xml:space="preserve">

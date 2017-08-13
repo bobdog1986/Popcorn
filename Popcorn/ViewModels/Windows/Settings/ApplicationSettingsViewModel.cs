@@ -91,12 +91,12 @@ namespace Popcorn.ViewModels.Windows.Settings
 
             Task.Run(async () =>
             {
-                DownloadLimit = await _userService.GetDownloadLimit();
-                UploadLimit = await _userService.GetUploadLimit();
-                var defaultSubtitleLanguage = await _userService.GetDefaultSubtitleLanguage();
-                DefaultHdQuality = await _userService.GetDefaultHdQuality();
                 try
                 {
+                    DownloadLimit = await _userService.GetDownloadLimit();
+                    UploadLimit = await _userService.GetUploadLimit();
+                    var defaultSubtitleLanguage = await _userService.GetDefaultSubtitleLanguage();
+                    DefaultHdQuality = await _userService.GetDefaultHdQuality();
                     AvailableSubtitlesLanguages = new ObservableRangeCollection<string>();
                     var languages = (await subtitlesService.GetSubLanguages()).Select(a => a.LanguageName)
                         .OrderBy(a => a)

@@ -330,22 +330,33 @@
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ItemsControl>
-        <Button
-            Width="140"
-            Height="40"
+        <StackPanel
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
-            controls1:ControlsHelper.ContentCharacterCasing="Normal"
-            Command="{Binding ReloadShows}"
-            Content="{lex:LocText ReloadLabel}"
-            FontSize="18"
-            Style="{StaticResource AccentedSquareButtonStyle}">
-            <Button.Visibility>
+            Orientation="Vertical">
+            <StackPanel.Visibility>
                 <MultiBinding Converter="{StaticResource MultiBooleanToVisibilityConverter}" ConverterParameter="OR">
                     <Binding Path="Window.ApplicationService.IsConnectionInError" Source="{StaticResource Locator}" />
                     <Binding Path="HasLoadingFailed" />
                 </MultiBinding>
-            </Button.Visibility>
-        </Button>
+            </StackPanel.Visibility>
+            <TextBlock
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                FontSize="26"
+                Foreground="#FF7D7D7D"
+                Text="{lex:LocText ConnectionErrorLabel}" />
+            <Button
+                Width="140"
+                Height="40"
+                Margin="0,20,0,0"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                controls1:ControlsHelper.ContentCharacterCasing="Normal"
+                Command="{Binding ReloadShows}"
+                Content="{lex:LocText ReloadLabel}"
+                FontSize="18"
+                Style="{StaticResource AccentedSquareButtonStyle}" />
+        </StackPanel>
     </Grid>
 </UserControl>

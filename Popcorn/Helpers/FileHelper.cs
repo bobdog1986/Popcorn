@@ -36,8 +36,6 @@ namespace Popcorn.Helpers
             {
                 try
                 {
-                    Logger.Debug(
-                        $"Deleting file: {filePath}");
                     File.Delete(filePath);
                 }
                 catch (Exception ex)

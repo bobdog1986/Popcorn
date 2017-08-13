@@ -703,11 +703,8 @@ namespace Popcorn.ViewModels.Windows
                         Logger.Info(
                             $"A new update has been found!\n Currently installed version: {updateInfo.CurrentlyInstalledVersion?.Version?.Version.Major}.{updateInfo.CurrentlyInstalledVersion?.Version?.Version.Minor}.{updateInfo.CurrentlyInstalledVersion?.Version?.Version.Build} - New update: {updateInfo.FutureReleaseEntry?.Version?.Version.Major}.{updateInfo.FutureReleaseEntry?.Version?.Version.Minor}.{updateInfo.FutureReleaseEntry?.Version?.Version.Build}");
 
-                        await updateManager.DownloadReleases(updateInfo.ReleasesToApply, x => Logger.Info(
-                            $"Downloading new update... {x}%"));
-
-                        var latestExe = await updateManager.ApplyReleases(updateInfo, x => Logger.Info(
-                            $"Applying... {x}%"));
+                        await updateManager.DownloadReleases(updateInfo.ReleasesToApply);
+                        var latestExe = await updateManager.ApplyReleases(updateInfo);
 
                         Logger.Info(
                             "A new update has been applied.");

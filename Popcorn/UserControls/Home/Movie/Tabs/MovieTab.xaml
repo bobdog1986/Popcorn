@@ -217,8 +217,8 @@
                                     Grid.ColumnSpan="3"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    attachedProperties:ImageAsyncHelper.Type="Thumbnail"
-                                    attachedProperties:ImageAsyncHelper.ImagePath="{Binding PosterImage, Mode=OneTime, IsAsync=True}" />
+                                    attachedProperties:ImageAsyncHelper.ImagePath="{Binding PosterImage, Mode=OneTime, IsAsync=True}"
+                                    attachedProperties:ImageAsyncHelper.Type="Thumbnail" />
                                 <Grid
                                     x:Name="PlayCanvas"
                                     Grid.Row="0"
@@ -366,23 +366,34 @@
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ItemsControl>
-        <Button
-            Width="140"
-            Height="40"
+        <StackPanel
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
-            controls:ControlsHelper.ContentCharacterCasing="Normal"
-            Command="{Binding ReloadMovies}"
-            Content="{lex:LocText ReloadLabel}"
-            FontSize="18"
-            Style="{StaticResource AccentedSquareButtonStyle}">
-            <Button.Visibility>
+            Orientation="Vertical">
+            <StackPanel.Visibility>
                 <MultiBinding Converter="{StaticResource MultiBooleanToVisibilityConverter}" ConverterParameter="OR">
                     <Binding Path="Window.ApplicationService.IsConnectionInError" Source="{StaticResource Locator}" />
                     <Binding Path="HasLoadingFailed" />
                 </MultiBinding>
-            </Button.Visibility>
-        </Button>
+            </StackPanel.Visibility>
+            <TextBlock
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                FontSize="26"
+                Foreground="#FF7D7D7D"
+                Text="{lex:LocText ConnectionErrorLabel}" />
+            <Button
+                Width="140"
+                Height="40"
+                Margin="0,20,0,0"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                controls:ControlsHelper.ContentCharacterCasing="Normal"
+                Command="{Binding ReloadMovies}"
+                Content="{lex:LocText ReloadLabel}"
+                FontSize="18"
+                Style="{StaticResource AccentedSquareButtonStyle}" />
+        </StackPanel>
     </Grid>
 </UserControl>
 

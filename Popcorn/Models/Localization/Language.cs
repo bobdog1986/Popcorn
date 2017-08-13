@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight;
@@ -68,15 +69,22 @@ namespace Popcorn.Models.Localization
         /// </summary>
         public async Task LoadLanguages()
         {
-            var watchStart = Stopwatch.StartNew();
+            try
+            {
+                var watchStart = Stopwatch.StartNew();
 
-            CurrentLanguage = await _userService.GetCurrentLanguageAsync();
-            Languages = _userService.GetAvailableLanguages();
+                CurrentLanguage = await _userService.GetCurrentLanguageAsync();
+                Languages = _userService.GetAvailableLanguages();
 
-            watchStart.Stop();
-            var elapsedLanguageMs = watchStart.ElapsedMilliseconds;
-            Logger.Info(
-                "Languages loaded in {0} milliseconds.", elapsedLanguageMs);
+                watchStart.Stop();
+                var elapsedLanguageMs = watchStart.ElapsedMilliseconds;
+                Logger.Info(
+                    "Languages loaded in {0} milliseconds.", elapsedLanguageMs);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
         }
     }
 }

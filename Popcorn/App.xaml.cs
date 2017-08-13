@@ -137,9 +137,9 @@ namespace Popcorn
             {
                 var splashScreen = new Windows.SplashScreen();
                 _splashScreenDispatcher = splashScreen.Dispatcher;
+                _splashScreenDispatcher.ShutdownStarted += (o, args) => splashScreen.Close();
                 splashScreen.Show();
                 Dispatcher.Run();
-                splashScreen.Close();
             });
 
             splashScreenThread.SetApartmentState(ApartmentState.STA);

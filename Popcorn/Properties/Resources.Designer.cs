@@ -243,9 +243,9 @@ namespace Popcorn.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à Internet connection error.
         /// </summary>
-        public static string ConnectionErrorTitlePopup {
+        public static string ConnectionErrorLabel {
             get {
-                return ResourceManager.GetString("ConnectionErrorTitlePopup", resourceCulture);
+                return ResourceManager.GetString("ConnectionErrorLabel", resourceCulture);
             }
         }
         
