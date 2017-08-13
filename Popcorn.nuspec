@@ -401,13 +401,10 @@
         <file src="BouncyCastle.Crypto.dll" target="lib\net45\BouncyCastle.Crypto.dll" />
         <file src="protobuf-net.dll" target="lib\net45\protobuf-net.dll" />
         <file src="Rssdp.dll" target="lib\net45\Rssdp.dll" />
-        <file src="System.IO.dll" target="lib\net45\System.IO.dll" />
         <file src="System.Reactive.Core.dll" target="lib\net45\System.Reactive.Core.dll" />
         <file src="System.Reactive.Interfaces.dll" target="lib\net45\System.Reactive.Interfaces.dll" />
         <file src="System.Reactive.Linq.dll" target="lib\net45\System.Reactive.Linq.dll" />
         <file src="Google.Protobuf.dll" target="lib\net45\Google.Protobuf.dll" />
-        <file src="System.Reflection.dll" target="lib\net45\System.Reflection.dll" />
-        <file src="System.Runtime.Extensions.dll" target="lib\net45\System.Runtime.Extensions.dll" />
         <file src="Popcorn.Chromecast.dll" target="lib\net45\Popcorn.Chromecast.dll" />
         <file src="Popcorn.Markdown.dll" target="lib\net45\Popcorn.Markdown.dll" />
         <file src="Popcorn.ColorPicker.dll" target="lib\net45\Popcorn.ColorPicker.dll" />
