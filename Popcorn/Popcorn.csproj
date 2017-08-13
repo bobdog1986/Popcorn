@@ -820,7 +820,7 @@
     <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />
   </Target>
   <PropertyGroup>
-    <PreBuildEvent>if not exist "$(TargetDir)edge" xcopy /s /i "$(SolutionDir)packages\Edge.js.7.10.1\content\edge\*.*" "$(TargetDir)edge"
+    <PreBuildEvent>if not exist "$(TargetDir)edge" xcopy /s /i "$(SolutionDir)packages\Edge.js.8.2.1\content\edge\*.*" "$(TargetDir)edge"
 if not exist "$(TargetDir)None.srt" xcopy /s /i "$(SolutionDir)Popcorn\Resources\Subtitles\*.*" "$(TargetDir)"
 if not exist "$(TargetDir)WPFToolkit.dll" xcopy /s /i "$(SolutionDir)packages\WPFToolkit.3.5.50211.1\lib\*.*" "$(TargetDir)"
 </PreBuildEvent>
