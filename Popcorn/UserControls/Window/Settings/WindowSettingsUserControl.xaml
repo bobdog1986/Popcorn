@@ -5,6 +5,7 @@
     xmlns:chips="clr-namespace:Popcorn.ColorPickerControls.Chips;assembly=Popcorn.ColorPickerControls"
     xmlns:command="http://www.galasoft.ch/mvvmlight"
     xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+    xmlns:converters="clr-namespace:Popcorn.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
@@ -28,6 +29,11 @@
         </i:EventTrigger>
     </i:Interaction.Triggers>
 
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <converters:BoolToInverseVisibilityConverter x:Key="BoolToInverseVisibilityConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
     <Grid Width="400" Margin="10">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -141,20 +147,30 @@
                 Grid.Column="0"
                 VerticalAlignment="Center"
                 Text="{lex:LocText DefaultSubtitleLanguageLabel}" />
-            <controls:SplitButton
+            <StackPanel
                 Grid.Column="2"
-                Width="130"
-                Height="35"
                 Margin="20,10,0,0"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Center"
-                HorizontalContentAlignment="Left"
-                ItemsSource="{Binding AvailableSubtitlesLanguages}"
-                SelectedItem="{Binding DefaultSubtitleLanguage}">
-                <controls:SplitButton.Icon>
-                    <iconPacks:PackIconMaterial Margin="6" Kind="Translate" />
-                </controls:SplitButton.Icon>
-            </controls:SplitButton>
+                Orientation="Horizontal">
+                <controls:SplitButton
+                    Width="130"
+                    Height="35"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    HorizontalContentAlignment="Left"
+                    ItemsSource="{Binding AvailableSubtitlesLanguages}"
+                    SelectedItem="{Binding DefaultSubtitleLanguage}">
+                    <controls:SplitButton.Icon>
+                        <iconPacks:PackIconMaterial Margin="6" Kind="Translate" />
+                    </controls:SplitButton.Icon>
+                </controls:SplitButton>
+                <controls:ProgressRing
+                    Width="20"
+                    Height="20"
+                    Margin="10,0,0,0"
+                    VerticalAlignment="Center"
+                    IsActive="True"
+                    Visibility="{Binding LoadingSubtitles, Converter={StaticResource BoolToInverseVisibilityConverter}}" />
+            </StackPanel>
         </Grid>
         <Grid
             Grid.Row="5"

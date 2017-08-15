@@ -75,6 +75,8 @@ namespace Popcorn.ViewModels.Windows.Settings
         /// </summary>
         private Color _subtitlesColor;
 
+        private bool _loadingSubtitles;
+
         /// <summary>
         /// Initializes a new instance of the ApplicationSettingsViewModel class.
         /// </summary>
@@ -97,6 +99,7 @@ namespace Popcorn.ViewModels.Windows.Settings
                     UploadLimit = await _userService.GetUploadLimit();
                     var defaultSubtitleLanguage = await _userService.GetDefaultSubtitleLanguage();
                     DefaultHdQuality = await _userService.GetDefaultHdQuality();
+                    LoadingSubtitles = true;
                     AvailableSubtitlesLanguages = new ObservableRangeCollection<string>();
                     var languages = (await subtitlesService.GetSubLanguages()).Select(a => a.LanguageName)
                         .OrderBy(a => a)
@@ -110,11 +113,19 @@ namespace Popcorn.ViewModels.Windows.Settings
                         DefaultSubtitleLanguage = AvailableSubtitlesLanguages.Any(a => a == defaultSubtitleLanguage)
                             ? defaultSubtitleLanguage
                             : LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel");
+                        LoadingSubtitles = false;
                     });
                 }
                 catch (Exception ex)
                 {
                     Logger.Error(ex);
+                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                    {
+                        LoadingSubtitles = false;
+                        AvailableSubtitlesLanguages.Insert(0,
+                            LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"));
+                        DefaultSubtitleLanguage = AvailableSubtitlesLanguages.FirstOrDefault();
+                    });
                 }
             });
         }
@@ -174,6 +185,15 @@ namespace Popcorn.ViewModels.Windows.Settings
                     await _userService.SetDefaultHdQuality(value);
                 });
             }
+        }
+
+        /// <summary>
+        /// If subtitles are loading
+        /// </summary>
+        public bool LoadingSubtitles
+        {
+            get => _loadingSubtitles;
+            set { Set(() => LoadingSubtitles, ref _loadingSubtitles, value); }
         }
 
         /// <summary>
