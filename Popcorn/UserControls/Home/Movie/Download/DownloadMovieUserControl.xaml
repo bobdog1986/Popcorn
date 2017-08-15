@@ -114,7 +114,7 @@
                 Margin="0,10,0,0"
                 VerticalAlignment="Center"
                 Foreground="{StaticResource AccentColorBrush}"
-                Maximum="4.0"
+                Maximum="10.0"
                 Minimum="0.0"
                 Value="{Binding MovieDownloadProgress}" />
             <Button

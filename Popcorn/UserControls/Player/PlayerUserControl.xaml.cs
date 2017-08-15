@@ -21,6 +21,8 @@ using Popcorn.Utils.Exceptions;
 using Popcorn.ViewModels.Windows.Settings;
 using System.Runtime.CompilerServices;
 using System.ComponentModel;
+using Meta.Vlc;
+using Meta.Vlc.Interop.Core.Events;
 
 namespace Popcorn.UserControls.Player
 {
@@ -131,12 +133,12 @@ namespace Popcorn.UserControls.Player
                 var vm = DataContext as MediaPlayerViewModel;
                 if (vm != null)
                 {
+                    vm.PlayerTime = Player.Time.TotalMilliseconds / 1000d;
                     if (vm.IsCasting)
                     {
                         return CastPlayerTimeInSeconds * 1000d;
                     }
 
-                    vm.PlayerTime = Player.Time.TotalMilliseconds / 1000d;
                     return Player.Time.TotalMilliseconds;
                 }
                 else
@@ -798,9 +800,9 @@ namespace Popcorn.UserControls.Player
             }
 
             var vm = DataContext as MediaPlayerViewModel;
-            vm.CastPlayerTimeChanged -= CastPlayerTimeChanged;
             if (vm != null)
             {
+                vm.CastPlayerTimeChanged -= CastPlayerTimeChanged;
                 vm.SubtitleChosen -= OnSubtitleChosen;
                 vm.StoppedMedia -= OnStoppedMedia;
                 vm.ResumedMedia -= OnResumedMedia;

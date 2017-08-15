@@ -184,11 +184,7 @@ namespace Popcorn.ViewModels.Pages.Player
         /// Subtitles
         /// </summary>
         private readonly IEnumerable<Subtitle> _subtitles;
-
-        private string _mediaMimeType;
-
-        private string _subtitleMimeType;
-
+        
         /// <summary>
         /// Initializes a new instance of the MediaPlayerViewModel class.
         /// </summary>
@@ -216,17 +212,6 @@ namespace Popcorn.ViewModels.Pages.Player
             _chromecastService = new ChromecastService();
             _subtitlesService = subtitlesService;
             _applicationService = applicationService;
-            try
-            {
-                _mediaMimeType = System.Web.MimeMapping.GetMimeMapping(mediaPath);
-                if(!string.IsNullOrEmpty(subtitleFilePath))
-                    _subtitleMimeType = System.Web.MimeMapping.GetMimeMapping(subtitleFilePath);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
-
             MediaPath = mediaPath;
             MediaName = mediaName;
             MediaType = type;
@@ -308,7 +293,6 @@ namespace Popcorn.ViewModels.Pages.Player
                     if (_castServer != null)
                     {
                         await _castServer.Invoke("play");
-                        await _castServer.Invoke($"seek:{PlayerTime}");
                     }
                 }
                 catch (Exception ex)
@@ -509,9 +493,8 @@ namespace Popcorn.ViewModels.Pages.Player
                 SourceType = isRemote ? SourceType.Youtube : SourceType.Torrent,
                 Host = host,
                 MediaPath = MediaPath,
-                MediaMimeType = _mediaMimeType,
-                SubtitleMimeType = _subtitleMimeType,
                 MediaTitle = MediaName,
+                SubtitlePath = SubtitleFilePath,
                 OnCastFailed = async message =>
                 {
                     if (!_castPlayerCancellationTokenSource.IsCancellationRequested)
@@ -577,6 +560,7 @@ namespace Popcorn.ViewModels.Pages.Player
                         closeCastDialog.Invoke();
                         OnCastStarted(new EventArgs());
                         IsCasting = true;
+                        await _castServer.Invoke($"seek:{PlayerTime}");
                     }
                     else
                     {

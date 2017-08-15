@@ -34,6 +34,8 @@ namespace Popcorn.ViewModels.Dialogs
 
         private ICommand _refreshCommand;
 
+        private ICommand _cancelCommand;
+
         private bool _anyChromecast;
 
         private bool _connectedToChromecast;
@@ -49,6 +51,11 @@ namespace Popcorn.ViewModels.Dialogs
             _message = message;
             Chromecasts = new ObservableCollection<ChromecastReceiver>();
             CloseCommand = new RelayCommand(() =>
+            {
+                OnCloseAction.Invoke();
+            });
+
+            CancelCommand = new RelayCommand(() =>
             {
                 _message.CastCancellationTokenSource.Cancel();
                 OnCloseAction.Invoke();
@@ -114,6 +121,12 @@ namespace Popcorn.ViewModels.Dialogs
         {
             get => _refreshCommand;
             set => Set(ref _refreshCommand, value);
+        }
+
+        public ICommand CancelCommand
+        {
+            get => _cancelCommand;
+            set => Set(ref _cancelCommand, value);
         }
 
         public ICommand ChooseChromecastDeviceCommand

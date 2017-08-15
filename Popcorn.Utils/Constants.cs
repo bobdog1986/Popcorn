@@ -30,7 +30,7 @@ namespace Popcorn.Utils
         /// <summary>
         /// In percentage, the minimum of buffering before we can actually start playing the movie
         /// </summary>
-        public const double MinimumMovieBuffering = 4.0;
+        public const double MinimumMovieBuffering = 10.0;
 
         /// <summary>
         /// In percentage, the minimum of buffering before we can actually start playing the episode

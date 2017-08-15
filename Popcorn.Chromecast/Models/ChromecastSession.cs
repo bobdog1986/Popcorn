@@ -18,8 +18,6 @@ namespace Popcorn.Chromecast.Models
         public string MediaPath { get; set; }
         public string MediaTitle { get; set; }
         public string SubtitlePath { get; set; }
-        public string MediaMimeType { get; set; }
-        public string SubtitleMimeType { get; set; }
         public SourceType SourceType { get; set; }
         public Func<object, Task<object>> OnCastSarted { get; set; }
         public Func<object, Task<object>> OnCastFailed { get; set; }
