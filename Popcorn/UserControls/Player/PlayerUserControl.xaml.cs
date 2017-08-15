@@ -700,8 +700,7 @@ namespace Popcorn.UserControls.Player
                 };
 
                 PlayerStatusBar.BeginAnimation(OpacityProperty, opacityAnimation);
-                DownloadProgress.BeginAnimation(OpacityProperty, opacityAnimation);
-                TitlePanel.BeginAnimation(OpacityProperty, opacityAnimation);
+                UpperPanel.BeginAnimation(OpacityProperty, opacityAnimation);
             }
 
             InactiveMousePosition = Mouse.GetPosition(Container);
@@ -754,8 +753,7 @@ namespace Popcorn.UserControls.Player
             };
 
             PlayerStatusBar.BeginAnimation(OpacityProperty, opacityAnimation);
-            DownloadProgress.BeginAnimation(OpacityProperty, opacityAnimation);
-            TitlePanel.BeginAnimation(OpacityProperty, opacityAnimation);
+            UpperPanel.BeginAnimation(OpacityProperty, opacityAnimation);
             var window = System.Windows.Window.GetWindow(this);
             if (window != null)
             {

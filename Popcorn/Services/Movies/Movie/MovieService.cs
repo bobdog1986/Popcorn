@@ -14,6 +14,7 @@ using GalaSoft.MvvmLight.Ioc;
 using Popcorn.Models.Genres;
 using Popcorn.Models.Trailer;
 using Popcorn.Models.User;
+using Popcorn.Utils.Exceptions;
 using Popcorn.ViewModels.Windows.Settings;
 using Popcorn.YTVideoProvider;
 
@@ -396,10 +397,15 @@ namespace Popcorn.Services.Movies.Movie
                             var settings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
                             var maxRes = settings.DefaultHdQuality ? 1080 : 720;
                             uri =
-                                await videos.Where(a => !a.Is3D && a.Resolution <= maxRes && a.Format == VideoFormat.Mp4 && a.AudioBitrate > 0)
+                                await videos.Where(a => !a.Is3D && a.Resolution <= maxRes &&
+                                                        a.Format == VideoFormat.Mp4 && a.AudioBitrate > 0)
                                     .Aggregate((i1, i2) => i1.Resolution > i2.Resolution ? i1 : i2).GetUriAsync();
                         }
                     }
+                }
+                else
+                {
+                    throw new PopcornException("No trailer found.");
                 }
             }
             catch (Exception exception) when (exception is TaskCanceledException)

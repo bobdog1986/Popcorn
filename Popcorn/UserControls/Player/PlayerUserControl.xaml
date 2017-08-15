@@ -14,9 +14,15 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <converters:BoolToInverseVisibilityConverter x:Key="BoolToInverseVisibilityConverter" />
-            <converters:BoolToInverseBoolConverter x:Key="BoolToInverseBoolConverter" />
+            <LinearGradientBrush x:Key="HeaderBackgroundOpacityMask" StartPoint="0.5,0" EndPoint="0.5,1">
+                <GradientStop Offset="0" Color="#FFFFFFFF" />
+                <GradientStop Offset="0.4" Color="#FFFFFFFF" />
+                <GradientStop Offset="1" Color="#00FFFFFF" />
+            </LinearGradientBrush>
         </ResourceDictionary>
+
     </UserControl.Resources>
+
 
     <UserControl.CommandBindings>
         <CommandBinding
@@ -84,55 +90,61 @@
                 Foreground="White"
                 Opacity="0" />
         </Grid>
-        <StackPanel
-            x:Name="TitlePanel"
-            Margin="20"
-            HorizontalAlignment="Left"
+        <Grid
+            x:Name="UpperPanel"
+            HorizontalAlignment="Stretch"
             VerticalAlignment="Top"
-            Opacity="0">
-            <TextBlock
-                x:Name="Title"
-                FontSize="20"
-                Foreground="White" />
-        </StackPanel>
-        <StackPanel
-            x:Name="DownloadProgress"
-            Margin="20"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Top">
-            <StackPanel Opacity="0.8" Orientation="Vertical">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Foreground="White" Text="{lex:LocText DownloadLabel}" />
-                    <TextBlock
-                        Margin="2.5,0,0,0"
-                        Foreground="White"
-                        Text=":" />
-                    <TextBlock
-                        x:Name="Download"
-                        Margin="5,0,0,0"
-                        Foreground="White" />
-                    <TextBlock
-                        Margin="2.5,0,0,0"
-                        Foreground="White"
-                        Text="{lex:LocText Speed}" />
-                </StackPanel>
-                <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
-                    <TextBlock Foreground="White" Text="{lex:LocText UploadLabel}" />
-                    <TextBlock
-                        Margin="2.5,0,0,0"
-                        Foreground="White"
-                        Text=":" />
-                    <TextBlock
-                        x:Name="Upload"
-                        Margin="5,0,0,0"
-                        Foreground="White" />
-                    <TextBlock
-                        Margin="2.5,0,0,0"
-                        Foreground="White"
-                        Text="{lex:LocText Speed}" />
+            Background="Black"
+            Opacity="0"
+            OpacityMask="{StaticResource HeaderBackgroundOpacityMask}">
+            <StackPanel
+                Margin="20"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center">
+                <TextBlock
+                    x:Name="Title"
+                    FontSize="20"
+                    Foreground="White" />
+            </StackPanel>
+            <StackPanel
+                x:Name="DownloadProgress"
+                Margin="20"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center">
+                <StackPanel Opacity="0.8" Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Foreground="White" Text="{lex:LocText DownloadLabel}" />
+                        <TextBlock
+                            Margin="2.5,0,0,0"
+                            Foreground="White"
+                            Text=":" />
+                        <TextBlock
+                            x:Name="Download"
+                            Margin="5,0,0,0"
+                            Foreground="White" />
+                        <TextBlock
+                            Margin="2.5,0,0,0"
+                            Foreground="White"
+                            Text="{lex:LocText Speed}" />
+                    </StackPanel>
+                    <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
+                        <TextBlock Foreground="White" Text="{lex:LocText UploadLabel}" />
+                        <TextBlock
+                            Margin="2.5,0,0,0"
+                            Foreground="White"
+                            Text=":" />
+                        <TextBlock
+                            x:Name="Upload"
+                            Margin="5,0,0,0"
+                            Foreground="White" />
+                        <TextBlock
+                            Margin="2.5,0,0,0"
+                            Foreground="White"
+                            Text="{lex:LocText Speed}" />
+                    </StackPanel>
                 </StackPanel>
             </StackPanel>
-        </StackPanel>
+        </Grid>
         <StatusBar x:Name="PlayerStatusBar" VerticalAlignment="Bottom">
             <StatusBar.ItemsPanel>
                 <ItemsPanelTemplate>
