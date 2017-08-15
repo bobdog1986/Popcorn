@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Net;
+using System.Net.Sockets;
 using System.Threading.Tasks;
 using EdgeJs;
 using Popcorn.Chromecast.Models;
@@ -10,8 +9,29 @@ namespace Popcorn.Chromecast.Services
 {
     public class ChromecastService : IChromecastService
     {
-        public async Task<Func<object, Task<object>>> StartCastAsync(ChromecastSession session)
+        public async Task<ChromecastSession> StartCastAsync(ChromecastSession session)
         {
+            if (session.SourceType == SourceType.Torrent)
+            {
+                var mediaMimeType = string.IsNullOrEmpty(session.MediaMimeType)
+                    ? "video/mp4"
+                    : session.MediaMimeType;
+                var streamServer = await StartStreamFileServer(session.MediaPath,
+                    mediaMimeType,
+                    9000, session.OnCastFailed);
+
+                session.StreamServer = streamServer;
+                if (!string.IsNullOrEmpty(session.SubtitlePath))
+                {
+                    var subtitleMimeType = string.IsNullOrEmpty(session.SubtitleMimeType)
+                        ? "text/plain"
+                        : session.SubtitleMimeType;
+                    var subtitleServer = await StartStaticFileServer(session.SubtitlePath,
+                        subtitleMimeType, 9001, session.OnCastFailed);
+                    session.SubtitleServer = subtitleServer;
+                }
+            }
+
             var server = Edge.Func(@"
                 var Client                = require('castv2-client').Client;
                 var DefaultMediaReceiver  = require('castv2-client').DefaultMediaReceiver;
@@ -38,12 +58,17 @@ namespace Popcorn.Chromecast.Services
                                     player.seek(parseFloat(seek.replace(',', '.')), function(){
                                     });
                                 }
+                                else if(data.includes('volume')){
+                                    var volume = data.split(':')[1];
+                                    client.setVolume({ level: parseFloat(volume.replace(',', '.')) }, function(vol) {
+                                    });
+                                }
                                 cb();
                             });
                             var media = {
                                 contentId: options.mediaPath,
-                                contentType: 'video/mp4',
-                                streamType: 'BUFFERED',
+                                contentType: options.contentType,
+                                streamType: options.streamType,
                                 metadata: {
                                     type: 0,
                                     metadataType: 0,
@@ -75,20 +100,42 @@ namespace Popcorn.Chromecast.Services
                 }
             ");
 
-            var result = (Func<object, Task<object>>)await server(new
+            await Task.Delay(1000);
+            var mediaPath = session.SourceType == SourceType.Torrent
+                ? $"http://{GetLocalIPAddress()}:9000"
+                : session.MediaPath;
+            var contentType = session.SourceType == SourceType.Torrent ? "video/mp4" : "video/mp4";
+            var streamType = session.SourceType == SourceType.Torrent ? "LIVE" : "BUFFERED";
+            var castServer = (Func<object, Task<object>>)await server(new
             {
                 host = session.Host,
-                mediaPath = session.MediaPath,
+                mediaPath = mediaPath,
                 mediaTitle = session.MediaTitle,
                 onStatusChanged = session.OnStatusChanged,
                 onError = session.OnCastFailed,
-                onStarted = session.OnCastSarted
+                onStarted = session.OnCastSarted,
+                contentType = contentType,
+                streamType = streamType
             });
 
-            return result;
+            session.CastServer = castServer;
+            return session;
         }
 
-        private async Task<Func<object, Task<object>>> StartStaticFileServer(string filePath, string contentType, int port)
+        public static string GetLocalIPAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip.ToString();
+                }
+            }
+            throw new Exception("Local IP Address Not Found!");
+        }
+
+        private async Task<Func<object, Task<object>>> StartStaticFileServer(string filePath, string contentType, int port, Func<object, Task<object>> onError)
         {
             var server = Edge.Func(@"
                 return function (options, cb) {
@@ -116,9 +163,9 @@ namespace Popcorn.Chromecast.Services
                         });
                       });
                     }).listen(parseInt(port), function (error) {
-                        cb(error, function (data, callback) {
+                        cb(error, function (data, cb) {
                             server.close();
-                            callback();
+                            cb();
                         });
                     });
                 }
@@ -128,13 +175,14 @@ namespace Popcorn.Chromecast.Services
             {
                 path = filePath,
                 port = port,
-                contentType = contentType
+                contentType = contentType,
+                onError = onError
             });
 
             return result;
         }
 
-        private async Task<Func<object, Task<object>>> StartStreamFileServer(string filePath, string contentType, int port)
+        private async Task<Func<object, Task<object>>> StartStreamFileServer(string filePath, string contentType, int port, Func<object, Task<object>> onError)
         {
             var server = Edge.Func(@"
                 return function (options, cb) {
@@ -162,9 +210,9 @@ namespace Popcorn.Chromecast.Services
                         });
                       });
                     }).listen(parseInt(port), function (error) {
-                        cb(error, function (data, callback) {
+                        cb(error, function (data, cb) {
                             server.close();
-                            callback();
+                            cb();
                         });
                     });
                 }
@@ -174,7 +222,8 @@ namespace Popcorn.Chromecast.Services
             {
                 path = filePath,
                 port = port,
-                contentType = contentType
+                contentType = contentType,
+                onError = onError
             });
 
             return result;

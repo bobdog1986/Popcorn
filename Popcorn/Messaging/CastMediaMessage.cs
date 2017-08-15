@@ -8,7 +8,7 @@ namespace Popcorn.Messaging
 {
     public class CastMediaMessage : MessageBase
     {
-        public Action OnCastStarted { get; set; }
+        public Action CloseCastDialog { get; set; }
 
         public CancellationTokenSource CastCancellationTokenSource { get; set; }
 

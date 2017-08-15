@@ -73,7 +73,7 @@ namespace Popcorn.ViewModels.Dialogs
                 {
                     ConnectingToChromecast = true;
                     _message.ChromecastReceiver = device;
-                    _message.OnCastStarted = () =>
+                    _message.CloseCastDialog = () =>
                     {
                         ConnectingToChromecast = false;
                         ConnectedToChromecast = true;

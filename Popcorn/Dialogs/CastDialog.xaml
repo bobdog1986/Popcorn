@@ -80,7 +80,7 @@
                 <Button
                     Width="100"
                     Height="35"
-                    Margin="0,15,0,15"
+                    Margin="10,15,0,15"
                     HorizontalAlignment="Center"
                     controls:ControlsHelper.ContentCharacterCasing="Normal"
                     Command="{Binding Path=CloseCommand}"

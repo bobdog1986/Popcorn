@@ -221,6 +221,11 @@ namespace Popcorn.Services.Download
                     if (status.is_finished)
                     {
                         session.remove_torrent(handle, 0);
+                        ((IProgress<BandwidthRate>)bandwidth).Report(new BandwidthRate
+                        {
+                            DownloadRate = 0d,
+                            UploadRate = 0d
+                        });
                         break;
                     }
 

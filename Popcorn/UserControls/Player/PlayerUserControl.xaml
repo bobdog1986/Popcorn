@@ -14,6 +14,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <converters:BoolToInverseVisibilityConverter x:Key="BoolToInverseVisibilityConverter" />
+            <converters:BoolToInverseBoolConverter x:Key="BoolToInverseBoolConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -38,7 +39,7 @@
             attachedProperties:MaximizeDoubleClickHelper.MaximizeDoubleClick="True"
             EndBehavior="Nothing"
             LibVlcPath="libvlc"
-            MouseDown="OnMouseDown"
+            MouseUp="OnMouseUp"
             VlcOption="{Binding VlcOptions, ElementName=PlayerUc}" />
         <Grid
             HorizontalAlignment="Stretch"
@@ -193,7 +194,8 @@
             <StatusBarItem
                 Grid.Column="2"
                 HorizontalContentAlignment="Stretch"
-                Background="#FF2F2F2F">
+                Background="#FF2F2F2F"
+                IsEnabled="{Binding IsCasting, Converter={StaticResource BoolToInverseBoolConverter}}">
                 <Grid>
                     <controls:MetroProgressBar
                         x:Name="BufferProgress"

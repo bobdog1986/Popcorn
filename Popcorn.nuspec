@@ -397,8 +397,6 @@
         <file src="Microsoft.Threading.Tasks.Extensions.dll" target="lib\net45\Microsoft.Threading.Tasks.Extensions.dll" />
         <file src="System.Net.Http.Extensions.dll" target="lib\net45\System.Net.Http.Extensions.dll" />
         <file src="System.Net.Http.Primitives.dll" target="lib\net45\System.Net.Http.Primitives.dll" />
-        <file src="MimeKit.dll" target="lib\net45\MimeKit.dll" />
-        <file src="BouncyCastle.Crypto.dll" target="lib\net45\BouncyCastle.Crypto.dll" />
         <file src="System.IO.dll" target="lib\net45\System.IO.dll" />
         <file src="System.Reflection.dll" target="lib\net45\System.Reflection.dll" />
         <file src="System.Runtime.Extensions.dll" target="lib\net45\System.Runtime.Extensions.dll" />

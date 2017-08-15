@@ -9,6 +9,6 @@ namespace Popcorn.Chromecast.Services
 {
     public interface IChromecastService
     {
-        Task<Func<object, Task<object>>> StartCastAsync(ChromecastSession session);
+        Task<ChromecastSession> StartCastAsync(ChromecastSession session);
     }
 }

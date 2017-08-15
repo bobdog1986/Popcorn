@@ -1,11 +1,17 @@
 ﻿using System;
 using GalaSoft.MvvmLight;
+using NLog;
 using Popcorn.Utils;
 
 namespace Popcorn.Services.Application
 {
     public class ApplicationService : ObservableObject, IApplicationService
     {
+        /// <summary>
+        /// Logger of the class
+        /// </summary>
+        private static Logger Logger { get; } = LogManager.GetCurrentClassLogger();
+
         /// <summary>
         /// Power request
         /// </summary>
@@ -67,27 +73,38 @@ namespace Popcorn.Services.Application
         /// <param name="enableConstantDisplayAndPower">True to get a constant display and power - False to clear the settings</param>
         public void EnableConstantDisplayAndPower(bool enableConstantDisplayAndPower)
         {
-            if (enableConstantDisplayAndPower)
+            try
             {
-                // Set up the diagnostic string
-                _powerRequestContext.Version = NativeMethods.POWER_REQUEST_CONTEXT_VERSION;
-                _powerRequestContext.Flags = NativeMethods.POWER_REQUEST_CONTEXT_SIMPLE_STRING;
-                _powerRequestContext.SimpleReasonString = "Popcorn is playing a media.";
+                if (enableConstantDisplayAndPower)
+                {
+                    // Set up the diagnostic string
+                    _powerRequestContext.Version = NativeMethods.POWER_REQUEST_CONTEXT_VERSION;
+                    _powerRequestContext.Flags = NativeMethods.POWER_REQUEST_CONTEXT_SIMPLE_STRING;
+                    _powerRequestContext.SimpleReasonString = "Popcorn is playing a media.";
 
-                // Create the request, get a handle
-                _powerRequest = NativeMethods.PowerCreateRequest(ref _powerRequestContext);
+                    // Create the request, get a handle
+                    _powerRequest = NativeMethods.PowerCreateRequest(ref _powerRequestContext);
 
-                // Set the request
-                NativeMethods.PowerSetRequest(_powerRequest, NativeMethods.PowerRequestType.PowerRequestSystemRequired);
-                NativeMethods.PowerSetRequest(_powerRequest, NativeMethods.PowerRequestType.PowerRequestDisplayRequired);
+                    // Set the request
+                    NativeMethods.PowerSetRequest(_powerRequest,
+                        NativeMethods.PowerRequestType.PowerRequestSystemRequired);
+                    NativeMethods.PowerSetRequest(_powerRequest,
+                        NativeMethods.PowerRequestType.PowerRequestDisplayRequired);
+                }
+                else
+                {
+                    // Clear the request
+                    NativeMethods.PowerClearRequest(_powerRequest,
+                        NativeMethods.PowerRequestType.PowerRequestSystemRequired);
+                    NativeMethods.PowerClearRequest(_powerRequest,
+                        NativeMethods.PowerRequestType.PowerRequestDisplayRequired);
+
+                    NativeMethods.CloseHandle(_powerRequest);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                // Clear the request
-                NativeMethods.PowerClearRequest(_powerRequest, NativeMethods.PowerRequestType.PowerRequestSystemRequired);
-                NativeMethods.PowerClearRequest(_powerRequest, NativeMethods.PowerRequestType.PowerRequestDisplayRequired);
-
-                NativeMethods.CloseHandle(_powerRequest);
+                Logger.Error(ex);
             }
         }
     }
