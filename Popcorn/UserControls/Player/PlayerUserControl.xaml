@@ -195,7 +195,7 @@
                 Grid.Column="2"
                 HorizontalContentAlignment="Stretch"
                 Background="#FF2F2F2F"
-                IsEnabled="{Binding IsCasting, Converter={StaticResource BoolToInverseBoolConverter}}">
+                IsEnabled="{Binding CanSeek}">
                 <Grid>
                     <controls:MetroProgressBar
                         x:Name="BufferProgress"

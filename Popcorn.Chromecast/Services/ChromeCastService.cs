@@ -104,7 +104,7 @@ namespace Popcorn.Chromecast.Services
             var mediaPath = session.SourceType == SourceType.Torrent
                 ? $"http://{GetLocalIPAddress()}:9000"
                 : session.MediaPath;
-            var contentType = session.SourceType == SourceType.Torrent ? "video/mp4" : "video/mp4";
+            var contentType = "video/mp4";
             var streamType = session.SourceType == SourceType.Torrent ? "LIVE" : "BUFFERED";
             var castServer = (Func<object, Task<object>>)await server(new
             {

@@ -13,12 +13,10 @@ using Popcorn.Models.Subtitles;
 using System.Windows.Input;
 using Popcorn.Helpers;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
-using GalaSoft.MvvmLight.Threading;
 using Popcorn.Chromecast.Models;
 using Popcorn.Chromecast.Services;
 using Popcorn.Services.Subtitles;
@@ -86,6 +84,8 @@ namespace Popcorn.ViewModels.Pages.Player
         /// The media name
         /// </summary>
         public readonly string MediaName;
+
+        private bool _canSeek;
 
         /// <summary>
         /// The media duration in seconds
@@ -230,6 +230,7 @@ namespace Popcorn.ViewModels.Pages.Player
             MediaPath = mediaPath;
             MediaName = mediaName;
             MediaType = type;
+            CanSeek = true;
             _mediaStoppedAction = mediaStoppedAction;
             _mediaEndedAction = mediaEndedAction;
             SubtitleFilePath = subtitleFilePath;
@@ -428,9 +429,14 @@ namespace Popcorn.ViewModels.Pages.Player
                     message.StartCast = async chromecastReseiver =>
                     {
                         await LoadMedia(chromecastReseiver.DeviceUri.Host, message.CloseCastDialog);
+                        
                     };
                     await Messenger.Default.SendAsync(message);
-                    if (message.ChromecastReceiver == null)
+                    if (message.CastCancellationTokenSource.IsCancellationRequested)
+                    {
+                        await StopCastPlayer();
+                    }
+                    else if (message.ChromecastReceiver == null)
                     {
                         OnResumedMedia(new EventArgs());
                     }
@@ -446,7 +452,9 @@ namespace Popcorn.ViewModels.Pages.Player
         {
             try
             {
+                IsCasting = false;
                 OnCastStopped(new EventArgs());
+                OnResumedMedia(new EventArgs());
                 if (_castServer != null)
                 {
                     await _castServer.Invoke("stop");
@@ -472,11 +480,6 @@ namespace Popcorn.ViewModels.Pages.Player
                 _subtitleServer = null;
                 Logger.Error(ex);
             }
-            finally
-            {
-                IsCasting = false;
-                OnResumedMedia(new EventArgs());
-            }
         }
 
         public async Task SetVolume(double volume)
@@ -500,6 +503,7 @@ namespace Popcorn.ViewModels.Pages.Player
             var isRemote = Uri.TryCreate(MediaPath, UriKind.Absolute, out uriResult)
                            && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
 
+            CanSeek = isRemote;
             var session = new ChromecastSession
             {
                 SourceType = isRemote ? SourceType.Youtube : SourceType.Torrent,
@@ -519,6 +523,7 @@ namespace Popcorn.ViewModels.Pages.Player
                                     LocalizationProviderHelper.GetLocalizedValue<string>("CastFailed"))));
                     }
 
+                    OnCastStopped(new EventArgs());
                     await StopCastPlayer();
                     return await Task.FromResult(message);
                 },
@@ -562,12 +567,6 @@ namespace Popcorn.ViewModels.Pages.Player
                             Logger.Error(ex);
                         }
                     }
-                    else if (dict.TryGetValue("playerState", out state) &&
-                             string.Equals((string) state, "IDLE") && (MediaDuration - _castTimeInSeconds < 10) &&
-                             _castServer != null && IsCasting)
-                    {
-                        DispatcherHelper.CheckBeginInvokeOnUI(MediaEnded);
-                    }
 
                     return await Task.FromResult(message);
                 },
@@ -604,7 +603,7 @@ namespace Popcorn.ViewModels.Pages.Player
                     new UnhandledExceptionMessage(
                         new PopcornException(
                             LocalizationProviderHelper.GetLocalizedValue<string>("CastFailed"))));
-
+                OnCastStopped(new EventArgs());
                 await StopCastPlayer();
             }
         }
@@ -631,6 +630,12 @@ namespace Popcorn.ViewModels.Pages.Player
         {
             get { return _stopCastCommand; }
             set { Set(ref _stopCastCommand, value); }
+        }
+
+        public bool CanSeek
+        {
+            get { return _canSeek; }
+            set { Set(ref _canSeek, value); }
         }
 
         public double PlayerTime

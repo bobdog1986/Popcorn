@@ -239,12 +239,14 @@ namespace Popcorn.UserControls.Player
 
         private void OnCastStopped(object sender, EventArgs e)
         {
-            Player.VlcMediaPlayer.ToggleMute();
+            if(Player.VlcMediaPlayer.IsMute)
+                Player.VlcMediaPlayer.ToggleMute();
         }
 
         private void OnCastStarted(object sender, EventArgs e)
         {
-            Player.VlcMediaPlayer.ToggleMute();
+            if (!Player.VlcMediaPlayer.IsMute)
+                Player.VlcMediaPlayer.ToggleMute();
         }
 
         /// <summary>
@@ -551,11 +553,8 @@ namespace Popcorn.UserControls.Player
             {
                 vm.PlayCastCommand.Execute(null);
             }
-            else
-            {
-                Player.Play();
-            }
 
+            Player.Play();
             MediaPlayerIsPlaying = true;
             MediaPlayerStatusBarItemPlay.Visibility = Visibility.Collapsed;
             MediaPlayerStatusBarItemPause.Visibility = Visibility.Visible;
@@ -571,11 +570,8 @@ namespace Popcorn.UserControls.Player
             {
                 vm.PauseCastCommand.Execute(null);
             }
-            else
-            {
-                Player.Pause();
-            }
 
+            Player.Pause();
             MediaPlayerIsPlaying = false;
             MediaPlayerStatusBarItemPlay.Visibility = Visibility.Visible;
             MediaPlayerStatusBarItemPause.Visibility = Visibility.Collapsed;
@@ -643,11 +639,8 @@ namespace Popcorn.UserControls.Player
                 vm.SeekCastCommand.Execute(CastPlayerTimeInSeconds);
                 vm.PlayCastCommand.Execute(null);
             }
-            else
-            {
-                Player.Resume();
-            }
 
+            Player.Resume();
             MediaPlayerIsPlaying = true;
         }
 
