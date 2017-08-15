@@ -60,6 +60,11 @@ namespace Popcorn.UserControls.Player
         private int SubtitleDelay { get; set; }
 
         /// <summary>
+        /// Cast player time in seconds
+        /// </summary>
+        private double CastPlayerTimeInSeconds { get; set; }
+
+        /// <summary>
         /// Report when dragging is used on media player
         /// </summary>
         /// <param name="sender">Sender object</param>
@@ -67,7 +72,15 @@ namespace Popcorn.UserControls.Player
         private void MediaSliderProgressDragStarted(object sender, DragStartedEventArgs e)
         {
             MediaPlayerIsPlaying = false;
-            Player.Pause();
+            var vm = DataContext as MediaPlayerViewModel;
+            if (vm != null && vm.IsCasting)
+            {
+                vm.PauseCastCommand.Execute(null);
+            }
+            else
+            {
+                Player.Pause();
+            }
         }
 
         /// <summary>
@@ -115,10 +128,24 @@ namespace Popcorn.UserControls.Player
         {
             get
             {
-                return Player.Time.TotalMilliseconds;
+                var vm = DataContext as MediaPlayerViewModel;
+                if (vm != null && vm.IsCasting)
+                {
+                    return CastPlayerTimeInSeconds * 1000;
+                }
+                else
+                {
+                    return Player.Time.TotalMilliseconds;
+                }
             }
             set
             {
+                var vm = DataContext as MediaPlayerViewModel;
+                if (vm != null && vm.IsCasting)
+                {
+                    CastPlayerTimeInSeconds = value / 1000;
+                }
+
                 Player.Time = TimeSpan.FromMilliseconds(value);
                 OnPropertyChanged();
             }
@@ -192,12 +219,29 @@ namespace Popcorn.UserControls.Player
             Player.VlcMediaPlayer.EncounteredError += EncounteredError;
             Player.VlcMediaPlayer.Playing += OnPlaying;
             Player.VlcMediaPlayer.Stoped += OnStopped;
+            vm.CastPlayerTimeChanged += CastPlayerTimeChanged;
             Title.Text = vm.MediaName;
             await Task.Delay(500);
             PlayMedia();
             if (!string.IsNullOrEmpty(vm.SubtitleFilePath))
             {
                 Player.VlcMediaPlayer.SetSubtitleFile(vm.SubtitleFilePath);
+            }
+        }
+
+        /// <summary>
+        /// On cast time player changed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CastPlayerTimeChanged(object sender, Events.TimeChangedEventArgs e)
+        {
+            if (MediaPlayerIsPlaying)
+            {
+                CastPlayerTimeInSeconds = e.Seconds;
+                MediaPlayerSliderProgress.Minimum = 0;
+                MediaPlayerSliderProgress.Maximum = Player.Length.TotalMilliseconds;
+                OnPropertyChanged(nameof(TimeInMilliseconds));
             }
         }
 
@@ -210,7 +254,7 @@ namespace Popcorn.UserControls.Player
         {
             MediaPlayerSliderProgress.Minimum = 0;
             MediaPlayerSliderProgress.Maximum = Player.Length.TotalMilliseconds;
-            OnPropertyChanged("TimeInMilliseconds");
+            OnPropertyChanged(nameof(TimeInMilliseconds));
         }
 
         /// <summary>
@@ -230,7 +274,7 @@ namespace Popcorn.UserControls.Player
         /// <param name="e"></param>
         private void OnResumedMedia(object sender, EventArgs e)
         {
-            Player.Resume();
+            DispatcherHelper.CheckBeginInvokeOnUI(PlayMedia);
         }
 
         /// <summary>
@@ -256,6 +300,11 @@ namespace Popcorn.UserControls.Player
             DispatcherHelper.CheckBeginInvokeOnUI(() =>
             {
                 CastButton.Visibility = Visibility.Visible;
+                var vm = DataContext as MediaPlayerViewModel;
+                if (vm != null)
+                {
+                    vm.MediaDuration = Player.Length.TotalSeconds;
+                }
             });
         }
 
@@ -266,7 +315,7 @@ namespace Popcorn.UserControls.Player
         /// <param name="e"></param>
         private void OnPausedMedia(object sender, EventArgs e)
         {
-            Player.Pause();
+            DispatcherHelper.CheckBeginInvokeOnUI(PauseMedia);
         }
 
         private void OnMouseDown(object sender, MouseButtonEventArgs e)
@@ -473,10 +522,19 @@ namespace Popcorn.UserControls.Player
         /// </summary>
         private void PlayMedia()
         {
+            var vm = DataContext as MediaPlayerViewModel;
+            if (vm != null && vm.IsCasting)
+            {
+                vm.PlayCastCommand.Execute(null);
+            }
+            else
+            {
+                Player.Play();
+            }
+
             MediaPlayerIsPlaying = true;
             MediaPlayerStatusBarItemPlay.Visibility = Visibility.Collapsed;
             MediaPlayerStatusBarItemPause.Visibility = Visibility.Visible;
-            Player.Play();
         }
 
         /// <summary>
@@ -484,9 +542,17 @@ namespace Popcorn.UserControls.Player
         /// </summary>
         private void PauseMedia()
         {
-            Player.Pause();
-            MediaPlayerIsPlaying = false;
+            var vm = DataContext as MediaPlayerViewModel;
+            if (vm != null && vm.IsCasting)
+            {
+                vm.PauseCastCommand.Execute(null);
+            }
+            else
+            {
+                Player.Pause();
+            }
 
+            MediaPlayerIsPlaying = false;
             MediaPlayerStatusBarItemPlay.Visibility = Visibility.Visible;
             MediaPlayerStatusBarItemPause.Visibility = Visibility.Collapsed;
         }
@@ -547,7 +613,17 @@ namespace Popcorn.UserControls.Player
         /// <param name="e">DragCompletedEventArgs</param>
         private void MediaSliderProgressDragCompleted(object sender, DragCompletedEventArgs e)
         {
-            Player.Resume();
+            var vm = DataContext as MediaPlayerViewModel;
+            if (vm != null && vm.IsCasting)
+            {
+                vm.SeekCastCommand.Execute(CastPlayerTimeInSeconds);
+                vm.PlayCastCommand.Execute(null);
+            }
+            else
+            {
+                Player.Resume();
+            }
+
             MediaPlayerIsPlaying = true;
         }
 
@@ -707,6 +783,7 @@ namespace Popcorn.UserControls.Player
             }
 
             var vm = DataContext as MediaPlayerViewModel;
+            vm.CastPlayerTimeChanged -= CastPlayerTimeChanged;
             if (vm != null)
             {
                 vm.SubtitleChosen -= OnSubtitleChosen;

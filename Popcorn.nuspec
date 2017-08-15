@@ -355,7 +355,6 @@
         <file src="msvcp140.dll" target="lib\net45\msvcp140.dll" />
         <file src="Newtonsoft.Json.dll" target="lib\net45\Newtonsoft.Json.dll" />
         <file src="NLog.dll" target="lib\net45\NLog.dll" />
-        <file src="Zeroconf.dll" target="lib\net45\Zeroconf.dll" />
         <file src="NuGet.Squirrel.dll" target="lib\net45\NuGet.Squirrel.dll" />
         <file src="Popcorn.OSDB.dll" target="lib\net45\Popcorn.OSDB.dll" />
         <file src="Popcorn.exe" target="lib\net45\Popcorn.exe" />
@@ -374,6 +373,7 @@
         <file src="System.Security.Cryptography.X509Certificates.dll" target="lib\net45\System.Security.Cryptography.X509Certificates.dll" />
         <file src="System.Windows.Interactivity.dll" target="lib\net45\System.Windows.Interactivity.dll" />
         <file src="TMDbLib.dll" target="lib\net45\TMDbLib.dll" />
+        <file src="Tmds.MDns.dll" target="lib\net45\Tmds.MDns.dll" />
         <file src="None.srt" target="lib\net45\None.srt" />
         <file src="vccorlib140.dll" target="lib\net45\vccorlib140.dll" />
         <file src="vcruntime140.dll" target="lib\net45\vcruntime140.dll" />
@@ -390,8 +390,8 @@
         <file src="edge\x86\edge_nativeclr.node" target="lib\net45\edge\x86\edge_nativeclr.node" />
         <file src="edge\x64\edge_nativeclr.node" target="lib\net45\edge\x64\edge_nativeclr.node" />
         <file src="edge\x64\node.dll" target="lib\net45\edge\x64\node.dll" />
+        <file src="edge\node_modules\**" target="lib\net45\edge\node_modules" />
         <file src="EdgeJs.dll" target="lib\net45\EdgeJs.dll" />
-        <file src="protobuf-net.dll" target="lib\net45\protobuf-net.dll" />
         <file src="Microsoft.Threading.Tasks.dll" target="lib\net45\Microsoft.Threading.Tasks.dll" />
         <file src="Microsoft.Threading.Tasks.Extensions.Desktop.dll" target="lib\net45\Microsoft.Threading.Tasks.Extensions.Desktop.dll" />
         <file src="Microsoft.Threading.Tasks.Extensions.dll" target="lib\net45\Microsoft.Threading.Tasks.Extensions.dll" />
@@ -399,13 +399,7 @@
         <file src="System.Net.Http.Primitives.dll" target="lib\net45\System.Net.Http.Primitives.dll" />
         <file src="MimeKit.dll" target="lib\net45\MimeKit.dll" />
         <file src="BouncyCastle.Crypto.dll" target="lib\net45\BouncyCastle.Crypto.dll" />
-        <file src="protobuf-net.dll" target="lib\net45\protobuf-net.dll" />
-        <file src="Rssdp.dll" target="lib\net45\Rssdp.dll" />
         <file src="System.IO.dll" target="lib\net45\System.IO.dll" />
-        <file src="System.Reactive.Core.dll" target="lib\net45\System.Reactive.Core.dll" />
-        <file src="System.Reactive.Interfaces.dll" target="lib\net45\System.Reactive.Interfaces.dll" />
-        <file src="System.Reactive.Linq.dll" target="lib\net45\System.Reactive.Linq.dll" />
-        <file src="Google.Protobuf.dll" target="lib\net45\Google.Protobuf.dll" />
         <file src="System.Reflection.dll" target="lib\net45\System.Reflection.dll" />
         <file src="System.Runtime.Extensions.dll" target="lib\net45\System.Runtime.Extensions.dll" />
         <file src="Popcorn.Chromecast.dll" target="lib\net45\Popcorn.Chromecast.dll" />

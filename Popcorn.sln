@@ -21,7 +21,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Popcorn.ColorPicker", "Popc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Popcorn.ColorPickerControls", "Popcorn.ColorPickerControls\Popcorn.ColorPickerControls.csproj", "{02E6C16F-757F-44AC-BE66-C0D79C0EBE0B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Popcorn.Chromecast", "Popcorn.Chromecast\Popcorn.Chromecast.csproj", "{21B07E87-7990-42E2-9717-B538E3388137}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Popcorn.Chromecast", "Popcorn.Chromecast\Popcorn.Chromecast.csproj", "{E59CEB48-8F9B-4EAF-B20F-F70202F08290}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -82,12 +82,12 @@ Global
 		{02E6C16F-757F-44AC-BE66-C0D79C0EBE0B}.Debug|x86.Build.0 = Debug|x86
 		{02E6C16F-757F-44AC-BE66-C0D79C0EBE0B}.Release|x86.ActiveCfg = Debug|x86
 		{02E6C16F-757F-44AC-BE66-C0D79C0EBE0B}.Release|x86.Build.0 = Debug|x86
-		{21B07E87-7990-42E2-9717-B538E3388137}.Analysis|x86.ActiveCfg = Release|x86
-		{21B07E87-7990-42E2-9717-B538E3388137}.Analysis|x86.Build.0 = Release|x86
-		{21B07E87-7990-42E2-9717-B538E3388137}.Debug|x86.ActiveCfg = Debug|x86
-		{21B07E87-7990-42E2-9717-B538E3388137}.Debug|x86.Build.0 = Debug|x86
-		{21B07E87-7990-42E2-9717-B538E3388137}.Release|x86.ActiveCfg = Release|x86
-		{21B07E87-7990-42E2-9717-B538E3388137}.Release|x86.Build.0 = Release|x86
+		{E59CEB48-8F9B-4EAF-B20F-F70202F08290}.Analysis|x86.ActiveCfg = Release|x86
+		{E59CEB48-8F9B-4EAF-B20F-F70202F08290}.Analysis|x86.Build.0 = Release|x86
+		{E59CEB48-8F9B-4EAF-B20F-F70202F08290}.Debug|x86.ActiveCfg = Debug|x86
+		{E59CEB48-8F9B-4EAF-B20F-F70202F08290}.Debug|x86.Build.0 = Debug|x86
+		{E59CEB48-8F9B-4EAF-B20F-F70202F08290}.Release|x86.ActiveCfg = Release|x86
+		{E59CEB48-8F9B-4EAF-B20F-F70202F08290}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

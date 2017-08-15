@@ -408,4 +408,7 @@
   <data name="SubtitlesColorLabel" xml:space="preserve">
     <value>Couleur des sous-titres</value>
   </data>
+  <data name="RefreshLabel" xml:space="preserve">
+    <value>Rafraîchir</value>
+  </data>
 </root>

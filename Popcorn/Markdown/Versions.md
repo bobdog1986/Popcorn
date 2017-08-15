@@ -1,4 +1,12 @@
-﻿# 2.4.10 31/07/2017 #
+﻿# 2.5.0 15/08/2017 #
+***
+Fix issues
+
+### Details ###
+
+* Fix Chromecast issues
+
+# 2.4.10 31/07/2017 #
 ***
 Improve performances
 

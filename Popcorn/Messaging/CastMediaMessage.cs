@@ -1,22 +1,19 @@
-﻿using GalaSoft.MvvmLight.Messaging;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using GalaSoft.MvvmLight.Messaging;
+using Popcorn.Chromecast.Models;
 
 namespace Popcorn.Messaging
 {
     public class CastMediaMessage : MessageBase
     {
-        public string Title { get; set; }
+        public Action OnCastStarted { get; set; }
 
-        public string MediaPath { get; set; }
+        public CancellationTokenSource CastCancellationTokenSource { get; set; }
 
-        public string SubtitleFilePath { get; set; }
+        public Func<ChromecastReceiver, Task> StartCast { get; set; }
 
-        public bool Cancelled { get; set; }
-
-        public CastMediaMessage(string title, string mediaPath, string subtitleFilePath)
-        {
-            Title = title;
-            SubtitleFilePath = subtitleFilePath;
-            MediaPath = mediaPath;
-        }
+        public ChromecastReceiver ChromecastReceiver { get; set; }
     }
 }

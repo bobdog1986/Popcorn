@@ -3,8 +3,8 @@
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProjectGuid>{21B07E87-7990-42E2-9717-B538E3388137}</ProjectGuid>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E59CEB48-8F9B-4EAF-B20F-F70202F08290}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Popcorn.Chromecast</RootNamespace>
@@ -15,109 +15,28 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>bin\x86\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="ChromeCastClient.cs" />
-    <Compile Include="DeviceLocator.cs" />
-    <Compile Include="Extensions\ByteArrayExtension.cs" />
-    <Compile Include="Extensions\ChromecastChannelExtensions.cs" />
-    <Compile Include="Extensions\StreamExtension.cs" />
-    <Compile Include="Interfaces\IController.cs" />
-    <Compile Include="Interfaces\IMediaController.cs" />
-    <Compile Include="JsonConverters\IdleReasonEnumConverter.cs" />
-    <Compile Include="JsonConverters\MediaErrorReasonEnumConverter.cs" />
-    <Compile Include="JsonConverters\MediaErrorTypeEnumConverter.cs" />
-    <Compile Include="JsonConverters\MetadataTypeConverter.cs" />
-    <Compile Include="JsonConverters\MetadataTypeEnumConverter.cs" />
-    <Compile Include="JsonConverters\StreamTypeConverter.cs" />
-    <Compile Include="Models\Chromecast.cs" />
-    <Compile Include="Models\ChromecastRequests\WebRequest.cs" />
-    <Compile Include="Models\CustomTypes\*.cs" />
-    <Compile Include="Models\Enums\MediaErrorReasonEnum.cs" />
-    <Compile Include="Models\Enums\MediaErrorTypeEnum.cs" />
-    <Compile Include="Models\Enums\MetadataTypeEnum.cs" />
-    <Compile Include="Models\MediaStatus\ChromecastMediaError.cs" />
-    <Compile Include="Models\Metadata\GenericMediaMetadata.cs" />
-    <Compile Include="Models\Metadata\IMetadata.cs" />
-    <Compile Include="Models\Metadata\MovieMediaMetadata.cs" />
-    <Compile Include="Models\Metadata\MusicTrackMediaMetadata.cs" />
-    <Compile Include="Models\Metadata\PhotoMediaMetadata.cs" />
-    <Compile Include="Models\Metadata\TvShowMediaMetadata.cs" />
-    <Compile Include="Models\Protobuf\CastChannel.cs" />
-    <Compile Include="Models\Protobuf\Logging.cs" />
-    <Compile Include="Services\ChromeCastService.cs" />
-    <Compile Include="Interfaces\IChromecastService.cs" />
-    <Compile Include="Interfaces\IChromecastSocketService.cs" />
-    <Compile Include="Models\CastMessage.cs" />
-    <Compile Include="Models\ChromecastSSLClientDataReceivedArgs.cs" />
-    <Compile Include="Models\MessageFactory.cs" />
-    <Compile Include="Models\Volume.cs" />
-    <Compile Include="Models\ChromecastRequests\CloseRequest.cs" />
-    <Compile Include="Models\ChromecastRequests\ConnectRequest.cs" />
-    <Compile Include="Models\ChromecastRequests\GetAppAvailabilityRequest.cs" />
-    <Compile Include="Models\ChromecastRequests\GetStatusRequest.cs" />
-    <Compile Include="Models\ChromecastRequests\LaunchRequest.cs" />
-    <Compile Include="Models\ChromecastRequests\LoadRequest.cs" />
-    <Compile Include="Models\ChromecastRequests\MediaData.cs" />
-    <Compile Include="Models\ChromecastRequests\MediaRequest.cs" />
-    <Compile Include="Models\ChromecastRequests\MediaStatusRequest.cs" />
-    <Compile Include="Models\ChromecastRequests\NextRequest.cs" />
-    <Compile Include="Models\ChromecastRequests\PauseRequest.cs" />
-    <Compile Include="Models\ChromecastRequests\PingRequest.cs" />
-    <Compile Include="Models\ChromecastRequests\PlayRequest.cs" />
-    <Compile Include="Models\ChromecastRequests\PongRequest.cs" />
-    <Compile Include="Models\ChromecastRequests\PreviousRequest.cs" />
-    <Compile Include="Models\ChromecastRequests\Request.cs" />
-    <Compile Include="Models\ChromecastRequests\RequestIdProvider.cs" />
-    <Compile Include="Models\ChromecastRequests\RequestWithId.cs" />
-    <Compile Include="Models\ChromecastRequests\SeekRequest.cs" />
-    <Compile Include="Models\ChromecastRequests\StopApplicationRequest.cs" />
-    <Compile Include="Models\ChromecastRequests\StopMediaRequest.cs" />
-    <Compile Include="Models\ChromecastRequests\VolumeDataObject.cs" />
-    <Compile Include="Models\ChromecastRequests\VolumeRequest.cs" />
-    <Compile Include="Models\MediaStatus\ChromecastImage.cs" />
-    <Compile Include="Models\MediaStatus\Item.cs" />
-    <Compile Include="Models\MediaStatus\Media.cs" />
-    <Compile Include="Models\MediaStatus\MediaStatus.cs" />
-    <Compile Include="Models\MediaStatus\MediaStatusResponse.cs" />
-    <Compile Include="Models\MediaStatus\Track.cs" />
-    <Compile Include="Models\ChromecastStatus\*.cs" />
-    <Compile Include="JsonConverters\PlayerStateEnumConverter.cs" />
-    <Compile Include="Channels\ChromecastChannel.cs" />
-    <Compile Include="Channels\ConnectionChannel.cs" />
-    <Compile Include="Channels\HeartbeatChannel.cs" />
-    <Compile Include="Channels\IChromecastChannel.cs" />
-    <Compile Include="Channels\MediaChannel.cs" />
-    <Compile Include="Channels\PlexChannel.cs" />
-    <Compile Include="Channels\ReceiverChannel.cs" />
-    <Compile Include="Channels\WebChannel.cs" />
-    <Compile Include="Channels\YouTubeChannel.cs" />
-    <Compile Include="Properties\Annotations.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Controllers\*.cs" />
-    <Compile Include="Services\ChromecastSocketService.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Google.Protobuf, Version=3.3.0.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Protobuf.3.3.0\lib\net45\Google.Protobuf.dll</HintPath>
+    <Reference Include="EdgeJs, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Edge.js.8.2.1\lib\net40\EdgeJs.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Threading.Tasks, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.dll</HintPath>
     </Reference>
@@ -130,16 +49,9 @@
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="Rssdp, Version=3.5.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Rssdp.3.5.5\lib\net45\Rssdp.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.IO, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IO.4.3.0\lib\net462\System.IO.dll</HintPath>
-    </Reference>
+    <Reference Include="System.Core" />
     <Reference Include="System.Net" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Extensions, Version=2.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net45\System.Net.Http.Extensions.dll</HintPath>
     </Reference>
@@ -147,54 +59,34 @@
       <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net45\System.Net.Http.Primitives.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http.WebRequest" />
-    <Reference Include="System.Reactive.Core, Version=3.0.3000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Reactive.Core.3.1.1\lib\net46\System.Reactive.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.Interfaces, Version=3.0.1000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Reactive.Interfaces.3.1.1\lib\net45\System.Reactive.Interfaces.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.Linq, Version=3.0.3000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Reactive.Linq.3.1.1\lib\net46\System.Reactive.Linq.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.PlatformServices, Version=3.0.3000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Reactive.PlatformServices.3.1.1\lib\net46\System.Reactive.PlatformServices.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reactive.Windows.Threading, Version=3.0.1000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Reactive.Windows.Threading.3.1.1\lib\net45\System.Reactive.Windows.Threading.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reflection, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Reflection.4.3.0\lib\net462\System.Reflection.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.4.3.0\lib\net462\System.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.Extensions, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.Extensions.4.3.0\lib\net462\System.Runtime.Extensions.dll</HintPath>
-    </Reference>
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Windows" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
     <Reference Include="Tmds.MDns, Version=0.6.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Tmds.MDns.0.6.0\lib\net45\Tmds.MDns.dll</HintPath>
     </Reference>
-    <Reference Include="WindowsBase" />
-    <Reference Include="Zeroconf, Version=2.9.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Zeroconf.2.9.0\lib\net45\Zeroconf.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
-    <None Include="Models\Protobuf\logging.proto" />
-    <None Include="Models\Protobuf\cast_channel.proto" />
-    <None Include="Models\Protobuf\Source\authority_keys.proto" />
-    <None Include="Models\Protobuf\Source\cast_channel.proto" />
-    <None Include="Models\Protobuf\Source\logging.proto" />
-    <None Include="packages.config" />
+    <Compile Include="ChromecastLocator.cs" />
+    <Compile Include="Interfaces\IChromecastLocator.cs" />
+    <Compile Include="Models\ChromecastReceiver.cs" />
+    <Compile Include="Models\ChromecastSession.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\ChromecastService.cs" />
+    <Compile Include="Services\IChromecastService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Popcorn.Utils\Popcorn.Utils.csproj">
       <Project>{094a69ce-c69e-4ef0-9321-ba16f7a89080}</Project>
       <Name>Popcorn.Utils</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />

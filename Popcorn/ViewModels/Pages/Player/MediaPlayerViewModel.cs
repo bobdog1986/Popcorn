@@ -14,8 +14,16 @@ using System.Windows.Input;
 using Popcorn.Helpers;
 using System.IO;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Threading;
+using GalaSoft.MvvmLight.Threading;
+using MimeKit;
+using Popcorn.Chromecast.Models;
+using Popcorn.Chromecast.Services;
 using Popcorn.Services.Subtitles;
 using Popcorn.Events;
+using Popcorn.Utils.Exceptions;
 
 namespace Popcorn.ViewModels.Pages.Player
 {
@@ -80,6 +88,31 @@ namespace Popcorn.ViewModels.Pages.Player
         public readonly string MediaName;
 
         /// <summary>
+        /// The media duration in seconds
+        /// </summary>
+        public double MediaDuration { get; set; }
+
+        private Func<object, Task<object>> _chromecastController;
+
+        private ChromecastReceiver _chromecastReceiver;
+
+        private ICommand _playCastCommand;
+
+        private ICommand _pauseCastCommand;
+
+        private ICommand _seekCastCommand;
+
+        private ICommand _stopCastCommand;
+
+        private readonly IChromecastService _chromecastService;
+
+        private readonly DispatcherTimer _castPlayerTimer;
+
+        public event EventHandler<TimeChangedEventArgs> CastPlayerTimeChanged;
+
+        private CancellationTokenSource _castPlayerCancellationTokenSource;
+
+        /// <summary>
         /// Media action to execute when media has ended
         /// </summary>
         private readonly Action _mediaEndedAction;
@@ -136,16 +169,12 @@ namespace Popcorn.ViewModels.Pages.Player
         /// <summary>
         /// Subtitles
         /// </summary>
-        private IEnumerable<Subtitle> _subtitles;
-
-        /// <summary>
-        /// Custom subtitle
-        /// </summary>
-        public string CustomSubtitlePath { get; set; }
+        private readonly IEnumerable<Subtitle> _subtitles;
 
         /// <summary>
         /// Initializes a new instance of the MediaPlayerViewModel class.
         /// </summary>
+        /// <param name="subtitlesService"></param>
         /// <param name="applicationService">Application service</param>
         /// <param name="mediaPath">Media path</param>
         /// <param name="mediaName">Media name</param>
@@ -166,6 +195,7 @@ namespace Popcorn.ViewModels.Pages.Player
             Logger.Info(
                 $"Loading media : {mediaPath}.");
             RegisterCommands();
+            _chromecastService = new ChromecastService();
             _subtitlesService = subtitlesService;
             _applicationService = applicationService;
             MediaPath = mediaPath;
@@ -176,10 +206,30 @@ namespace Popcorn.ViewModels.Pages.Player
             SubtitleFilePath = subtitleFilePath;
             BufferProgress = bufferProgress;
             BandwidthRate = bandwidthRate;
-            ShowSubtitleButton = MediaType == MediaType.Trailer ? false : true;
+            ShowSubtitleButton = MediaType != MediaType.Trailer;
             _subtitles = subtitles;
             // Prevent windows from sleeping
             _applicationService.EnableConstantDisplayAndPower(true);
+            _castPlayerTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+            _castPlayerTimer.Tick += OnCastPlayerTimerChanged;
+        }
+
+        /// <summary>
+        /// Fire OnTimeChange event
+        /// </summary>
+        /// <param name="e">Event args</param>
+        private void OnCastPlayerTimeChanged(TimeChangedEventArgs e)
+        {
+            var handler = CastPlayerTimeChanged;
+            handler?.Invoke(this, e);
+        }
+
+        private double _castTimeInSeconds;
+
+        private void OnCastPlayerTimerChanged(object sender, EventArgs e)
+        {
+            _castTimeInSeconds += 1;
+            OnCastPlayerTimeChanged(new TimeChangedEventArgs(_castTimeInSeconds));
         }
 
         /// <summary>
@@ -203,6 +253,44 @@ namespace Popcorn.ViewModels.Pages.Player
         /// </summary>
         private void RegisterCommands()
         {
+            PlayCastCommand = new RelayCommand(async () =>
+            {
+                try
+                {
+                    await _chromecastController.Invoke("play");
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                }
+            });
+
+            PauseCastCommand = new RelayCommand(async () =>
+            {
+                try
+                {
+                    await _chromecastController.Invoke("pause");
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                }
+            });
+
+            SeekCastCommand = new RelayCommand<double>(async seek =>
+            {
+                try
+                {
+                    await _chromecastController.Invoke($"seek:{seek}");
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                }
+            });
+
+            StopCastCommand = new RelayCommand(async () => { await StopCastPlayer(); });
+
             SelectSubtitlesCommand = new RelayCommand(async () =>
             {
                 try
@@ -257,8 +345,15 @@ namespace Popcorn.ViewModels.Pages.Player
             });
 
             StopPlayingMediaCommand =
-                new RelayCommand(() =>
+                new RelayCommand(async () =>
                 {
+                    if (_chromecastController != null)
+                    {
+                        await StopCastPlayer();
+                        _chromecastController = null;
+                    }
+
+                    _castPlayerTimer.Tick -= OnCastPlayerTimerChanged;
                     _mediaStoppedAction?.Invoke();
                     _applicationService.EnableConstantDisplayAndPower(false);
                     OnStoppedMedia(new EventArgs());
@@ -266,19 +361,173 @@ namespace Popcorn.ViewModels.Pages.Player
 
             CastCommand = new RelayCommand(async () =>
             {
-                OnPausedMedia(new EventArgs());
-                var message = new CastMediaMessage(MediaName, MediaPath, SubtitleFilePath);
-                await Messenger.Default.SendAsync(message);
-                if (message.Cancelled)
+                if (_chromecastController != null)
                 {
-                    OnResumedMedia(new EventArgs());
+                    await StopCastPlayer();
                     IsCasting = false;
+                    OnResumedMedia(new EventArgs());
+                    _chromecastController = null;
                 }
                 else
                 {
-                    IsCasting = true;
+                    IsCasting = false;
+                    OnPausedMedia(new EventArgs());
+                    var message = new CastMediaMessage {CastCancellationTokenSource = new CancellationTokenSource()};
+                    _castPlayerCancellationTokenSource = message.CastCancellationTokenSource;
+                    message.StartCast = async chromecastReseiver =>
+                    {
+                        await LoadMedia(chromecastReseiver.DeviceUri.Host, message.OnCastStarted);
+                    };
+                    await Messenger.Default.SendAsync(message);
+                    if (message.ChromecastReceiver == null)
+                    {
+                        OnResumedMedia(new EventArgs());
+                    }
+                    else
+                    {
+                        ChromecastReceiver = message.ChromecastReceiver;
+                    }
                 }
             });
+        }
+
+        private async Task StopCastPlayer()
+        {
+            try
+            {
+                await _chromecastController.Invoke("stop");
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+        }
+
+        private async Task LoadMedia(string host, Action onCastStarted)
+        {
+            Uri uriResult;
+            var isRemote = Uri.TryCreate(MediaPath, UriKind.Absolute, out uriResult)
+                           && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+
+            if (!string.IsNullOrEmpty(SubtitleFilePath))
+            {
+                var message = MimeMessage.Load(SubtitleFilePath);
+                //_subtitleServer = await _chromecastService.StartStaticFileServer(_subtitleFilePath,
+                //    message.BodyParts.FirstOrDefault().ContentType.Name, 9001);
+            }
+
+            if (!isRemote)
+            {
+                try
+                {
+                    var message = MimeMessage.Load(MediaPath);
+                    //_mediaServer =
+                    //    await _chromecastService.StartStreamFileServer(_mediaPath,
+                    //        message.BodyParts.FirstOrDefault().ContentType.Name, 9000);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                    Messenger.Default.Send(
+                        new UnhandledExceptionMessage(
+                            new PopcornException(LocalizationProviderHelper.GetLocalizedValue<string>("CastFailed"))));
+                }
+            }
+            else
+            {
+                var session = new ChromecastSession
+                {
+                    BroadcastType = BroadcastType.Buffered,
+                    Host = host,
+                    MediaPath = MediaPath,
+                    MediaTitle = MediaName,
+                    OnCastFailed = async message =>
+                    {
+                        if (!_castPlayerCancellationTokenSource.IsCancellationRequested)
+                        {
+                            onCastStarted.Invoke();
+                            Messenger.Default.Send(
+                                new UnhandledExceptionMessage(
+                                    new PopcornException(
+                                        LocalizationProviderHelper.GetLocalizedValue<string>("CastFailed"))));
+                        }
+
+                        return await Task.FromResult(message);
+                    },
+                    OnStatusChanged = async message =>
+                    {
+                        var dict = message as IDictionary<string, object>;
+                        object state;
+                        if (dict.TryGetValue("playerState", out state) &&
+                            string.Equals((string)state, "PLAYING"))
+                        {
+                            _castTimeInSeconds = (double)dict["currentTime"];
+                            _castPlayerTimer.Start();
+                        }
+                        else if (dict.TryGetValue("playerState", out state) &&
+                                 string.Equals((string)state, "PAUSED"))
+                        {
+                            _castTimeInSeconds = (double)dict["currentTime"];
+                            _castPlayerTimer.Stop();
+                        }
+                        else if (dict.TryGetValue("playerState", out state) &&
+                                 string.Equals((string)state, "IDLE") && _castTimeInSeconds > 0)
+                        {
+                            await StopCastPlayer();
+                            DispatcherHelper.CheckBeginInvokeOnUI(MediaEnded);
+                        }
+
+                        return await Task.FromResult(message);
+                    },
+                    OnCastSarted = async message =>
+                    {
+                        if (!_castPlayerCancellationTokenSource.IsCancellationRequested)
+                        {
+                            onCastStarted.Invoke();
+                            IsCasting = true;
+                        }
+                        else
+                        {
+                            IsCasting = false;
+                        }
+
+                        OnResumedMedia(new EventArgs());
+                        return await Task.FromResult(message);
+                    }
+                };
+
+                _chromecastController = await _chromecastService.StartCastAsync(session);
+            }
+        }
+
+        public ICommand PlayCastCommand
+        {
+            get { return _playCastCommand; }
+            set { Set(ref _playCastCommand, value); }
+        }
+
+        public ICommand PauseCastCommand
+        {
+            get { return _pauseCastCommand; }
+            set { Set(ref _pauseCastCommand, value); }
+        }
+
+        public ICommand SeekCastCommand
+        {
+            get { return _seekCastCommand; }
+            set { Set(ref _seekCastCommand, value); }
+        }
+
+        public ICommand StopCastCommand
+        {
+            get { return _stopCastCommand; }
+            set { Set(ref _stopCastCommand, value); }
+        }
+
+        public ChromecastReceiver ChromecastReceiver
+        {
+            get { return _chromecastReceiver; }
+            set { Set(ref _chromecastReceiver, value); }
         }
 
         /// <summary>

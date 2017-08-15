@@ -20,7 +20,6 @@ using Popcorn.Extensions;
 using Popcorn.Helpers;
 using Popcorn.Messaging;
 using Popcorn.Services.Application;
-using Popcorn.Services.FileServer;
 using Popcorn.Services.User;
 using Popcorn.Utils;
 using Popcorn.Utils.Exceptions;
@@ -96,11 +95,6 @@ namespace Popcorn.ViewModels.Windows
         private IApplicationService _applicationService;
 
         /// <summary>
-        /// File server service
-        /// </summary>
-        private readonly IFileServerService _fileServerService;
-
-        /// <summary>
         /// Subtitles service
         /// </summary>
         private readonly ISubtitlesService _subtitlesService;
@@ -130,12 +124,10 @@ namespace Popcorn.ViewModels.Windows
         /// </summary>
         /// <param name="applicationService">Instance of Application state</param>
         /// <param name="userService">Instance of movie history service</param>
-        /// <param name="fileServerService">Instance of file server service</param>
         /// <param name="subtitlesService">Instance of subtitles service</param>
-        public WindowViewModel(IApplicationService applicationService, IUserService userService, IFileServerService fileServerService, ISubtitlesService subtitlesService)
+        public WindowViewModel(IApplicationService applicationService, IUserService userService, ISubtitlesService subtitlesService)
         {
             _subtitlesService = subtitlesService;
-            _fileServerService = fileServerService;
             _userService = userService;
             _dialogCoordinator = DialogCoordinator.Instance;
             _applicationService = applicationService;
@@ -468,7 +460,7 @@ namespace Popcorn.ViewModels.Windows
 
             _castMediaMessage = Messenger.Default.RegisterAsyncMessage<CastMediaMessage>(async message =>
             {
-                var vm = new ChromecastDialogViewModel(message.Title, message.MediaPath, message.SubtitleFilePath, _fileServerService);
+                var vm = new ChromecastDialogViewModel(message);
                 var castDialog = new CastDialog
                 {
                     DataContext = vm
@@ -476,9 +468,15 @@ namespace Popcorn.ViewModels.Windows
                 var cts = new TaskCompletionSource<object>();
                 vm.OnCloseAction = async () =>
                 {
-                    await _dialogCoordinator.HideMetroDialogAsync(this, castDialog);
-                    message.Cancelled = true;
-                    cts.TrySetResult(null);
+                    try
+                    {
+                        await _dialogCoordinator.HideMetroDialogAsync(this, castDialog);
+                        cts.TrySetResult(null);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(ex);
+                    }
                 };
                 await _dialogCoordinator.ShowMetroDialogAsync(this, castDialog);
                 await cts.Task;

@@ -1,7 +1,7 @@
-﻿using Popcorn.Utils;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Popcorn.Utils;
 
 // Les informations générales relatives à un assembly dépendent de
 // l'ensemble d'attributs suivant. Changez les valeurs de ces attributs pour modifier les informations
@@ -21,7 +21,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // Le GUID suivant est pour l'ID de la typelib si ce projet est exposé à COM
-[assembly: Guid("21b07e87-7990-42e2-9717-b538e3388137")]
+[assembly: Guid("e59ceb48-8f9b-4eaf-b20f-f70202f08290")]
 
 // Les informations de version pour un assembly se composent des quatre valeurs suivantes :
 //

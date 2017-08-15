@@ -6,10 +6,8 @@
     xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:converters="clr-namespace:Popcorn.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:lex="http://wpflocalizeextension.codeplex.com"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:system="clr-namespace:System;assembly=mscorlib"
     xmlns:wpf="clr-namespace:Meta.Vlc.Wpf;assembly=Meta.Vlc.Wpf"
     x:Name="PlayerUc"
     mc:Ignorable="d">
@@ -42,6 +40,32 @@
             LibVlcPath="libvlc"
             MouseDown="OnMouseDown"
             VlcOption="{Binding VlcOptions, ElementName=PlayerUc}" />
+        <Grid
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            Visibility="{Binding IsCasting, Converter={StaticResource BoolToInverseVisibilityConverter}}">
+            <Grid
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Background="Black"
+                Opacity="0.8" />
+            <StackPanel
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Orientation="Horizontal">
+                <TextBlock
+                    FontSize="36"
+                    FontWeight="Light"
+                    Foreground="White"
+                    Text="{lex:LocText CastToLabel}" />
+                <TextBlock
+                    Margin="5,0,0,0"
+                    FontSize="36"
+                    FontWeight="Light"
+                    Foreground="White"
+                    Text="{Binding ChromecastReceiver.Name}" />
+            </StackPanel>
+        </Grid>
         <Grid
             Margin="0,0,0,100"
             HorizontalAlignment="Center"
@@ -186,11 +210,11 @@
                         HorizontalAlignment="Stretch"
                         IsMoveToPointEnabled="True"
                         Opacity="0.7"
-                        Value="{Binding TimeInMilliseconds, Mode=TwoWay, ElementName=PlayerUc}"
                         Style="{StaticResource FlatSlider}"
                         Thumb.DragCompleted="MediaSliderProgressDragCompleted"
-                        Thumb.DragStarted="MediaSliderProgressDragStarted"                        
-                        ValueChanged="MediaSliderProgressValueChanged" />
+                        Thumb.DragStarted="MediaSliderProgressDragStarted"
+                        ValueChanged="MediaSliderProgressValueChanged"
+                        Value="{Binding TimeInMilliseconds, Mode=TwoWay, ElementName=PlayerUc}" />
                 </Grid>
             </StatusBarItem>
             <StatusBarItem Grid.Column="3" Background="#FF2F2F2F">

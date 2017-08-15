@@ -709,6 +709,15 @@ namespace Popcorn.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Refresh.
+        /// </summary>
+        public static string RefreshLabel {
+            get {
+                return ResourceManager.GetString("RefreshLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Reload.
         /// </summary>
         public static string ReloadLabel {
@@ -813,6 +822,15 @@ namespace Popcorn.Properties {
         public static string StopLabel {
             get {
                 return ResourceManager.GetString("StopLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à .
+        /// </summary>
+        public static string String1 {
+            get {
+                return ResourceManager.GetString("String1", resourceCulture);
             }
         }
         
