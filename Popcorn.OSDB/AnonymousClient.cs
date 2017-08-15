@@ -97,6 +97,13 @@ namespace Popcorn.OSDB
 
             var destinationfile = Path.Combine(path,
                 (string.IsNullOrEmpty(newSubtitleName)) ? subtitle.SubtitleFileName : newSubtitleName);
+
+            if (File.Exists(destinationfile))
+            {
+                //if file has been downloaded before - there is no need to download it again
+                return destinationfile;
+            }
+
             var tempZipName = Path.GetTempFileName();
             try
             {
