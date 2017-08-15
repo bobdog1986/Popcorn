@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using CookComputing.XmlRpc;
+using Polly;
 using Popcorn.OSDB;
 
 namespace Popcorn.Services.Subtitles
@@ -15,10 +18,19 @@ namespace Popcorn.Services.Subtitles
         /// <returns>Languages</returns>
         public async Task<IEnumerable<Language>> GetSubLanguages()
         {
-            using (var osdb = new Osdb().Login("OSTestUserAgentTemp"))
+            var retryGetSubLanguagesPolicy = Policy
+                .Handle<XmlRpcServerException>()
+                .WaitAndRetryAsync(5, retryAttempt =>
+                    TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))
+                );
+
+            return await retryGetSubLanguagesPolicy.ExecuteAsync(async () =>
             {
-                return await osdb.GetSubLanguages();
-            }
+                using (var osdb = new Osdb().Login("OSTestUserAgentTemp"))
+                {
+                    return await osdb.GetSubLanguages();
+                }
+            });
         }
 
         /// <summary>
@@ -31,10 +43,19 @@ namespace Popcorn.Services.Subtitles
         /// <returns>Subtitles</returns>
         public async Task<IList<Subtitle>> SearchSubtitlesFromImdb(string languages, string imdbId, int? season, int? episode)
         {
-            using (var osdb = new Osdb().Login("OSTestUserAgentTemp"))
+            var retrySearchSubtitlesFromImdbPolicy = Policy
+                .Handle<XmlRpcServerException>()
+                .WaitAndRetryAsync(5, retryAttempt =>
+                    TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))
+                );
+
+            return await retrySearchSubtitlesFromImdbPolicy.ExecuteAsync(async () =>
             {
-                return await osdb.SearchSubtitlesFromImdb(languages, imdbId, season, episode);
-            }
+                using (var osdb = new Osdb().Login("OSTestUserAgentTemp"))
+                {
+                    return await osdb.SearchSubtitlesFromImdb(languages, imdbId, season, episode);
+                }
+            });
         }
 
         /// <summary>
@@ -45,10 +66,19 @@ namespace Popcorn.Services.Subtitles
         /// <returns>Downloaded subtitle path</returns>
         public async Task<string> DownloadSubtitleToPath(string path, Subtitle subtitle)
         {
-            using (var osdb = new Osdb().Login("OSTestUserAgentTemp"))
+            var retryDownloadSubtitleToPathPolicy = Policy
+                .Handle<XmlRpcServerException>()
+                .WaitAndRetryAsync(5, retryAttempt =>
+                    TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))
+                );
+
+            return await retryDownloadSubtitleToPathPolicy.ExecuteAsync(async () =>
             {
-                return await osdb.DownloadSubtitleToPath(path, subtitle);
-            }
+                using (var osdb = new Osdb().Login("OSTestUserAgentTemp"))
+                {
+                    return await osdb.DownloadSubtitleToPath(path, subtitle);
+                }
+            });
         }
     }
 }

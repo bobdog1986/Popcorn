@@ -10,10 +10,8 @@ using Popcorn.Models.Shows;
 using RestSharp;
 using TMDbLib.Client;
 using Popcorn.Models.User;
-using Popcorn.Models.Trailer;
 using System.Linq;
 using GalaSoft.MvvmLight.Ioc;
-using Popcorn.Services.Application;
 using Popcorn.ViewModels.Windows.Settings;
 using Popcorn.YTVideoProvider;
 using Video = TMDbLib.Objects.General.Video;
@@ -69,7 +67,10 @@ namespace Popcorn.Services.Shows.Show
         public async Task<ShowJson> GetShowAsync(string imdbCode)
         {
             var watch = Stopwatch.StartNew();
-            var restClient = new RestClient(Utils.Constants.PopcornApi);
+            var restClient = new RestClient(Utils.Constants.PopcornApi)
+            {
+                Timeout = 5000
+            };
             var request = new RestRequest("/{segment}/{show}", Method.GET);
             request.AddUrlSegment("segment", "shows");
             request.AddUrlSegment("show", imdbCode);
@@ -129,7 +130,10 @@ namespace Popcorn.Services.Shows.Show
             if (page < 1)
                 page = 1;
 
-            var restClient = new RestClient(Utils.Constants.PopcornApi);
+            var restClient = new RestClient(Utils.Constants.PopcornApi)
+            {
+                Timeout = 5000
+            };
             var request = new RestRequest("/{segment}", Method.GET);
             request.AddUrlSegment("segment", "shows");
             request.AddParameter("limit", limit);
@@ -194,7 +198,10 @@ namespace Popcorn.Services.Shows.Show
             if (page < 1)
                 page = 1;
 
-            var restClient = new RestClient(Utils.Constants.PopcornApi);
+            var restClient = new RestClient(Utils.Constants.PopcornApi)
+            {
+                Timeout = 5000
+            };
             var request = new RestRequest("/{segment}", Method.GET);
             request.AddUrlSegment("segment", "shows");
             request.AddParameter("limit", limit);
@@ -252,14 +259,21 @@ namespace Popcorn.Services.Shows.Show
                     Video trailer = null;
                     await shows.Results.ParallelForEachAsync(async tvShow =>
                     {
-                        var result = await TmdbClient.GetTvShowExternalIdsAsync(tvShow.Id);
-                        if (result.ImdbId == show.ImdbId)
+                        try
                         {
-                            var videos = await TmdbClient.GetTvShowVideosAsync(result.Id);
-                            if (videos != null && videos.Results.Any())
+                            var result = await TmdbClient.GetTvShowExternalIdsAsync(tvShow.Id);
+                            if (result.ImdbId == show.ImdbId)
                             {
-                                trailer = videos.Results.FirstOrDefault();
+                                var videos = await TmdbClient.GetTvShowVideosAsync(result.Id);
+                                if (videos != null && videos.Results.Any())
+                                {
+                                    trailer = videos.Results.FirstOrDefault();
+                                }
                             }
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Error(ex);
                         }
                     }, ct);
 

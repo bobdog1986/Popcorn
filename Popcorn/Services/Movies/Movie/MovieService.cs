@@ -86,7 +86,10 @@ namespace Popcorn.Services.Movies.Movie
         {
             var watch = Stopwatch.StartNew();
 
-            var restClient = new RestClient(Utils.Constants.PopcornApi);
+            var restClient = new RestClient(Utils.Constants.PopcornApi)
+            {
+                Timeout = 5000
+            };
             var request = new RestRequest("/{segment}/{movie}", Method.GET);
             request.AddUrlSegment("segment", "movies");
             request.AddUrlSegment("movie", imdbCode);
@@ -137,10 +140,17 @@ namespace Popcorn.Services.Movies.Movie
                 {
                     await movie.Similars.ParallelForEachAsync(async imdbCode =>
                     {
-                        var similar = await GetMovieAsync(imdbCode);
-                        if (similar != null)
+                        try
                         {
-                            movies.Add(similar);
+                            var similar = await GetMovieAsync(imdbCode);
+                            if (similar != null)
+                            {
+                                movies.Add(similar);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Error(ex);
                         }
                     });
                 }
@@ -187,7 +197,10 @@ namespace Popcorn.Services.Movies.Movie
             if (page < 1)
                 page = 1;
 
-            var restClient = new RestClient(Utils.Constants.PopcornApi);
+            var restClient = new RestClient(Utils.Constants.PopcornApi)
+            {
+                Timeout = 5000
+            };
             var request = new RestRequest("/{segment}", Method.GET);
             request.AddUrlSegment("segment", "movies");
             request.AddParameter("limit", limit);
@@ -270,7 +283,10 @@ namespace Popcorn.Services.Movies.Movie
             if (page < 1)
                 page = 1;
 
-            var restClient = new RestClient(Utils.Constants.PopcornApi);
+            var restClient = new RestClient(Utils.Constants.PopcornApi)
+            {
+                Timeout = 5000
+            };
             var request = new RestRequest("/{segment}", Method.GET);
             request.AddUrlSegment("segment", "movies");
             request.AddParameter("limit", limit);

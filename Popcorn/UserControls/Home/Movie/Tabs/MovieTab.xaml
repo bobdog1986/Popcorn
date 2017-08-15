@@ -55,8 +55,16 @@
             ItemsSource="{Binding Movies, Mode=OneTime}"
             ScrollViewer.CanContentScroll="True"
             VirtualizingStackPanel.IsVirtualizing="True"
-            VirtualizingStackPanel.VirtualizationMode="Recycling"
-            Visibility="{Binding Window.ApplicationService.IsConnectionInError, Converter={StaticResource BoolToVisibilityConverter}, Source={StaticResource Locator}}">
+            VirtualizingStackPanel.VirtualizationMode="Recycling">
+            <ItemsControl.Visibility>
+                <MultiBinding Converter="{StaticResource MultiBooleanToVisibilityConverter}" ConverterParameter="AND">
+                    <Binding
+                        Converter="{StaticResource BoolToInverseBoolConverter}"
+                        Path="Window.ApplicationService.IsConnectionInError"
+                        Source="{StaticResource Locator}" />
+                    <Binding Converter="{StaticResource BoolToInverseBoolConverter}" Path="HasLoadingFailed" />
+                </MultiBinding>
+            </ItemsControl.Visibility>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <StackPanel

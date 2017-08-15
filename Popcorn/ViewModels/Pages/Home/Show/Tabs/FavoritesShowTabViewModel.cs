@@ -88,11 +88,18 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
                         var shows = new List<ShowJson>();
                         await imdbIds.shows.ParallelForEachAsync(async imdbId =>
                         {
-                            var show = await ShowService.GetShowAsync(imdbId).ConfigureAwait(false);
-                            if (show != null)
+                            try
                             {
-                                show.IsFavorite = true;
-                                shows.Add(show);
+                                var show = await ShowService.GetShowAsync(imdbId).ConfigureAwait(false);
+                                if (show != null)
+                                {
+                                    show.IsFavorite = true;
+                                    shows.Add(show);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Logger.Error(ex);
                             }
                         });
                         var updatedShows = shows.OrderBy(a => a.Title)
@@ -137,14 +144,21 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
                         var showsToAddAndToOrder = new List<ShowJson>();
                         await shows.ParallelForEachAsync(async imdbId =>
                         {
-                            var show = await ShowService.GetShowAsync(imdbId).ConfigureAwait(false);
-                            if ((Genre != null
-                                    ? show.Genres.Any(
-                                        genre => genre.ToLowerInvariant() ==
-                                                 Genre.EnglishName.ToLowerInvariant())
-                                    : show.Genres.TrueForAll(b => true)) && show.Rating.Percentage >= Rating * 10)
+                            try
                             {
-                                showsToAddAndToOrder.Add(show);
+                                var show = await ShowService.GetShowAsync(imdbId).ConfigureAwait(false);
+                                if ((Genre != null
+                                        ? show.Genres.Any(
+                                            genre => genre.ToLowerInvariant() ==
+                                                     Genre.EnglishName.ToLowerInvariant())
+                                        : show.Genres.TrueForAll(b => true)) && show.Rating.Percentage >= Rating * 10)
+                                {
+                                    showsToAddAndToOrder.Add(show);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Logger.Error(ex);
                             }
                         });
 

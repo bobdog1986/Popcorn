@@ -85,11 +85,18 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                         var movies = new List<MovieJson>();
                         await imdbIds.movies.ParallelForEachAsync(async imdbId =>
                         {
-                            var movie = await MovieService.GetMovieAsync(imdbId);
-                            if (movie != null)
+                            try
                             {
-                                movie.IsFavorite = true;
-                                movies.Add(movie);
+                                var movie = await MovieService.GetMovieAsync(imdbId);
+                                if (movie != null)
+                                {
+                                    movie.IsFavorite = true;
+                                    movies.Add(movie);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Logger.Error(ex);
                             }
                         });
                         var updatedMovies = movies.OrderBy(a => a.Title)
@@ -133,14 +140,21 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                         var moviesToAddAndToOrder = new List<MovieJson>();
                         await movies.ParallelForEachAsync(async imdbId =>
                         {
-                            var movie = await MovieService.GetMovieAsync(imdbId);
-                            if ((Genre != null
-                                    ? movie.Genres.Any(
-                                        genre => genre.ToLowerInvariant() ==
-                                                 Genre.EnglishName.ToLowerInvariant())
-                                    : movie.Genres.TrueForAll(b => true)) && movie.Rating >= Rating)
+                            try
                             {
-                                moviesToAddAndToOrder.Add(movie);
+                                var movie = await MovieService.GetMovieAsync(imdbId);
+                                if ((Genre != null
+                                        ? movie.Genres.Any(
+                                            genre => genre.ToLowerInvariant() ==
+                                                     Genre.EnglishName.ToLowerInvariant())
+                                        : movie.Genres.TrueForAll(b => true)) && movie.Rating >= Rating)
+                                {
+                                    moviesToAddAndToOrder.Add(movie);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Logger.Error(ex);
                             }
                         });
 
