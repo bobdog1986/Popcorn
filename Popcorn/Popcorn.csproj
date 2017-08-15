@@ -263,6 +263,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AttachedProperties\ImageAsyncHelper.cs" />
+    <Compile Include="AttachedProperties\MouseCommandBehavior.cs" />
     <Compile Include="AttachedProperties\RippleAssist.cs" />
     <Compile Include="AttachedProperties\TextParenthesis.cs" />
     <Compile Include="Comparers\ShowComparer.cs" />

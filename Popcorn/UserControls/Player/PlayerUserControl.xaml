@@ -156,7 +156,7 @@
                 Visibility="Visible">
                 <Button
                     Margin="5,0,5,0"
-                    Command="MediaCommands.Pause"
+                    attachedProperties:MouseCommandBehavior.MouseUpCommand="MediaCommands.Pause"
                     Style="{StaticResource ChromelessButtonStyle}">
                     <Canvas Width="15" Height="15">
                         <Path
@@ -175,7 +175,7 @@
                 Visibility="Collapsed">
                 <Button
                     Margin="5,0,5,0"
-                    Command="MediaCommands.Play"
+                    attachedProperties:MouseCommandBehavior.MouseUpCommand="MediaCommands.Play"
                     Style="{StaticResource ChromelessButtonStyle}">
                     <Canvas Width="15" Height="15">
                         <Path
