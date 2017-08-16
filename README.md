@@ -62,13 +62,13 @@ See the [roadmap](https://github.com/bbougot/Popcorn/projects/1) for the full li
 ## Mockups
 
 ### Home Page
-![Home Page](https://github.com/bbougot/Popcorn/blob/master/Screenshots/Screen1.jpg))
+![Home Page](https://github.com/bbougot/Popcorn/blob/master/Screenshots/Screen1.jpg)
 
 ### Movie Page
-![Movie Page](https://github.com/bbougot/Popcorn/blob/master/Screenshots/Screen2.jpg))
+![Movie Page](https://github.com/bbougot/Popcorn/blob/master/Screenshots/Screen2.jpg)
 
 ### Show Page
-![Show Page](https://github.com/bbougot/Popcorn/blob/master/Screenshots/Screen3.jpg))
+![Show Page](https://github.com/bbougot/Popcorn/blob/master/Screenshots/Screen3.jpg)
 
 ## License
 If you distribute a copy or make a fork of the project, you have to credit this project as source.
