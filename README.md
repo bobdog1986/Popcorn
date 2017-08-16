@@ -50,6 +50,9 @@ It also supports caching using Redis database.
 
 The assets (images and torrent files) are stored on Azure Blob Storage.
 
+## Supported platforms
+Windows 7+ is supported (Windows 7, 8, 8.1, 10).
+
 ## Installation
 Download installer [here](https://github.com/bbougot/Popcorn/releases/download/v2.5.0/PopcornInstaller.exe) 
 
@@ -61,8 +64,11 @@ See the [roadmap](https://github.com/bbougot/Popcorn/projects/1) for the full li
 ### Home Page
 ![Home Page](https://github.com/bbougot/Popcorn/blob/master/Screenshots/Screen1.jpg))
 
-## Supported platforms
-Windows 7+ is supported (Windows 7, 8, 8.1, 10).
+### Movie Page
+![Movie Page](https://github.com/bbougot/Popcorn/blob/master/Screenshots/Screen2.jpg))
+
+### Show Page
+![Show Page](https://github.com/bbougot/Popcorn/blob/master/Screenshots/Screen3.jpg))
 
 ## License
 If you distribute a copy or make a fork of the project, you have to credit this project as source.

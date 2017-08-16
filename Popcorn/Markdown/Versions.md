@@ -1,4 +1,4 @@
-﻿# 2.5.0 15/08/2017 #
+﻿# 2.5.0 - 15/08/2017 #
 ***
 Fix issues
 
@@ -10,7 +10,7 @@ Fix issues
 * Fixed issue [#77](https://github.com/bbougot/Popcorn/issues/77).
 * Fixed issue [#76](https://github.com/bbougot/Popcorn/issues/76).
 
-# 2.4.10 31/07/2017 #
+# 2.4.10 - 31/07/2017 #
 ***
 Improve performances
 
@@ -18,7 +18,7 @@ Improve performances
 
 * Improve image rendering
 
-# 2.4.9 31/07/2017 #
+# 2.4.9 - 31/07/2017 #
 ***
 Fix issues
 
@@ -26,7 +26,7 @@ Fix issues
 
 * Fixed issue [#75](https://github.com/bbougot/Popcorn/issues/75).
 
-# 2.4.8- 31/07/2017 #
+# 2.4.8 - 31/07/2017 #
 ***
 Fix issues
 
