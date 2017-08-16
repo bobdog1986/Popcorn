@@ -327,6 +327,7 @@
     <Compile Include="Messaging\StopPlayingEpisodeMessage.cs" />
     <Compile Include="Messaging\StopPlayMediaMessage.cs" />
     <Compile Include="Messaging\UnhandledExceptionMessage.cs" />
+    <Compile Include="Models\Subtitles\SubtitleSize.cs" />
     <Compile Include="Models\Version\VersionInfo.cs" />
     <Compile Include="Panels\VirtualizingTilePanel.cs" />
     <Compile Include="Services\Application\ApplicationService.cs" />

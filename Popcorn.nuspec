@@ -9,7 +9,7 @@
         <iconUrl>https://raw.githubusercontent.com/bbougot/Popcorn/master/Popcorn/icon.ico</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>Popcorn Windows native app made in .NET/WPF</description>
-        <releaseNotes>Fixed Chromecast issue.</releaseNotes>
+        <releaseNotes>Fixed Chromecast issue and improved stability.</releaseNotes>
     </metadata>
     <files>
         <file src="en\Popcorn.resources.dll" target="lib\net45\en\Popcorn.resources.dll" />

@@ -4,7 +4,11 @@ Fix issues
 
 ### Details ###
 
-* Fix Chromecast issues
+* Fixed issue [#59](https://github.com/bbougot/Popcorn/issues/59).
+* Fixed issue [#83](https://github.com/bbougot/Popcorn/issues/83).
+* Fixed issue [#82](https://github.com/bbougot/Popcorn/issues/82).
+* Fixed issue [#77](https://github.com/bbougot/Popcorn/issues/77).
+* Fixed issue [#76](https://github.com/bbougot/Popcorn/issues/76).
 
 # 2.4.10 31/07/2017 #
 ***

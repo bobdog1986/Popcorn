@@ -21,8 +21,6 @@ using Popcorn.Utils.Exceptions;
 using Popcorn.ViewModels.Windows.Settings;
 using System.Runtime.CompilerServices;
 using System.ComponentModel;
-using Meta.Vlc;
-using Meta.Vlc.Interop.Core.Events;
 
 namespace Popcorn.UserControls.Player
 {
@@ -107,7 +105,8 @@ namespace Popcorn.UserControls.Player
             VlcOptions = new[]
             {
                 "-I", "--dummy-quiet", "--no-video-title", "--no-sub-autodetect-file", "--sub-filter=freetype",
-                $"--freetype-color={HexConverter(applicationSettings.SubtitlesColor)}"
+                $"--freetype-color={HexConverter(applicationSettings.SubtitlesColor)}",
+                $"--freetype-rel-fontsize={applicationSettings.SelectedSubtitleSize.Size}"
             };
             InitializeComponent();
             Loaded += OnLoaded;
@@ -141,10 +140,8 @@ namespace Popcorn.UserControls.Player
 
                     return Player.Time.TotalMilliseconds;
                 }
-                else
-                {
-                    return Player.Time.TotalMilliseconds;
-                }
+
+                return Player.Time.TotalMilliseconds;
             }
             set
             {
@@ -165,7 +162,6 @@ namespace Popcorn.UserControls.Player
         public int Volume
         {
             get => (int) GetValue(VolumeProperty);
-
             set => SetValue(VolumeProperty, value);
         }
 

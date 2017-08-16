@@ -134,7 +134,6 @@ namespace Popcorn.Chromecast.Services
                 ? $"http://{GetLocalIpAddress()}:9000"
                 : session.MediaPath;
             var contentType = "video/mp4";
-            var streamType = session.SourceType == SourceType.Torrent ? "BUFFERED" : "BUFFERED";
             var castServer = (Func<object, Task<object>>) await server(new
             {
                 host = session.Host,
@@ -144,7 +143,7 @@ namespace Popcorn.Chromecast.Services
                 onError = session.OnCastFailed,
                 onStarted = session.OnCastSarted,
                 contentType = contentType,
-                streamType = streamType,
+                streamType = "BUFFERED",
                 subtitlePath = $"http://{GetLocalIpAddress()}:9001",
                 anySubtitle = !string.IsNullOrEmpty(session.SubtitlePath)
             });

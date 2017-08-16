@@ -413,7 +413,6 @@ namespace Popcorn.ViewModels.Pages.Player
                     message.StartCast = async chromecastReseiver =>
                     {
                         await LoadMedia(chromecastReseiver.DeviceUri.Host, message.CloseCastDialog);
-                        
                     };
                     await Messenger.Default.SendAsync(message);
                     if (message.CastCancellationTokenSource.IsCancellationRequested)

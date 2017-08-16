@@ -106,6 +106,24 @@ namespace Popcorn.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Big.
+        /// </summary>
+        public static string Big {
+            get {
+                return ResourceManager.GetString("Big", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Bigger.
+        /// </summary>
+        public static string Bigger {
+            get {
+                return ResourceManager.GetString("Bigger", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Buffering.
         /// </summary>
         public static string BufferingLabel {
@@ -592,6 +610,15 @@ namespace Popcorn.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Normal.
+        /// </summary>
+        public static string Normal {
+            get {
+                return ResourceManager.GetString("Normal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à No similar movie found.
         /// </summary>
         public static string NoSimilarLabel {
@@ -808,6 +835,24 @@ namespace Popcorn.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Small.
+        /// </summary>
+        public static string Small {
+            get {
+                return ResourceManager.GetString("Small", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Smaller.
+        /// </summary>
+        public static string Smaller {
+            get {
+                return ResourceManager.GetString("Smaller", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à (kB/s).
         /// </summary>
         public static string Speed {
@@ -826,15 +871,6 @@ namespace Popcorn.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à .
-        /// </summary>
-        public static string String1 {
-            get {
-                return ResourceManager.GetString("String1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Recherche une chaîne localisée semblable à Subtitles color.
         /// </summary>
         public static string SubtitlesColorLabel {
@@ -849,6 +885,15 @@ namespace Popcorn.Properties {
         public static string SubtitlesLabel {
             get {
                 return ResourceManager.GetString("SubtitlesLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Subtitle size.
+        /// </summary>
+        public static string SubtitlesSizeLabel {
+            get {
+                return ResourceManager.GetString("SubtitlesSizeLabel", resourceCulture);
             }
         }
         

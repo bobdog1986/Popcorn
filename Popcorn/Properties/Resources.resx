@@ -411,4 +411,22 @@
   <data name="RefreshLabel" xml:space="preserve">
     <value>Refresh</value>
   </data>
+  <data name="Big" xml:space="preserve">
+    <value>Big</value>
+  </data>
+  <data name="Bigger" xml:space="preserve">
+    <value>Bigger</value>
+  </data>
+  <data name="Normal" xml:space="preserve">
+    <value>Normal</value>
+  </data>
+  <data name="Small" xml:space="preserve">
+    <value>Small</value>
+  </data>
+  <data name="Smaller" xml:space="preserve">
+    <value>Smaller</value>
+  </data>
+  <data name="SubtitlesSizeLabel" xml:space="preserve">
+    <value>Subtitle size</value>
+  </data>
 </root>

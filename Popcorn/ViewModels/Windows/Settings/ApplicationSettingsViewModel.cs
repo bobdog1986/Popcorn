@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using GalaSoft.MvvmLight.Threading;
 using NLog;
 using Popcorn.Helpers;
 using Popcorn.Models.Localization;
+using Popcorn.Models.Subtitles;
 using Popcorn.Services.Subtitles;
 using Popcorn.Services.User;
 using Popcorn.Utils;
@@ -77,6 +79,10 @@ namespace Popcorn.ViewModels.Windows.Settings
 
         private bool _loadingSubtitles;
 
+        private ObservableCollection<SubtitleSize> _subtitleSizes;
+
+        private SubtitleSize _selectedSubtitleSize;
+
         /// <summary>
         /// Initializes a new instance of the ApplicationSettingsViewModel class.
         /// </summary>
@@ -95,6 +101,36 @@ namespace Popcorn.ViewModels.Windows.Settings
             {
                 try
                 {
+                    SubtitleSizes = new ObservableCollection<SubtitleSize>
+                    {
+                        new SubtitleSize
+                        {
+                            Label = LocalizationProviderHelper.GetLocalizedValue<string>("Bigger"),
+                            Size = 6
+                        },
+                        new SubtitleSize
+                        {
+                            Label = LocalizationProviderHelper.GetLocalizedValue<string>("Big"),
+                            Size = 12
+                        },
+                        new SubtitleSize
+                        {
+                            Label = LocalizationProviderHelper.GetLocalizedValue<string>("Normal"),
+                            Size = 16
+                        },
+                        new SubtitleSize
+                        {
+                            Label = LocalizationProviderHelper.GetLocalizedValue<string>("Small"),
+                            Size = 18
+                        },
+                        new SubtitleSize
+                        {
+                            Label = LocalizationProviderHelper.GetLocalizedValue<string>("Smaller"),
+                            Size = 20
+                        }
+                    };
+
+                    SelectedSubtitleSize = SubtitleSizes.FirstOrDefault(a => a.Size == 16);
                     DownloadLimit = await _userService.GetDownloadLimit();
                     UploadLimit = await _userService.GetUploadLimit();
                     var defaultSubtitleLanguage = await _userService.GetDefaultSubtitleLanguage();
@@ -160,6 +196,24 @@ namespace Popcorn.ViewModels.Windows.Settings
                     await _userService.SetDefaultSubtitleLanguage(_defaultSubtitleLanguage);
                 });
             }
+        }
+
+        /// <summary>
+        /// Selected subtitle size
+        /// </summary>
+        public SubtitleSize SelectedSubtitleSize
+        {
+            get => _selectedSubtitleSize;
+            set { Set(ref _selectedSubtitleSize, value); }
+        }
+
+        /// <summary>
+        /// Available subtitle sizes
+        /// </summary>
+        public ObservableCollection<SubtitleSize> SubtitleSizes
+        {
+            get => _subtitleSizes;
+            set { Set(ref _subtitleSizes, value); }
         }
 
         /// <summary>
