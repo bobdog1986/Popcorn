@@ -333,9 +333,8 @@
                             HorizontalAlignment="Left"
                             FontSize="12"
                             Foreground="Gray"
-                            TextOptions.TextHintingMode="Fixed">
-                            <customControls:GenresLabel Genres="{Binding Genres, Mode=OneTime}" />
-                        </TextBlock>
+                            Text="{Binding Genres, Mode=OneTime}"
+                            TextOptions.TextHintingMode="Fixed" />
                         <TextBlock
                             Width="200"
                             HorizontalAlignment="Left"

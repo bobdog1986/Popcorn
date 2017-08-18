@@ -3,12 +3,16 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using System.Windows.Media;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
+using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using NLog;
+using Popcorn.Extensions;
 using Popcorn.Helpers;
+using Popcorn.Messaging;
 using Popcorn.Models.Localization;
 using Popcorn.Models.Subtitles;
 using Popcorn.Services.Subtitles;
@@ -83,6 +87,8 @@ namespace Popcorn.ViewModels.Windows.Settings
 
         private SubtitleSize _selectedSubtitleSize;
 
+        private ICommand _showTraktDialogCommand;
+
         /// <summary>
         /// Initializes a new instance of the ApplicationSettingsViewModel class.
         /// </summary>
@@ -96,6 +102,10 @@ namespace Popcorn.ViewModels.Windows.Settings
             RefreshCacheSize();
             RegisterCommands();
             SubtitlesColor = Color.FromRgb(255, 255, 255);
+            ShowTraktDialogCommand = new RelayCommand(async () =>
+            {
+                await Messenger.Default.SendAsync(new ShowTraktDialogMessage());
+            });
 
             Task.Run(async () =>
             {
@@ -205,6 +215,15 @@ namespace Popcorn.ViewModels.Windows.Settings
         {
             get => _selectedSubtitleSize;
             set { Set(ref _selectedSubtitleSize, value); }
+        }
+
+        /// <summary>
+        /// Show Trakt dialog
+        /// </summary>
+        public ICommand ShowTraktDialogCommand
+        {
+            get => _showTraktDialogCommand;
+            set { Set(ref _showTraktDialogCommand, value); }
         }
 
         /// <summary>

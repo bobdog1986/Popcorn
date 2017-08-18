@@ -22,32 +22,32 @@ namespace Popcorn.Services.Genres
                     new GenreJson
                     {
                         EnglishName = "Action",
-                        Name = "Action"
+                        Name = language == "es" ? "Acción" : "Action"
                     },
                     new GenreJson
                     {
                         EnglishName = "Adventure",
-                        Name = language == "fr" ? "Aventure" : "Adventure"
+                        Name = language == "fr" ? "Aventure" : (language == "es" ? "Aventura" : "Adventure")
                     },
                     new GenreJson
                     {
                         EnglishName = "Animation",
-                        Name = "Animation"
+                        Name = language == "es" ? "Animación" : "Animation"
                     },
                     new GenreJson
                     {
                         EnglishName = "Comedy",
-                        Name = language == "fr" ? "Comédie" : "Comedy"
+                        Name = language == "fr" ? "Comédie" : (language == "es" ? "Comedia" : "Comedy")
                     },
                     new GenreJson
                     {
                         EnglishName = "Crime",
-                        Name = "Crime"
+                        Name = language == "es" ? "Crimen" : "Crime"
                     },
                     new GenreJson
                     {
                         EnglishName = "Documentary",
-                        Name = language == "fr" ? "Documentaire" : "Documentary"
+                        Name = language == "fr" ? "Documentaire" : (language == "es" ? "Documental" : "Documentary")
                     },
                     new GenreJson
                     {
@@ -57,17 +57,17 @@ namespace Popcorn.Services.Genres
                     new GenreJson
                     {
                         EnglishName = "Family",
-                        Name = language == "fr" ? "Familial" : "Family"
+                        Name = language == "fr" ? "Familial" : (language == "es" ? "Familiar" : "Family")
                     },
                     new GenreJson
                     {
                         EnglishName = "Fantasy",
-                        Name = language == "fr" ? "Fantastique" : "Fantasy"
+                        Name = language == "fr" ? "Fantastique" : (language == "es" ? "Fantasía" : "Fantasy")
                     },
                     new GenreJson
                     {
                         EnglishName = "History",
-                        Name = language == "fr" ? "Histoire" : "History"
+                        Name = language == "fr" ? "Histoire" : (language == "es" ? "Historia" : "History")
                     },
                     new GenreJson
                     {
@@ -77,12 +77,12 @@ namespace Popcorn.Services.Genres
                     new GenreJson
                     {
                         EnglishName = "Music",
-                        Name = language == "fr" ? "Musique" : "Music"
+                        Name = language == "fr" ? "Musique" : (language == "es" ? "Musical" : "Music")
                     },
                     new GenreJson
                     {
                         EnglishName = "Mystery",
-                        Name = language == "fr" ? "Mystère" : "Mystery"
+                        Name = language == "fr" ? "Mystère" : (language == "es" ? "Misterio" : "Mystery")
                     },
                     new GenreJson
                     {
@@ -92,22 +92,22 @@ namespace Popcorn.Services.Genres
                     new GenreJson
                     {
                         EnglishName = "Science-Fiction",
-                        Name = "Science-Fiction"
+                        Name = language == "es" ? "Ciencia-Ficción" : "Science-Fiction"
                     },
                     new GenreJson
                     {
                         EnglishName = "Thriller",
-                        Name = "Thriller"
+                        Name = language == "es" ? "Suspense" : "Thriller"
                     },
                     new GenreJson
                     {
                         EnglishName = "War",
-                        Name = language == "fr" ? "Guerre" : "War"
+                        Name = language == "fr" ? "Guerre" : (language == "es" ? "Bélica" : "War")
                     },
                     new GenreJson
                     {
                         EnglishName = "Western",
-                        Name = "Western"
+                        Name = language == "es" ? "Oeste" : "Western"
                     },
                 }
             };

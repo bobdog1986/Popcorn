@@ -21,6 +21,8 @@ using Popcorn.Utils.Exceptions;
 using Popcorn.ViewModels.Windows.Settings;
 using System.Runtime.CompilerServices;
 using System.ComponentModel;
+using System.Linq;
+using GalaSoft.MvvmLight.CommandWpf;
 
 namespace Popcorn.UserControls.Player
 {
@@ -64,6 +66,15 @@ namespace Popcorn.UserControls.Player
         /// </summary>
         private double CastPlayerTimeInSeconds { get; set; }
 
+        private ICommand _setLowerSubtitleSizeCommand;
+
+        private ICommand _setHigherSubtitleSizeCommand;
+
+        /// <summary>
+        /// Subtitle size
+        /// </summary>
+        private int _subtitleSize;
+
         /// <summary>
         /// Report when dragging is used on media player
         /// </summary>
@@ -102,6 +113,7 @@ namespace Popcorn.UserControls.Player
             }
 
             var applicationSettings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
+            _subtitleSize = applicationSettings.SelectedSubtitleSize.Size;
             VlcOptions = new[]
             {
                 "-I", "--dummy-quiet", "--no-video-title", "--no-sub-autodetect-file", "--sub-filter=freetype",
@@ -199,6 +211,33 @@ namespace Popcorn.UserControls.Player
             ActivityTimer.Start();
 
             InputManager.Current.PreProcessInput += OnActivity;
+
+            SetLowerSubtitleSizeCommand = new RelayCommand(() =>
+            {
+                if (_subtitleSize == 12)
+                {
+                    Player.VlcOption[5] = $"--freetype-rel-fontsize={_subtitleSize}";
+
+                }
+                else
+                {
+                    Player.VlcOption[5] = $"--freetype-rel-fontsize={_subtitleSize - 2}";
+                    _subtitleSize -= 2;
+                }
+            });
+
+            SetHigherSubtitleSizeCommand = new RelayCommand(() =>
+            {
+                if (_subtitleSize == 20)
+                {
+                    Player.VlcOption[5] = $"--freetype-rel-fontsize={_subtitleSize}";
+                }
+                else
+                {
+                    Player.VlcOption[5] = $"--freetype-rel-fontsize={_subtitleSize + 2}";
+                    _subtitleSize += 2;
+                }
+            });
 
             vm.StoppedMedia += OnStoppedMedia;
             vm.PausedMedia += OnPausedMedia;
@@ -760,6 +799,32 @@ namespace Popcorn.UserControls.Player
 
             await Task.Delay(TimeSpan.FromSeconds(1));
             MouseActivitySemaphore.Release();
+        }
+
+        /// <summary>
+        /// Command used to lower subtitle size
+        /// </summary>
+        public ICommand SetLowerSubtitleSizeCommand
+        {
+            get => _setLowerSubtitleSizeCommand;
+            set
+            {
+                _setLowerSubtitleSizeCommand = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Command used to lower subtitle size
+        /// </summary>
+        public ICommand SetHigherSubtitleSizeCommand
+        {
+            get => _setHigherSubtitleSizeCommand;
+            set
+            {
+                _setHigherSubtitleSizeCommand = value;
+                OnPropertyChanged();
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

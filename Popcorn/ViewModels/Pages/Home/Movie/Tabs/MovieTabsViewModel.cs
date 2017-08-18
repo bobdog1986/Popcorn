@@ -90,7 +90,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
         /// <summary>
         /// The tab's movies
         /// </summary>
-        private ObservableCollection<MovieJson> _movies = new ObservableCollection<MovieJson>();
+        private ObservableCollection<MovieLightJson> _movies = new ObservableCollection<MovieLightJson>();
 
         /// <summary>
         /// The tab's name
@@ -133,7 +133,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
         /// <summary>
         /// Tab's movies
         /// </summary>
-        public ObservableCollection<MovieJson> Movies
+        public ObservableCollection<MovieLightJson> Movies
         {
             get => _movies;
             set { Set(() => Movies, ref _movies, value); }
@@ -201,7 +201,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
         /// <summary>
         /// Command used to set a movie as favorite
         /// </summary>
-        public RelayCommand<MovieJson> SetFavoriteMovieCommand { get; private set; }
+        public RelayCommand<MovieLightJson> SetFavoriteMovieCommand { get; private set; }
 
         /// <summary>
         /// Command used to change movie's genres
@@ -256,70 +256,59 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
         /// </summary>
         public virtual async Task LoadMoviesAsync(bool reset = false)
         {
-            await Task.Run(async () =>
+            await LoadingSemaphore.WaitAsync();
+            if (reset)
             {
-                await LoadingSemaphore.WaitAsync();
-                if (reset)
-                {
-                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
-                    {
-                        Movies.Clear();
-                        Page = 0;
-                    });
-                }
+                Movies.Clear();
+                Page = 0;
+            }
 
-                var watch = Stopwatch.StartNew();
-                Page++;
-                if (Page > 1 && Movies.Count == MaxNumberOfMovies)
-                {
-                    Page--;
-                    LoadingSemaphore.Release();
-                    return;
-                }
+            var watch = Stopwatch.StartNew();
+            Page++;
+            if (Page > 1 && Movies.Count == MaxNumberOfMovies)
+            {
+                Page--;
+                LoadingSemaphore.Release();
+                return;
+            }
 
-                StopLoadingMovies();
+            StopLoadingMovies();
+            Logger.Info(
+                $"Loading page {Page}...");
+            HasLoadingFailed = false;
+            try
+            {
+                IsLoadingMovies = true;
+                var result =
+                    await MovieService.GetMoviesAsync(Page,
+                        MaxMoviesPerPage,
+                        Rating,
+                        SortBy,
+                        CancellationLoadingMovies.Token,
+                        Genre);
+                Movies.AddRange(result.movies.Except(Movies, new MovieLightComparer()));
+                IsLoadingMovies = false;
+                IsMovieFound = Movies.Any();
+                CurrentNumberOfMovies = Movies.Count;
+                MaxNumberOfMovies = result.nbMovies;
+                await UserService.SyncMovieHistoryAsync(Movies).ConfigureAwait(false);
+            }
+            catch (Exception exception)
+            {
+                Page--;
+                Logger.Error(
+                    $"Error while loading page {Page}: {exception.Message}");
+                HasLoadingFailed = true;
+                Messenger.Default.Send(new ManageExceptionMessage(exception));
+            }
+            finally
+            {
+                watch.Stop();
+                var elapsedMs = watch.ElapsedMilliseconds;
                 Logger.Info(
-                    $"Loading page {Page}...");
-                HasLoadingFailed = false;
-                try
-                {
-                    IsLoadingMovies = true;
-                    var result =
-                        await MovieService.GetMoviesAsync(Page,
-                            MaxMoviesPerPage,
-                            Rating,
-                            SortBy,
-                            CancellationLoadingMovies.Token,
-                            Genre).ConfigureAwait(false);
-                    DispatcherHelper.CheckBeginInvokeOnUI(async () =>
-                    {
-                        Movies.AddRange(result.movies.Except(Movies, new MovieComparer()));
-                        IsLoadingMovies = false;
-                        IsMovieFound = Movies.Any();
-                        CurrentNumberOfMovies = Movies.Count;
-                        MaxNumberOfMovies = result.nbMovies;
-                        await UserService.SyncMovieHistoryAsync(Movies).ConfigureAwait(false);
-                    });
-        
-                }
-                catch (Exception exception)
-                {
-                    Page--;
-                    Logger.Error(
-                        $"Error while loading page {Page}: {exception.Message}");
-                    HasLoadingFailed = true;
-                    Messenger.Default.Send(new ManageExceptionMessage(exception));
-                }
-                finally
-                {
-                    watch.Stop();
-                    var elapsedMs = watch.ElapsedMilliseconds;
-                    Logger.Info(
-                        $"Loaded page {Page} in {elapsedMs} milliseconds.");
-                    LoadingSemaphore.Release();
-                }
-            }).ConfigureAwait(false);
-            
+                    $"Loaded page {Page} in {elapsedMs} milliseconds.");
+                LoadingSemaphore.Release();
+            }
         }
 
         /// <summary>
@@ -411,7 +400,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
             });
 
             SetFavoriteMovieCommand =
-                new RelayCommand<MovieJson>(async movie =>
+                new RelayCommand<MovieLightJson>(async movie =>
                 {
                     await UserService.SetMovieAsync(movie).ConfigureAwait(false);
                     Messenger.Default.Send(new ChangeFavoriteMovieMessage());
@@ -420,8 +409,8 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
             ChangeMovieGenreCommand =
                 new RelayCommand<GenreJson>(genre =>
                 {
-                    if(genre.Name == LocalizationProviderHelper.GetLocalizedValue<string>(
-                           "AllLabel"))
+                    if (genre.Name == LocalizationProviderHelper.GetLocalizedValue<string>(
+                            "AllLabel"))
                     {
                         Genre = null;
                     }

@@ -79,7 +79,7 @@ namespace Popcorn.Windows
         {
             var searchBox =
                 this.FindChild<TextBox>("SearchBox");
-            if (e.Key == Key.I && !searchBox.IsFocused)
+            if (e.Key == Key.I && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control && !searchBox.IsFocused)
             {
                 var vm = DataContext as WindowViewModel;
                 vm?.OpenAboutCommand.Execute(null);

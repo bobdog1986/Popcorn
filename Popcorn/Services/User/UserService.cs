@@ -128,7 +128,7 @@ namespace Popcorn.Services.User
         /// Set if movies have been seen or set as favorite
         /// </summary>
         /// <param name="movies">All movies to compute</param>
-        public async Task SyncMovieHistoryAsync(IEnumerable<MovieJson> movies)
+        public async Task SyncMovieHistoryAsync(IEnumerable<IMovie> movies)
         {
             var watch = Stopwatch.StartNew();
             try
@@ -160,7 +160,7 @@ namespace Popcorn.Services.User
         /// Set if shows have been seen or set as favorite
         /// </summary>
         /// <param name="shows">All shows to compute</param>
-        public async Task SyncShowHistoryAsync(IEnumerable<ShowJson> shows)
+        public async Task SyncShowHistoryAsync(IEnumerable<IShow> shows)
         {
             var watch = Stopwatch.StartNew();
             try
@@ -191,7 +191,7 @@ namespace Popcorn.Services.User
         /// Set the movie
         /// </summary>
         /// <param name="movie">Movie</param>
-        public async Task SetMovieAsync(MovieJson movie)
+        public async Task SetMovieAsync(IMovie movie)
         {
             var watch = Stopwatch.StartNew();
             try
@@ -232,7 +232,7 @@ namespace Popcorn.Services.User
         /// Set the show
         /// </summary>
         /// <param name="show">Show</param>
-        public async Task SetShowAsync(ShowJson show)
+        public async Task SetShowAsync(IShow show)
         {
             var watch = Stopwatch.StartNew();
             try
@@ -316,7 +316,7 @@ namespace Popcorn.Services.User
             catch (Exception ex)
             {
                 Logger.Error(ex);
-                return (new List<string>(), new List<string>(), 0 );
+                return (new List<string>(), new List<string>(), 0);
             }
         }
 
@@ -533,7 +533,8 @@ namespace Popcorn.Services.User
             ICollection<LanguageJson> availableLanguages = new List<LanguageJson>
             {
                 new EnglishLanguage(),
-                new FrenchLanguage()
+                new FrenchLanguage(),
+                new SpanishLanguage()
             };
             watch.Stop();
             var elapsedMs = watch.ElapsedMilliseconds;
@@ -561,6 +562,9 @@ namespace Popcorn.Services.User
                     {
                         case "fr":
                             currentLanguage = new FrenchLanguage();
+                            break;
+                        case "es":
+                            currentLanguage = new SpanishLanguage();
                             break;
                         default:
                             currentLanguage = new EnglishLanguage();
@@ -591,10 +595,10 @@ namespace Popcorn.Services.User
             try
             {
                 var watch = Stopwatch.StartNew();
-                await GetHistoryAsync();
                 User.Language.Culture = language.Culture;
-                await UpdateHistoryAsync();
                 ChangeLanguage(User.Language);
+                await GetHistoryAsync();
+                await UpdateHistoryAsync();
                 watch.Stop();
                 var elapsedMs = watch.ElapsedMilliseconds;
                 Logger.Debug(

@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
@@ -11,6 +12,8 @@ using Popcorn.Services.Download;
 using Popcorn.Models.Episode;
 using Popcorn.Services.Shows.Trailer;
 using System.Threading;
+using System.Threading.Tasks;
+using Popcorn.Services.Shows.Show;
 
 namespace Popcorn.ViewModels.Pages.Home.Show.Details
 {
@@ -27,6 +30,11 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Details
         private readonly IShowTrailerService _showTrailerService;
 
         /// <summary>
+        /// The show service
+        /// </summary>
+        private readonly IShowService _showService;
+
+        /// <summary>
         /// The show
         /// </summary>
         private ShowJson _show;
@@ -35,6 +43,11 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Details
         /// Specify if a trailer is playing
         /// </summary>
         private bool _isPlayingTrailer;
+        
+        /// <summary>
+        /// Specify if a movie is loading
+        /// </summary>
+        private bool _isShowLoading;
 
         /// <summary>
         /// Specify if a trailer is loading
@@ -54,11 +67,14 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Details
         /// <summary>
         /// Constructor
         /// </summary>
+        /// <param name="showService">The show service</param>
         /// <param name="subtitlesService">The subtitles service</param>
         /// <param name="showTrailerService">The show trailer service</param>
-        public ShowDetailsViewModel(ISubtitlesService subtitlesService, IShowTrailerService showTrailerService)
+        public ShowDetailsViewModel(IShowService showService, ISubtitlesService subtitlesService, IShowTrailerService showTrailerService)
         {
             _showTrailerService = showTrailerService;
+            _showService = showService;
+            Show = new ShowJson();
             RegisterCommands();
             RegisterMessages();
             CancellationLoadingTrailerToken = new CancellationTokenSource();
@@ -71,7 +87,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Details
         /// </summary>
         private void RegisterCommands()
         {
-            LoadShowCommand = new RelayCommand<ShowJson>(LoadShow);
+            LoadShowCommand = new RelayCommand<ShowLightJson>(async show => await LoadShow(show));
 
             PlayTrailerCommand = new RelayCommand(async () =>
             {
@@ -83,6 +99,16 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Details
 
             StopLoadingTrailerCommand = new RelayCommand(StopLoadingTrailer);
         }
+
+        /// <summary>
+        /// Indicates if a show is loading
+        /// </summary>
+        public bool IsShowLoading
+        {
+            get => _isShowLoading;
+            set { Set(() => IsShowLoading, ref _isShowLoading, value); }
+        }
+
 
         /// <summary>
         /// Specify if a trailer is loading
@@ -110,7 +136,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Details
         /// <summary>
         /// Command used to load the show
         /// </summary>
-        public RelayCommand<ShowJson> LoadShowCommand { get; private set; }
+        public RelayCommand<ShowLightJson> LoadShowCommand { get; private set; }
 
         /// <summary>
         /// Command used to stop loading the trailer
@@ -162,17 +188,27 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Details
         /// Load the requested show
         /// </summary>
         /// <param name="show">The show to load</param>
-        private void LoadShow(ShowJson show)
+        private async Task LoadShow(ShowLightJson show)
         {
             var watch = Stopwatch.StartNew();
-
-            Messenger.Default.Send(new LoadShowMessage());
-            Show = show;
-            foreach (var episode in Show.Episodes)
+            try
             {
-                episode.ImdbId = Show.ImdbId;
+                Messenger.Default.Send(new LoadShowMessage());
+                Show = new ShowJson();
+                IsShowLoading = true;
+                Show = await _showService.GetShowAsync(show.ImdbId);
+                IsShowLoading = false;
+                foreach (var episode in Show.Episodes)
+                {
+                    episode.ImdbId = Show.ImdbId;
+                }
             }
-
+            catch (Exception ex)
+            {
+                Logger.Error(
+                    $"Failed loading show : {show.ImdbId}. {ex.Message}");
+            }
+            
             watch.Stop();
             var elapsedMs = watch.ElapsedMilliseconds;
             Logger.Debug($"LoadShow ({show.ImdbId}) in {elapsedMs} milliseconds.");

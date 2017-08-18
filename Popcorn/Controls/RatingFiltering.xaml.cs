@@ -62,7 +62,7 @@ namespace Popcorn.Controls
             if (rating == null)
                 return;
 
-            var newval = Convert.ToInt32((double) e.NewValue);
+            var newval = Convert.ToInt32(Math.Ceiling((double) e.NewValue));
             newval /= 2;
             var childs = ((Grid) (rating.Content)).Children;
 
@@ -205,7 +205,7 @@ namespace Popcorn.Controls
                     else
                     {
                         StarFive.IsChecked = false;
-                        RatingValue = 6;
+                        RatingValue = 8;
                         OnMouseLeaveStarFive(null, null);
                     }
                 }
@@ -234,7 +234,8 @@ namespace Popcorn.Controls
                     StarTwo.IsChecked = true;
                     StarThree.IsChecked = true;
                     StarFour.IsChecked = true;
-                    RatingValue = 10;
+                    StarFive.IsChecked = true;
+                    RatingValue = 9.1;
                 }
             }
         }

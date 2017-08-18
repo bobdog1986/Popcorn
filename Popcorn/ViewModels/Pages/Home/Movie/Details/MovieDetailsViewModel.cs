@@ -83,7 +83,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
         /// <summary>
         /// The similar movies
         /// </summary>
-        private ObservableCollection<MovieJson> _similarMovies;
+        private ObservableCollection<MovieLightJson> _similarMovies;
 
         /// <summary>
         /// The movie trailer service
@@ -136,6 +136,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
         {
             _movieTrailerService = movieTrailerService;
             _movieService = movieService;
+            Movie = new MovieJson();
             SubtitlesService = subtitlesService;
             CancellationLoadingToken = new CancellationTokenSource();
             CancellationLoadingTrailerToken = new CancellationTokenSource();
@@ -156,7 +157,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
         /// <summary>
         /// The similar movies
         /// </summary>
-        public ObservableCollection<MovieJson> SimilarMovies
+        public ObservableCollection<MovieLightJson> SimilarMovies
         {
             get => _similarMovies;
             set { Set(() => SimilarMovies, ref _similarMovies, value); }
@@ -255,7 +256,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
         /// <summary>
         /// Command used to load the movie
         /// </summary>
-        public RelayCommand<MovieJson> LoadMovieCommand { get; private set; }
+        public RelayCommand<IMovie> LoadMovieCommand { get; private set; }
 
         /// <summary>
         /// Command used to stop loading the trailer
@@ -420,7 +421,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
         /// </summary>
         private void RegisterCommands()
         {
-            LoadMovieCommand = new RelayCommand<MovieJson>(async movie => await LoadMovie(movie));
+            LoadMovieCommand = new RelayCommand<IMovie>(async movie => await LoadMovie(movie));
 
             PlayMovieCommand = new RelayCommand(() =>
             {
@@ -443,37 +444,38 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
         /// Load the requested movie
         /// </summary>
         /// <param name="movie">The movie to load</param>
-        private async Task LoadMovie(MovieJson movie)
+        private async Task LoadMovie(IMovie movie)
         {
             var watch = Stopwatch.StartNew();
-            Messenger.Default.Send(new LoadMovieMessage());
-            IsMovieLoading = true;
-            Movie = movie;
-            IsMovieLoading = false;
-            Movie.FullHdAvailable = movie.Torrents.Any(torrent => torrent.Quality == "1080p");
-            var applicationSettings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
-            Movie.WatchInFullHdQuality = Movie.FullHdAvailable && applicationSettings.DefaultHdQuality;
-            ComputeTorrentHealth();
             try
             {
+                Messenger.Default.Send(new LoadMovieMessage());
+                Movie = new MovieJson();
+                IsMovieLoading = true;
+                Movie = await _movieService.GetMovieAsync(movie.ImdbCode);
+                IsMovieLoading = false;
+                Movie.FullHdAvailable = Movie.Torrents.Any(torrent => torrent.Quality == "1080p");
+                var applicationSettings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
+                Movie.WatchInFullHdQuality = Movie.FullHdAvailable && applicationSettings.DefaultHdQuality;
+                ComputeTorrentHealth();
                 LoadingSimilar = true;
                 await Task.Run(async () =>
                 {
-                    var similars = await _movieService.GetMoviesSimilarAsync(Movie).ConfigureAwait(false);
+                    var similars = await _movieService.GetMoviesSimilarAsync(Movie);
                     DispatcherHelper.CheckBeginInvokeOnUI(() =>
                     {
                         SimilarMovies =
-                            new ObservableCollection<MovieJson>(similars);
+                            new ObservableCollection<MovieLightJson>(similars);
                         AnySimilar = SimilarMovies.Any();
                         LoadingSimilar = false;
                     });
                     await LoadSubtitles(Movie).ConfigureAwait(false);
-                }).ConfigureAwait(false);
+                });
             }
             catch (Exception ex)
             {
                 Logger.Error(
-                    $"Failed loading similar movies for : {movie.Title}. {ex.Message}");
+                    $"Failed loading movie : {movie.ImdbCode}. {ex.Message}");
             }
 
             watch.Stop();

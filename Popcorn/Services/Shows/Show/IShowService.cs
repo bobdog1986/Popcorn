@@ -18,9 +18,16 @@ namespace Popcorn.Services.Shows.Show
         /// <summary>
         /// Get show by its Imdb code
         /// </summary>
-        /// <param name="imdbCode">Show's Imdb code</param>
+        /// <param name="imdbId">Show's Imdb code</param>
         /// <returns>The show</returns>
-        Task<ShowJson> GetShowAsync(string imdbCode);
+        Task<ShowJson> GetShowAsync(string imdbId);
+
+        /// <summary>
+        /// Get show light by its Imdb code
+        /// </summary>
+        /// <param name="imdbId">Show's Imdb code</param>
+        /// <returns>The show</returns>
+        Task<ShowLightJson> GetShowLightAsync(string imdbId);
 
         /// <summary>
         /// Get popular shows by page
@@ -32,7 +39,7 @@ namespace Popcorn.Services.Shows.Show
         /// <param name="sortBy">The sort</param>
         /// <param name="ratingFilter">Used to filter by rating</param>
         /// <returns>Popular shows and the number of shows found</returns>
-        Task<(IEnumerable<ShowJson> shows, int nbShows)> GetShowsAsync(int page,
+        Task<(IEnumerable<ShowLightJson> shows, int nbShows)> GetShowsAsync(int page,
             int limit,
             double ratingFilter,
             string sortBy,
@@ -49,7 +56,7 @@ namespace Popcorn.Services.Shows.Show
         /// <param name="ratingFilter">Used to filter by rating</param>
         /// <param name="ct">Cancellation token</param>
         /// <returns>Searched shows and the number of movies found</returns>
-        Task<(IEnumerable<ShowJson> shows, int nbShows)> SearchShowsAsync(string criteria,
+        Task<(IEnumerable<ShowLightJson> shows, int nbShows)> SearchShowsAsync(string criteria,
             int page,
             int limit,
             GenreJson genre,
@@ -59,7 +66,7 @@ namespace Popcorn.Services.Shows.Show
         /// <summary>
         /// Get the youtube trailer of a show
         /// </summary>
-        /// <param name="movie">The show</param>
+        /// <param name="show">The show</param>
         /// <param name="ct">Used to cancel loading trailer</param>
         /// <returns>Video trailer</returns>
         Task<string> GetShowTrailerAsync(ShowJson show, CancellationToken ct);

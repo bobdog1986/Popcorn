@@ -2,18 +2,19 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>Popcorn</id>
-        <version>2.5.0</version>
+        <version>2.6.0</version>
         <title>Popcorn</title>
         <authors>bbougot</authors>
         <projectUrl>https://github.com/bbougot/Popcorn</projectUrl>
         <iconUrl>https://raw.githubusercontent.com/bbougot/Popcorn/master/Popcorn/icon.ico</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>Popcorn Windows native app made in .NET/WPF</description>
-        <releaseNotes>Fixed Chromecast issue and improved stability.</releaseNotes>
+        <releaseNotes>Add Trakt support and improve performances.</releaseNotes>
     </metadata>
     <files>
         <file src="en\Popcorn.resources.dll" target="lib\net45\en\Popcorn.resources.dll" />
         <file src="fr\Popcorn.resources.dll" target="lib\net45\fr\Popcorn.resources.dll" />
+        <file src="es\Popcorn.resources.dll" target="lib\net45\es\Popcorn.resources.dll" />
         <file src="libvlc\plugins\access\libaccess_bd_plugin.dll" target="lib\net45\libvlc\plugins\access\libaccess_bd_plugin.dll" />
         <file src="libvlc\plugins\access\libaccess_mms_plugin.dll" target="lib\net45\libvlc\plugins\access\libaccess_mms_plugin.dll" />
         <file src="libvlc\plugins\access\libaccess_realrtsp_plugin.dll" target="lib\net45\libvlc\plugins\access\libaccess_realrtsp_plugin.dll" />
@@ -408,5 +409,91 @@
         <file src="Polly.dll" target="lib\net45\Polly.dll" />
         <file src="System.Windows.Controls.Input.Toolkit.dll" target="lib\net45\System.Windows.Controls.Input.Toolkit.dll" />
         <file src="System.Windows.Controls.Layout.Toolkit.dll" target="lib\net45\System.Windows.Controls.Layout.Toolkit.dll" />
+        <file src="locales\am.pak" target="lib\net45\locales\am.pak" />
+        <file src="locales\ar.pak" target="lib\net45\locales\ar.pak" />
+        <file src="locales\bg.pak" target="lib\net45\locales\bg.pak" />
+        <file src="locales\bn.pak" target="lib\net45\locales\bn.pak" />
+        <file src="locales\ca.pak" target="lib\net45\locales\ca.pak" />
+        <file src="locales\cs.pak" target="lib\net45\locales\cs.pak" />
+        <file src="locales\da.pak" target="lib\net45\locales\da.pak" />
+        <file src="locales\de.pak" target="lib\net45\locales\de.pak" />
+        <file src="locales\el.pak" target="lib\net45\locales\el.pak" />
+        <file src="locales\en-GB.pak" target="lib\net45\locales\en-GB.pak" />
+        <file src="locales\en-US.pak" target="lib\net45\locales\en-US.pak" />
+        <file src="locales\es.pak" target="lib\net45\locales\es.pak" />
+        <file src="locales\es-419.pak" target="lib\net45\locales\es-419.pak" />
+        <file src="locales\et.pak" target="lib\net45\locales\et.pak" />
+        <file src="locales\fa.pak" target="lib\net45\locales\fa.pak" />
+        <file src="locales\fi.pak" target="lib\net45\locales\fi.pak" />
+        <file src="locales\fil.pak" target="lib\net45\locales\fil.pak" />
+        <file src="locales\fr.pak" target="lib\net45\locales\fr.pak" />
+        <file src="locales\gu.pak" target="lib\net45\locales\gu.pak" />
+        <file src="locales\he.pak" target="lib\net45\locales\he.pak" />
+        <file src="locales\hi.pak" target="lib\net45\locales\hi.pak" />
+        <file src="locales\hr.pak" target="lib\net45\locales\hr.pak" />
+        <file src="locales\hu.pak" target="lib\net45\locales\hu.pak" />
+        <file src="locales\id.pak" target="lib\net45\locales\id.pak" />
+        <file src="locales\it.pak" target="lib\net45\locales\it.pak" />
+        <file src="locales\ja.pak" target="lib\net45\locales\ja.pak" />
+        <file src="locales\kn.pak" target="lib\net45\locales\kn.pak" />
+        <file src="locales\ko.pak" target="lib\net45\locales\ko.pak" />
+        <file src="locales\lt.pak" target="lib\net45\locales\lt.pak" />
+        <file src="locales\lv.pak" target="lib\net45\locales\lv.pak" />
+        <file src="locales\ml.pak" target="lib\net45\locales\ml.pak" />
+        <file src="locales\mr.pak" target="lib\net45\locales\mr.pak" />
+        <file src="locales\ms.pak" target="lib\net45\locales\ms.pak" />
+        <file src="locales\nb.pak" target="lib\net45\locales\nb.pak" />
+        <file src="locales\nl.pak" target="lib\net45\locales\nl.pak" />
+        <file src="locales\pl.pak" target="lib\net45\locales\pl.pak" />
+        <file src="locales\pt-BR.pak" target="lib\net45\locales\pt-BR.pak" />
+        <file src="locales\pt-PT.pak" target="lib\net45\locales\pt-PT.pak" />
+        <file src="locales\ro.pak" target="lib\net45\locales\ro.pak" />
+        <file src="locales\ru.pak" target="lib\net45\locales\ru.pak" />
+        <file src="locales\sk.pak" target="lib\net45\locales\sk.pak" />
+        <file src="locales\sl.pak" target="lib\net45\locales\sl.pak" />
+        <file src="locales\sr.pak" target="lib\net45\locales\sr.pak" />
+        <file src="locales\sv.pak" target="lib\net45\locales\sv.pak" />
+        <file src="locales\sw.pak" target="lib\net45\locales\sw.pak" />
+        <file src="locales\ta.pak" target="lib\net45\locales\ta.pak" />
+        <file src="locales\te.pak" target="lib\net45\locales\te.pak" />
+        <file src="locales\th.pak" target="lib\net45\locales\th.pak" />
+        <file src="locales\tr.pak" target="lib\net45\locales\tr.pak" />
+        <file src="locales\uk.pak" target="lib\net45\locales\uk.pak" />
+        <file src="locales\vi.pak" target="lib\net45\locales\vi.pak" />
+        <file src="locales\zh-CN.pak" target="lib\net45\locales\zh-CN.pak" />
+        <file src="locales\zh-TW.pak" target="lib\net45\locales\zh-TW.pak" />
+        <file src="x64\e_sqlite3.dll" target="lib\net45\x64\e_sqlite3.dll" />
+        <file src="x86\e_sqlite3.dll" target="lib\net45\x86\e_sqlite3.dll" />
+        <file src="Akavache.dll" target="lib\net45\Akavache.dll" />
+        <file src="Akavache.Sqlite3.dll" target="lib\net45\Akavache.Sqlite3.dll" />
+        <file src="cef.pak" target="lib\net45\cef.pak" />
+        <file src="cef_100_percent.pak" target="lib\net45\cef_100_percent.pak" />
+        <file src="cef_200_percent.pak" target="lib\net45\cef_200_percent.pak" />
+        <file src="cef_extensions.pak" target="lib\net45\cef_extensions.pak" />
+        <file src="CefSharp.BrowserSubprocess.Core.dll" target="lib\net45\CefSharp.BrowserSubprocess.Core.dll" />
+        <file src="CefSharp.BrowserSubprocess.exe" target="lib\net45\CefSharp.BrowserSubprocess.exe" />
+        <file src="CefSharp.Core.dll" target="lib\net45\CefSharp.Core.dll" />
+        <file src="CefSharp.dll" target="lib\net45\CefSharp.dll" />
+        <file src="CefSharp.Wpf.dll" target="lib\net45\CefSharp.Wpf.dll" />
+        <file src="chrome_elf.dll" target="lib\net45\chrome_elf.dll" />
+        <file src="d3dcompiler_47.dll" target="lib\net45\d3dcompiler_47.dll" />
+        <file src="devtools_resources.pak" target="lib\net45\devtools_resources.pak" />
+        <file src="icudtl.dat" target="lib\net45\icudtl.dat" />
+        <file src="libcef.dll" target="lib\net45\libcef.dll" />
+        <file src="libEGL.dll" target="lib\net45\libEGL.dll" />
+        <file src="libGLESv2.dll" target="lib\net45\libGLESv2.dll" />
+        <file src="natives_blob.bin" target="lib\net45\natives_blob.bin" />
+        <file src="snapshot_blob.bin" target="lib\net45\snapshot_blob.bin" />
+        <file src="SQLitePCLRaw.batteries_e_sqlite3.dll" target="lib\net45\SQLitePCLRaw.batteries_e_sqlite3.dll" />
+        <file src="SQLitePCLRaw.batteries_v2.dll" target="lib\net45\SQLitePCLRaw.batteries_v2.dll" />
+        <file src="SQLitePCLRaw.core.dll" target="lib\net45\SQLitePCLRaw.core.dll" />
+        <file src="SQLitePCLRaw.provider.e_sqlite3.dll" target="lib\net45\SQLitePCLRaw.provider.e_sqlite3.dll" />
+        <file src="System.Reactive.Core.dll" target="lib\net45\System.Reactive.Core.dll" />
+        <file src="System.Reactive.Interfaces.dll" target="lib\net45\System.Reactive.Interfaces.dll" />
+        <file src="System.Reactive.Linq.dll" target="lib\net45\System.Reactive.Linq.dll" />
+        <file src="System.Reactive.PlatformServices.dll" target="lib\net45\System.Reactive.PlatformServices.dll" />
+        <file src="System.Reactive.Windows.Threading.dll" target="lib\net45\System.Reactive.Windows.Threading.dll" />
+        <file src="TraktApiSharp.dll" target="lib\net45\TraktApiSharp.dll" />
+        <file src="widevinecdmadapter.dll" target="lib\net45\widevinecdmadapter.dll" />
     </files>
 </package>

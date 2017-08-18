@@ -40,6 +40,9 @@ namespace Popcorn.Controls.Show
         {
             var seasons = dependencyObject as SeasonDetail;
             var collection = new ObservableCollection<Season>();
+            if (seasons?.Show?.Episodes == null)
+                return;
+
             var episodesBySeason =
                 seasons.Show.Episodes.GroupBy(r => r.Season)
                     .ToDictionary(t => t.Key, t => t.Select(r => r).ToList());

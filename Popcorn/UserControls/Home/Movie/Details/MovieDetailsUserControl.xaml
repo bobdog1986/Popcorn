@@ -48,7 +48,7 @@
                                     <DoubleAnimation
                                         Storyboard.TargetProperty="Opacity"
                                         To="0.0"
-                                        Duration="0:0:0.5" />
+                                        Duration="0:0:0.2" />
                                 </Storyboard>
                             </BeginStoryboard>
                         </DataTrigger.EnterActions>
@@ -150,9 +150,9 @@
             <Image
                 Grid.Row="0"
                 Grid.RowSpan="3"
-                Opacity="0.3"
-                attachedProperties:ImageAsyncHelper.ImagePath="{Binding Movie.BackdropImage, IsAsync=True}"      
-                attachedProperties:ImageAsyncHelper.Type="Backdrop" />
+                attachedProperties:ImageAsyncHelper.ImagePath="{Binding Movie.BackdropImage, IsAsync=True}"
+                attachedProperties:ImageAsyncHelper.Type="Backdrop"
+                Opacity="0.3" />
             <TextBlock
                 Grid.Row="0"
                 HorizontalAlignment="Center"
@@ -189,8 +189,8 @@
                     Grid.Column="1"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
-                    attachedProperties:ImageAsyncHelper.Type="Poster"
-                    attachedProperties:ImageAsyncHelper.ImagePath="{Binding Movie.PosterImage, IsAsync=True}">
+                    attachedProperties:ImageAsyncHelper.ImagePath="{Binding Movie.PosterImage, IsAsync=True}"
+                    attachedProperties:ImageAsyncHelper.Type="Poster">
                     <Image.Effect>
                         <DropShadowEffect
                             BlurRadius="35"
@@ -624,8 +624,8 @@
                                                     Grid.ColumnSpan="3"
                                                     HorizontalAlignment="Center"
                                                     VerticalAlignment="Center"
-                                                    attachedProperties:ImageAsyncHelper.Type="Thumbnail"
-                                                    attachedProperties:ImageAsyncHelper.ImagePath="{Binding PosterImage, IsAsync=True}"/>
+                                                    attachedProperties:ImageAsyncHelper.ImagePath="{Binding PosterImage, IsAsync=True}"
+                                                    attachedProperties:ImageAsyncHelper.Type="Thumbnail" />
                                                 <Grid
                                                     x:Name="PlayCanvas"
                                                     Grid.Row="0"

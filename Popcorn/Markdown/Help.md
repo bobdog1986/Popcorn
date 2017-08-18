@@ -5,7 +5,7 @@
 * Hit F3 or Ctrl + F key to jump to search.
 
 ### About
-* Hit I key to open about window.
+* Hit Control + I skey to open about window.
 
 ### Help
 * Hit F1 key to open help window.

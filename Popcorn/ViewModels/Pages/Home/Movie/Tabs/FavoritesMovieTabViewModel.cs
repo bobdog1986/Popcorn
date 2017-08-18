@@ -51,161 +51,136 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
         /// </summary>
         public override async Task LoadMoviesAsync(bool reset = false)
         {
-            await Task.Run(async () =>
+            await LoadingSemaphore.WaitAsync();
+            StopLoadingMovies();
+            if (reset)
             {
-                await LoadingSemaphore.WaitAsync();
-                StopLoadingMovies();
-                if (reset)
+                Movies.Clear();
+                Page = 0;
+            }
+
+            var watch = Stopwatch.StartNew();
+            Page++;
+            if (Page > 1 && Movies.Count == MaxNumberOfMovies)
+            {
+                Page--;
+                LoadingSemaphore.Release();
+                return;
+            }
+
+            Logger.Info(
+                "Loading movies favorites page...");
+            HasLoadingFailed = false;
+            try
+            {
+                IsLoadingMovies = true;
+                var imdbIds =
+                    await UserService.GetFavoritesMovies(Page);
+                if (!NeedSync)
                 {
-                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                    var movies = new List<MovieLightJson>();
+                    await imdbIds.movies.ParallelForEachAsync(async imdbId =>
                     {
-                        Movies.Clear();
-                        Page = 0;
+                        try
+                        {
+                            var movie = await MovieService.GetMovieLightAsync(imdbId);
+                            if (movie != null)
+                            {
+                                movie.IsFavorite = true;
+                                movies.Add(movie);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Error(ex);
+                        }
                     });
-                }
+                    var updatedMovies = movies.OrderBy(a => a.Title)
+                        .Where(a => (Genre == null || a.Genres.Contains(Genre.EnglishName.ToLowerInvariant())) &&
+                                    a.Rating >= Rating);
+                    foreach (var movie in updatedMovies.Except(Movies.ToList(), new MovieLightComparer()))
+                    {
+                        var pair = Movies
+                            .Select((value, index) => new {value, index})
+                            .FirstOrDefault(x => string.CompareOrdinal(x.value.Title, movie.Title) > 0);
 
-                var watch = Stopwatch.StartNew();
-                Page++;
-                if (Page > 1 && Movies.Count == MaxNumberOfMovies)
+                        if (pair == null)
+                        {
+                            Movies.Add(movie);
+                        }
+                        else
+                        {
+                            Movies.Insert(pair.index, movie);
+                        }
+                    }
+                }
+                else
                 {
-                    Page--;
-                    LoadingSemaphore.Release();
-                    return;
+                    var moviesToDelete = Movies.Select(a => a.ImdbCode).Except(imdbIds.allMovies);
+                    var moviesToAdd = imdbIds.allMovies.Except(Movies.Select(a => a.ImdbCode));
+                    foreach (var movie in moviesToDelete.ToList())
+                    {
+                        Movies.Remove(Movies.FirstOrDefault(a => a.ImdbCode == movie));
+                    }
+
+                    var movies = moviesToAdd.ToList();
+                    var moviesToAddAndToOrder = new List<MovieLightJson>();
+                    await movies.ParallelForEachAsync(async imdbId =>
+                    {
+                        try
+                        {
+                            var movie = await MovieService.GetMovieLightAsync(imdbId);
+                            if ((Genre == null || movie.Genres.Contains(Genre.EnglishName.ToLowerInvariant())) && movie.Rating >= Rating)
+                            {
+                                moviesToAddAndToOrder.Add(movie);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Error(ex);
+                        }
+                    });
+
+                    foreach (var movie in moviesToAddAndToOrder.Except(Movies.ToList(), new MovieLightComparer()))
+                    {
+                        var pair = Movies
+                            .Select((value, index) => new {value, index})
+                            .FirstOrDefault(x => string.CompareOrdinal(x.value.Title, movie.Title) > 0);
+
+                        if (pair == null)
+                        {
+                            Movies.Add(movie);
+                        }
+                        else
+                        {
+                            Movies.Insert(pair.index, movie);
+                        }
+                    }
                 }
 
+                IsLoadingMovies = false;
+                IsMovieFound = Movies.Any();
+                CurrentNumberOfMovies = Movies.Count;
+                MaxNumberOfMovies = imdbIds.nbMovies;
+                await UserService.SyncMovieHistoryAsync(Movies).ConfigureAwait(false);
+            }
+            catch (Exception exception)
+            {
+                Page--;
+                Logger.Error(
+                    $"Error while loading movies favorite page {Page}: {exception.Message}");
+                HasLoadingFailed = true;
+                Messenger.Default.Send(new ManageExceptionMessage(exception));
+            }
+            finally
+            {
+                NeedSync = false;
+                watch.Stop();
+                var elapsedMs = watch.ElapsedMilliseconds;
                 Logger.Info(
-                    "Loading movies favorites page...");
-                HasLoadingFailed = false;
-                try
-                {
-                    IsLoadingMovies = true;
-                    var imdbIds =
-                        await UserService.GetFavoritesMovies(Page).ConfigureAwait(false);
-                    if (!NeedSync)
-                    {
-                        var movies = new List<MovieJson>();
-                        await imdbIds.movies.ParallelForEachAsync(async imdbId =>
-                        {
-                            try
-                            {
-                                var movie = await MovieService.GetMovieAsync(imdbId).ConfigureAwait(false);
-                                if (movie != null)
-                                {
-                                    movie.IsFavorite = true;
-                                    movies.Add(movie);
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                Logger.Error(ex);
-                            }
-                        });
-                        var updatedMovies = movies.OrderBy(a => a.Title)
-                            .Where(a => (Genre != null
-                                            ? a.Genres.Any(
-                                                genre => genre.ToLowerInvariant() ==
-                                                         Genre.EnglishName.ToLowerInvariant())
-                                            : a.Genres.TrueForAll(b => true)) && a.Rating >= Rating);
-                        DispatcherHelper.CheckBeginInvokeOnUI(() =>
-                        {
-                            foreach (var movie in updatedMovies.Except(Movies.ToList(), new MovieComparer()))
-                            {
-                                var pair = Movies
-                                    .Select((value, index) => new { value, index })
-                                    .FirstOrDefault(x => string.CompareOrdinal(x.value.Title, movie.Title) > 0);
-
-                                if (pair == null)
-                                {
-                                    Movies.Add(movie);
-                                }
-                                else
-                                {
-                                    Movies.Insert(pair.index, movie);
-                                }
-                            }
-                        });
-                    }
-                    else
-                    {
-                        var moviesToDelete = Movies.Select(a => a.ImdbCode).Except(imdbIds.allMovies);
-                        var moviesToAdd = imdbIds.allMovies.Except(Movies.Select(a => a.ImdbCode));
-                        DispatcherHelper.CheckBeginInvokeOnUI(() =>
-                        {
-                            foreach (var movie in moviesToDelete.ToList())
-                            {
-                                Movies.Remove(Movies.FirstOrDefault(a => a.ImdbCode == movie));
-                            }
-                        });
-                        
-                        var movies = moviesToAdd.ToList();
-                        var moviesToAddAndToOrder = new List<MovieJson>();
-                        await movies.ParallelForEachAsync(async imdbId =>
-                        {
-                            try
-                            {
-                                var movie = await MovieService.GetMovieAsync(imdbId).ConfigureAwait(false);
-                                if ((Genre != null
-                                        ? movie.Genres.Any(
-                                            genre => genre.ToLowerInvariant() ==
-                                                     Genre.EnglishName.ToLowerInvariant())
-                                        : movie.Genres.TrueForAll(b => true)) && movie.Rating >= Rating)
-                                {
-                                    moviesToAddAndToOrder.Add(movie);
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                Logger.Error(ex);
-                            }
-                        });
-
-                        DispatcherHelper.CheckBeginInvokeOnUI(() =>
-                        {
-                            foreach (var movie in moviesToAddAndToOrder.Except(Movies.ToList(), new MovieComparer()))
-                            {
-                                var pair = Movies
-                                    .Select((value, index) => new { value, index })
-                                    .FirstOrDefault(x => string.CompareOrdinal(x.value.Title, movie.Title) > 0);
-
-                                if (pair == null)
-                                {
-                                    Movies.Add(movie);
-                                }
-                                else
-                                {
-                                    Movies.Insert(pair.index, movie);
-                                }
-                            }
-                        });
-                    }
-
-                    DispatcherHelper.CheckBeginInvokeOnUI(async () =>
-                    {
-                        IsLoadingMovies = false;
-                        IsMovieFound = Movies.Any();
-                        CurrentNumberOfMovies = Movies.Count;
-                        MaxNumberOfMovies = imdbIds.nbMovies;
-                        await UserService.SyncMovieHistoryAsync(Movies).ConfigureAwait(false);
-                    });
-                }
-                catch (Exception exception)
-                {
-                    Page--;
-                    Logger.Error(
-                        $"Error while loading movies favorite page {Page}: {exception.Message}");
-                    HasLoadingFailed = true;
-                    Messenger.Default.Send(new ManageExceptionMessage(exception));
-                }
-                finally
-                {
-                    NeedSync = false;
-                    watch.Stop();
-                    var elapsedMs = watch.ElapsedMilliseconds;
-                    Logger.Info(
-                        $"Loaded movies favorite page {Page} in {elapsedMs} milliseconds.");
-                    LoadingSemaphore.Release();
-                }
-            }).ConfigureAwait(false);
+                    $"Loaded movies favorite page {Page} in {elapsedMs} milliseconds.");
+                LoadingSemaphore.Release();
+            }
         }
     }
 }

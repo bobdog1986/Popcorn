@@ -5,6 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+using Akavache;
+using CefSharp;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using Microsoft.ApplicationInsights.NLogTarget;
@@ -15,6 +17,7 @@ using Popcorn.Messaging;
 using Popcorn.Utils;
 using Popcorn.Utils.Exceptions;
 using Popcorn.Windows;
+using Squirrel;
 using WPFLocalizeExtension.Engine;
 
 namespace Popcorn
@@ -44,6 +47,22 @@ namespace Popcorn
         /// </summary>
         static App()
         {
+#if !DEBUG
+            try
+            {
+                using (var mgr = UpdateManager.GitHubUpdateManager(Constants.GithubRepository).GetAwaiter().GetResult())
+                {
+                    mgr.RemoveShortcutsForExecutable("CefSharp.BrowserSubprocess.exe", ShortcutLocation.Desktop);
+                    mgr.RemoveShortcutsForExecutable("CefSharp.BrowserSubprocess.exe", ShortcutLocation.StartMenu);
+                    mgr.RemoveShortcutsForExecutable("CefSharp.BrowserSubprocess.exe", ShortcutLocation.AppRoot);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+#endif
+
             WatchStart = Stopwatch.StartNew();
             var config = new LoggingConfiguration();
             var target =
@@ -55,12 +74,13 @@ namespace Popcorn
                 "Popcorn starting...");
             DispatcherHelper.Initialize();
             LocalizeDictionary.Instance.SetCurrentThreadCulture = true;
+            BlobCache.ApplicationName = "Popcorn";
             if (!Directory.Exists(Constants.Assets))
             {
                 Directory.CreateDirectory(Constants.Assets);
             }
         }
-
+     
         /// <summary>
         /// Initializes a new instance of the App class.
         /// </summary>
@@ -79,6 +99,8 @@ namespace Popcorn
         {
             base.OnStartup(e);
             AsyncSynchronizationContext.Register();
+            var settings = new CefSettings();
+            Cef.Initialize(settings, performDependencyCheck: true, browserProcessHandler: null);
         }
 
         /// <summary>
@@ -121,8 +143,7 @@ namespace Popcorn
         /// <param name="e">UnhandledExceptionEventArgs args</param>
         private static void CurrentDomainUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            var ex = e.ExceptionObject as Exception;
-            if (ex != null)
+            if (e.ExceptionObject is Exception ex)
             {
                 Logger.Fatal(ex);
                 Messenger.Default.Send(

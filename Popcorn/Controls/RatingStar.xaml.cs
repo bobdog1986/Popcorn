@@ -58,7 +58,7 @@ namespace Popcorn.Controls
             if (rating == null)
                 return;
 
-            var newval = Convert.ToInt32((double)e.NewValue);
+            var newval = Convert.ToInt32(Math.Ceiling((double)e.NewValue));
             newval /= 2;
             var childs = ((Grid)(rating.Content)).Children;
 

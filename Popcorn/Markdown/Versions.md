@@ -1,4 +1,13 @@
-﻿# 2.5.0 - 15/08/2017 #
+﻿# 2.6.0 - 18/08/2017 #
+***
+Fix issues
+
+### Details ###
+
+* Add Trakt support
+* Improve performances
+
+# 2.5.0 - 15/08/2017 #
 ***
 Fix issues
 

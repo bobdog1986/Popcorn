@@ -30,25 +30,25 @@ namespace Popcorn.Services.User
         /// Set if movies have been seen or set as favorite
         /// </summary>
         /// <param name="movies">All movies to compute</param>
-        Task SyncMovieHistoryAsync(IEnumerable<MovieJson> movies);
+        Task SyncMovieHistoryAsync(IEnumerable<IMovie> movies);
 
         /// <summary>
-        /// Set if movies have been seen or set as favorite
+        /// Set if shows have been seen or set as favorite
         /// </summary>
-        /// <param name="movies">All movies to compute</param>
-        Task SyncShowHistoryAsync(IEnumerable<ShowJson> movies);
+        /// <param name="shows">All movies to compute</param>
+        Task SyncShowHistoryAsync(IEnumerable<IShow> shows);
 
         /// <summary>
         /// Set the movie
         /// </summary>
         /// <param name="movie">Favorite movie</param>
-        Task SetMovieAsync(MovieJson movie);
+        Task SetMovieAsync(IMovie movie);
 
         /// <summary>
         /// Set the show
         /// </summary>
         /// <param name="show">Show</param>
-        Task SetShowAsync(ShowJson show);
+        Task SetShowAsync(IShow show);
 
         /// <summary>
         /// Get seen movies

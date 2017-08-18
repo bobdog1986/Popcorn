@@ -63,18 +63,15 @@ namespace Popcorn.Services.Shows.Show
         /// <summary>
         /// Get show by its Imdb code
         /// </summary>
-        /// <param name="imdbCode">Show's Imdb code</param>
+        /// <param name="imdbId">Show's Imdb code</param>
         /// <returns>The show</returns>
-        public async Task<ShowJson> GetShowAsync(string imdbCode)
+        public async Task<ShowJson> GetShowAsync(string imdbId)
         {
             var watch = Stopwatch.StartNew();
-            var restClient = new RestClient(Utils.Constants.PopcornApi)
-            {
-                Timeout = 5000
-            };
+            var restClient = new RestClient(Utils.Constants.PopcornApi);
             var request = new RestRequest("/{segment}/{show}", Method.GET);
             request.AddUrlSegment("segment", "shows");
-            request.AddUrlSegment("show", imdbCode);
+            request.AddUrlSegment("show", imdbId);
             var show = new ShowJson();
             try
             {
@@ -100,7 +97,50 @@ namespace Popcorn.Services.Shows.Show
                 watch.Stop();
                 var elapsedMs = watch.ElapsedMilliseconds;
                 Logger.Debug(
-                    $"GetShowAsync ({imdbCode}) in {elapsedMs} milliseconds.");
+                    $"GetShowAsync ({imdbId}) in {elapsedMs} milliseconds.");
+            }
+
+            return show;
+        }
+
+        /// <summary>
+        /// Get show light by its Imdb code
+        /// </summary>
+        /// <param name="imdbId">Show's Imdb code</param>
+        /// <returns>The show</returns>
+        public async Task<ShowLightJson> GetShowLightAsync(string imdbId)
+        {
+            var watch = Stopwatch.StartNew();
+            var restClient = new RestClient(Utils.Constants.PopcornApi);
+            var request = new RestRequest("/{segment}/light/{show}", Method.GET);
+            request.AddUrlSegment("segment", "shows");
+            request.AddUrlSegment("show", imdbId);
+            var show = new ShowLightJson();
+            try
+            {
+                var response = await restClient.ExecuteTaskAsync<ShowLightJson>(request);
+                if (response.ErrorException != null)
+                    throw response.ErrorException;
+
+                show = response.Data;
+            }
+            catch (Exception exception) when (exception is TaskCanceledException)
+            {
+                Logger.Debug(
+                    "GetShowLightAsync cancelled.");
+            }
+            catch (Exception exception)
+            {
+                Logger.Error(
+                    $"GetShowLightAsync: {exception.Message}");
+                throw;
+            }
+            finally
+            {
+                watch.Stop();
+                var elapsedMs = watch.ElapsedMilliseconds;
+                Logger.Debug(
+                    $"GetShowLightAsync ({imdbId}) in {elapsedMs} milliseconds.");
             }
 
             return show;
@@ -116,7 +156,7 @@ namespace Popcorn.Services.Shows.Show
         /// <param name="sortBy">The sort</param>
         /// <param name="ratingFilter">Used to filter by rating</param>
         /// <returns>Popular shows and the number of shows found</returns>
-        public async Task<(IEnumerable<ShowJson> shows, int nbShows)> GetShowsAsync(int page,
+        public async Task<(IEnumerable<ShowLightJson> shows, int nbShows)> GetShowsAsync(int page,
             int limit,
             double ratingFilter,
             string sortBy,
@@ -124,27 +164,24 @@ namespace Popcorn.Services.Shows.Show
             GenreJson genre = null)
         {
             var watch = Stopwatch.StartNew();
-            var wrapper = new ShowResponse();
+            var wrapper = new ShowLightResponse();
             if (limit < 1 || limit > 50)
                 limit = Utils.Constants.MaxShowsPerPage;
 
             if (page < 1)
                 page = 1;
 
-            var restClient = new RestClient(Utils.Constants.PopcornApi)
-            {
-                Timeout = 5000
-            };
+            var restClient = new RestClient(Utils.Constants.PopcornApi);
             var request = new RestRequest("/{segment}", Method.GET);
             request.AddUrlSegment("segment", "shows");
             request.AddParameter("limit", limit);
             request.AddParameter("page", page);
             if (genre != null) request.AddParameter("genre", genre.EnglishName);
-            request.AddParameter("minimum_rating", ratingFilter);
+            request.AddParameter("minimum_rating", Convert.ToInt32(ratingFilter));
             request.AddParameter("sort_by", sortBy);
             try
             {
-                var response = await restClient.ExecuteTaskAsync<ShowResponse>(request, ct);
+                var response = await restClient.ExecuteTaskAsync<ShowLightResponse>(request, ct);
                 if (response.ErrorException != null)
                     throw response.ErrorException;
 
@@ -169,7 +206,7 @@ namespace Popcorn.Services.Shows.Show
                     $"GetShowsAsync ({page}, {limit}) in {elapsedMs} milliseconds.");
             }
 
-            var shows = wrapper?.Shows ?? new List<ShowJson>();
+            var shows = wrapper?.Shows ?? new List<ShowLightJson>();
             var nbShows = wrapper?.TotalShows ?? 0;
             return (shows, nbShows);
         }
@@ -184,7 +221,7 @@ namespace Popcorn.Services.Shows.Show
         /// <param name="ratingFilter">Used to filter by rating</param>
         /// <param name="ct">Cancellation token</param>
         /// <returns>Searched shows and the number of movies found</returns>
-        public async Task<(IEnumerable<ShowJson> shows, int nbShows)> SearchShowsAsync(string criteria,
+        public async Task<(IEnumerable<ShowLightJson> shows, int nbShows)> SearchShowsAsync(string criteria,
             int page,
             int limit,
             GenreJson genre,
@@ -192,27 +229,24 @@ namespace Popcorn.Services.Shows.Show
             CancellationToken ct)
         {
             var watch = Stopwatch.StartNew();
-            var wrapper = new ShowResponse();
+            var wrapper = new ShowLightResponse();
             if (limit < 1 || limit > 50)
                 limit = Utils.Constants.MaxShowsPerPage;
 
             if (page < 1)
                 page = 1;
 
-            var restClient = new RestClient(Utils.Constants.PopcornApi)
-            {
-                Timeout = 5000
-            };
+            var restClient = new RestClient(Utils.Constants.PopcornApi);
             var request = new RestRequest("/{segment}", Method.GET);
             request.AddUrlSegment("segment", "shows");
             request.AddParameter("limit", limit);
             request.AddParameter("page", page);
             if (genre != null) request.AddParameter("genre", genre.EnglishName);
-            request.AddParameter("minimum_rating", ratingFilter);
+            request.AddParameter("minimum_rating", Convert.ToInt32(ratingFilter));
             request.AddParameter("query_term", criteria);
             try
             {
-                var response = await restClient.ExecuteTaskAsync<ShowResponse>(request, ct);
+                var response = await restClient.ExecuteTaskAsync<ShowLightResponse>(request, ct);
                 if (response.ErrorException != null)
                     throw response.ErrorException;
 
@@ -237,7 +271,7 @@ namespace Popcorn.Services.Shows.Show
                     $"SearchShowsAsync ({criteria}, {page}, {limit}) in {elapsedMs} milliseconds.");
             }
 
-            var result = wrapper?.Shows ?? new List<ShowJson>();
+            var result = wrapper?.Shows ?? new List<ShowLightJson>();
             var nbResult = wrapper?.TotalShows ?? 0;
             return (result, nbResult);
         }

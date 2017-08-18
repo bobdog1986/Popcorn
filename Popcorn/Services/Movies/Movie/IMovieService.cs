@@ -23,6 +23,13 @@ namespace Popcorn.Services.Movies.Movie
         Task<MovieJson> GetMovieAsync(string imdbCode);
 
         /// <summary>
+        /// Get movie light by its Imdb code
+        /// </summary>
+        /// <param name="imdbCode">Movie's Imdb code</param>
+        /// <returns>The movie</returns>
+        Task<MovieLightJson> GetMovieLightAsync(string imdbCode);
+
+        /// <summary>
         /// Get popular movies by page
         /// </summary>
         /// <param name="page">Page to return</param>
@@ -32,7 +39,7 @@ namespace Popcorn.Services.Movies.Movie
         /// <param name="sortBy">The sort</param>
         /// <param name="ratingFilter">Used to filter by rating</param>
         /// <returns>Popular movies and the number of movies found</returns>
-        Task<(IEnumerable<MovieJson> movies, int nbMovies)> GetMoviesAsync(int page,
+        Task<(IEnumerable<MovieLightJson> movies, int nbMovies)> GetMoviesAsync(int page,
             int limit,
             double ratingFilter,
             string sortBy,
@@ -49,7 +56,7 @@ namespace Popcorn.Services.Movies.Movie
         /// <param name="ratingFilter">Used to filter by rating</param>
         /// <param name="ct">Cancellation token</param>
         /// <returns>Searched movies and the number of movies found</returns>
-        Task<(IEnumerable<MovieJson> movies, int nbMovies)> SearchMoviesAsync(string criteria,
+        Task<(IEnumerable<MovieLightJson> movies, int nbMovies)> SearchMoviesAsync(string criteria,
             int page,
             int limit,
             GenreJson genre,
@@ -61,7 +68,7 @@ namespace Popcorn.Services.Movies.Movie
         /// </summary>
         /// <param name="movieToTranslate">Movie to translate</param>
         /// <returns>Task</returns>
-        Task TranslateMovieAsync(MovieJson movieToTranslate);
+        Task TranslateMovieAsync(IMovie movieToTranslate);
 
         /// <summary>
         /// Get the youtube trailer of a movie
@@ -76,6 +83,6 @@ namespace Popcorn.Services.Movies.Movie
         /// </summary>
         /// <param name="movie">Movie</param>
         /// <returns>Movies</returns>
-        Task<List<MovieJson>> GetMoviesSimilarAsync(MovieJson movie);
+        Task<List<MovieLightJson>> GetMoviesSimilarAsync(MovieJson movie);
     }
 }

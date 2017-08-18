@@ -14,7 +14,7 @@ using Popcorn.Models.Media;
 
 namespace Popcorn.Models.Movie
 {
-    public class MovieJson : ObservableObject, IMediaFile
+    public class MovieJson : ObservableObject, IMediaFile, IMovie
     {
         private List<CastJson> _cast;
 

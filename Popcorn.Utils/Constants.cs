@@ -10,7 +10,7 @@ namespace Popcorn.Utils
         /// <summary>
         /// App version
         /// </summary>
-        public const string AppVersion = "2.5.0";
+        public const string AppVersion = "2.6.0";
 
         /// <summary>
         /// Endpoint to API
@@ -21,6 +21,16 @@ namespace Popcorn.Utils
         /// Application Insights key
         /// </summary>
         public const string AiKey = "647b7610-bfc7-4b78-962d-822f7e59eda3";
+
+        /// <summary>
+        /// Trakt Client Api key
+        /// </summary>
+        public const string TraktClientApiKey = "a946923efa1f62c49cef3052d13591ee3584ce74ee3db6cb65c7baab8b63414f";
+
+        /// <summary>
+        /// Trakt Secret Api key
+        /// </summary>
+        public const string TraktSecretKey = "3c1633962c5654ec3cb124df7993a89f4aaf279992de3fde7435a749e8970650";
 
         /// <summary>
         /// Client ID for TMDb

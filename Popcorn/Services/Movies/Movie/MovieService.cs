@@ -87,10 +87,7 @@ namespace Popcorn.Services.Movies.Movie
         {
             var watch = Stopwatch.StartNew();
 
-            var restClient = new RestClient(Utils.Constants.PopcornApi)
-            {
-                Timeout = 5000
-            };
+            var restClient = new RestClient(Utils.Constants.PopcornApi);
             var request = new RestRequest("/{segment}/{movie}", Method.GET);
             request.AddUrlSegment("segment", "movies");
             request.AddUrlSegment("movie", imdbCode);
@@ -127,14 +124,59 @@ namespace Popcorn.Services.Movies.Movie
         }
 
         /// <summary>
+        /// Get light movie by its Imdb code
+        /// </summary>
+        /// <param name="imdbCode">Movie's Imdb code</param>
+        /// <returns>The movie</returns>
+        public async Task<MovieLightJson> GetMovieLightAsync(string imdbCode)
+        {
+            var watch = Stopwatch.StartNew();
+
+            var restClient = new RestClient(Utils.Constants.PopcornApi);
+            var request = new RestRequest("/{segment}/light/{movie}", Method.GET);
+            request.AddUrlSegment("segment", "movies");
+            request.AddUrlSegment("movie", imdbCode);
+            var movie = new MovieLightJson();
+
+            try
+            {
+                var response = await restClient.ExecuteTaskAsync<MovieLightJson>(request);
+                if (response.ErrorException != null)
+                    throw response.ErrorException;
+
+                movie = response.Data;
+            }
+            catch (Exception exception) when (exception is TaskCanceledException)
+            {
+                Logger.Debug(
+                    "GetMovieLightAsync cancelled.");
+            }
+            catch (Exception exception)
+            {
+                Logger.Error(
+                    $"GetMovieLightAsync: {exception.Message}");
+                throw;
+            }
+            finally
+            {
+                watch.Stop();
+                var elapsedMs = watch.ElapsedMilliseconds;
+                Logger.Debug(
+                    $"GetMovieLightAsync ({imdbCode}) in {elapsedMs} milliseconds.");
+            }
+
+            return movie;
+        }
+
+        /// <summary>
         /// Get movies similar async
         /// </summary>
         /// <param name="movie">Movie</param>
         /// <returns>Movies</returns>
-        public async Task<List<MovieJson>> GetMoviesSimilarAsync(MovieJson movie)
+        public async Task<List<MovieLightJson>> GetMoviesSimilarAsync(MovieJson movie)
         {
             var watch = Stopwatch.StartNew();
-            var movies = new List<MovieJson>();
+            var movies = new List<MovieLightJson>();
             try
             {
                 if (movie.Similars != null && movie.Similars.Any())
@@ -143,7 +185,7 @@ namespace Popcorn.Services.Movies.Movie
                     {
                         try
                         {
-                            var similar = await GetMovieAsync(imdbCode);
+                            var similar = await GetMovieLightAsync(imdbCode);
                             if (similar != null)
                             {
                                 movies.Add(similar);
@@ -183,7 +225,7 @@ namespace Popcorn.Services.Movies.Movie
         /// <param name="sortBy">The sort</param>
         /// <param name="ratingFilter">Used to filter by rating</param>
         /// <returns>Popular movies and the number of movies found</returns>
-        public async Task<(IEnumerable<MovieJson> movies, int nbMovies)> GetMoviesAsync(int page,
+        public async Task<(IEnumerable<MovieLightJson> movies, int nbMovies)> GetMoviesAsync(int page,
             int limit,
             double ratingFilter,
             string sortBy,
@@ -191,27 +233,24 @@ namespace Popcorn.Services.Movies.Movie
             GenreJson genre = null)
         {
             var watch = Stopwatch.StartNew();
-            var wrapper = new MovieResponse();
+            var wrapper = new MovieLightResponse();
             if (limit < 1 || limit > 50)
                 limit = Utils.Constants.MaxMoviesPerPage;
 
             if (page < 1)
                 page = 1;
 
-            var restClient = new RestClient(Utils.Constants.PopcornApi)
-            {
-                Timeout = 5000
-            };
+            var restClient = new RestClient(Utils.Constants.PopcornApi);
             var request = new RestRequest("/{segment}", Method.GET);
             request.AddUrlSegment("segment", "movies");
             request.AddParameter("limit", limit);
             request.AddParameter("page", page);
             if (genre != null) request.AddParameter("genre", genre.EnglishName);
-            request.AddParameter("minimum_rating", ratingFilter);
+            request.AddParameter("minimum_rating", Convert.ToInt32(ratingFilter));
             request.AddParameter("sort_by", sortBy);
             try
             {
-                var response = await restClient.ExecuteTaskAsync<MovieResponse>(request, ct);
+                var response = await restClient.ExecuteTaskAsync<MovieLightResponse>(request, ct);
                 if (response.ErrorException != null)
                     throw response.ErrorException;
 
@@ -236,7 +275,7 @@ namespace Popcorn.Services.Movies.Movie
                     $"GetMoviesAsync ({page}, {limit}) in {elapsedMs} milliseconds.");
             }
 
-            var result = wrapper?.Movies ?? new List<MovieJson>();
+            var result = wrapper?.Movies ?? new List<MovieLightJson>();
             Task.Run(async () =>
             {
                 await ProcessTranslations(result).ConfigureAwait(false);
@@ -251,7 +290,7 @@ namespace Popcorn.Services.Movies.Movie
         /// </summary>
         /// <param name="result"></param>
         /// <returns></returns>
-        private async Task ProcessTranslations(IEnumerable<MovieJson> result)
+        private async Task ProcessTranslations(IEnumerable<IMovie> result)
         {
             await result.ParallelForEachAsync(async movie =>
             {
@@ -269,7 +308,7 @@ namespace Popcorn.Services.Movies.Movie
         /// <param name="ratingFilter">Used to filter by rating</param>
         /// <param name="ct">Cancellation token</param>
         /// <returns>Searched movies and the number of movies found</returns>
-        public async Task<(IEnumerable<MovieJson> movies, int nbMovies)> SearchMoviesAsync(string criteria,
+        public async Task<(IEnumerable<MovieLightJson> movies, int nbMovies)> SearchMoviesAsync(string criteria,
             int page,
             int limit,
             GenreJson genre,
@@ -277,28 +316,25 @@ namespace Popcorn.Services.Movies.Movie
             CancellationToken ct)
         {
             var watch = Stopwatch.StartNew();
-            var wrapper = new MovieResponse();
+            var wrapper = new MovieLightResponse();
             if (limit < 1 || limit > 50)
                 limit = Utils.Constants.MaxMoviesPerPage;
 
             if (page < 1)
                 page = 1;
 
-            var restClient = new RestClient(Utils.Constants.PopcornApi)
-            {
-                Timeout = 5000
-            };
+            var restClient = new RestClient(Utils.Constants.PopcornApi);
             var request = new RestRequest("/{segment}", Method.GET);
             request.AddUrlSegment("segment", "movies");
             request.AddParameter("limit", limit);
             request.AddParameter("page", page);
             if (genre != null) request.AddParameter("genre", genre.EnglishName);
-            request.AddParameter("minimum_rating", ratingFilter);
+            request.AddParameter("minimum_rating", Convert.ToInt32(ratingFilter));
             request.AddParameter("query_term", criteria);
 
             try
             {
-                var response = await restClient.ExecuteTaskAsync<MovieResponse>(request, ct);
+                var response = await restClient.ExecuteTaskAsync<MovieLightResponse>(request, ct);
                 if (response.ErrorException != null)
                     throw response.ErrorException;
 
@@ -323,7 +359,7 @@ namespace Popcorn.Services.Movies.Movie
                     $"SearchMoviesAsync ({criteria}, {page}, {limit}) in {elapsedMs} milliseconds.");
             }
 
-            var result = wrapper?.Movies ?? new List<MovieJson>();
+            var result = wrapper?.Movies ?? new List<MovieLightJson>();
             Task.Run(async () =>
             {
                 await ProcessTranslations(result).ConfigureAwait(false);
@@ -338,7 +374,7 @@ namespace Popcorn.Services.Movies.Movie
         /// </summary>
         /// <param name="movieToTranslate">Movie to translate</param>
         /// <returns>Task</returns>
-        public async Task TranslateMovieAsync(MovieJson movieToTranslate)
+        public async Task TranslateMovieAsync(IMovie movieToTranslate)
         {
             if (!MustRefreshLanguage) return;
             var watch = Stopwatch.StartNew();
@@ -346,9 +382,23 @@ namespace Popcorn.Services.Movies.Movie
             {
                 var movie = await TmdbClient.GetMovieAsync(movieToTranslate.ImdbCode,
                     MovieMethods.Credits);
-                movieToTranslate.Title = movie?.Title;
-                movieToTranslate.Genres = movie?.Genres?.Select(a => a.Name).ToList();
-                movieToTranslate.DescriptionFull = movie?.Overview;
+                var refMovie = movieToTranslate as MovieJson;
+                if (refMovie != null)
+                {
+                    refMovie.Title = movie?.Title;
+                    refMovie.Genres = movie?.Genres?.Select(a => a.Name).ToList();
+                    refMovie.DescriptionFull = movie?.Overview;
+                    return;
+                }
+
+                var refMovieLight = movieToTranslate as MovieLightJson;
+                if (refMovieLight != null)
+                {
+                    refMovieLight.Title = movie?.Title;
+                    refMovieLight.Genres = movie?.Genres != null
+                        ? string.Join(", ", movie.Genres?.Select(a => a.Name))
+                        : string.Empty;
+                }
             }
             catch (Exception exception) when (exception is TaskCanceledException)
             {

@@ -429,4 +429,16 @@
   <data name="SubtitlesSizeLabel" xml:space="preserve">
     <value>Subtitle size</value>
   </data>
+  <data name="Connect" xml:space="preserve">
+    <value>Connect</value>
+  </data>
+  <data name="SyncTraktLabel" xml:space="preserve">
+    <value>Sync with Trakt</value>
+  </data>
+  <data name="LoggedInLabel" xml:space="preserve">
+    <value>You are already logged in.</value>
+  </data>
+  <data name="TraktConnectLabel" xml:space="preserve">
+    <value>Connect to you Trakt account</value>
+  </data>
 </root>

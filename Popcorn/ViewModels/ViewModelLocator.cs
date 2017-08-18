@@ -16,6 +16,7 @@ using Popcorn.ViewModels.Pages.Home.Show.Details;
 using Popcorn.ViewModels.Windows;
 using Popcorn.ViewModels.Windows.Settings;
 using Popcorn.Services.Shows.Trailer;
+using Popcorn.Services.Trakt;
 
 namespace Popcorn.ViewModels
 {
@@ -40,6 +41,7 @@ namespace Popcorn.ViewModels
             SimpleIoc.Default.Register<IApplicationService, ApplicationService>();
             SimpleIoc.Default.Register<ISubtitlesService, SubtitlesService>();
             SimpleIoc.Default.Register<IGenreService, GenreService>();
+            SimpleIoc.Default.Register<ITraktService, TraktService>();
 
             #endregion
 

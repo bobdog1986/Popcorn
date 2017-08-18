@@ -3,7 +3,7 @@ using Popcorn.Models.Shows;
 
 namespace Popcorn.Comparers
 {
-    public class ShowComparer : IEqualityComparer<ShowJson>
+    public class ShowLightComparer : IEqualityComparer<ShowLightJson>
     {
         /// <summary>
         /// Compare two shows
@@ -11,7 +11,7 @@ namespace Popcorn.Comparers
         /// <param name="x">First show</param>
         /// <param name="y">Second show</param>
         /// <returns>True if both shows are the same, false otherwise</returns>
-        public bool Equals(ShowJson x, ShowJson y)
+        public bool Equals(ShowLightJson x, ShowLightJson y)
         {
             //Check whether the compared objects reference the same data.
             if (ReferenceEquals(x, y)) return true;
@@ -28,7 +28,7 @@ namespace Popcorn.Comparers
         /// </summary>
         /// <param name="show">A show</param>
         /// <returns>Unique hashcode</returns>
-        public int GetHashCode(ShowJson show)
+        public int GetHashCode(ShowLightJson show)
         {
             //Check whether the object is null
             if (ReferenceEquals(show, null)) return 0;

@@ -19,7 +19,7 @@ namespace Popcorn.Properties {
     // à l'aide d'un outil, tel que ResGen ou Visual Studio.
     // Pour ajouter ou supprimer un membre, modifiez votre fichier .ResX, puis réexécutez ResGen
     // avec l'option /str ou régénérez votre projet VS.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Resources {
@@ -237,6 +237,15 @@ namespace Popcorn.Properties {
         public static string ConfirmPasswordWatermark {
             get {
                 return ResourceManager.GetString("ConfirmPasswordWatermark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Connect.
+        /// </summary>
+        public static string Connect {
+            get {
+                return ResourceManager.GetString("Connect", resourceCulture);
             }
         }
         
@@ -507,6 +516,15 @@ namespace Popcorn.Properties {
         public static string LoadingTrailerLabel {
             get {
                 return ResourceManager.GetString("LoadingTrailerLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à You are already logged in..
+        /// </summary>
+        public static string LoggedInLabel {
+            get {
+                return ResourceManager.GetString("LoggedInLabel", resourceCulture);
             }
         }
         
@@ -898,6 +916,15 @@ namespace Popcorn.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Sync with Trakt.
+        /// </summary>
+        public static string SyncTraktLabel {
+            get {
+                return ResourceManager.GetString("SyncTraktLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Trailer.
         /// </summary>
         public static string TrailerButton {
@@ -912,6 +939,15 @@ namespace Popcorn.Properties {
         public static string TrailerNotAvailable {
             get {
                 return ResourceManager.GetString("TrailerNotAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Connect to your Trakt account.
+        /// </summary>
+        public static string TraktConnectLabel {
+            get {
+                return ResourceManager.GetString("TraktConnectLabel", resourceCulture);
             }
         }
         

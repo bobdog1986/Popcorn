@@ -90,7 +90,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
         /// <summary>
         /// The tab's shows
         /// </summary>
-        private ObservableCollection<ShowJson> _shows = new ObservableCollection<ShowJson>();
+        private ObservableCollection<ShowLightJson> _shows = new ObservableCollection<ShowLightJson>();
 
         /// <summary>
         /// The tab's name
@@ -133,7 +133,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
         /// <summary>
         /// Tab's shows
         /// </summary>
-        public ObservableCollection<ShowJson> Shows
+        public ObservableCollection<ShowLightJson> Shows
         {
             get => _shows;
             set { Set(() => Shows, ref _shows, value); }
@@ -201,7 +201,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
         /// <summary>
         /// Command used to set a show as favorite
         /// </summary>
-        public RelayCommand<ShowJson> SetFavoriteShowCommand { get; private set; }
+        public RelayCommand<ShowLightJson> SetFavoriteShowCommand { get; private set; }
 
         /// <summary>
         /// Command used to change show's genres
@@ -256,70 +256,60 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
         /// </summary>
         public virtual async Task LoadShowsAsync(bool reset = false)
         {
-            await Task.Run(async () =>
+            await LoadingSemaphore.WaitAsync();
+            if (reset)
             {
-                await LoadingSemaphore.WaitAsync();
-                if (reset)
-                {
-                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
-                    {
-                        Shows.Clear();
-                        Page = 0;
-                    });
-                }
+                Shows.Clear();
+                Page = 0;
+            }
 
-                var watch = Stopwatch.StartNew();
-                Page++;
-                if (Page > 1 && Shows.Count == MaxNumberOfShows)
-                {
-                    Page--;
-                    LoadingSemaphore.Release();
-                    return;
-                }
+            var watch = Stopwatch.StartNew();
+            Page++;
+            if (Page > 1 && Shows.Count == MaxNumberOfShows)
+            {
+                Page--;
+                LoadingSemaphore.Release();
+                return;
+            }
 
-                StopLoadingShows();
+            StopLoadingShows();
+            Logger.Info(
+                $"Loading page {Page}...");
+            HasLoadingFailed = false;
+            try
+            {
+                IsLoadingShows = true;
+                var result =
+                    await ShowService.GetShowsAsync(Page,
+                            MaxShowsPerPage,
+                            Rating * 10,
+                            SortBy,
+                            CancellationLoadingShows.Token,
+                            Genre);
+
+                Shows.AddRange(result.shows.Except(Shows, new ShowLightComparer()));
+                IsLoadingShows = false;
+                IsShowFound = Shows.Any();
+                CurrentNumberOfShows = Shows.Count;
+                MaxNumberOfShows = result.nbShows;
+                await UserService.SyncShowHistoryAsync(Shows).ConfigureAwait(false);
+            }
+            catch (Exception exception)
+            {
+                Page--;
+                Logger.Error(
+                    $"Error while loading page {Page}: {exception.Message}");
+                HasLoadingFailed = true;
+                Messenger.Default.Send(new ManageExceptionMessage(exception));
+            }
+            finally
+            {
+                watch.Stop();
+                var elapsedMs = watch.ElapsedMilliseconds;
                 Logger.Info(
-                    $"Loading page {Page}...");
-                HasLoadingFailed = false;
-                try
-                {
-                    IsLoadingShows = true;
-                    var result =
-                        await ShowService.GetShowsAsync(Page,
-                                MaxShowsPerPage,
-                                Rating * 10,
-                                SortBy,
-                                CancellationLoadingShows.Token,
-                                Genre)
-                            .ConfigureAwait(false);
-
-                    DispatcherHelper.CheckBeginInvokeOnUI(async () =>
-                    {
-                        Shows.AddRange(result.shows.Except(Shows, new ShowComparer()));
-                        IsLoadingShows = false;
-                        IsShowFound = Shows.Any();
-                        CurrentNumberOfShows = Shows.Count;
-                        MaxNumberOfShows = result.nbShows;
-                        await UserService.SyncShowHistoryAsync(Shows).ConfigureAwait(false);
-                    });
-                }
-                catch (Exception exception)
-                {
-                    Page--;
-                    Logger.Error(
-                        $"Error while loading page {Page}: {exception.Message}");
-                    HasLoadingFailed = true;
-                    Messenger.Default.Send(new ManageExceptionMessage(exception));
-                }
-                finally
-                {
-                    watch.Stop();
-                    var elapsedMs = watch.ElapsedMilliseconds;
-                    Logger.Info(
-                        $"Loaded page {Page} in {elapsedMs} milliseconds.");
-                    LoadingSemaphore.Release();
-                }
-            }).ConfigureAwait(false);
+                    $"Loaded page {Page} in {elapsedMs} milliseconds.");
+                LoadingSemaphore.Release();
+            }
         }
 
         /// <summary>
@@ -397,7 +387,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
         private void RegisterCommands()
         {
             SetFavoriteShowCommand =
-                new RelayCommand<ShowJson>(async show =>
+                new RelayCommand<ShowLightJson>(async show =>
                 {
                     await UserService.SetShowAsync(show).ConfigureAwait(false);
                     Messenger.Default.Send(new ChangeFavoriteShowMessage());

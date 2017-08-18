@@ -7,6 +7,8 @@ using System.Net.Sockets;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Navigation;
+using Akavache;
+using CefSharp;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Ioc;
@@ -31,6 +33,7 @@ using Popcorn.ViewModels.Pages.Player;
 using Squirrel;
 using Popcorn.ViewModels.Windows.Settings;
 using Popcorn.Services.Subtitles;
+using Popcorn.Services.Trakt;
 
 namespace Popcorn.ViewModels.Windows
 {
@@ -58,6 +61,11 @@ namespace Popcorn.ViewModels.Windows
         /// Holds the async message relative to <see cref="ShowSubtitleDialogMessage"/>
         /// </summary>
         private IDisposable _showSubtitleDialogMessage;
+
+        /// <summary>
+        /// Holds the async message relative to <see cref="ShowTraktDialogMessage"/>
+        /// </summary>
+        private IDisposable _showTraktDialogMessage;
 
         /// <summary>
         /// Holds the async message relative to <see cref="CastMediaMessage"/>
@@ -501,6 +509,25 @@ namespace Popcorn.ViewModels.Windows
                 await cts.Task;
             });
 
+            _showTraktDialogMessage = Messenger.Default.RegisterAsyncMessage<ShowTraktDialogMessage>(async message =>
+            {
+                var vm = new TraktDialogViewModel();
+                var subtitleDialog = new TraktDialog
+                {
+                    DataContext = vm
+                };
+
+                var cts = new TaskCompletionSource<object>();
+                vm.CloseAction = async () =>
+                {
+                    await _dialogCoordinator.HideMetroDialogAsync(this, subtitleDialog);
+                    cts.TrySetResult(null);
+                };
+                IsSettingsFlyoutOpen = false;
+                await _dialogCoordinator.ShowMetroDialogAsync(this, subtitleDialog);
+                await cts.Task;
+            });
+
             _customSubtitleMessage = Messenger.Default.RegisterAsyncMessage<CustomSubtitleMessage>(
                 async message =>
                 {
@@ -551,7 +578,12 @@ namespace Popcorn.ViewModels.Windows
                 }
             });
 
-            MainWindowClosingCommand = new RelayCommand(ClearFolders);
+            MainWindowClosingCommand = new RelayCommand(async () =>
+            {
+                await SaveCacheOnExit();
+                Cef.Shutdown();
+                ClearFolders();
+            });
 
             OpenSettingsCommand = new RelayCommand(() => IsSettingsFlyoutOpen = !IsSettingsFlyoutOpen);
 
@@ -642,6 +674,14 @@ namespace Popcorn.ViewModels.Windows
                 await StartUpdateProcessAsync();
 #endif
             });
+        }
+
+        /// <summary>
+        /// Flush cache on disk
+        /// </summary>
+        private async Task SaveCacheOnExit()
+        {
+            await BlobCache.Shutdown();
         }
 
         /// <summary>

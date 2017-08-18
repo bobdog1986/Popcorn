@@ -12,7 +12,7 @@ using RestSharp.Deserializers;
 
 namespace Popcorn.Models.Shows
 {
-    public class ShowJson : ObservableObject
+    public class ShowJson : ObservableObject, IShow
     {
         private bool _isFavorite;
 
