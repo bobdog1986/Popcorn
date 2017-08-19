@@ -65,20 +65,26 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
             try
             {
                 IsLoadingMovies = true;
-                var result =
-                    await MovieService.SearchMoviesAsync(SearchFilter,
-                        Page,
-                        MaxMoviesPerPage,
-                        Genre,
-                        Rating,
-                        CancellationLoadingMovies.Token);
+                await Task.Run(async () =>
+                {
+                    var result =
+                        await MovieService.SearchMoviesAsync(SearchFilter,
+                            Page,
+                            MaxMoviesPerPage,
+                            Genre,
+                            Rating,
+                            CancellationLoadingMovies.Token).ConfigureAwait(false);
 
-                Movies.AddRange(result.movies.Except(Movies, new MovieLightComparer()));
-                IsLoadingMovies = false;
-                IsMovieFound = Movies.Any();
-                CurrentNumberOfMovies = Movies.Count;
-                MaxNumberOfMovies = result.nbMovies;
-                await UserService.SyncMovieHistoryAsync(Movies).ConfigureAwait(false);
+                    DispatcherHelper.CheckBeginInvokeOnUI(async () =>
+                    {
+                        Movies.AddRange(result.movies.Except(Movies, new MovieLightComparer()));
+                        IsLoadingMovies = false;
+                        IsMovieFound = Movies.Any();
+                        CurrentNumberOfMovies = Movies.Count;
+                        MaxNumberOfMovies = result.nbMovies;
+                        await UserService.SyncMovieHistoryAsync(Movies).ConfigureAwait(false);
+                    });
+                }).ConfigureAwait(false);
             }
             catch (Exception exception)
             {
