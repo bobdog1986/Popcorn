@@ -13,7 +13,7 @@ namespace Popcorn.Services.Movies.Movie
         /// Change the culture of TMDb
         /// </summary>
         /// <param name="language">Language to set</param>
-        void ChangeTmdbLanguage(LanguageJson language);
+        void ChangeTmdbLanguage(Language language);
 
         /// <summary>
         /// Get movie by its Imdb code
@@ -82,7 +82,8 @@ namespace Popcorn.Services.Movies.Movie
         /// Get movies similar async
         /// </summary>
         /// <param name="movie">Movie</param>
+        /// <param name="similars">Similars</param>
         /// <returns>Movies</returns>
-        Task<List<MovieLightJson>> GetMoviesSimilarAsync(MovieJson movie);
+        Task GetMoviesSimilarAsync(MovieJson movie, IList<MovieLightJson> similars);
     }
 }

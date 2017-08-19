@@ -6,7 +6,7 @@ namespace Popcorn.Models.Localization
     /// <summary>
     /// English language
     /// </summary>
-    public sealed class EnglishLanguage : LanguageJson
+    public sealed class EnglishLanguage : User.Language
     {
         /// <summary>
         /// Initialize a new instance of EnglishLanguage

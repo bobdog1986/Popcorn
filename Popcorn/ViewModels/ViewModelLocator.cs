@@ -33,7 +33,7 @@ namespace Popcorn.ViewModels
             #region Services
             var movieService = new MovieService();
             var showService = new ShowService();
-            SimpleIoc.Default.Register<IUserService>(() => new UserService(movieService, showService, Utils.Registry.GetMachineGuid()));
+            SimpleIoc.Default.Register<IUserService>(() => new UserService(movieService, showService));
             SimpleIoc.Default.Register<IMovieService>(() => movieService);
             SimpleIoc.Default.Register<IShowService>(() => showService);
             SimpleIoc.Default.Register<IMovieTrailerService, MovieTrailerService>();

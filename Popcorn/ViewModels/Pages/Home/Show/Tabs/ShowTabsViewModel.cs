@@ -279,20 +279,25 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
             try
             {
                 IsLoadingShows = true;
-                var result =
-                    await ShowService.GetShowsAsync(Page,
+                await Task.Run(async () =>
+                {
+                    var result =
+                        await ShowService.GetShowsAsync(Page,
                             MaxShowsPerPage,
                             Rating * 10,
                             SortBy,
                             CancellationLoadingShows.Token,
-                            Genre);
-
-                Shows.AddRange(result.shows.Except(Shows, new ShowLightComparer()));
-                IsLoadingShows = false;
-                IsShowFound = Shows.Any();
-                CurrentNumberOfShows = Shows.Count;
-                MaxNumberOfShows = result.nbShows;
-                await UserService.SyncShowHistoryAsync(Shows).ConfigureAwait(false);
+                            Genre).ConfigureAwait(false);
+                    DispatcherHelper.CheckBeginInvokeOnUI(async () =>
+                    {
+                        Shows.AddRange(result.shows.Except(Shows, new ShowLightComparer()));
+                        IsLoadingShows = false;
+                        IsShowFound = Shows.Any();
+                        CurrentNumberOfShows = Shows.Count;
+                        MaxNumberOfShows = result.nbShows;
+                        await UserService.SyncShowHistoryAsync(Shows).ConfigureAwait(false);
+                    });
+                }).ConfigureAwait(false);
             }
             catch (Exception exception)
             {

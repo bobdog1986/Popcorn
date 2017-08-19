@@ -84,7 +84,7 @@
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             Fill="Black"
-            Opacity="0.5" />
+            Opacity="0.6" />
         <Grid Background="Transparent">
             <Grid.Resources>
                 <ResourceDictionary>

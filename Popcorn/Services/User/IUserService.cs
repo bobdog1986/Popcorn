@@ -13,18 +13,18 @@ namespace Popcorn.Services.User
         /// Get all available languages
         /// </summary>
         /// <returns>All available languages</returns>
-        ICollection<LanguageJson> GetAvailableLanguages();
+        ICollection<Language> GetAvailableLanguages();
 
         /// <summary>
         /// Get the current language of the application
         /// </summary>
-        Task<LanguageJson> GetCurrentLanguageAsync();
+        Task<Language> GetCurrentLanguageAsync();
 
         /// <summary>
         /// Set the current language of the application
         /// </summary>
         /// <param name="language">Language</param>
-        Task SetCurrentLanguageAsync(LanguageJson language);
+        Task SetCurrentLanguageAsync(Language language);
 
         /// <summary>
         /// Set if movies have been seen or set as favorite

@@ -35,7 +35,7 @@ namespace Popcorn.Services.Shows.Show
         /// Change the culture of TMDb
         /// </summary>
         /// <param name="language">Language to set</param>
-        public void ChangeTmdbLanguage(LanguageJson language)
+        public void ChangeTmdbLanguage(Language language)
         {
             TmdbClient.DefaultLanguage = language.Culture;
         }
@@ -75,7 +75,7 @@ namespace Popcorn.Services.Shows.Show
             var show = new ShowJson();
             try
             {
-                var response = await restClient.ExecuteTaskAsync<ShowJson>(request);
+                var response = await restClient.ExecuteTaskAsync<ShowJson>(request).ConfigureAwait(false);
                 if (response.ErrorException != null)
                     throw response.ErrorException;
 
@@ -118,7 +118,7 @@ namespace Popcorn.Services.Shows.Show
             var show = new ShowLightJson();
             try
             {
-                var response = await restClient.ExecuteTaskAsync<ShowLightJson>(request);
+                var response = await restClient.ExecuteTaskAsync<ShowLightJson>(request).ConfigureAwait(false);
                 if (response.ErrorException != null)
                     throw response.ErrorException;
 
@@ -181,7 +181,7 @@ namespace Popcorn.Services.Shows.Show
             request.AddParameter("sort_by", sortBy);
             try
             {
-                var response = await restClient.ExecuteTaskAsync<ShowLightResponse>(request, ct);
+                var response = await restClient.ExecuteTaskAsync<ShowLightResponse>(request, ct).ConfigureAwait(false);
                 if (response.ErrorException != null)
                     throw response.ErrorException;
 
@@ -246,7 +246,7 @@ namespace Popcorn.Services.Shows.Show
             request.AddParameter("query_term", criteria);
             try
             {
-                var response = await restClient.ExecuteTaskAsync<ShowLightResponse>(request, ct);
+                var response = await restClient.ExecuteTaskAsync<ShowLightResponse>(request, ct).ConfigureAwait(false);
                 if (response.ErrorException != null)
                     throw response.ErrorException;
 
@@ -288,18 +288,18 @@ namespace Popcorn.Services.Shows.Show
             var uri = string.Empty;
             try
             {
-                var shows = await TmdbClient.SearchTvShowAsync(show.Title);
+                var shows = await TmdbClient.SearchTvShowAsync(show.Title).ConfigureAwait(false);
                 if (shows.Results.Any())
                 {
                     Video trailer = null;
-                    await shows.Results.ParallelForEachAsync(async tvShow =>
+                    foreach(var tvShow in shows.Results)
                     {
                         try
                         {
-                            var result = await TmdbClient.GetTvShowExternalIdsAsync(tvShow.Id);
+                            var result = await TmdbClient.GetTvShowExternalIdsAsync(tvShow.Id).ConfigureAwait(false);
                             if (result.ImdbId == show.ImdbId)
                             {
-                                var videos = await TmdbClient.GetTvShowVideosAsync(result.Id);
+                                var videos = await TmdbClient.GetTvShowVideosAsync(result.Id).ConfigureAwait(false);
                                 if (videos != null && videos.Results.Any())
                                 {
                                     trailer = videos.Results.FirstOrDefault();
@@ -310,13 +310,13 @@ namespace Popcorn.Services.Shows.Show
                         {
                             Logger.Error(ex);
                         }
-                    }, ct);
+                    }
 
                     if (trailer != null)
                     {
                         using (var service = Client.For(YouTube.Default))
                         {
-                            var videos = (await service.GetAllVideosAsync("https://youtube.com/watch?v=" + trailer.Key))
+                            var videos = (await service.GetAllVideosAsync("https://youtube.com/watch?v=" + trailer.Key).ConfigureAwait(false))
                                 .ToList();
                             if (videos.Any())
                             {

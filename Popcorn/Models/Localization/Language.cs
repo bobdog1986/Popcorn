@@ -27,12 +27,12 @@ namespace Popcorn.Models.Localization
         /// <summary>
         /// Current language
         /// </summary>
-        private LanguageJson _currentLanguage;
+        private User.Language _currentLanguage;
 
         /// <summary>
         /// Available languages
         /// </summary>
-        private ICollection<LanguageJson> _languages;
+        private ICollection<User.Language> _languages;
 
         /// <summary>
         /// Initialize a new instance of Language
@@ -45,7 +45,7 @@ namespace Popcorn.Models.Localization
         /// <summary>
         /// Available languages of the application
         /// </summary>
-        public ICollection<LanguageJson> Languages
+        public ICollection<User.Language> Languages
         {
             get { return _languages; }
             set { Set(() => Languages, ref _languages, value); }
@@ -54,7 +54,7 @@ namespace Popcorn.Models.Localization
         /// <summary>
         /// Current language used in the application
         /// </summary>
-        public LanguageJson CurrentLanguage
+        public User.Language CurrentLanguage
         {
             get => _currentLanguage;
             set

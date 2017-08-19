@@ -279,19 +279,25 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
             try
             {
                 IsLoadingMovies = true;
-                var result =
-                    await MovieService.GetMoviesAsync(Page,
-                        MaxMoviesPerPage,
-                        Rating,
-                        SortBy,
-                        CancellationLoadingMovies.Token,
-                        Genre);
-                Movies.AddRange(result.movies.Except(Movies, new MovieLightComparer()));
-                IsLoadingMovies = false;
-                IsMovieFound = Movies.Any();
-                CurrentNumberOfMovies = Movies.Count;
-                MaxNumberOfMovies = result.nbMovies;
-                await UserService.SyncMovieHistoryAsync(Movies).ConfigureAwait(false);
+                await Task.Run(async () =>
+                {
+                    var result =
+                        await MovieService.GetMoviesAsync(Page,
+                            MaxMoviesPerPage,
+                            Rating,
+                            SortBy,
+                            CancellationLoadingMovies.Token,
+                            Genre).ConfigureAwait(false);
+                    DispatcherHelper.CheckBeginInvokeOnUI(async () =>
+                    {
+                        Movies.AddRange(result.movies.Except(Movies, new MovieLightComparer()));
+                        IsLoadingMovies = false;
+                        IsMovieFound = Movies.Any();
+                        CurrentNumberOfMovies = Movies.Count;
+                        MaxNumberOfMovies = result.nbMovies;
+                        await UserService.SyncMovieHistoryAsync(Movies).ConfigureAwait(false);
+                    });
+                }).ConfigureAwait(false);
             }
             catch (Exception exception)
             {
@@ -340,10 +346,10 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                 async message =>
                 {
                     var movies = Movies.ToList();
-                    await movies.ParallelForEachAsync(async movie =>
+                    foreach(var movie in movies)
                     {
                         await MovieService.TranslateMovieAsync(movie).ConfigureAwait(false);
-                    }).ConfigureAwait(false);
+                    }
                 });
 
             Messenger.Default.Register<ChangeLanguageMessage>(

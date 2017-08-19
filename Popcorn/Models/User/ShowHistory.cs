@@ -8,11 +8,12 @@ using RestSharp.Deserializers;
 
 namespace Popcorn.Models.User
 {
-    public class LanguageJson
+    public class ShowHistory
     {
-        [DeserializeAs(Name = "Culture")]
-        public string Culture { get; set; }
+        public string ImdbId { get; set; }
 
-        public string Name { get; set; }
+        public bool Seen { get; set; }
+
+        public bool Favorite { get; set; }
     }
 }

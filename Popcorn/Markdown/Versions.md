@@ -1,4 +1,12 @@
-﻿# 2.6.0 - 18/08/2017 #
+﻿# 2.6.1 - 19/08/2017 #
+***
+Fix issues
+
+### Details ###
+
+* Improve performances
+
+# 2.6.0 - 18/08/2017 #
 ***
 Fix issues
 

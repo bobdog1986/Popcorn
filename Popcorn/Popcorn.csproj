@@ -402,10 +402,10 @@
     <Compile Include="Models\Torrent\Show\TorrentShowJson.cs" />
     <Compile Include="Models\Torrent\Show\TorrentShowNodeJson.cs" />
     <Compile Include="Models\Trailer\TrailerResponse.cs" />
-    <Compile Include="Models\User\LanguageJson.cs" />
-    <Compile Include="Models\User\MovieHistoryJson.cs" />
-    <Compile Include="Models\User\ShowHistoryJson.cs" />
-    <Compile Include="Models\User\UserJson.cs" />
+    <Compile Include="Models\User\Language.cs" />
+    <Compile Include="Models\User\MovieHistory.cs" />
+    <Compile Include="Models\User\ShowHistory.cs" />
+    <Compile Include="Models\User\User.cs" />
     <Compile Include="Pages\HomePage.xaml.cs">
       <DependentUpon>HomePage.xaml</DependentUpon>
     </Compile>

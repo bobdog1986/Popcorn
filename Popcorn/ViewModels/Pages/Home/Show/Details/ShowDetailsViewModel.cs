@@ -87,14 +87,17 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Details
         /// </summary>
         private void RegisterCommands()
         {
-            LoadShowCommand = new RelayCommand<ShowLightJson>(async show => await LoadShow(show));
+            LoadShowCommand = new RelayCommand<ShowLightJson>(async show => await LoadShow(show).ConfigureAwait(false));
 
             PlayTrailerCommand = new RelayCommand(async () =>
             {
-                IsPlayingTrailer = true;
-                IsTrailerLoading = true;
-                await _showTrailerService.LoadTrailerAsync(Show, CancellationLoadingTrailerToken.Token);
-                IsTrailerLoading = false;
+                await Task.Run(async () =>
+                {
+                    IsPlayingTrailer = true;
+                    IsTrailerLoading = true;
+                    await _showTrailerService.LoadTrailerAsync(Show, CancellationLoadingTrailerToken.Token).ConfigureAwait(false);
+                    IsTrailerLoading = false;
+                });
             });
 
             StopLoadingTrailerCommand = new RelayCommand(StopLoadingTrailer);
@@ -196,12 +199,15 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Details
                 Messenger.Default.Send(new LoadShowMessage());
                 Show = new ShowJson();
                 IsShowLoading = true;
-                Show = await _showService.GetShowAsync(show.ImdbId);
-                IsShowLoading = false;
-                foreach (var episode in Show.Episodes)
+                await Task.Run(async () =>
                 {
-                    episode.ImdbId = Show.ImdbId;
-                }
+                    Show = await _showService.GetShowAsync(show.ImdbId).ConfigureAwait(false);
+                    IsShowLoading = false;
+                    foreach (var episode in Show.Episodes)
+                    {
+                        episode.ImdbId = Show.ImdbId;
+                    }
+                }).ConfigureAwait(false);
             }
             catch (Exception ex)
             {

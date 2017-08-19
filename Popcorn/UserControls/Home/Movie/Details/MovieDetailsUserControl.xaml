@@ -48,7 +48,7 @@
                                     <DoubleAnimation
                                         Storyboard.TargetProperty="Opacity"
                                         To="0.0"
-                                        Duration="0:0:0.2" />
+                                        Duration="0:0:0.1" />
                                 </Storyboard>
                             </BeginStoryboard>
                         </DataTrigger.EnterActions>
@@ -150,7 +150,7 @@
             <Image
                 Grid.Row="0"
                 Grid.RowSpan="3"
-                attachedProperties:ImageAsyncHelper.ImagePath="{Binding Movie.BackdropImage, IsAsync=True}"
+                attachedProperties:ImageAsyncHelper.ImagePath="{Binding Movie.BackdropImage}"
                 attachedProperties:ImageAsyncHelper.Type="Backdrop"
                 Opacity="0.3" />
             <TextBlock
@@ -189,7 +189,7 @@
                     Grid.Column="1"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
-                    attachedProperties:ImageAsyncHelper.ImagePath="{Binding Movie.PosterImage, IsAsync=True}"
+                    attachedProperties:ImageAsyncHelper.ImagePath="{Binding Movie.PosterImage}"
                     attachedProperties:ImageAsyncHelper.Type="Poster">
                     <Image.Effect>
                         <DropShadowEffect
@@ -468,7 +468,7 @@
                                                                     Width="60"
                                                                     Height="60"
                                                                     HorizontalAlignment="Left"
-                                                                    Source="{Binding SmallImage, IsAsync=True}" />
+                                                                    Source="{Binding SmallImage}" />
                                                             </StackPanel>
                                                         </Grid>
                                                     </Border>
@@ -624,7 +624,7 @@
                                                     Grid.ColumnSpan="3"
                                                     HorizontalAlignment="Center"
                                                     VerticalAlignment="Center"
-                                                    attachedProperties:ImageAsyncHelper.ImagePath="{Binding PosterImage, IsAsync=True}"
+                                                    attachedProperties:ImageAsyncHelper.ImagePath="{Binding PosterImage}"
                                                     attachedProperties:ImageAsyncHelper.Type="Thumbnail" />
                                                 <Grid
                                                     x:Name="PlayCanvas"
@@ -673,9 +673,8 @@
                                             Width="100"
                                             HorizontalAlignment="Left"
                                             FontSize="12"
-                                            Foreground="Gray">
-                                            <customControls:GenresLabel Genres="{Binding Genres}" />
-                                        </TextBlock>
+                                            Foreground="Gray"
+                                            Text="{Binding Genres}" />
                                         <TextBlock
                                             Width="100"
                                             HorizontalAlignment="Left"

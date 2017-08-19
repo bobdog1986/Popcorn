@@ -36,9 +36,9 @@ namespace Popcorn.Services.Trakt
                 var token = await BlobCache.UserAccount.GetObject<TraktToken>("trakt");
                 accessToken = token.AccessToken;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Logger.Error(ex);
+                
             }
 
             return accessToken;
@@ -67,6 +67,7 @@ namespace Popcorn.Services.Trakt
                 ExpiresInSeconds = _traktAuthorization.ExpiresInSeconds,
                 RefreshToken = _traktAuthorization.RefreshToken
             });
+            await BlobCache.UserAccount.Flush();
         }
     }
 }

@@ -95,7 +95,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                         }
                     });
                     var updatedMovies = movies.OrderBy(a => a.Title)
-                        .Where(a => (Genre == null || a.Genres.Contains(Genre.EnglishName.ToLowerInvariant())) &&
+                        .Where(a => (Genre == null || a.Genres.Contains(Genre.EnglishName)) &&
                                     a.Rating >= Rating);
 
                     foreach (var movie in updatedMovies.Except(Movies.ToList(), new MovieLightComparer()))
@@ -131,7 +131,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                         try
                         {
                             var movie = await MovieService.GetMovieLightAsync(imdbId);
-                            if ((Genre == null || movie.Genres.Contains(Genre.EnglishName.ToLowerInvariant())) && movie.Rating >= Rating)
+                            if ((Genre == null || movie.Genres.Contains(Genre.EnglishName)) && movie.Rating >= Rating)
                             {
                                 moviesToAddAndToOrder.Add(movie);
                             }

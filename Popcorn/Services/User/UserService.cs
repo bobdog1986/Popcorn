@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Akavache;
 using GalaSoft.MvvmLight.Messaging;
 using NLog;
 using Popcorn.Messaging;
@@ -17,6 +19,7 @@ using Popcorn.Utils;
 using RestSharp;
 using WPFLocalizeExtension.Engine;
 using Popcorn.Services.Shows.Show;
+using Language = Popcorn.Models.User.Language;
 
 namespace Popcorn.Services.User
 {
@@ -41,87 +44,58 @@ namespace Popcorn.Services.User
         private IShowService ShowService { get; }
 
         /// <summary>
-        /// User Id (Machine Guid)
-        /// </summary>
-        private string UserId { get; }
-
-        /// <summary>
         /// User
         /// </summary>
-        private UserJson User { get; set; }
-
-        private readonly SemaphoreSlim _semaphoreGet = new SemaphoreSlim(1, 1);
-
-        private readonly SemaphoreSlim _semaphoreUpdate = new SemaphoreSlim(1, 1);
-
-        private bool _needSync = true;
-
-        /// <summary>
-        /// <see cref="IRestClient"/>
-        /// </summary>
-        private IRestClient RestClient { get; }
+        private Models.User.User User { get; set; }
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="movieService"><see cref="IMovieService"/></param>
         /// <param name="showService"><see cref="IShowService"/></param>
-        /// <param name="userId">User Id (Machine Guid)</param>
-        public UserService(IMovieService movieService, IShowService showService, string userId)
+        public UserService(IMovieService movieService, IShowService showService)
         {
             ShowService = showService;
             MovieService = movieService;
-            UserId = userId;
-            RestClient = new RestClient(Constants.PopcornApi);
         }
 
-        /// <summary>
-        /// Refresh user history
-        /// </summary>
-        /// <returns></returns>
-        private async Task GetHistoryAsync()
+        private async Task<Models.User.User> GetUser()
         {
-            await _semaphoreGet.WaitAsync();
+            var user = new Models.User.User
+            {
+                Language = new Language()
+            };
+
             try
             {
-                if (!_needSync) return;
-                var request = new RestRequest("/{segment}/{userId}", Method.GET);
-                request.AddUrlSegment("segment", "user");
-                request.AddUrlSegment("userId", UserId);
-                var response = await RestClient.ExecuteTaskAsync<UserJson>(request);
-                if (response.ErrorException != null)
-                    throw response.ErrorException;
-                User = response.Data;
-                _needSync = false;
+                user = await BlobCache.UserAccount.GetObject<Models.User.User>("user");
+                if (user.Language == null)
+                {
+                    user.Language = new Language();
+                }
+
+                if (user.MovieHistory == null)
+                {
+                    user.MovieHistory = new List<MovieHistory>();
+                }
+
+                if (user.ShowHistory == null)
+                {
+                    user.ShowHistory = new List<ShowHistory>();
+                }
             }
-            finally
+            catch (Exception)
             {
-                _semaphoreGet.Release();
+
             }
+
+            return user;
         }
 
-        /// <summary>
-        /// Update user history
-        /// </summary>
-        /// <returns></returns>
-        private async Task UpdateHistoryAsync()
+        private async Task UpdateUser(Models.User.User user)
         {
-            await _semaphoreUpdate.WaitAsync();
-            try
-            {
-                var request = new RestRequest("/{segment}", Method.POST);
-                request.AddUrlSegment("segment", "user");
-                request.AddJsonBody(User);
-                var response = await RestClient.ExecuteTaskAsync<UserJson>(request);
-                if (response.ErrorException != null)
-                    throw response.ErrorException;
-                User = response.Data;
-                _needSync = true;
-            }
-            finally
-            {
-                _semaphoreUpdate.Release();
-            }
+            await BlobCache.UserAccount.InsertObject("user", user);
+            await BlobCache.UserAccount.Flush();
         }
 
         /// <summary>
@@ -133,7 +107,7 @@ namespace Popcorn.Services.User
             var watch = Stopwatch.StartNew();
             try
             {
-                await GetHistoryAsync();
+                User = await GetUser().ConfigureAwait(false);
                 foreach (var movie in movies)
                 {
                     var updatedMovie = User.MovieHistory.FirstOrDefault(p => p.ImdbId == movie.ImdbCode);
@@ -165,7 +139,7 @@ namespace Popcorn.Services.User
             var watch = Stopwatch.StartNew();
             try
             {
-                await GetHistoryAsync();
+                User = await GetUser().ConfigureAwait(false);
                 foreach (var show in shows)
                 {
                     var updatedShow = User.ShowHistory.FirstOrDefault(p => p.ImdbId == show.ImdbId);
@@ -199,7 +173,7 @@ namespace Popcorn.Services.User
                 var movieToUpdate = User.MovieHistory.FirstOrDefault(a => a.ImdbId == movie.ImdbCode);
                 if (movieToUpdate == null)
                 {
-                    User.MovieHistory.Add(new MovieHistoryJson
+                    User.MovieHistory.Add(new MovieHistory
                     {
                         ImdbId = movie.ImdbCode,
                         Favorite = movie.IsFavorite,
@@ -212,7 +186,7 @@ namespace Popcorn.Services.User
                     movieToUpdate.Favorite = movie.IsFavorite;
                 }
 
-                await UpdateHistoryAsync();
+                await UpdateUser(User).ConfigureAwait(false);
             }
             catch (Exception exception)
             {
@@ -240,7 +214,7 @@ namespace Popcorn.Services.User
                 var showToUpdate = User.ShowHistory.FirstOrDefault(a => a.ImdbId == show.ImdbId);
                 if (showToUpdate == null)
                 {
-                    User.ShowHistory.Add(new ShowHistoryJson
+                    User.ShowHistory.Add(new ShowHistory
                     {
                         ImdbId = show.ImdbId,
                         Favorite = show.IsFavorite,
@@ -251,7 +225,7 @@ namespace Popcorn.Services.User
                     showToUpdate.Favorite = show.IsFavorite;
                 }
 
-                await UpdateHistoryAsync();
+                await UpdateUser(User).ConfigureAwait(false);
             }
             catch (Exception exception)
             {
@@ -277,7 +251,7 @@ namespace Popcorn.Services.User
         {
             try
             {
-                await GetHistoryAsync();
+                User = await GetUser().ConfigureAwait(false);
                 var movies = User.MovieHistory.Where(a => a.Seen).Select(a => a.ImdbId).ToList();
                 var skip = (page - 1) * Constants.MaxMoviesPerPage;
                 if (movies.Count <= Constants.MaxMoviesPerPage)
@@ -303,7 +277,7 @@ namespace Popcorn.Services.User
         {
             try
             {
-                await GetHistoryAsync();
+                User = await GetUser().ConfigureAwait(false);
                 var shows = User.ShowHistory.Where(a => a.Seen).Select(a => a.ImdbId).ToList();
                 var skip = (page - 1) * Constants.MaxShowsPerPage;
                 if (shows.Count <= Constants.MaxShowsPerPage)
@@ -330,7 +304,7 @@ namespace Popcorn.Services.User
         {
             try
             {
-                await GetHistoryAsync();
+                User = await GetUser().ConfigureAwait(false);
                 var movies = User.MovieHistory.Where(a => a.Favorite).Select(a => a.ImdbId).ToList();
                 var skip = (page - 1) * Constants.MaxMoviesPerPage;
                 if (movies.Count <= Constants.MaxMoviesPerPage)
@@ -357,7 +331,7 @@ namespace Popcorn.Services.User
         {
             try
             {
-                await GetHistoryAsync();
+                User = await GetUser().ConfigureAwait(false);
                 var shows = User.ShowHistory.Where(a => a.Favorite).Select(a => a.ImdbId).ToList();
                 var skip = (page - 1) * Constants.MaxShowsPerPage;
                 if (shows.Count <= Constants.MaxShowsPerPage)
@@ -382,7 +356,7 @@ namespace Popcorn.Services.User
         {
             try
             {
-                await GetHistoryAsync();
+                User = await GetUser().ConfigureAwait(false);
                 return User.DownloadLimit;
             }
             catch (Exception ex)
@@ -400,7 +374,7 @@ namespace Popcorn.Services.User
         {
             try
             {
-                await GetHistoryAsync();
+                User = await GetUser().ConfigureAwait(false);
                 return User.UploadLimit;
             }
             catch (Exception ex)
@@ -419,9 +393,9 @@ namespace Popcorn.Services.User
         {
             try
             {
-                await GetHistoryAsync();
+                User = await GetUser().ConfigureAwait(false);
                 User.DownloadLimit = limit;
-                await UpdateHistoryAsync();
+                await UpdateUser(User).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -438,9 +412,9 @@ namespace Popcorn.Services.User
         {
             try
             {
-                await GetHistoryAsync();
+                User = await GetUser().ConfigureAwait(false);
                 User.UploadLimit = limit;
-                await UpdateHistoryAsync();
+                await UpdateUser(User).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -457,9 +431,9 @@ namespace Popcorn.Services.User
         {
             try
             {
-                await GetHistoryAsync();
+                User = await GetUser().ConfigureAwait(false);
                 User.DefaultHdQuality = hd;
-                await UpdateHistoryAsync();
+                await UpdateUser(User).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -476,9 +450,9 @@ namespace Popcorn.Services.User
         {
             try
             {
-                await GetHistoryAsync();
+                User = await GetUser().ConfigureAwait(false);
                 User.DefaultSubtitleLanguage = englishName;
-                await UpdateHistoryAsync();
+                await UpdateUser(User).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -495,7 +469,7 @@ namespace Popcorn.Services.User
         {
             try
             {
-                await GetHistoryAsync();
+                User = await GetUser().ConfigureAwait(false);
                 return User.DefaultHdQuality;
             }
             catch (Exception ex)
@@ -513,7 +487,7 @@ namespace Popcorn.Services.User
         {
             try
             {
-                await GetHistoryAsync();
+                User = await GetUser().ConfigureAwait(false);
                 return User.DefaultSubtitleLanguage;
             }
             catch (Exception ex)
@@ -527,10 +501,10 @@ namespace Popcorn.Services.User
         /// Get all available languages from the database
         /// </summary>
         /// <returns>All available languages</returns>
-        public ICollection<LanguageJson> GetAvailableLanguages()
+        public ICollection<Language> GetAvailableLanguages()
         {
             var watch = Stopwatch.StartNew();
-            ICollection<LanguageJson> availableLanguages = new List<LanguageJson>
+            ICollection<Language> availableLanguages = new List<Language>
             {
                 new EnglishLanguage(),
                 new FrenchLanguage(),
@@ -548,13 +522,13 @@ namespace Popcorn.Services.User
         /// Get the current language of the application
         /// </summary>
         /// <returns>Current language</returns>
-        public async Task<LanguageJson> GetCurrentLanguageAsync()
+        public async Task<Language> GetCurrentLanguageAsync()
         {
             try
             {
-                LanguageJson currentLanguage = null;
+                Language currentLanguage;
                 var watch = Stopwatch.StartNew();
-                await GetHistoryAsync();
+                User = await GetUser().ConfigureAwait(false);
                 var language = User.Language;
                 if (language != null)
                 {
@@ -570,6 +544,10 @@ namespace Popcorn.Services.User
                             currentLanguage = new EnglishLanguage();
                             break;
                     }
+                }
+                else
+                {
+                    currentLanguage = new EnglishLanguage();
                 }
 
                 watch.Stop();
@@ -590,15 +568,15 @@ namespace Popcorn.Services.User
         /// Set the current language of the application
         /// </summary>
         /// <param name="language">Language</param>
-        public async Task SetCurrentLanguageAsync(LanguageJson language)
+        public async Task SetCurrentLanguageAsync(Language language)
         {
             try
             {
                 var watch = Stopwatch.StartNew();
+                User = await GetUser().ConfigureAwait(false);
                 User.Language.Culture = language.Culture;
                 ChangeLanguage(User.Language);
-                await GetHistoryAsync();
-                await UpdateHistoryAsync();
+                await UpdateUser(User).ConfigureAwait(false);
                 watch.Stop();
                 var elapsedMs = watch.ElapsedMilliseconds;
                 Logger.Debug(
@@ -614,7 +592,7 @@ namespace Popcorn.Services.User
         /// Change language
         /// </summary>
         /// <param name="language"></param>
-        private void ChangeLanguage(LanguageJson language)
+        private void ChangeLanguage(Language language)
         {
             MovieService.ChangeTmdbLanguage(language);
             ShowService.ChangeTmdbLanguage(language);

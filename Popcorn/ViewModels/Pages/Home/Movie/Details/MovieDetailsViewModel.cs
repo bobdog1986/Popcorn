@@ -137,6 +137,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
             _movieTrailerService = movieTrailerService;
             _movieService = movieService;
             Movie = new MovieJson();
+            SimilarMovies = new ObservableCollection<MovieLightJson>();
             SubtitlesService = subtitlesService;
             CancellationLoadingToken = new CancellationTokenSource();
             CancellationLoadingTrailerToken = new CancellationTokenSource();
@@ -297,7 +298,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
             LoadingSubtitles = true;
             try
             {
-                var languages = (await SubtitlesService.GetSubLanguages()).ToList();
+                var languages = (await SubtitlesService.GetSubLanguages().ConfigureAwait(false)).ToList();
                 if (int.TryParse(new string(movie.ImdbCode
                     .SkipWhile(x => !char.IsDigit(x))
                     .TakeWhile(char.IsDigit)
@@ -305,8 +306,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
                 {
                     var subtitles = await SubtitlesService.SearchSubtitlesFromImdb(
                         languages.Select(lang => lang.SubLanguageID).Aggregate((a, b) => a + "," + b),
-                        imdbId.ToString(), null, null);
-
+                        imdbId.ToString(), null, null).ConfigureAwait(false);
 
                     DispatcherHelper.CheckBeginInvokeOnUI(() =>
                     {
@@ -405,8 +405,11 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
                 this,
                 async message =>
                 {
-                    if (!string.IsNullOrEmpty(Movie?.ImdbCode))
-                        await _movieService.TranslateMovieAsync(Movie);
+                    await Task.Run(async () =>
+                    {
+                        if (!string.IsNullOrEmpty(Movie?.ImdbCode))
+                            await _movieService.TranslateMovieAsync(Movie).ConfigureAwait(false);
+                    }).ConfigureAwait(false);
                 });
 
             Messenger.Default.Register<PropertyChangedMessage<bool>>(this, e =>
@@ -421,7 +424,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
         /// </summary>
         private void RegisterCommands()
         {
-            LoadMovieCommand = new RelayCommand<IMovie>(async movie => await LoadMovie(movie));
+            LoadMovieCommand = new RelayCommand<IMovie>(async movie => await LoadMovie(movie).ConfigureAwait(false));
 
             PlayMovieCommand = new RelayCommand(() =>
             {
@@ -431,10 +434,13 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
 
             PlayTrailerCommand = new RelayCommand(async () =>
             {
-                IsPlayingTrailer = true;
-                IsTrailerLoading = true;
-                await _movieTrailerService.LoadTrailerAsync(Movie, CancellationLoadingTrailerToken.Token);
-                IsTrailerLoading = false;
+                await Task.Run(async () =>
+                {
+                    IsPlayingTrailer = true;
+                    IsTrailerLoading = true;
+                    await _movieTrailerService.LoadTrailerAsync(Movie, CancellationLoadingTrailerToken.Token).ConfigureAwait(false);
+                    IsTrailerLoading = false;
+                }).ConfigureAwait(false);
             });
 
             StopLoadingTrailerCommand = new RelayCommand(StopLoadingTrailer);
@@ -452,25 +458,21 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
                 Messenger.Default.Send(new LoadMovieMessage());
                 Movie = new MovieJson();
                 IsMovieLoading = true;
-                Movie = await _movieService.GetMovieAsync(movie.ImdbCode);
-                IsMovieLoading = false;
-                Movie.FullHdAvailable = Movie.Torrents.Any(torrent => torrent.Quality == "1080p");
-                var applicationSettings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
-                Movie.WatchInFullHdQuality = Movie.FullHdAvailable && applicationSettings.DefaultHdQuality;
-                ComputeTorrentHealth();
-                LoadingSimilar = true;
+                SimilarMovies.Clear();
                 await Task.Run(async () =>
                 {
-                    var similars = await _movieService.GetMoviesSimilarAsync(Movie);
-                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
-                    {
-                        SimilarMovies =
-                            new ObservableCollection<MovieLightJson>(similars);
-                        AnySimilar = SimilarMovies.Any();
-                        LoadingSimilar = false;
-                    });
+                    Movie = await _movieService.GetMovieAsync(movie.ImdbCode).ConfigureAwait(false);
+                    IsMovieLoading = false;
+                    Movie.FullHdAvailable = Movie.Torrents.Any(torrent => torrent.Quality == "1080p");
+                    var applicationSettings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
+                    Movie.WatchInFullHdQuality = Movie.FullHdAvailable && applicationSettings.DefaultHdQuality;
+                    ComputeTorrentHealth();
+                    LoadingSimilar = true;
+                    await _movieService.GetMoviesSimilarAsync(Movie, SimilarMovies).ConfigureAwait(false);
+                    AnySimilar = SimilarMovies.Any();
+                    LoadingSimilar = false;
                     await LoadSubtitles(Movie).ConfigureAwait(false);
-                });
+                }).ConfigureAwait(false);
             }
             catch (Exception ex)
             {

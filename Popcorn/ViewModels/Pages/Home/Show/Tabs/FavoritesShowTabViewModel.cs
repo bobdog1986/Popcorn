@@ -99,7 +99,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
                         }
                     });
                     var updatedShows = shows.OrderBy(a => a.Title)
-                        .Where(a => (Genre == null || a.Genres.Contains(Genre.EnglishName.ToLowerInvariant())) &&
+                        .Where(a => (Genre == null || a.Genres.Contains(Genre.EnglishName)) &&
                                     a.Rating.Percentage >= Rating * 10);
                     foreach (var show in updatedShows.Except(Shows.ToList(), new ShowLightComparer()))
                     {
@@ -134,7 +134,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
                         try
                         {
                             var show = await ShowService.GetShowLightAsync(imdbId);
-                            if ((Genre == null || show.Genres.Contains(Genre.EnglishName.ToLowerInvariant())) && show.Rating.Percentage >= Rating * 10)
+                            if ((Genre == null || show.Genres.Contains(Genre.EnglishName)) && show.Rating.Percentage >= Rating * 10)
                             {
                                 showsToAddAndToOrder.Add(show);
                             }

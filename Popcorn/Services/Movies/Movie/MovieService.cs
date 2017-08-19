@@ -11,6 +11,7 @@ using TMDbLib.Client;
 using TMDbLib.Objects.Movies;
 using System.Collections.Async;
 using GalaSoft.MvvmLight.Ioc;
+using GalaSoft.MvvmLight.Threading;
 using Popcorn.Models.Genres;
 using Popcorn.Models.Trailer;
 using Popcorn.Models.User;
@@ -64,7 +65,7 @@ namespace Popcorn.Services.Movies.Movie
         /// Change the culture of TMDb
         /// </summary>
         /// <param name="language">Language to set</param>
-        public void ChangeTmdbLanguage(LanguageJson language)
+        public void ChangeTmdbLanguage(Language language)
         {
             if (TmdbClient.DefaultLanguage == null)
             {
@@ -95,7 +96,7 @@ namespace Popcorn.Services.Movies.Movie
 
             try
             {
-                var response = await restClient.ExecuteTaskAsync<MovieJson>(request);
+                var response = await restClient.ExecuteTaskAsync<MovieJson>(request).ConfigureAwait(false);
                 if (response.ErrorException != null)
                     throw response.ErrorException;
 
@@ -140,7 +141,7 @@ namespace Popcorn.Services.Movies.Movie
 
             try
             {
-                var response = await restClient.ExecuteTaskAsync<MovieLightJson>(request);
+                var response = await restClient.ExecuteTaskAsync<MovieLightJson>(request).ConfigureAwait(false);
                 if (response.ErrorException != null)
                     throw response.ErrorException;
 
@@ -172,30 +173,33 @@ namespace Popcorn.Services.Movies.Movie
         /// Get movies similar async
         /// </summary>
         /// <param name="movie">Movie</param>
+        /// <param name="similars">Similars</param>
         /// <returns>Movies</returns>
-        public async Task<List<MovieLightJson>> GetMoviesSimilarAsync(MovieJson movie)
+        public async Task GetMoviesSimilarAsync(MovieJson movie, IList<MovieLightJson> similars)
         {
             var watch = Stopwatch.StartNew();
-            var movies = new List<MovieLightJson>();
             try
             {
                 if (movie.Similars != null && movie.Similars.Any())
                 {
-                    await movie.Similars.ParallelForEachAsync(async imdbCode =>
+                    foreach(var imdbCode in movie.Similars)
                     {
                         try
                         {
-                            var similar = await GetMovieLightAsync(imdbCode);
+                            var similar = await GetMovieLightAsync(imdbCode).ConfigureAwait(false);
                             if (similar != null)
                             {
-                                movies.Add(similar);
+                                DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                                {
+                                    similars.Add(similar);
+                                });
                             }
                         }
                         catch (Exception ex)
                         {
                             Logger.Error(ex);
                         }
-                    });
+                    }
                 }
             }
             catch (Exception exception)
@@ -211,8 +215,6 @@ namespace Popcorn.Services.Movies.Movie
                 Logger.Debug(
                     $"GetMoviesSimilarAsync in {elapsedMs} milliseconds.");
             }
-
-            return movies;
         }
 
         /// <summary>
@@ -250,7 +252,7 @@ namespace Popcorn.Services.Movies.Movie
             request.AddParameter("sort_by", sortBy);
             try
             {
-                var response = await restClient.ExecuteTaskAsync<MovieLightResponse>(request, ct);
+                var response = await restClient.ExecuteTaskAsync<MovieLightResponse>(request, ct).ConfigureAwait(false);
                 if (response.ErrorException != null)
                     throw response.ErrorException;
 
@@ -288,14 +290,14 @@ namespace Popcorn.Services.Movies.Movie
         /// <summary>
         /// Process translations for a list of movies
         /// </summary>
-        /// <param name="result"></param>
+        /// <param name="movies"></param>
         /// <returns></returns>
-        private async Task ProcessTranslations(IEnumerable<IMovie> result)
+        private async Task ProcessTranslations(IEnumerable<IMovie> movies)
         {
-            await result.ParallelForEachAsync(async movie =>
+            foreach(var movie in movies)
             {
-                await TranslateMovieAsync(movie);
-            });
+                await TranslateMovieAsync(movie).ConfigureAwait(false);
+            }
         }
 
         /// <summary>
@@ -381,7 +383,7 @@ namespace Popcorn.Services.Movies.Movie
             try
             {
                 var movie = await TmdbClient.GetMovieAsync(movieToTranslate.ImdbCode,
-                    MovieMethods.Credits);
+                    MovieMethods.Credits).ConfigureAwait(false);
                 var refMovie = movieToTranslate as MovieJson;
                 if (refMovie != null)
                 {
@@ -431,7 +433,7 @@ namespace Popcorn.Services.Movies.Movie
             var uri = string.Empty;
             try
             {
-                var tmdbMovie = await TmdbClient.GetMovieAsync(movie.ImdbCode, MovieMethods.Videos);
+                var tmdbMovie = await TmdbClient.GetMovieAsync(movie.ImdbCode, MovieMethods.Videos).ConfigureAwait(false);
                 var trailers = tmdbMovie?.Videos;
                 if (trailers != null && trailers.Results.Any())
                 {
@@ -440,7 +442,7 @@ namespace Popcorn.Services.Movies.Movie
                         var videos =
                             (await service.GetAllVideosAsync("https://youtube.com/watch?v=" + trailers.Results
                                                                  .FirstOrDefault()
-                                                                 .Key))
+                                                                 .Key).ConfigureAwait(false))
                             .ToList();
                         if (videos.Any())
                         {
