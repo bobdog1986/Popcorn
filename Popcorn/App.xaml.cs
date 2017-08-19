@@ -17,7 +17,6 @@ using Popcorn.Messaging;
 using Popcorn.Utils;
 using Popcorn.Utils.Exceptions;
 using Popcorn.Windows;
-using Squirrel;
 using WPFLocalizeExtension.Engine;
 
 namespace Popcorn
@@ -99,8 +98,7 @@ namespace Popcorn
         {
             base.OnStartup(e);
             AsyncSynchronizationContext.Register();
-            var settings = new CefSettings();
-            Cef.Initialize(settings, performDependencyCheck: true, browserProcessHandler: null);
+            Cef.Initialize();
         }
 
         /// <summary>
