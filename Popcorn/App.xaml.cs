@@ -17,6 +17,7 @@ using Popcorn.Messaging;
 using Popcorn.Utils;
 using Popcorn.Utils.Exceptions;
 using Popcorn.Windows;
+using Squirrel;
 using WPFLocalizeExtension.Engine;
 
 namespace Popcorn

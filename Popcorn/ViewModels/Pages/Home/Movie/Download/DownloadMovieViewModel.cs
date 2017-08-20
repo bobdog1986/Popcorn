@@ -167,6 +167,15 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Download
 
             if (!string.IsNullOrEmpty(Movie?.FilePath))
             {
+                try
+                {
+                    File.Delete(Movie.FilePath);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                }
+
                 Movie.FilePath = string.Empty;
             }
         }

@@ -1,4 +1,12 @@
-﻿# 2.6.1 - 19/08/2017 #
+﻿# 2.6.2 - 20/08/2017 #
+***
+Fix issues
+
+### Details ###
+
+* The app could crash at launch due to missing dependencies.
+
+# 2.6.1 - 19/08/2017 #
 ***
 Fix issues
 
