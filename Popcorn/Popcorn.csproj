@@ -845,8 +845,9 @@ if not exist "$(TargetDir)vccorlib140.dll" xcopy /s /y "$(SolutionDir)packages\l
 if not exist "$(TargetDir)vcruntime140.dll" xcopy /s /y "$(SolutionDir)packages\libtorrent-net.2.1.0\tools\vcruntime140.dll" "$(TargetDir)"
 if not exist "$(TargetDir)msvcp120.dll" xcopy /s /y "$(SolutionDir)packages\Microsoft.VC120.CRT.JetBrains.12.0.21005.2\DotFiles\msvcp120.dll" "$(TargetDir)"
 if not exist "$(TargetDir)vccorlib120.dll" xcopy /s /y "$(SolutionDir)packages\Microsoft.VC120.CRT.JetBrains.12.0.21005.2\DotFiles\vccorlib120.dll" "$(TargetDir)"
-if not exist "$(TargetDir)msvcr120.dll" xcopy /s /y "$(SolutionDir)packages\Microsoft.VC120.CRT.JetBrains.12.0.21005.2\DotFiles\msvcr120.dll" "$(TargetDir)"</PostBuildEvent>
-  </PropertyGroup>
+if not exist "$(TargetDir)msvcr120.dll" xcopy /s /y "$(SolutionDir)packages\Microsoft.VC120.CRT.JetBrains.12.0.21005.2\DotFiles\msvcr120.dll" "$(TargetDir)"
+  </PostBuildEvent>
+</PropertyGroup>
   <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release'">
     <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
       <Output TaskParameter="Assemblies" ItemName="Popcorn" />
@@ -861,6 +862,7 @@ if not exist "$(TargetDir)msvcr120.dll" xcopy /s /y "$(SolutionDir)packages\Micr
       <Build Include="$(Version.Split('.')[2])" />
       <Revision Include="$(Version.Split('.')[3])" />
     </ItemGroup>
+    <Move SourceFiles="$(TargetDir)CefSharp.BrowserSubprocess.exe" DestinationFiles="$(TargetDir)CefSharp.BrowserSubprocess" />
     <Exec Command="$(SolutionDir)\.nuget\NuGet.exe pack $(SolutionDir)\Popcorn.nuspec -Version @(Major).@(Minor).@(Build) -Properties Configuration=Release -OutputDirectory $(OutDir) -BasePath $(OutDir)" />
     <Exec Command="$(SolutionDir)\packages\squirrel.windows.1.7.8\tools\Squirrel.exe --framework-version net462 --releasify $(OutDir)Popcorn.@(Major).@(Minor).@(Build).nupkg -g $(SolutionDir)\Popcorn\InstallLoader.gif --no-msi --setupIcon $(SolutionDir)\Popcorn\icon.ico" />
     <Move SourceFiles="$(SolutionDir)\Popcorn\Releases\Setup.exe" DestinationFiles="$(SolutionDir)\Popcorn\Releases\PopcornInstaller.exe" />

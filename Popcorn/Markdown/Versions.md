@@ -1,4 +1,12 @@
-﻿# 2.6.2 - 20/08/2017 #
+﻿# 2.6.3 - 20/08/2017 #
+***
+Fix issues
+
+### Details ###
+
+* Fix an issue with wrong shortcut dropped on desktop.
+
+# 2.6.2 - 20/08/2017 #
 ***
 Fix issues
 

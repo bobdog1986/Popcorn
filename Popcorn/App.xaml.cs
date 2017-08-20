@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -47,22 +48,6 @@ namespace Popcorn
         /// </summary>
         static App()
         {
-#if !DEBUG
-            try
-            {
-                using (var mgr = UpdateManager.GitHubUpdateManager(Constants.GithubRepository).GetAwaiter().GetResult())
-                {
-                    mgr.RemoveShortcutsForExecutable("CefSharp.BrowserSubprocess.exe", ShortcutLocation.Desktop);
-                    mgr.RemoveShortcutsForExecutable("CefSharp.BrowserSubprocess.exe", ShortcutLocation.StartMenu);
-                    mgr.RemoveShortcutsForExecutable("CefSharp.BrowserSubprocess.exe", ShortcutLocation.AppRoot);
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
-#endif
-
             WatchStart = Stopwatch.StartNew();
             var config = new LoggingConfiguration();
             var target =
@@ -99,7 +84,11 @@ namespace Popcorn
         {
             base.OnStartup(e);
             AsyncSynchronizationContext.Register();
-            Cef.Initialize();
+            var settings = new CefSettings
+            {
+                BrowserSubprocessPath = $@"{Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName}\CefSharp.BrowserSubprocess"
+            };
+            Cef.Initialize(settings);
         }
 
         /// <summary>

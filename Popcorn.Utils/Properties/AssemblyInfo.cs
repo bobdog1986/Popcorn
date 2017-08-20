@@ -7,7 +7,7 @@ using Popcorn.Utils;
 // l'ensemble d'attributs suivant. Changez les valeurs de ces attributs pour modifier les informations
 // associées à un assembly.
 [assembly: AssemblyTitle("Popcorn.Constants")]
-[assembly: AssemblyDescription("Popcorn Windows native app made in .NET/WPF")]
+[assembly: AssemblyDescription("A Powerful and Fast Popcorn Time Client")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Popcorn")]

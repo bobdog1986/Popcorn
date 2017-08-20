@@ -2,14 +2,14 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>Popcorn</id>
-        <version>2.6.2</version>
+        <version>2.6.3</version>
         <title>Popcorn</title>
-        <authors>bbougot</authors>
+        <authors>Benjamin Bougot</authors>
         <projectUrl>https://github.com/bbougot/Popcorn</projectUrl>
         <iconUrl>https://raw.githubusercontent.com/bbougot/Popcorn/master/Popcorn/icon.ico</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>A Powerful and Fast Popcorn Time Client</description>
-        <releaseNotes>The app could crash at launch.</releaseNotes>
+        <releaseNotes>Fix an issue with wrong shortcut dropped on destkop.</releaseNotes>
     </metadata>
     <files>
         <file src="en\Popcorn.resources.dll" target="lib\net45\en\Popcorn.resources.dll" />
@@ -474,7 +474,7 @@
         <file src="cef_200_percent.pak" target="lib\net45\cef_200_percent.pak" />
         <file src="cef_extensions.pak" target="lib\net45\cef_extensions.pak" />
         <file src="CefSharp.BrowserSubprocess.Core.dll" target="lib\net45\CefSharp.BrowserSubprocess.Core.dll" />
-        <file src="CefSharp.BrowserSubprocess.exe" target="lib\net45\CefSharp.BrowserSubprocess.exe" />
+        <file src="CefSharp.BrowserSubprocess" target="lib\net45\CefSharp.BrowserSubprocess" />
         <file src="CefSharp.Core.dll" target="lib\net45\CefSharp.Core.dll" />
         <file src="CefSharp.dll" target="lib\net45\CefSharp.dll" />
         <file src="CefSharp.Wpf.dll" target="lib\net45\CefSharp.Wpf.dll" />
