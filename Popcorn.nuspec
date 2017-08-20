@@ -354,6 +354,8 @@
         <file src="Mono.Cecil.Mdb.dll" target="lib\net45\Mono.Cecil.Mdb.dll" />
         <file src="Mono.Cecil.Rocks.dll" target="lib\net45\Mono.Cecil.Rocks.dll" />
         <file src="msvcp140.dll" target="lib\net45\msvcp140.dll" />
+        <file src="msvcp120.dll" target="lib\net45\msvcp120.dll" />
+        <file src="msvcr120.dll" target="lib\net45\msvcr120.dll" />
         <file src="Newtonsoft.Json.dll" target="lib\net45\Newtonsoft.Json.dll" />
         <file src="NLog.dll" target="lib\net45\NLog.dll" />
         <file src="NuGet.Squirrel.dll" target="lib\net45\NuGet.Squirrel.dll" />
@@ -377,6 +379,7 @@
         <file src="Tmds.MDns.dll" target="lib\net45\Tmds.MDns.dll" />
         <file src="None.srt" target="lib\net45\None.srt" />
         <file src="vccorlib140.dll" target="lib\net45\vccorlib140.dll" />
+        <file src="vccorlib120.dll" target="lib\net45\vccorlib120.dll" /> 
         <file src="vcruntime140.dll" target="lib\net45\vcruntime140.dll" />
         <file src="WPFLocalizeExtension.dll" target="lib\net45\WPFLocalizeExtension.dll" />
         <file src="XAMLMarkupExtensions.dll" target="lib\net45\XAMLMarkupExtensions.dll" />
