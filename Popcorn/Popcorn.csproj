@@ -93,7 +93,7 @@
       <HintPath>..\packages\MvvmLightLibs.5.3.0.0\lib\net45\GalaSoft.MvvmLight.Platform.dll</HintPath>
     </Reference>
     <Reference Include="ltnet, Version=0.0.0.0, Culture=neutral, processorArchitecture=x86">
-      <HintPath>..\packages\libtorrent-net.2.1.0\lib\net45\ltnet.dll</HintPath>
+      <HintPath>..\packages\libtorrent-net.2.2.0\lib\net45\ltnet.dll</HintPath>
     </Reference>
     <Reference Include="MahApps.Metro, Version=1.5.0.23, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.1.5.0\lib\net45\MahApps.Metro.dll</HintPath>
@@ -840,14 +840,15 @@ if not exist "$(TargetDir)None.srt" xcopy /s /i "$(SolutionDir)Popcorn\Resources
 if not exist "$(TargetDir)WPFToolkit.dll" xcopy /s /i "$(SolutionDir)packages\WPFToolkit.3.5.50211.1\lib\*.*" "$(TargetDir)"
 </PreBuildEvent>
     <PostBuildEvent>if not exist "$(TargetDir)libvlc" xcopy /s /i "$(SolutionDir)packages\VlcLibs.2.2.5.1\lib\net45\libvlc\*.*" "$(TargetDir)libvlc"
-if not exist "$(TargetDir)msvcp140.dll" xcopy /s /y "$(SolutionDir)packages\libtorrent-net.2.1.0\tools\msvcp140.dll" "$(TargetDir)"
-if not exist "$(TargetDir)vccorlib140.dll" xcopy /s /y "$(SolutionDir)packages\libtorrent-net.2.1.0\tools\vccorlib140.dll" "$(TargetDir)"
-if not exist "$(TargetDir)vcruntime140.dll" xcopy /s /y "$(SolutionDir)packages\libtorrent-net.2.1.0\tools\vcruntime140.dll" "$(TargetDir)"
+if not exist "$(TargetDir)msvcp140.dll" xcopy /s /y "$(SolutionDir)packages\libtorrent-net.2.2.0\tools\msvcp140.dll" "$(TargetDir)"
+if not exist "$(TargetDir)vccorlib140.dll" xcopy /s /y "$(SolutionDir)packages\libtorrent-net.2.2.0\tools\vccorlib140.dll" "$(TargetDir)"
+if not exist "$(TargetDir)vcruntime140.dll" xcopy /s /y "$(SolutionDir)packages\libtorrent-net.2.2.0\tools\vcruntime140.dll" "$(TargetDir)"
+if not exist "$(TargetDir)vcomp140.dll" xcopy /s /y "$(SolutionDir)packages\libtorrent-net.2.2.0\tools\vcomp140.dll" "$(TargetDir)"
 if not exist "$(TargetDir)msvcp120.dll" xcopy /s /y "$(SolutionDir)packages\Microsoft.VC120.CRT.JetBrains.12.0.21005.2\DotFiles\msvcp120.dll" "$(TargetDir)"
 if not exist "$(TargetDir)vccorlib120.dll" xcopy /s /y "$(SolutionDir)packages\Microsoft.VC120.CRT.JetBrains.12.0.21005.2\DotFiles\vccorlib120.dll" "$(TargetDir)"
 if not exist "$(TargetDir)msvcr120.dll" xcopy /s /y "$(SolutionDir)packages\Microsoft.VC120.CRT.JetBrains.12.0.21005.2\DotFiles\msvcr120.dll" "$(TargetDir)"
   </PostBuildEvent>
-</PropertyGroup>
+  </PropertyGroup>
   <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release'">
     <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
       <Output TaskParameter="Assemblies" ItemName="Popcorn" />

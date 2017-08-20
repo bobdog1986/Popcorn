@@ -1,10 +1,18 @@
-﻿# 2.6.3 - 20/08/2017 #
+﻿# 2.6.4 - 20/08/2017 #
 ***
-Fix issues
+Fix issue
 
 ### Details ###
 
-* Fix an issue with wrong shortcut dropped on desktop.
+* Fixed issue [#88](https://github.com/bbougot/Popcorn/issues/88).
+
+# 2.6.3 - 20/08/2017 #
+***
+Fix issue
+
+### Details ###
+
+* Fix an issue with wrong shortcut being dropped on desktop.
 
 # 2.6.2 - 20/08/2017 #
 ***

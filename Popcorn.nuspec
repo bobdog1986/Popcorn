@@ -2,14 +2,14 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>Popcorn</id>
-        <version>2.6.3</version>
+        <version>2.6.4</version>
         <title>Popcorn</title>
         <authors>Benjamin Bougot</authors>
         <projectUrl>https://github.com/bbougot/Popcorn</projectUrl>
         <iconUrl>https://raw.githubusercontent.com/bbougot/Popcorn/master/Popcorn/icon.ico</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>A Powerful and Fast Popcorn Time Client</description>
-        <releaseNotes>Fix an issue with wrong shortcut dropped on destkop.</releaseNotes>
+        <releaseNotes>Fix issue with missing dependencies.</releaseNotes>
     </metadata>
     <files>
         <file src="en\Popcorn.resources.dll" target="lib\net45\en\Popcorn.resources.dll" />
@@ -356,6 +356,7 @@
         <file src="msvcp140.dll" target="lib\net45\msvcp140.dll" />
         <file src="msvcp120.dll" target="lib\net45\msvcp120.dll" />
         <file src="msvcr120.dll" target="lib\net45\msvcr120.dll" />
+        <file src="vcomp140.dll" target="lib\net45\vcomp140.dll" />
         <file src="Newtonsoft.Json.dll" target="lib\net45\Newtonsoft.Json.dll" />
         <file src="NLog.dll" target="lib\net45\NLog.dll" />
         <file src="NuGet.Squirrel.dll" target="lib\net45\NuGet.Squirrel.dll" />
