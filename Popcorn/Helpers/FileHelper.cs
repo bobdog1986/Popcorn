@@ -50,7 +50,7 @@ namespace Popcorn.Helpers
                 var directories = directory.GetDirectories();
 
                 foreach (var folder in directories)
-                    Directory.Delete(folder.FullName);
+                    Directory.Delete(folder.FullName, true);
             }
             catch (Exception ex)
             {

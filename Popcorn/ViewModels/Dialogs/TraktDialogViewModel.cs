@@ -30,6 +30,8 @@ namespace Popcorn.ViewModels.Dialogs
 
         private bool _isLoggedIn;
 
+        private bool _isLoading;
+
         public TraktDialogViewModel()
         {
             _traktService = new TraktService();
@@ -40,14 +42,18 @@ namespace Popcorn.ViewModels.Dialogs
 
             InitializeAsyncCommand = new RelayCommand(async () =>
             {
+                IsLoading = true;
                 IsLoggedIn = await _traktService.IsLoggedIn();
+                IsLoading = false;
                 TraktOAuthUrl = !IsLoggedIn ? _traktService.GetAuthorizationUrl() : string.Empty;
             });
         }
 
         public async Task ValidateOAuthCode(string code)
         {
+            IsLoading = true;
             await _traktService.AuthorizeAsync(code);
+            IsLoading = false;
             CloseAction.Invoke();
         }
 
@@ -69,6 +75,12 @@ namespace Popcorn.ViewModels.Dialogs
         {
             get => _isLoggedIn;
             set { Set(ref _isLoggedIn, value); }
+        }
+
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set { Set(ref _isLoading, value); }
         }
 
         public string TraktOAuthUrl

@@ -844,6 +844,9 @@ xcopy /s /y "$(SolutionDir)packages\libtorrent-net.3.1.0\tools\*.*" "$(TargetDir
 xcopy /s /y "$(SolutionDir)packages\Microsoft.VC120.CRT.JetBrains.12.0.21005.2\DotFiles\*.*" "$(TargetDir)"
   </PostBuildEvent>
   </PropertyGroup>
+  <Target Name="CefSharp" AfterTargets="CefSharpCopyLibs86">
+      <Move SourceFiles="$(TargetDir)CefSharp.BrowserSubprocess.exe" DestinationFiles="$(TargetDir)CefSharp.BrowserSubprocess" />
+  </Target>
   <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release'">
     <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
       <Output TaskParameter="Assemblies" ItemName="Popcorn" />
@@ -858,7 +861,6 @@ xcopy /s /y "$(SolutionDir)packages\Microsoft.VC120.CRT.JetBrains.12.0.21005.2\D
       <Build Include="$(Version.Split('.')[2])" />
       <Revision Include="$(Version.Split('.')[3])" />
     </ItemGroup>
-    <Move SourceFiles="$(TargetDir)CefSharp.BrowserSubprocess.exe" DestinationFiles="$(TargetDir)CefSharp.BrowserSubprocess" />
     <Exec Command="$(SolutionDir)\.nuget\NuGet.exe pack $(SolutionDir)\Popcorn.nuspec -Version @(Major).@(Minor).@(Build) -Properties Configuration=Release -OutputDirectory $(OutDir) -BasePath $(OutDir)" />
     <Exec Command="$(SolutionDir)\packages\squirrel.windows.1.7.8\tools\Squirrel.exe --framework-version net462 --releasify $(OutDir)Popcorn.@(Major).@(Minor).@(Build).nupkg -g $(SolutionDir)\Popcorn\InstallLoader.gif --no-msi --setupIcon $(SolutionDir)\Popcorn\icon.ico" />
     <Move SourceFiles="$(SolutionDir)\Popcorn\Releases\Setup.exe" DestinationFiles="$(SolutionDir)\Popcorn\Releases\PopcornInstaller.exe" />

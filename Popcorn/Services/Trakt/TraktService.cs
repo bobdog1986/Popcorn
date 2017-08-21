@@ -49,25 +49,48 @@ namespace Popcorn.Services.Trakt
             var accessToken = await GetAccessToken();
             if (string.IsNullOrEmpty(accessToken)) return false;
 
-            return !await _client.Authentication.CheckIfAccessTokenWasRevokedOrIsNotValidAsync(accessToken);
+            try
+            {
+                return !await _client.Authentication.CheckIfAccessTokenWasRevokedOrIsNotValidAsync(accessToken);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                return false;
+            }
         }
 
         public string GetAuthorizationUrl()
         {
-            return _client.OAuth.CreateAuthorizationUrl();
+            try
+            {
+                return _client.OAuth.CreateAuthorizationUrl();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                return string.Empty;
+            }
         }
 
         public async Task AuthorizeAsync(string code)
         {
-            _traktAuthorization = await _client.OAuth.GetAuthorizationAsync(code);
-            await BlobCache.UserAccount.InsertObject("trakt", new TraktToken
+            try
             {
-                AccessToken = _traktAuthorization.AccessToken,
-                Created = _traktAuthorization.Created,
-                ExpiresInSeconds = _traktAuthorization.ExpiresInSeconds,
-                RefreshToken = _traktAuthorization.RefreshToken
-            });
-            await BlobCache.UserAccount.Flush();
+                _traktAuthorization = await _client.OAuth.GetAuthorizationAsync(code);
+                await BlobCache.UserAccount.InsertObject("trakt", new TraktToken
+                {
+                    AccessToken = _traktAuthorization.AccessToken,
+                    Created = _traktAuthorization.Created,
+                    ExpiresInSeconds = _traktAuthorization.ExpiresInSeconds,
+                    RefreshToken = _traktAuthorization.RefreshToken
+                });
+                await BlobCache.UserAccount.Flush();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
         }
     }
 }
