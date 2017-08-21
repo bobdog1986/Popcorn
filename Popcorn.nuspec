@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>Popcorn</id>
-        <version>2.6.5</version>
+        <version>2.6.6</version>
         <title>Popcorn</title>
         <authors>Benjamin Bougot</authors>
         <projectUrl>https://github.com/bbougot/Popcorn</projectUrl>
@@ -353,10 +353,8 @@
         <file src="Mono.Cecil.dll" target="lib\net45\Mono.Cecil.dll" />
         <file src="Mono.Cecil.Mdb.dll" target="lib\net45\Mono.Cecil.Mdb.dll" />
         <file src="Mono.Cecil.Rocks.dll" target="lib\net45\Mono.Cecil.Rocks.dll" />
-        <file src="msvcp140.dll" target="lib\net45\msvcp140.dll" />
         <file src="msvcp120.dll" target="lib\net45\msvcp120.dll" />
         <file src="msvcr120.dll" target="lib\net45\msvcr120.dll" />
-        <file src="concrt140.dll" target="lib\net45\concrt140.dll" />
         <file src="Newtonsoft.Json.dll" target="lib\net45\Newtonsoft.Json.dll" />
         <file src="NLog.dll" target="lib\net45\NLog.dll" />
         <file src="NuGet.Squirrel.dll" target="lib\net45\NuGet.Squirrel.dll" />
@@ -379,9 +377,7 @@
         <file src="TMDbLib.dll" target="lib\net45\TMDbLib.dll" />
         <file src="Tmds.MDns.dll" target="lib\net45\Tmds.MDns.dll" />
         <file src="None.srt" target="lib\net45\None.srt" />
-        <file src="vccorlib140.dll" target="lib\net45\vccorlib140.dll" />
         <file src="vccorlib120.dll" target="lib\net45\vccorlib120.dll" /> 
-        <file src="vcruntime140.dll" target="lib\net45\vcruntime140.dll" />
         <file src="WPFLocalizeExtension.dll" target="lib\net45\WPFLocalizeExtension.dll" />
         <file src="XAMLMarkupExtensions.dll" target="lib\net45\XAMLMarkupExtensions.dll" />
         <file src="Popcorn.Spinner.dll" target="lib\net45\Popcorn.Spinner.dll" />
@@ -499,5 +495,48 @@
         <file src="System.Reactive.Windows.Threading.dll" target="lib\net45\System.Reactive.Windows.Threading.dll" />
         <file src="TraktApiSharp.dll" target="lib\net45\TraktApiSharp.dll" />
         <file src="widevinecdmadapter.dll" target="lib\net45\widevinecdmadapter.dll" />
+        <file src="api-ms-win-core-debug-l1-1-0.dll" target="lib\net45\api-ms-win-core-debug-l1-1-0.dll" />
+        <file src="api-ms-win-core-errorhandling-l1-1-0.dll" target="lib\net45\api-ms-win-core-errorhandling-l1-1-0.dll" />
+        <file src="api-ms-win-core-file-l1-1-0.dll" target="lib\net45\api-ms-win-core-file-l1-1-0.dll" />
+        <file src="api-ms-win-core-file-l1-2-0.dll" target="lib\net45\api-ms-win-core-file-l1-2-0.dll" />
+        <file src="api-ms-win-core-file-l2-1-0.dll" target="lib\net45\api-ms-win-core-file-l2-1-0.dll" />
+        <file src="api-ms-win-core-handle-l1-1-0.dll" target="lib\net45\api-ms-win-core-handle-l1-1-0.dll" />
+        <file src="api-ms-win-core-heap-l1-1-0.dll" target="lib\net45\api-ms-win-core-heap-l1-1-0.dll" />
+        <file src="api-ms-win-core-interlocked-l1-1-0.dll" target="lib\net45\api-ms-win-core-interlocked-l1-1-0.dll" />
+        <file src="api-ms-win-core-libraryloader-l1-1-0.dll" target="lib\net45\api-ms-win-core-libraryloader-l1-1-0.dll" />
+        <file src="api-ms-win-core-localization-l1-2-0.dll" target="lib\net45\api-ms-win-core-localization-l1-2-0.dll" />
+        <file src="api-ms-win-core-memory-l1-1-0.dll" target="lib\net45\api-ms-win-core-memory-l1-1-0.dll" />
+        <file src="api-ms-win-core-namedpipe-l1-1-0.dll" target="lib\net45\api-ms-win-core-namedpipe-l1-1-0.dll" />
+        <file src="api-ms-win-core-processenvironment-l1-1-0.dll" target="lib\net45\api-ms-win-core-processenvironment-l1-1-0.dll" />
+        <file src="api-ms-win-core-processthreads-l1-1-0.dll" target="lib\net45\api-ms-win-core-processthreads-l1-1-0.dll" />
+        <file src="api-ms-win-core-processthreads-l1-1-1.dll" target="lib\net45\api-ms-win-core-processthreads-l1-1-1.dll" />
+        <file src="api-ms-win-core-profile-l1-1-0.dll" target="lib\net45\api-ms-win-core-profile-l1-1-0.dll" />
+        <file src="api-ms-win-core-rtlsupport-l1-1-0.dll" target="lib\net45\api-ms-win-core-rtlsupport-l1-1-0.dll" />
+        <file src="api-ms-win-core-string-l1-1-0.dll" target="lib\net45\api-ms-win-core-string-l1-1-0.dll" />
+        <file src="api-ms-win-core-synch-l1-1-0.dll" target="lib\net45\api-ms-win-core-synch-l1-1-0.dll" />
+        <file src="api-ms-win-core-synch-l1-2-0.dll" target="lib\net45\api-ms-win-core-synch-l1-2-0.dll" />
+        <file src="api-ms-win-core-sysinfo-l1-1-0.dll" target="lib\net45\api-ms-win-core-sysinfo-l1-1-0.dll" />
+        <file src="api-ms-win-core-timezone-l1-1-0.dll" target="lib\net45\api-ms-win-core-timezone-l1-1-0.dll" />
+        <file src="api-ms-win-core-util-l1-1-0.dll" target="lib\net45\api-ms-win-core-util-l1-1-0.dll" />
+        <file src="api-ms-win-crt-conio-l1-1-0.dll" target="lib\net45\api-ms-win-crt-conio-l1-1-0.dll" />
+        <file src="api-ms-win-crt-convert-l1-1-0.dll" target="lib\net45\api-ms-win-crt-convert-l1-1-0.dll" />
+        <file src="api-ms-win-crt-environment-l1-1-0.dll" target="lib\net45\api-ms-win-crt-environment-l1-1-0.dll" />
+        <file src="api-ms-win-crt-filesystem-l1-1-0.dll" target="lib\net45\api-ms-win-crt-filesystem-l1-1-0.dll" />
+        <file src="api-ms-win-crt-heap-l1-1-0.dll" target="lib\net45\api-ms-win-crt-heap-l1-1-0.dll" />
+        <file src="api-ms-win-crt-locale-l1-1-0.dll" target="lib\net45\api-ms-win-crt-locale-l1-1-0.dll" />
+        <file src="api-ms-win-crt-math-l1-1-0.dll" target="lib\net45\api-ms-win-crt-math-l1-1-0.dll" />
+        <file src="api-ms-win-crt-multibyte-l1-1-0.dll" target="lib\net45\api-ms-win-crt-multibyte-l1-1-0.dll" />
+        <file src="api-ms-win-crt-private-l1-1-0.dll" target="lib\net45\api-ms-win-crt-private-l1-1-0.dll" />
+        <file src="api-ms-win-crt-process-l1-1-0.dll" target="lib\net45\api-ms-win-crt-process-l1-1-0.dll" />
+        <file src="api-ms-win-crt-runtime-l1-1-0.dll" target="lib\net45\api-ms-win-crt-runtime-l1-1-0.dll" />
+        <file src="api-ms-win-crt-stdio-l1-1-0.dll" target="lib\net45\api-ms-win-crt-stdio-l1-1-0.dll" />
+        <file src="api-ms-win-crt-string-l1-1-0.dll" target="lib\net45\api-ms-win-crt-string-l1-1-0.dll" />
+        <file src="api-ms-win-crt-time-l1-1-0.dll" target="lib\net45\api-ms-win-crt-time-l1-1-0.dll" />
+        <file src="api-ms-win-crt-utility-l1-1-0.dll" target="lib\net45\api-ms-win-crt-utility-l1-1-0.dll" />
+        <file src="concrt140.dll" target="lib\net45\concrt140.dll" />
+        <file src="msvcp140.dll" target="lib\net45\msvcp140.dll" />
+        <file src="ucrtbase.dll" target="lib\net45\ucrtbase.dll" />
+        <file src="vccorlib140.dll" target="lib\net45\vccorlib140.dll" />
+        <file src="vcruntime140.dll" target="lib\net45\vcruntime140.dll" />
     </files>
 </package>

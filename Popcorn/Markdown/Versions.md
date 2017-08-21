@@ -1,10 +1,18 @@
-﻿# 2.6.5 - 21/08/2017 #
+﻿# 2.6.6 - 21/08/2017 #
 ***
 Fix issue
 
 ### Details ###
 
 * Fixed issue [#88](https://github.com/bbougot/Popcorn/issues/88).
+
+# 2.6.5 - 21/08/2017 #
+***
+Fix issue
+
+### Details ###
+
+* Improve performances.
 
 # 2.6.4 - 20/08/2017 #
 ***
