@@ -125,6 +125,7 @@ namespace Popcorn.AttachedProperties
                             var hash = Convert.ToBase64String(Encoding.UTF8.GetBytes(path));
                             var files = FastDirectoryEnumerator.EnumerateFiles(Constants.Assets);
                             var file = files.FirstOrDefault(a => a.Name.Contains(hash));
+                            var mustDownload = false;
                             if (file != null)
                             {
                                 localFile = file.Path;
@@ -163,28 +164,33 @@ namespace Popcorn.AttachedProperties
                                     image.RenderTransform = loadingAnimationTransform;
                                 }
 
-                                using (var client = new HttpClient())
+                                localFile = Constants.Assets + hash;
+                                mustDownload = true;
+                            }
+
+                            await Task.Run(async () =>
+                            {
+                                if (mustDownload)
                                 {
-                                    using (var ms = await client.GetStreamAsync(path))
+                                    using (var client = new HttpClient())
                                     {
-                                        using (var stream = new MemoryStream())
+                                        using (var ms = await client.GetStreamAsync(path).ConfigureAwait(false))
                                         {
-                                            await ms.CopyToAsync(stream);
-                                            using (var fs =
-                                                new FileStream(Constants.Assets + hash, FileMode.OpenOrCreate,
-                                                    FileAccess.ReadWrite, FileShare.ReadWrite))
+                                            using (var stream = new MemoryStream())
                                             {
-                                                stream.WriteTo(fs);
+                                                await ms.CopyToAsync(stream).ConfigureAwait(false);
+                                                using (var fs =
+                                                    new FileStream(Constants.Assets + hash, FileMode.OpenOrCreate,
+                                                        FileAccess.ReadWrite, FileShare.ReadWrite, 4096, true))
+                                                {
+                                                    var writeAsync = stream.ToArray();
+                                                    await fs.WriteAsync(writeAsync, 0, writeAsync.Length).ConfigureAwait(false);
+                                                }
                                             }
                                         }
                                     }
                                 }
 
-                                localFile = Constants.Assets + hash;
-                            }
-
-                            await Task.Run(() =>
-                            {
                                 using (var fs = new MemoryStream(File.ReadAllBytes(localFile)))
                                 {
                                     var bitmapImage = new BitmapImage();
@@ -222,7 +228,7 @@ namespace Popcorn.AttachedProperties
                                         image.Source = bitmapImage;
                                     });
                                 }
-                            });
+                            }).ConfigureAwait(false);
                         }
                         catch (Exception ex)
                         {

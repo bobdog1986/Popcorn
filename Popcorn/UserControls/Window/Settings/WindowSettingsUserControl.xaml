@@ -195,7 +195,7 @@
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     ColorDialog="Standard"
-                    Color="{Binding SubtitlesColor}" />
+                    Color="{Binding SubtitlesColor, Mode=TwoWay}" />
             </StackPanel>
         </Grid>
         <Grid

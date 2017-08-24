@@ -53,6 +53,11 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
         private double _rating;
 
         /// <summary>
+        /// Vertical scroll offset
+        /// </summary>
+        private double _verticalScroll;
+
+        /// <summary>
         /// Services used to interact with movie history
         /// </summary>
         protected readonly IUserService UserService;
@@ -174,6 +179,15 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
             get => _isLoadingShows;
             protected set { Set(() => IsLoadingShows, ref _isLoadingShows, value); }
         }
+        
+        /// <summary>
+        /// Vertical scroll offset
+        /// </summary>
+        public double VerticalScroll
+        {
+            get => _verticalScroll;
+            set { Set(() => VerticalScroll, ref _verticalScroll, value); }
+        }
 
         /// <summary>
         /// Indicates if there's any show found
@@ -261,6 +275,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
             {
                 Shows.Clear();
                 Page = 0;
+                VerticalScroll = 0d;
             }
 
             var watch = Stopwatch.StartNew();

@@ -23,6 +23,11 @@ namespace Popcorn.Utils
         public const string AiKey = "647b7610-bfc7-4b78-962d-822f7e59eda3";
 
         /// <summary>
+        /// Open Subtitles User Agent
+        /// </summary>
+        public const string OsdbUa = "Popcorn v1.0";
+
+        /// <summary>
         /// Trakt Client Api key
         /// </summary>
         public const string TraktClientApiKey = "a946923efa1f62c49cef3052d13591ee3584ce74ee3db6cb65c7baab8b63414f";

@@ -43,6 +43,11 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
         public bool NeedSync;
 
         /// <summary>
+        /// Vertical scroll offset
+        /// </summary>
+        private double _verticalScroll;
+
+        /// <summary>
         /// The genre used to filter movies
         /// </summary>
         private static GenreJson _genre;
@@ -218,6 +223,15 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
         }
 
         /// <summary>
+        /// Vertical scroll offset
+        /// </summary>
+        public double VerticalScroll
+        {
+            get => _verticalScroll;
+            set { Set(() => VerticalScroll, ref _verticalScroll, value); }
+        }
+
+        /// <summary>
         /// The genre used to filter movies
         /// </summary>
         protected GenreJson Genre
@@ -261,6 +275,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
             {
                 Movies.Clear();
                 Page = 0;
+                VerticalScroll = 0d;
             }
 
             var watch = Stopwatch.StartNew();

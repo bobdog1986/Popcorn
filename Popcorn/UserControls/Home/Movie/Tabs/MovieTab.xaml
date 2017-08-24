@@ -225,7 +225,7 @@
                                     Grid.ColumnSpan="3"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    attachedProperties:ImageAsyncHelper.ImagePath="{Binding PosterImage, Mode=OneTime, IsAsync=True}"
+                                    attachedProperties:ImageAsyncHelper.ImagePath="{Binding PosterImage, Mode=OneTime}"
                                     attachedProperties:ImageAsyncHelper.Type="Thumbnail" />
                                 <Grid
                                     x:Name="PlayCanvas"
@@ -357,6 +357,7 @@
                             Padding="{TemplateBinding Control.Padding}"
                             Focusable="False"
                             ScrollChanged="ScrollViewerScrollChanged"
+                            TargetVerticalOffset="{Binding VerticalScroll, Mode=TwoWay}"
                             VerticalScrollBarVisibility="Auto">
                             <ItemsPresenter SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
                         </customControls:AnimatedScrollViewer>
