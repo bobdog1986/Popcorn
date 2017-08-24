@@ -123,15 +123,14 @@ namespace Popcorn.AttachedProperties
 
                             string localFile;
                             var hash = Convert.ToBase64String(Encoding.UTF8.GetBytes(path));
-                            var files = FastDirectoryEnumerator.EnumerateFiles(Constants.Assets);
-                            var file = files.FirstOrDefault(a => a.Name.Contains(hash));
                             var mustDownload = false;
-                            if (file != null)
+                            if (File.Exists(Constants.Assets + hash))
                             {
-                                localFile = file.Path;
+                                localFile = Constants.Assets + hash;
                             }
                             else
                             {
+                                mustDownload = true;
                                 if (imageType == ImageType.Thumbnail)
                                 {
                                     var loadingImage = resourceDictionary["ImageLoading"] as DrawingImage;
@@ -165,7 +164,6 @@ namespace Popcorn.AttachedProperties
                                 }
 
                                 localFile = Constants.Assets + hash;
-                                mustDownload = true;
                             }
 
                             await Task.Run(async () =>
@@ -179,12 +177,16 @@ namespace Popcorn.AttachedProperties
                                             using (var stream = new MemoryStream())
                                             {
                                                 await ms.CopyToAsync(stream).ConfigureAwait(false);
-                                                using (var fs =
-                                                    new FileStream(Constants.Assets + hash, FileMode.OpenOrCreate,
-                                                        FileAccess.ReadWrite, FileShare.ReadWrite, 4096, true))
+                                                if (!File.Exists(Constants.Assets + hash))
                                                 {
-                                                    var writeAsync = stream.ToArray();
-                                                    await fs.WriteAsync(writeAsync, 0, writeAsync.Length).ConfigureAwait(false);
+                                                    using (var fs =
+                                                        new FileStream(Constants.Assets + hash, FileMode.Create,
+                                                            FileAccess.ReadWrite, FileShare.ReadWrite, 4096, true))
+                                                    {
+                                                        var writeAsync = stream.ToArray();
+                                                        await fs.WriteAsync(writeAsync, 0, writeAsync.Length)
+                                                            .ConfigureAwait(false);
+                                                    }
                                                 }
                                             }
                                         }
