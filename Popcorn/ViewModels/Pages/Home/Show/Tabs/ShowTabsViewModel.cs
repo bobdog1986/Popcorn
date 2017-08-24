@@ -296,6 +296,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
                 IsLoadingShows = true;
                 await Task.Run(async () =>
                 {
+                    var getShowWatcher = new Stopwatch();
                     var result =
                         await ShowService.GetShowsAsync(Page,
                             MaxShowsPerPage,
@@ -303,6 +304,14 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
                             SortBy,
                             CancellationLoadingShows.Token,
                             Genre).ConfigureAwait(false);
+                    getShowWatcher.Stop();
+                    var getShowEllapsedTime = getShowWatcher.ElapsedMilliseconds;
+                    if (reset && getShowEllapsedTime < 500)
+                    {
+                        // Wait for VerticalOffset to reach 0 (animation lasts 500ms)
+                        await Task.Delay(500 - (int)getShowEllapsedTime).ConfigureAwait(false);
+                    }
+
                     DispatcherHelper.CheckBeginInvokeOnUI(async () =>
                     {
                         Shows.AddRange(result.shows.Except(Shows, new ShowLightComparer()));

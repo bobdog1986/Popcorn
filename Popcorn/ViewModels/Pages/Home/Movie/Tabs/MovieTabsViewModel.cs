@@ -296,6 +296,8 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                 IsLoadingMovies = true;
                 await Task.Run(async () =>
                 {
+                    var getMoviesWatcher = new Stopwatch();
+                    getMoviesWatcher.Start();
                     var result =
                         await MovieService.GetMoviesAsync(Page,
                             MaxMoviesPerPage,
@@ -303,6 +305,14 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                             SortBy,
                             CancellationLoadingMovies.Token,
                             Genre).ConfigureAwait(false);
+                    getMoviesWatcher.Stop();
+                    var getMoviesEllapsedTime = getMoviesWatcher.ElapsedMilliseconds;
+                    if (reset && getMoviesEllapsedTime < 500)
+                    {
+                        // Wait for VerticalOffset to reach 0 (animation lasts 500ms)
+                        await Task.Delay(500 - (int)getMoviesEllapsedTime).ConfigureAwait(false);
+                    }
+
                     DispatcherHelper.CheckBeginInvokeOnUI(async () =>
                     {
                         Movies.AddRange(result.movies.Except(Movies, new MovieLightComparer()));

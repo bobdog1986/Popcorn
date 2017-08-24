@@ -191,7 +191,7 @@ namespace Popcorn.AttachedProperties
                                     }
                                 }
 
-                                using (var fs = new MemoryStream(File.ReadAllBytes(localFile)))
+                                using (var fs = new FileStream(localFile, FileMode.Open, FileAccess.Read))
                                 {
                                     var bitmapImage = new BitmapImage();
                                     bitmapImage.BeginInit();
