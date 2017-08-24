@@ -1,4 +1,12 @@
-﻿# 2.6.6 - 21/08/2017 #
+﻿# 2.6.7 - 24/08/2017 #
+***
+Various improvements
+
+### Details ###
+
+* Improved stability
+
+# 2.6.6 - 21/08/2017 #
 ***
 Fix issue
 
