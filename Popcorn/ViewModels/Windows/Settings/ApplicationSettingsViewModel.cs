@@ -10,6 +10,7 @@ using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using NLog;
+using Popcorn.ColorPicker;
 using Popcorn.Extensions;
 using Popcorn.Helpers;
 using Popcorn.Messaging;
@@ -89,6 +90,8 @@ namespace Popcorn.ViewModels.Windows.Settings
 
         private ICommand _showTraktDialogCommand;
 
+        private ICommand _changeSubtitleColorCommand;
+
         /// <summary>
         /// Initializes a new instance of the ApplicationSettingsViewModel class.
         /// </summary>
@@ -97,18 +100,9 @@ namespace Popcorn.ViewModels.Windows.Settings
         public ApplicationSettingsViewModel(IUserService userService, ISubtitlesService subtitlesService)
         {
             _userService = userService;
-            Version = Constants.AppVersion;
-
-            RefreshCacheSize();
-            RegisterCommands();
-            SubtitlesColor = Color.FromRgb(255, 255, 255);
-            ShowTraktDialogCommand = new RelayCommand(async () =>
+            DispatcherHelper.CheckBeginInvokeOnUI(async () =>
             {
-                await Messenger.Default.SendAsync(new ShowTraktDialogMessage());
-            });
-
-            Task.Run(async () =>
-            {
+                var user = await _userService.GetUser();
                 try
                 {
                     SubtitleSizes = new ObservableCollection<SubtitleSize>
@@ -140,27 +134,33 @@ namespace Popcorn.ViewModels.Windows.Settings
                         }
                     };
 
-                    SelectedSubtitleSize = SubtitleSizes.FirstOrDefault(a => a.Size == 16);
-                    DownloadLimit = await _userService.GetDownloadLimit();
-                    UploadLimit = await _userService.GetUploadLimit();
-                    var defaultSubtitleLanguage = await _userService.GetDefaultSubtitleLanguage();
-                    DefaultHdQuality = await _userService.GetDefaultHdQuality();
+                    _downloadLimit = user.DownloadLimit;
+                    _uploadLimit = user.UploadLimit;
+                    var defaultSubtitleLanguage = user.DefaultSubtitleLanguage;
+                    var subtitleSize = user.DefaultSubtitleSize;
+                    _defaultHdQuality = user.DefaultHdQuality;
+                    _selectedSubtitleSize = SubtitleSizes.FirstOrDefault(a => a.Size == subtitleSize.Size);
+                    _subtitlesColor =
+                        (Color)ColorConverter.ConvertFromString(user.DefaultSubtitleColor);
+                    RaisePropertyChanged(nameof(SubtitlesColor));
+                    RaisePropertyChanged(nameof(DownloadLimit));
+                    RaisePropertyChanged(nameof(UploadLimit));
+                    RaisePropertyChanged(nameof(SelectedSubtitleSize));
+                    RaisePropertyChanged(nameof(DefaultHdQuality));
                     LoadingSubtitles = true;
                     AvailableSubtitlesLanguages = new ObservableRangeCollection<string>();
                     var languages = (await subtitlesService.GetSubLanguages()).Select(a => a.LanguageName)
                         .OrderBy(a => a)
                         .ToList();
-                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
-                    {
-                        languages.Insert(0,
-                            LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"));
-                        AvailableSubtitlesLanguages.AddRange(
-                            new ObservableRangeCollection<string>(languages));
-                        DefaultSubtitleLanguage = AvailableSubtitlesLanguages.Any(a => a == defaultSubtitleLanguage)
-                            ? defaultSubtitleLanguage
-                            : LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel");
-                        LoadingSubtitles = false;
-                    });
+                    languages.Insert(0,
+                        LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"));
+                    AvailableSubtitlesLanguages.AddRange(
+                        new ObservableRangeCollection<string>(languages));
+                    _defaultSubtitleLanguage = AvailableSubtitlesLanguages.Any(a => a == defaultSubtitleLanguage)
+                        ? defaultSubtitleLanguage
+                        : LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel");
+                    RaisePropertyChanged(nameof(DefaultSubtitleLanguage));
+                    LoadingSubtitles = false;
                 }
                 catch (Exception ex)
                 {
@@ -170,9 +170,23 @@ namespace Popcorn.ViewModels.Windows.Settings
                         LoadingSubtitles = false;
                         AvailableSubtitlesLanguages.Insert(0,
                             LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"));
-                        DefaultSubtitleLanguage = AvailableSubtitlesLanguages.FirstOrDefault();
+                        _defaultSubtitleLanguage = AvailableSubtitlesLanguages.FirstOrDefault();
+                        RaisePropertyChanged(nameof(DefaultSubtitleLanguage));
                     });
                 }
+            });
+
+            Version = Constants.AppVersion;
+            RefreshCacheSize();
+            RegisterCommands();
+            ShowTraktDialogCommand = new RelayCommand(async () =>
+            {
+                await Messenger.Default.SendAsync(new ShowTraktDialogMessage());
+            });
+
+            ChangeSubtitleColorCommand = new RelayCommand<EventArgs<Color>>(args =>
+            {
+                SubtitlesColor = args.Value;
             });
         }
 
@@ -214,7 +228,14 @@ namespace Popcorn.ViewModels.Windows.Settings
         public SubtitleSize SelectedSubtitleSize
         {
             get => _selectedSubtitleSize;
-            set { Set(ref _selectedSubtitleSize, value); }
+            set
+            {
+                Set(ref _selectedSubtitleSize, value);
+                Task.Run(async () =>
+                {
+                    await _userService.SetDefaultSubtitleSize(value);
+                });
+            }
         }
 
         /// <summary>
@@ -232,7 +253,10 @@ namespace Popcorn.ViewModels.Windows.Settings
         public ObservableCollection<SubtitleSize> SubtitleSizes
         {
             get => _subtitleSizes;
-            set { Set(ref _subtitleSizes, value); }
+            set
+            {
+                Set(ref _subtitleSizes, value);
+            }
         }
 
         /// <summary>
@@ -327,13 +351,28 @@ namespace Popcorn.ViewModels.Windows.Settings
         /// </summary>
         public RelayCommand UpdateCacheSizeCommand { get; private set; }
 
+        public ICommand ChangeSubtitleColorCommand
+        {
+            get => _changeSubtitleColorCommand;
+            set => Set(ref _changeSubtitleColorCommand, value);
+        }
+
         /// <summary>
         /// Subtitles color
         /// </summary>
         public Color SubtitlesColor
         {
             get => _subtitlesColor;
-            set { Set(() => SubtitlesColor, ref _subtitlesColor, value); }
+            set
+            {
+                Set(ref _subtitlesColor, value);
+                Task.Run(async () =>
+                {
+                    await _userService.SetDefaultSubtitleColor("#" + _subtitlesColor.R.ToString("X2") +
+                                                               _subtitlesColor.G.ToString("X2") +
+                                                               _subtitlesColor.B.ToString("X2"));
+                });
+            }
         }
 
         /// <summary>
@@ -341,8 +380,9 @@ namespace Popcorn.ViewModels.Windows.Settings
         /// </summary>
         private async Task InitializeAsync()
         {
-            Language = new Language(_userService);
+            _language = new Language(_userService);
             await Language.LoadLanguages();
+            RaisePropertyChanged(nameof(Language));
         }
 
         /// <summary>

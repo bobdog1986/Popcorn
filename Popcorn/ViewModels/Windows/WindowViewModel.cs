@@ -492,7 +492,7 @@ namespace Popcorn.ViewModels.Windows
 
             _showSubtitleDialogMessage = Messenger.Default.RegisterAsyncMessage<ShowSubtitleDialogMessage>(async message =>
             {
-                var vm = new SubtitleDialogViewModel(message.Subtitles);
+                var vm = new SubtitleDialogViewModel(message.Subtitles, message.CurrentSubtitle);
                 var subtitleDialog = new SubtitleDialog
                 {
                     DataContext = vm

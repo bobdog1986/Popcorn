@@ -10,12 +10,19 @@ namespace Popcorn.Events
         public readonly string SubtitlePath;
 
         /// <summary>
+        /// The subtitle
+        /// </summary>
+        public readonly OSDB.Subtitle Subtitle;
+
+        /// <summary>
         /// Initialize a new instance of SubtitleChangedEventArgs
         /// </summary>
         /// <param name="subtitlePath">Subtitle path</param>
-        public SubtitleChangedEventArgs(string subtitlePath)
+        /// <param name="subtitle">The subtitle</param>
+        public SubtitleChangedEventArgs(string subtitlePath, OSDB.Subtitle subtitle)
         {
             SubtitlePath = subtitlePath;
+            Subtitle = subtitle;
         }
     }
 }

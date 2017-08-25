@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Popcorn.Models.Episode;
 using Popcorn.Models.Movie;
 using Popcorn.Models.Shows;
+using Popcorn.Models.Subtitles;
 using Popcorn.Models.User;
 
 namespace Popcorn.Services.User
@@ -78,17 +79,7 @@ namespace Popcorn.Services.User
         /// <returns>List of ImdbId</returns>
         Task<(IEnumerable<string> shows, IEnumerable<string> allShows, int nbShows)> GetFavoritesShows(int page);
 
-        /// <summary>
-        /// Get the download limit
-        /// </summary>
-        /// <returns>Download rate</returns>
-        Task<int> GetDownloadLimit();
-
-        /// <summary>
-        /// Get the upload limit
-        /// </summary>
-        /// <returns>Upload rate</returns>
-        Task<int> GetUploadLimit();
+        Task<Models.User.User> GetUser();
 
         /// <summary>
         /// Set the download limit
@@ -119,15 +110,15 @@ namespace Popcorn.Services.User
         Task SetDefaultSubtitleLanguage(string englishName);
 
         /// <summary>
-        /// Set default HD quality
+        /// Set default subtitle color
         /// </summary>
         /// <returns></returns>
-        Task<bool> GetDefaultHdQuality();
+        Task SetDefaultSubtitleColor(string color);
 
         /// <summary>
-        /// Set default subtitle language
+        /// Set default subtitle size
         /// </summary>
         /// <returns></returns>
-        Task<string> GetDefaultSubtitleLanguage();
+        Task SetDefaultSubtitleSize(SubtitleSize size);
     }
 }

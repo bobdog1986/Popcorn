@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
@@ -467,11 +468,22 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
                     var applicationSettings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
                     Movie.WatchInFullHdQuality = Movie.FullHdAvailable && applicationSettings.DefaultHdQuality;
                     ComputeTorrentHealth();
-                    LoadingSimilar = true;
-                    await _movieService.GetMoviesSimilarAsync(Movie, SimilarMovies).ConfigureAwait(false);
-                    AnySimilar = SimilarMovies.Any();
-                    LoadingSimilar = false;
-                    await LoadSubtitles(Movie).ConfigureAwait(false);
+                    var tasks = new Func<Task>[]
+                    {
+                        async () =>
+                        {
+                            LoadingSimilar = true;
+                            await _movieService.GetMoviesSimilarAsync(Movie, SimilarMovies).ConfigureAwait(false);
+                            AnySimilar = SimilarMovies.Any();
+                            LoadingSimilar = false;
+                        },
+                        async () =>
+                        {
+                            await LoadSubtitles(Movie).ConfigureAwait(false);
+                        }
+                    };
+
+                    await Task.WhenAll(tasks.Select(task => task()).ToArray()).ConfigureAwait(false);    
                 }).ConfigureAwait(false);
             }
             catch (Exception ex)

@@ -9,10 +9,12 @@ using System.Threading.Tasks;
 using Akavache;
 using GalaSoft.MvvmLight.Messaging;
 using NLog;
+using Popcorn.Helpers;
 using Popcorn.Messaging;
 using Popcorn.Models.Localization;
 using Popcorn.Models.Movie;
 using Popcorn.Models.Shows;
+using Popcorn.Models.Subtitles;
 using Popcorn.Models.User;
 using Popcorn.Services.Movies.Movie;
 using Popcorn.Utils;
@@ -59,7 +61,7 @@ namespace Popcorn.Services.User
             MovieService = movieService;
         }
 
-        private async Task<Models.User.User> GetUser()
+        public async Task<Models.User.User> GetUser()
         {
             var user = new Models.User.User
             {
@@ -82,6 +84,20 @@ namespace Popcorn.Services.User
                 if (user.ShowHistory == null)
                 {
                     user.ShowHistory = new List<ShowHistory>();
+                }
+
+                if (user.DefaultSubtitleSize == null)
+                {
+                    user.DefaultSubtitleSize = new SubtitleSize
+                    {
+                        Size = 16,
+                        Label = LocalizationProviderHelper.GetLocalizedValue<string>("Normal")
+                    };
+                }
+
+                if (string.IsNullOrEmpty(user.DefaultSubtitleColor))
+                {
+                    user.DefaultSubtitleColor = "#FFFFFF";
                 }
             }
             catch (Exception)
@@ -366,23 +382,6 @@ namespace Popcorn.Services.User
             }
         }
 
-        /// <summary>
-        /// Get the upload rate
-        /// </summary>
-        /// <returns>Upload rate</returns>
-        public async Task<int> GetUploadLimit()
-        {
-            try
-            {
-                User = await GetUser().ConfigureAwait(false);
-                return User.UploadLimit;
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-                return 0;
-            }
-        }
 
         /// <summary>
         /// Set the download rate
@@ -497,6 +496,34 @@ namespace Popcorn.Services.User
             }
         }
 
+        public async Task SetDefaultSubtitleColor(string color)
+        {
+            try
+            {
+                User = await GetUser().ConfigureAwait(false);
+                User.DefaultSubtitleColor = color;
+                await UpdateUser(User).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+        }
+
+        public async Task SetDefaultSubtitleSize(SubtitleSize size)
+        {
+            try
+            {
+                User = await GetUser().ConfigureAwait(false);
+                User.DefaultSubtitleSize = size;
+                await UpdateUser(User).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+        }
+
         /// <summary>
         /// Get all available languages from the database
         /// </summary>
@@ -575,8 +602,8 @@ namespace Popcorn.Services.User
                 var watch = Stopwatch.StartNew();
                 User = await GetUser().ConfigureAwait(false);
                 User.Language.Culture = language.Culture;
-                ChangeLanguage(User.Language);
                 await UpdateUser(User).ConfigureAwait(false);
+                ChangeLanguage(User.Language);
                 watch.Stop();
                 var elapsedMs = watch.ElapsedMilliseconds;
                 Logger.Debug(

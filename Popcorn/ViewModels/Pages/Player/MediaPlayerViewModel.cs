@@ -122,6 +122,10 @@ namespace Popcorn.ViewModels.Pages.Player
 
         private bool _isCastPaused;
 
+        private bool _isSubtitleChosen;
+
+        private OSDB.Subtitle _currentSubtitle;
+
         /// <summary>
         /// Media action to execute when media has ended
         /// </summary>
@@ -335,10 +339,13 @@ namespace Popcorn.ViewModels.Pages.Player
 
             SelectSubtitlesCommand = new RelayCommand(async () =>
             {
+                IsSubtitleChosen = !IsSubtitleChosen;
+                var previousSubtitleChosen = IsSubtitleChosen;
                 try
                 {
+                    IsSubtitleChosen = false;
                     OnPausedMedia(new EventArgs());
-                    var message = new ShowSubtitleDialogMessage(_subtitles);
+                    var message = new ShowSubtitleDialogMessage(_subtitles, CurrentSubtitle);
                     await Messenger.Default.SendAsync(message);
                     if (message.SelectedSubtitle != null &&
                         message.SelectedSubtitle.LanguageName !=
@@ -351,7 +358,8 @@ namespace Popcorn.ViewModels.Pages.Player
                         var subtitlePath = await
                             _subtitlesService.DownloadSubtitleToPath(path,
                                 message.SelectedSubtitle);
-                        OnSubtitleChosen(new SubtitleChangedEventArgs(subtitlePath));
+                        OnSubtitleChosen(new SubtitleChangedEventArgs(subtitlePath, message.SelectedSubtitle));
+                        IsSubtitleChosen = true;
                     }
                     else if (message.SelectedSubtitle != null &&
                              message.SelectedSubtitle.LanguageName !=
@@ -362,7 +370,13 @@ namespace Popcorn.ViewModels.Pages.Player
                         await Messenger.Default.SendAsync(subMessage);
                         if (!subMessage.Error && !string.IsNullOrEmpty(subMessage.FileName))
                         {
-                            OnSubtitleChosen(new SubtitleChangedEventArgs(subMessage.FileName));
+                            OnSubtitleChosen(
+                                new SubtitleChangedEventArgs(subMessage.FileName, message.SelectedSubtitle));
+                            IsSubtitleChosen = true;
+                        }
+                        else
+                        {
+                            IsSubtitleChosen = false;
                         }
 
                         OnResumedMedia(new EventArgs());
@@ -372,16 +386,19 @@ namespace Popcorn.ViewModels.Pages.Player
                     {
                         var path = Assembly.GetExecutingAssembly().Location;
                         var directory = Directory.GetParent(path);
-                        OnSubtitleChosen(new SubtitleChangedEventArgs($@"{directory}\None.srt"));
+                        OnSubtitleChosen(new SubtitleChangedEventArgs($@"{directory}\None.srt", message.SelectedSubtitle));
                         OnResumedMedia(new EventArgs());
+                        IsSubtitleChosen = false;
                     }
                     else
                     {
                         OnResumedMedia(new EventArgs());
+                        IsSubtitleChosen = previousSubtitleChosen;
                     }
                 }
                 catch (Exception ex)
                 {
+                    IsSubtitleChosen = previousSubtitleChosen;
                     Logger.Trace(ex);
                 }
             });
@@ -615,6 +632,18 @@ namespace Popcorn.ViewModels.Pages.Player
             set { Set(ref _stopCastCommand, value); }
         }
 
+        public OSDB.Subtitle CurrentSubtitle
+        {
+            get { return _currentSubtitle; }
+            set { Set(ref _currentSubtitle, value); }
+        }
+
+        public bool IsSubtitleChosen
+        {
+            get { return _isSubtitleChosen; }
+            set { Set(ref _isSubtitleChosen, value); }
+        }
+
         public bool CanSeek
         {
             get { return _canSeek; }
@@ -667,6 +696,7 @@ namespace Popcorn.ViewModels.Pages.Player
             Logger.Debug(
                 "Subtitle chosen");
 
+            CurrentSubtitle = e.Subtitle;
             var handler = SubtitleChosen;
             handler?.Invoke(this, e);
         }

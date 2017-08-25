@@ -38,7 +38,7 @@ namespace Popcorn.Services.Trakt
             }
             catch (Exception)
             {
-                
+
             }
 
             return accessToken;

@@ -94,7 +94,7 @@
                 HorizontalContentAlignment="Left"
                 DisplayMemberPath="Sub.LanguageName"
                 ItemsSource="{Binding AvailableSubtitles}"
-                SelectedItem="{Binding SelectedSubtitle, UpdateSourceTrigger=PropertyChanged}">
+                SelectedItem="{Binding SelectedSubtitle}">
                 <controls:SplitButton.Icon>
                     <iconPacks:PackIconMaterial Margin="6" Kind="Translate" />
                 </controls:SplitButton.Icon>

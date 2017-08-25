@@ -4,7 +4,9 @@ using Popcorn.Models.Subtitles;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
+using Popcorn.Helpers;
 
 namespace Popcorn.ViewModels.Dialogs
 {
@@ -18,9 +20,22 @@ namespace Popcorn.ViewModels.Dialogs
 
         private ICommand _closeCommand;
 
-        public SubtitleDialogViewModel(IEnumerable<Subtitle> subtitles)
+        public SubtitleDialogViewModel(IEnumerable<Subtitle> subtitles, OSDB.Subtitle currentSubtitle)
         {
             AvailableSubtitles = new ObservableCollection<Subtitle>(subtitles);
+            if (currentSubtitle != null)
+            {
+                SelectedSubtitle =
+                    AvailableSubtitles.FirstOrDefault(a => a.Sub.LanguageId == currentSubtitle.LanguageId);
+            }
+            else
+            {
+                SelectedSubtitle =
+                    AvailableSubtitles.FirstOrDefault(a => a.Sub.LanguageName ==
+                                                           LocalizationProviderHelper.GetLocalizedValue<string>(
+                                                               "NoneLabel"));
+            }
+
             CloseCommand = new RelayCommand(() =>
              {
                  OnCloseAction.Invoke();

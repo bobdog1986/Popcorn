@@ -59,8 +59,8 @@ namespace Popcorn.Models.Localization
             get => _currentLanguage;
             set
             {
-                Task.Run(async () => { await _userService.SetCurrentLanguageAsync(value); });
                 Set(() => CurrentLanguage, ref _currentLanguage, value);
+                Task.Run(async () => { await _userService.SetCurrentLanguageAsync(value); });
             }
         }
 

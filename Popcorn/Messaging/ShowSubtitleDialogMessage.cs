@@ -10,9 +10,12 @@ namespace Popcorn.Messaging
 
         public OSDB.Subtitle SelectedSubtitle { get; set; }
 
-        public ShowSubtitleDialogMessage(IEnumerable<Subtitle> subtitles)
+        public OSDB.Subtitle CurrentSubtitle { get; set; }
+
+        public ShowSubtitleDialogMessage(IEnumerable<Subtitle> subtitles, OSDB.Subtitle currentSubtitle)
         {
             Subtitles = subtitles;
+            CurrentSubtitle = currentSubtitle;
         }
     }
 }
