@@ -196,9 +196,12 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Download
             this,
             message =>
             {
+                if (IsDownloadingMovie)
+                    return;
+
+                IsDownloadingMovie = true;
                 Task.Run(async () =>
                 {
-                    IsDownloadingMovie = true;
                     Movie = message.Movie;
                     MovieDownloadRate = 0d;
                     MovieDownloadProgress = 0d;
