@@ -184,9 +184,12 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Download
             this,
             message =>
             {
+                if(IsDownloadingEpisode)
+                    return;
+
+                IsDownloadingEpisode = true;
                 Task.Run(async () =>
                 {
-                    IsDownloadingEpisode = true;
                     Episode = message.Episode;
                     EpisodeDownloadRate = 0d;
                     EpisodeDownloadProgress = 0d;

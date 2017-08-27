@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media.Animation;
+using NLog;
 
 namespace Popcorn.Controls
 {
@@ -12,6 +13,11 @@ namespace Popcorn.Controls
 
     public class AnimatedScrollViewer : ScrollViewer
     {
+        /// <summary>
+        /// Logger of the class
+        /// </summary>
+        private static Logger Logger { get; } = LogManager.GetCurrentClassLogger();
+
         #region PART items
 
         ScrollBar _aniVerticalScrollBar;
@@ -252,14 +258,21 @@ namespace Popcorn.Controls
 
         private static void OnTargetVerticalOffsetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var thisScroller = (AnimatedScrollViewer) d;
-
-            if (!((double) e.NewValue).Equals(thisScroller._aniVerticalScrollBar.Value))
+            try
             {
-                thisScroller._aniVerticalScrollBar.Value = (double) e.NewValue;
-            }
+                var thisScroller = (AnimatedScrollViewer) d;
 
-            thisScroller.animateScroller(thisScroller);
+                if (!((double) e.NewValue).Equals(thisScroller._aniVerticalScrollBar.Value))
+                {
+                    thisScroller._aniVerticalScrollBar.Value = (double) e.NewValue;
+                }
+
+                thisScroller.animateScroller(thisScroller);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
         }
 
         #endregion
