@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using System.Windows;
@@ -15,6 +16,7 @@ using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using MahApps.Metro.Controls.Dialogs;
+using Microsoft.Owin.Hosting;
 using Microsoft.Win32;
 using NLog;
 using Popcorn.Dialogs;
@@ -22,6 +24,7 @@ using Popcorn.Extensions;
 using Popcorn.Helpers;
 using Popcorn.Messaging;
 using Popcorn.Services.Application;
+using Popcorn.Services.Server;
 using Popcorn.Services.User;
 using Popcorn.Utils;
 using Popcorn.Utils.Exceptions;
@@ -66,6 +69,11 @@ namespace Popcorn.ViewModels.Windows
         /// Holds the async message relative to <see cref="ShowTraktDialogMessage"/>
         /// </summary>
         private IDisposable _showTraktDialogMessage;
+
+        /// <summary>
+        /// The disposable local OWIN server
+        /// </summary>
+        private IDisposable _localServer;
 
         /// <summary>
         /// Holds the async message relative to <see cref="CastMediaMessage"/>
@@ -142,7 +150,7 @@ namespace Popcorn.ViewModels.Windows
             RegisterMessages();
             RegisterCommands();
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
-            ClearFolders();
+            //ClearFolders();
         }
 
         /// <summary>
@@ -580,9 +588,10 @@ namespace Popcorn.ViewModels.Windows
 
             MainWindowClosingCommand = new RelayCommand(async () =>
             {
+                _localServer.Dispose();
                 await SaveCacheOnExit();
                 Cef.Shutdown();
-                ClearFolders();
+                //ClearFolders();
             });
 
             OpenSettingsCommand = new RelayCommand(() => IsSettingsFlyoutOpen = !IsSettingsFlyoutOpen);
@@ -670,6 +679,8 @@ namespace Popcorn.ViewModels.Windows
                 {
                     OpenAboutCommand.Execute(null);
                 }
+
+                _localServer = WebApp.Start<Startup>(Constants.ServerUrl);
 #if !DEBUG
                 await StartUpdateProcessAsync();
 #endif

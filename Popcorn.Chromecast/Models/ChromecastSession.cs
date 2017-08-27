@@ -22,8 +22,6 @@ namespace Popcorn.Chromecast.Models
         public Func<object, Task<object>> OnCastSarted { get; set; }
         public Func<object, Task<object>> OnCastFailed { get; set; }
         public Func<object, Task<object>> OnStatusChanged { get; set; }
-        public Func<object, Task<object>> SubtitleServer { get; set; }
-        public Func<object, Task<object>> StreamServer { get; set; }
         public Func<object, Task<object>> CastServer { get; set; }
     }
 }

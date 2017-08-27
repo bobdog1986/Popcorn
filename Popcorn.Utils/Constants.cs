@@ -18,6 +18,11 @@ namespace Popcorn.Utils
         public const string PopcornApi = "https://popcornapi.azurewebsites.net/api";
 
         /// <summary>
+        /// Url used to start a local OWIN server
+        /// </summary>
+        public const string ServerUrl = "http://localhost:9900";
+
+        /// <summary>
         /// Application Insights key
         /// </summary>
         public const string AiKey = "647b7610-bfc7-4b78-962d-822f7e59eda3";
@@ -96,5 +101,10 @@ namespace Popcorn.Utils
         /// Subtitles directory
         /// </summary>
         public static string Subtitles { get; } = Path.GetTempPath() + "Popcorn\\Subtitles\\";
+
+        /// <summary>
+        /// Popcorn temp directory
+        /// </summary>
+        public static string PopcornTemp { get; } = Path.GetTempPath() + "Popcorn\\";
     }
 }

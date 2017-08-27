@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -11,21 +13,6 @@ namespace Popcorn.Chromecast.Services
     {
         public async Task<ChromecastSession> StartCastAsync(ChromecastSession session)
         {
-            if (session.SourceType == SourceType.Torrent)
-            {
-                var streamServer = await StartStreamFileServer(session.MediaPath,
-                    "video/mp4",
-                    9000, session.OnCastFailed);
-
-                session.StreamServer = streamServer;
-                if (!string.IsNullOrEmpty(session.SubtitlePath))
-                {
-                    var subtitleServer = await StartStaticFileServer(session.SubtitlePath,
-                        "text/vtt", 9001, session.OnCastFailed);
-                    session.SubtitleServer = subtitleServer;
-                }
-            }
-
             var server = Edge.Func(@"
                 var Client                = require('castv2-client').Client;
                 var DefaultMediaReceiver  = require('castv2-client').DefaultMediaReceiver;
@@ -129,11 +116,14 @@ namespace Popcorn.Chromecast.Services
                 }
             ");
 
-            await Task.Delay(1000);
+            var videoPath = session.MediaPath.Split(new[] {"Popcorn\\"}, StringSplitOptions.RemoveEmptyEntries)[1]
+                .Replace("\\", "/");
             var mediaPath = session.SourceType == SourceType.Torrent
-                ? $"http://{GetLocalIpAddress()}:9000"
+                ? $"http://{GetLocalIpAddress()}:9900/{videoPath}"
                 : session.MediaPath;
             var contentType = "video/mp4";
+            var subtitlePath = string.IsNullOrEmpty(session.SubtitlePath) ? string.Empty : session.SubtitlePath.Split(new[] {"Popcorn\\"}, StringSplitOptions.RemoveEmptyEntries)[1]
+                .Replace("\\", "/");
             var castServer = (Func<object, Task<object>>) await server(new
             {
                 host = session.Host,
@@ -144,7 +134,7 @@ namespace Popcorn.Chromecast.Services
                 onStarted = session.OnCastSarted,
                 contentType = contentType,
                 streamType = "BUFFERED",
-                subtitlePath = $"http://{GetLocalIpAddress()}:9001",
+                subtitlePath = $"http://{GetLocalIpAddress()}:9900/{subtitlePath}",
                 anySubtitle = !string.IsNullOrEmpty(session.SubtitlePath)
             });
 
@@ -163,102 +153,6 @@ namespace Popcorn.Chromecast.Services
                 }
             }
             throw new Exception("Local IP Address Not Found!");
-        }
-
-        private async Task<Func<object, Task<object>>> StartStaticFileServer(string filePath, string contentType,
-            int port, Func<object, Task<object>> onError)
-        {
-            var server = Edge.Func(@"
-                return function (options, cb) {
-                    const http = require('http');
-                    const fs = require('fs');
-                    const port = options.port;
-                    var mediaPath = options.path;
-                    var server = http.createServer(function (req, res) {
-                      fs.exists(mediaPath, function (exist) {
-                        if(!exist) {
-                          res.statusCode = 404;
-                          var err = 'File ${mediaPath} not found!';
-                          res.end(err);
-                          options.onError(err, function (error, result) {});
-                          return;
-                        }
-                        fs.readFile(mediaPath, function(err, data){
-                          if(err){
-                            res.statusCode = 500;
-                            res.end('Error getting the file: ${err}.');
-                          } else {
-                            res.setHeader('Content-type', options.contentType );
-                            res.end(data);
-                          }
-                        });
-                      });
-                    }).listen(parseInt(port), function (error) {
-                        cb(error, function (data, cb) {
-                            server.close();
-                            cb();
-                        });
-                    });
-                }
-            ");
-
-            var result = (Func<object, Task<object>>) await server(new
-            {
-                path = filePath,
-                port = port,
-                contentType = contentType,
-                onError = onError
-            });
-
-            return result;
-        }
-
-        private async Task<Func<object, Task<object>>> StartStreamFileServer(string filePath, string contentType,
-            int port, Func<object, Task<object>> onError)
-        {
-            var server = Edge.Func(@"
-                return function (options, cb) {
-                    const http = require('http');
-                    const fs = require('fs');
-                    const port = options.port;
-                    var mediaPath = options.path;
-                    var server = http.createServer(function (req, res) {
-                      fs.exists(mediaPath, function (exist) {
-                        if(!exist) {
-                          res.statusCode = 404;
-                          var err = 'File ${mediaPath} not found!';
-                          res.end(err);
-                          options.onError(err, function (error, result) {});
-                          return;
-                        }
-                        var stream = fs.createReadStream(mediaPath, { bufferSize: 64 * 1024 });
-                        stream.on('error', function(err) {
-                            options.onError(err, function (error, result) {});
-                            res.end(err);
-                        });
-                        stream.on('open', function () {
-                            res.setHeader('Content-type', options.contentType );
-                            stream.pipe(res);
-                        });
-                      });
-                    }).listen(parseInt(port), function (error) {
-                        cb(error, function (data, cb) {
-                            server.close();
-                            cb();
-                        });
-                    });
-                }
-            ");
-
-            var result = (Func<object, Task<object>>) await server(new
-            {
-                path = filePath,
-                port = port,
-                contentType = contentType,
-                onError = onError
-            });
-
-            return result;
         }
     }
 }

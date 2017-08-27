@@ -94,10 +94,6 @@ namespace Popcorn.ViewModels.Pages.Player
 
         private Func<object, Task<object>> _castServer;
 
-        private Func<object, Task<object>> _subtitleServer;
-
-        private Func<object, Task<object>> _streamServer;
-
         private ChromecastReceiver _chromecastReceiver;
 
         private ICommand _playCastCommand;
@@ -460,24 +456,10 @@ namespace Popcorn.ViewModels.Pages.Player
                     await _castServer.Invoke("stop");
                     _castServer = null;
                 }
-
-                if (_streamServer != null)
-                {
-                    await _streamServer.Invoke(null);
-                    _streamServer = null;
-                }
-
-                if (_subtitleServer != null)
-                {
-                    await _subtitleServer.Invoke(null);
-                    _subtitleServer = null;
-                }
             }
             catch (Exception ex)
             {
                 _castServer = null;
-                _streamServer = null;
-                _subtitleServer = null;
                 Logger.Error(ex);
             }
         }
@@ -592,8 +574,6 @@ namespace Popcorn.ViewModels.Pages.Player
             {
                 var castSession = await _chromecastService.StartCastAsync(session);
                 _castServer = castSession.CastServer;
-                _streamServer = castSession.StreamServer;
-                _subtitleServer = castSession.SubtitleServer;
             }
             catch (Exception ex)
             {
