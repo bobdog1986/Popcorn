@@ -540,5 +540,14 @@
         <file src="ucrtbase.dll" target="lib\net45\ucrtbase.dll" />
         <file src="vccorlib140.dll" target="lib\net45\vccorlib140.dll" />
         <file src="vcruntime140.dll" target="lib\net45\vcruntime140.dll" />
+        <file src="Microsoft.Owin.dll" target="lib\net45\Microsoft.Owin.dll" />
+        <file src="Microsoft.Owin.FileSystems.dll" target="lib\net45\Microsoft.Owin.FileSystems.dll" />
+        <file src="Microsoft.Owin.Host.HttpListener.dll" target="lib\net45\Microsoft.Owin.Host.HttpListener.dll" />
+        <file src="Microsoft.Owin.Hosting.dll" target="lib\net45\Microsoft.Owin.Hosting.dll" />
+        <file src="Microsoft.Owin.StaticFiles.dll" target="lib\net45\Microsoft.Owin.StaticFiles.dll" />
+        <file src="Owin.dll" target="lib\net45\Owin.dll" />
+        <file src="System.Net.Http.Formatting.dll" target="lib\net45\System.Net.Http.Formatting.dll" />
+        <file src="System.Web.Http.dll" target="lib\net45\System.Web.Http.dll" />
+        <file src="System.Web.Http.Owin.dll" target="lib\net45\System.Web.Http.Owin.dll" />
     </files>
 </package>

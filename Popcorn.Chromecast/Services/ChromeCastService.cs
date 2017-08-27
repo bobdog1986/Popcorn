@@ -116,17 +116,25 @@ namespace Popcorn.Chromecast.Services
                 }
             ");
 
-            var videoPath = session.MediaPath.Split(new[] {"Popcorn\\"}, StringSplitOptions.RemoveEmptyEntries)[1]
-                .Replace("\\", "/");
-            var mediaPath = session.SourceType == SourceType.Torrent
-                ? $"http://{GetLocalIpAddress()}:9900/{videoPath}"
-                : session.MediaPath;
+            var mediaPath = string.Empty;
+            if (session.SourceType == SourceType.Torrent)
+            {
+                var videoPath = session.MediaPath.Split(new[] { "Popcorn\\" }, StringSplitOptions.RemoveEmptyEntries)[1]
+                    .Replace("\\", "/");
+                mediaPath = $"http://{GetLocalIpAddress()}:9900/{videoPath}";
+            }
+            else
+            {
+                mediaPath = session.MediaPath;
+            }
+
             var contentType = "video/mp4";
             var subtitlePath = string.IsNullOrEmpty(session.SubtitlePath) ? string.Empty : session.SubtitlePath.Split(new[] {"Popcorn\\"}, StringSplitOptions.RemoveEmptyEntries)[1]
                 .Replace("\\", "/");
-            var castServer = (Func<object, Task<object>>) await server(new
+
+            var castServer = (Func<object, Task<object>>)await server(new
             {
-                host = session.Host,
+                host = $"{session.Chromecast.DeviceUri.Host}",
                 mediaPath = mediaPath,
                 mediaTitle = session.MediaTitle,
                 onStatusChanged = session.OnStatusChanged,

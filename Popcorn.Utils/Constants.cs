@@ -20,7 +20,7 @@ namespace Popcorn.Utils
         /// <summary>
         /// Url used to start a local OWIN server
         /// </summary>
-        public const string ServerUrl = "http://localhost:9900";
+        public const string ServerUrl = "http://*:9900";
 
         /// <summary>
         /// Application Insights key

@@ -5,6 +5,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
+using System.Reflection;
+using System.Security.Permissions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Navigation;
@@ -18,7 +20,9 @@ using GalaSoft.MvvmLight.Threading;
 using MahApps.Metro.Controls.Dialogs;
 using Microsoft.Owin.Hosting;
 using Microsoft.Win32;
+using NetFwTypeLib;
 using NLog;
+using Polly;
 using Popcorn.Dialogs;
 using Popcorn.Extensions;
 using Popcorn.Helpers;
@@ -150,7 +154,7 @@ namespace Popcorn.ViewModels.Windows
             RegisterMessages();
             RegisterCommands();
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
-            //ClearFolders();
+            ClearFolders();
         }
 
         /// <summary>
@@ -680,11 +684,85 @@ namespace Popcorn.ViewModels.Windows
                     OpenAboutCommand.Execute(null);
                 }
 
-                _localServer = WebApp.Start<Startup>(Constants.ServerUrl);
+                var retryLaunchingOwinPolicy = Policy
+                    .Handle<TargetInvocationException>()
+                    .Retry(2, (exception, retryCount, context) =>
+                        {
+                            var username = Environment.GetEnvironmentVariable("USERNAME");
+                            if (retryCount == 2)
+                            {
+                                Logger.Error($"Issue while registering netsh http add urlacl url={Constants.ServerUrl} user={username} listen=yes");
+                            }
+                            else
+                            {
+                                Process process = new System.Diagnostics.Process();
+                                ProcessStartInfo startInfo =
+                                    new System.Diagnostics.ProcessStartInfo
+                                    {
+                                        WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
+                                        FileName = "cmd.exe",
+                                        Arguments =
+                                            $"netsh http add urlacl url={Constants.ServerUrl} user={username} listen=yes",
+                                        Verb = "runas"
+                                    };
+                                process.StartInfo = startInfo;
+                                process.Start();
+                            }
+                        }
+                    );
+
+                retryLaunchingOwinPolicy.Execute(() =>
+                {
+                    _localServer = WebApp.Start<Startup>(Constants.ServerUrl);
+                    if (!FirewallRuleExists("Popcorn Server"))
+                    {
+                        RegisterFirewallRule();
+                    }
+                });
+
 #if !DEBUG
                 await StartUpdateProcessAsync();
 #endif
             });
+        }
+
+        private void RegisterFirewallRule()
+        {
+            INetFwRule firewallRule = (INetFwRule)Activator.CreateInstance(
+                Type.GetTypeFromProgID("HNetCfg.FWRule"));
+            firewallRule.Action = NET_FW_ACTION_.NET_FW_ACTION_ALLOW;
+            firewallRule.Description = "Enables Popcorn server.";
+            firewallRule.Direction = NET_FW_RULE_DIRECTION_.NET_FW_RULE_DIR_IN;
+            firewallRule.Enabled = true;
+            firewallRule.InterfaceTypes = "All";
+            firewallRule.Name = "Popcorn Server";
+            firewallRule.Protocol = (int)NET_FW_IP_PROTOCOL_.NET_FW_IP_PROTOCOL_TCP;
+            firewallRule.LocalPorts = "9900";
+            INetFwPolicy2 firewallPolicy = (INetFwPolicy2)Activator.CreateInstance(
+                Type.GetTypeFromProgID("HNetCfg.FwPolicy2"));
+            firewallPolicy.Rules.Add(firewallRule);
+        }
+
+        private bool FirewallRuleExists(string ruleName)
+        {
+            try
+            {
+                Type tNetFwPolicy2 = Type.GetTypeFromProgID("HNetCfg.FwPolicy2");
+                INetFwPolicy2 fwPolicy2 = (INetFwPolicy2)Activator.CreateInstance(tNetFwPolicy2);
+                foreach (INetFwRule rule in fwPolicy2.Rules)
+                {
+                    if (rule.Name.IndexOf(ruleName, StringComparison.Ordinal) != -1)
+                    {
+                        return true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+
+            return false;
         }
 
         /// <summary>

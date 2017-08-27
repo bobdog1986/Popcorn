@@ -425,7 +425,7 @@ namespace Popcorn.ViewModels.Pages.Player
                     _castPlayerCancellationTokenSource = message.CastCancellationTokenSource;
                     message.StartCast = async chromecastReseiver =>
                     {
-                        await LoadMedia(chromecastReseiver.DeviceUri.Host, message.CloseCastDialog);
+                        await LoadMedia(chromecastReseiver, message.CloseCastDialog);
                     };
                     await Messenger.Default.SendAsync(message);
                     if (message.CastCancellationTokenSource.IsCancellationRequested)
@@ -479,7 +479,7 @@ namespace Popcorn.ViewModels.Pages.Player
             }
         }
 
-        private async Task LoadMedia(string host, Action closeCastDialog)
+        private async Task LoadMedia(ChromecastReceiver chromecast, Action closeCastDialog)
         {
             Uri uriResult;
             var isRemote = Uri.TryCreate(MediaPath, UriKind.Absolute, out uriResult)
@@ -489,7 +489,7 @@ namespace Popcorn.ViewModels.Pages.Player
             var session = new ChromecastSession
             {
                 SourceType = isRemote ? SourceType.Youtube : SourceType.Torrent,
-                Host = host,
+                Chromecast = chromecast,
                 MediaPath = MediaPath,
                 MediaTitle = MediaName,
                 SubtitlePath = SubtitleFilePath,

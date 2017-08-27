@@ -14,7 +14,7 @@ namespace Popcorn.Chromecast.Models
 
     public class ChromecastSession
     {
-        public string Host { get; set; }
+        public ChromecastReceiver Chromecast { get; set; }
         public string MediaPath { get; set; }
         public string MediaTitle { get; set; }
         public string SubtitlePath { get; set; }
