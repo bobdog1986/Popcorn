@@ -71,38 +71,39 @@ namespace Popcorn.Services.User
             try
             {
                 user = await BlobCache.UserAccount.GetObject<Models.User.User>("user");
-                if (user.Language == null)
-                {
-                    user.Language = new Language();
-                }
-
-                if (user.MovieHistory == null)
-                {
-                    user.MovieHistory = new List<MovieHistory>();
-                }
-
-                if (user.ShowHistory == null)
-                {
-                    user.ShowHistory = new List<ShowHistory>();
-                }
-
-                if (user.DefaultSubtitleSize == null)
-                {
-                    user.DefaultSubtitleSize = new SubtitleSize
-                    {
-                        Size = 16,
-                        Label = LocalizationProviderHelper.GetLocalizedValue<string>("Normal")
-                    };
-                }
-
-                if (string.IsNullOrEmpty(user.DefaultSubtitleColor))
-                {
-                    user.DefaultSubtitleColor = "#FFFFFF";
-                }
             }
             catch (Exception)
             {
 
+            }
+
+            if (user.Language == null)
+            {
+                user.Language = new Language();
+            }
+
+            if (user.MovieHistory == null)
+            {
+                user.MovieHistory = new List<MovieHistory>();
+            }
+
+            if (user.ShowHistory == null)
+            {
+                user.ShowHistory = new List<ShowHistory>();
+            }
+
+            if (user.DefaultSubtitleSize == null)
+            {
+                user.DefaultSubtitleSize = new SubtitleSize
+                {
+                    Size = 16,
+                    Label = LocalizationProviderHelper.GetLocalizedValue<string>("Normal")
+                };
+            }
+
+            if (string.IsNullOrEmpty(user.DefaultSubtitleColor))
+            {
+                user.DefaultSubtitleColor = "#FFFFFF";
             }
 
             return user;
