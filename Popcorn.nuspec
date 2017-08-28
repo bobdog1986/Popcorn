@@ -359,6 +359,7 @@
         <file src="NLog.dll" target="lib\net45\NLog.dll" />
         <file src="NuGet.Squirrel.dll" target="lib\net45\NuGet.Squirrel.dll" />
         <file src="Popcorn.OSDB.dll" target="lib\net45\Popcorn.OSDB.dll" />
+        <file src="Popcorn.Handler" target="lib\net45\Popcorn.Handler" />
         <file src="Popcorn.exe" target="lib\net45\Popcorn.exe" />
         <file src="Popcorn.exe.config" target="lib\net45\Popcorn.exe.config" />
         <file src="RestSharp.dll" target="lib\net45\RestSharp.dll" />

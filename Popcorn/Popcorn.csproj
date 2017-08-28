@@ -902,7 +902,7 @@ xcopy /s /y "$(SolutionDir)packages\Microsoft.VC120.CRT.JetBrains.12.0.21005.2\D
   <Target Name="CefSharp" AfterTargets="CefSharpCopyLibs86">
     <Move SourceFiles="$(TargetDir)CefSharp.BrowserSubprocess.exe" DestinationFiles="$(TargetDir)CefSharp.BrowserSubprocess" />
   </Target>
-  <Target Name="PopcornHandler" AfterTargets="AfterBuild">
+  <Target Name="PopcornHandler" BeforeTargets="AfterBuild">
     <Move SourceFiles="$(TargetDir)Popcorn.Handler.exe" DestinationFiles="$(TargetDir)Popcorn.Handler" />
   </Target>
   <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release'">
