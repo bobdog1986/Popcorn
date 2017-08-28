@@ -10,7 +10,7 @@ namespace Popcorn.Utils
         /// <summary>
         /// App version
         /// </summary>
-        public const string AppVersion = "2.6.7";
+        public const string AppVersion = "2.7.0";
 
         /// <summary>
         /// Endpoint to API
@@ -20,7 +20,7 @@ namespace Popcorn.Utils
         /// <summary>
         /// Url used to start a local OWIN server
         /// </summary>
-        public const string ServerUrl = "http://*:9900";
+        public const string ServerUrl = "http://*:9900/";
 
         /// <summary>
         /// Application Insights key

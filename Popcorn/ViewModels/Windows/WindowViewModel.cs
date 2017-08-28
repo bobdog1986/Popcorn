@@ -17,6 +17,7 @@ using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
+using Ignite.SharpNetSH;
 using MahApps.Metro.Controls.Dialogs;
 using Microsoft.Owin.Hosting;
 using Microsoft.Win32;
@@ -595,7 +596,7 @@ namespace Popcorn.ViewModels.Windows
                 _localServer.Dispose();
                 await SaveCacheOnExit();
                 Cef.Shutdown();
-                //ClearFolders();
+                ClearFolders();
             });
 
             OpenSettingsCommand = new RelayCommand(() => IsSettingsFlyoutOpen = !IsSettingsFlyoutOpen);
@@ -684,63 +685,65 @@ namespace Popcorn.ViewModels.Windows
                     OpenAboutCommand.Execute(null);
                 }
 
-                var retryLaunchingOwinPolicy = Policy
-                    .Handle<TargetInvocationException>()
-                    .Retry(2, (exception, retryCount, context) =>
-                        {
-                            var username = Environment.GetEnvironmentVariable("USERNAME");
-                            if (retryCount == 2)
-                            {
-                                Logger.Error($"Issue while registering netsh http add urlacl url={Constants.ServerUrl} user={username} listen=yes");
-                            }
-                            else
-                            {
-                                Process process = new System.Diagnostics.Process();
-                                ProcessStartInfo startInfo =
-                                    new System.Diagnostics.ProcessStartInfo
-                                    {
-                                        WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
-                                        FileName = "cmd.exe",
-                                        Arguments =
-                                            $"netsh http add urlacl url={Constants.ServerUrl} user={username} listen=yes",
-                                        Verb = "runas"
-                                    };
-                                process.StartInfo = startInfo;
-                                process.Start();
-                            }
-                        }
-                    );
-
-                retryLaunchingOwinPolicy.Execute(() =>
+                try
                 {
-                    _localServer = WebApp.Start<Startup>(Constants.ServerUrl);
-                    if (!FirewallRuleExists("Popcorn Server"))
+                    var netsh = new NetSH(new Utils.CommandLineHarness());
+                    var showResponse = netsh.Http.Show.UrlAcl(Constants.ServerUrl);
+                    if (showResponse.ResponseObject.Count == 0 || !FirewallRuleExists("Popcorn Server"))
                     {
-                        RegisterFirewallRule();
+                        var arguments = string.Empty;
+                        if (showResponse.ResponseObject.Count == 0)
+                            arguments += "acl ";
+
+                        if (!FirewallRuleExists("Popcorn Server"))
+                            arguments += "fw";
+
+                        var handlerPath = $@"{
+                                Directory.GetParent(new Uri(Assembly.GetExecutingAssembly().CodeBase)
+                                    .AbsolutePath)
+                            }\Popcorn.Handler";
+                        if (File.Exists(handlerPath))
+                        {
+                            File.Move(handlerPath, handlerPath + ".exe");
+                        }
+
+                        var process = new Process();
+                        var startInfo =
+                            new ProcessStartInfo
+                            {
+                                FileName = handlerPath + ".exe",
+                                Arguments = $"{arguments}",
+                                Verb = "runas"
+                            };
+                        process.StartInfo = startInfo;
+                        process.EnableRaisingEvents = true;
+                        process.Start();
+                        process.Exited += (sender, args) =>
+                        {
+                            try
+                            {
+                                _localServer = WebApp.Start<Startup>(Constants.ServerUrl);
+                            }
+                            catch (Exception ex)
+                            {
+                                Logger.Error(ex);
+                            }
+                        };
                     }
-                });
+                    else
+                    {
+                        _localServer = WebApp.Start<Startup>(Constants.ServerUrl);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                }
 
 #if !DEBUG
                 await StartUpdateProcessAsync();
 #endif
             });
-        }
-
-        private void RegisterFirewallRule()
-        {
-            INetFwRule firewallRule = (INetFwRule)Activator.CreateInstance(
-                Type.GetTypeFromProgID("HNetCfg.FWRule"));
-            firewallRule.Action = NET_FW_ACTION_.NET_FW_ACTION_ALLOW;
-            firewallRule.Description = "Enables Popcorn server.";
-            firewallRule.Direction = NET_FW_RULE_DIRECTION_.NET_FW_RULE_DIR_IN;
-            firewallRule.Enabled = true;
-            firewallRule.InterfaceTypes = "All";
-            firewallRule.Name = "Popcorn Server";
-            firewallRule.Protocol = (int)NET_FW_IP_PROTOCOL_.NET_FW_IP_PROTOCOL_TCP;
-            firewallRule.LocalPorts = "9900";
-            INetFwPolicy2 firewallPolicy = (INetFwPolicy2)Activator.CreateInstance(
-                Type.GetTypeFromProgID("HNetCfg.FwPolicy2"));
-            firewallPolicy.Rules.Add(firewallRule);
         }
 
         private bool FirewallRuleExists(string ruleName)
