@@ -1,4 +1,10 @@
-﻿# 2.6.7 - 24/08/2017 #
+﻿# 2.7.0 - 28/08/2017 #
+***
+Add browsable Popcorn medias on http://localhost:9900/.
+
+### Details ###
+
+# 2.6.7 - 24/08/2017 #
 ***
 Various improvements
 
