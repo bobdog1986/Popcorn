@@ -360,7 +360,12 @@ namespace Popcorn.Services.Shows.Show
             return uri;
         }
 
-        public async Task<IEnumerable<ShowLightJson>> Discover(int page)
+        /// <summary>
+        /// Get recommendations by page
+        /// </summary>
+        /// <param name="page"></param>
+        /// <returns></returns>
+        public async Task<(IEnumerable<ShowLightJson>, int nbMovies)> Discover(int page)
         {
             var discover = TmdbClient.DiscoverTvShowsAsync();
             var result = await discover.Query(page);
@@ -368,7 +373,7 @@ namespace Popcorn.Services.Shows.Show
             await result.Results.ParallelForEachAsync(async show =>
             {
                 var imdbShow = await TmdbClient.GetTvShowAsync(show.Id, TvShowMethods.ExternalIds);
-                if (imdbShow?.ExternalIds == null)
+                if (imdbShow?.ExternalIds?.ImdbId == null)
                     return;
 
                 var fetch = await GetShowLightAsync(imdbShow.ExternalIds.ImdbId);
@@ -376,7 +381,7 @@ namespace Popcorn.Services.Shows.Show
                     shows.Add(fetch);
             });
 
-            return shows;
+            return (shows, result.TotalResults);
         }
     }
 }

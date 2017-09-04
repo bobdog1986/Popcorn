@@ -482,7 +482,12 @@ namespace Popcorn.Services.Movies.Movie
             return uri;
         }
 
-        public async Task<IEnumerable<MovieLightJson>> Discover(int page)
+        /// <summary>
+        /// Get recommendations by page
+        /// </summary>
+        /// <param name="page"></param>
+        /// <returns></returns>
+        public async Task<(IEnumerable<MovieLightJson>, int nbMovies)> Discover(int page)
         {
             var discover = TmdbClient.DiscoverMoviesAsync();
             var result = await discover.Query(page);
@@ -490,7 +495,7 @@ namespace Popcorn.Services.Movies.Movie
             await result.Results.ParallelForEachAsync(async movie =>
             {
                 var imdbMovie = await TmdbClient.GetMovieAsync(movie.Id);
-                if (imdbMovie == null)
+                if (imdbMovie?.ImdbId == null)
                     return;
 
                 var fetch = await GetMovieLightAsync(imdbMovie.ImdbId);
@@ -498,7 +503,7 @@ namespace Popcorn.Services.Movies.Movie
                     movies.Add(fetch);
             });
 
-            return movies;
+            return (movies, result.TotalResults);
         }
     }
 }

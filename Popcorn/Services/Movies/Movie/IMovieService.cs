@@ -86,6 +86,11 @@ namespace Popcorn.Services.Movies.Movie
         /// <returns>Movies</returns>
         Task GetMoviesSimilarAsync(MovieJson movie, IList<MovieLightJson> similars);
 
-        Task<IEnumerable<MovieLightJson>> Discover(int page);
+        /// <summary>
+        /// Get recommendations by page
+        /// </summary>
+        /// <param name="page"></param>
+        /// <returns></returns>
+        Task<(IEnumerable<MovieLightJson>, int nbMovies)> Discover(int page);
     }
 }

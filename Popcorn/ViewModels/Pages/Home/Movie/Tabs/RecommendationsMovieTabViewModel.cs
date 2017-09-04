@@ -78,11 +78,11 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
 
                     DispatcherHelper.CheckBeginInvokeOnUI(() =>
                     {
-                        Movies.AddRange(result.Except(Movies, new MovieLightComparer()));
+                        Movies.AddRange(result.Item1.Except(Movies, new MovieLightComparer()));
                         IsLoadingMovies = false;
                         IsMovieFound = Movies.Any();
                         CurrentNumberOfMovies = Movies.Count;
-                        MaxNumberOfMovies = result.Count();
+                        MaxNumberOfMovies = result.nbMovies;
                         UserService.SyncMovieHistory(Movies);
                     });
                 }).ConfigureAwait(false);

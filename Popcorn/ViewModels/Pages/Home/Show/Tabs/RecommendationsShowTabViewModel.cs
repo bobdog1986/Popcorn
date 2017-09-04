@@ -78,11 +78,11 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
 
                     DispatcherHelper.CheckBeginInvokeOnUI(() =>
                     {
-                        Shows.AddRange(result.Except(Shows, new ShowLightComparer()));
+                        Shows.AddRange(result.Item1.Except(Shows, new ShowLightComparer()));
                         IsLoadingShows = false;
                         IsShowFound = Shows.Any();
                         CurrentNumberOfShows = Shows.Count;
-                        MaxNumberOfShows = result.Count();
+                        MaxNumberOfShows = result.nbMovies;
                         UserService.SyncShowHistory(Shows);
                     });
                 }).ConfigureAwait(false);

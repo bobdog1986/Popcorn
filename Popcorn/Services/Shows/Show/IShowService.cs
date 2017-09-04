@@ -71,6 +71,11 @@ namespace Popcorn.Services.Shows.Show
         /// <returns>Video trailer</returns>
         Task<string> GetShowTrailerAsync(ShowJson show, CancellationToken ct);
 
-        Task<IEnumerable<ShowLightJson>> Discover(int page);
+        /// <summary>
+        /// Get recommendations by page
+        /// </summary>
+        /// <param name="page"></param>
+        /// <returns></returns>
+        Task<(IEnumerable<ShowLightJson>, int nbMovies)> Discover(int page);
     }
 }
