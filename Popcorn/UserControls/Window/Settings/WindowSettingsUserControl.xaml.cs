@@ -1,4 +1,8 @@
-﻿namespace Popcorn.UserControls.Window.Settings
+﻿using System;
+using GalaSoft.MvvmLight.Ioc;
+using Popcorn.ViewModels.Windows.Settings;
+
+namespace Popcorn.UserControls.Window.Settings
 {
     /// <summary>
     /// Interaction logic for Settings.xaml
@@ -8,9 +12,15 @@
         /// <summary>
         /// Initializes a new instance of the Settings class.
         /// </summary>
-        public WindowSettingsUserControl()
+        protected override async void OnInitialized(EventArgs e)
         {
-            InitializeComponent();
+            base.OnInitialized(e);
+            var dc = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
+            if (dc != null)
+            {
+                await dc.InitializeAsync();
+                InitializeComponent();
+            }
         }
     }
 }

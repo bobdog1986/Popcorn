@@ -36,15 +36,12 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
                 this,
                 message =>
                 {
-                    Task.Run(async () =>
+                    var movies = UserService.GetFavoritesShows(Page);
+                    DispatcherHelper.CheckBeginInvokeOnUI(async () =>
                     {
-                        var movies = await UserService.GetFavoritesShows(Page);
-                        DispatcherHelper.CheckBeginInvokeOnUI(async () =>
-                        {
-                            MaxNumberOfShows = movies.nbShows;
-                            NeedSync = true;
-                            await LoadShowsAsync();
-                        });
+                        MaxNumberOfShows = movies.nbShows;
+                        NeedSync = true;
+                        await LoadShowsAsync();
                     });
                 });
         }
@@ -77,8 +74,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
             try
             {
                 IsLoadingShows = true;
-                var imdbIds =
-                    await UserService.GetFavoritesShows(Page);
+                var imdbIds = UserService.GetFavoritesShows(Page);
                 if (!NeedSync)
                 {
                     var shows = new List<ShowLightJson>();
@@ -163,7 +159,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
                 IsShowFound = Shows.Any();
                 CurrentNumberOfShows = Shows.Count;
                 MaxNumberOfShows = imdbIds.nbShows;
-                await UserService.SyncShowHistoryAsync(Shows).ConfigureAwait(false);
+                UserService.SyncShowHistory(Shows);
             }
             catch (Exception exception)
             {

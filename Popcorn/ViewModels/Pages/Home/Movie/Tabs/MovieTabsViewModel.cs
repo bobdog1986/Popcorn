@@ -313,14 +313,14 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                         await Task.Delay(500 - (int)getMoviesEllapsedTime).ConfigureAwait(false);
                     }
 
-                    DispatcherHelper.CheckBeginInvokeOnUI(async () =>
+                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
                     {
                         Movies.AddRange(result.movies.Except(Movies, new MovieLightComparer()));
                         IsLoadingMovies = false;
                         IsMovieFound = Movies.Any();
                         CurrentNumberOfMovies = Movies.Count;
                         MaxNumberOfMovies = result.nbMovies;
-                        await UserService.SyncMovieHistoryAsync(Movies).ConfigureAwait(false);
+                        UserService.SyncMovieHistory(Movies);
                     });
                 }).ConfigureAwait(false);
             }
@@ -415,7 +415,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
 
             Messenger.Default.Register<ChangeFavoriteMovieMessage>(
                 this,
-                async message => await UserService.SyncMovieHistoryAsync(Movies).ConfigureAwait(false));
+                message => UserService.SyncMovieHistory(Movies));
         }
 
         /// <summary>
@@ -431,9 +431,9 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
             });
 
             SetFavoriteMovieCommand =
-                new RelayCommand<MovieLightJson>(async movie =>
+                new RelayCommand<MovieLightJson>(movie =>
                 {
-                    await UserService.SetMovieAsync(movie).ConfigureAwait(false);
+                    UserService.SetMovie(movie);
                     Messenger.Default.Send(new ChangeFavoriteMovieMessage());
                 });
 

@@ -63,6 +63,10 @@ namespace Popcorn.ViewModels.Pages.Home.Genres
             GenreService = genreService;
             CancellationLoadingGenres = new CancellationTokenSource();
             RegisterMessages();
+            DispatcherHelper.CheckBeginInvokeOnUI(async () =>
+            {
+                await LoadGenresAsync();
+            });
         }
 
         /// <summary>
@@ -86,9 +90,9 @@ namespace Popcorn.ViewModels.Pages.Home.Genres
         /// <summary>
         /// Load genres asynchronously
         /// </summary>
-        public async Task LoadGenresAsync()
+        private async Task LoadGenresAsync()
         {
-            var language = await UserService.GetCurrentLanguageAsync();
+            var language = UserService.GetCurrentLanguage();
             var genres =
                 new ObservableCollection<GenreJson>(
                     await GenreService.GetGenresAsync(language.Culture, CancellationLoadingGenres.Token));
@@ -119,13 +123,10 @@ namespace Popcorn.ViewModels.Pages.Home.Genres
         /// </summary>
         private void RegisterMessages() => Messenger.Default.Register<ChangeLanguageMessage>(
             this,
-            message =>
+            async message =>
             {
-                Task.Run(async () =>
-                {
-                    StopLoadingGenres();
-                    await LoadGenresAsync();
-                });
+                StopLoadingGenres();
+                await LoadGenresAsync();
             });
 
         /// <summary>

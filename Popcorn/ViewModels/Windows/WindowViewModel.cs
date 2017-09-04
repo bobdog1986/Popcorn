@@ -347,9 +347,9 @@ namespace Popcorn.ViewModels.Windows
                     {
                         Messenger.Default.Send(new StopPlayingMovieMessage());
                     },
-                    async () =>
+                    () =>
                     {
-                        await _userService.SetMovieAsync(message.Movie);
+                        _userService.SetMovie(message.Movie);
                         Messenger.Default.Send(new ChangeSeenMovieMessage());
                         Messenger.Default.Send(new StopPlayingMovieMessage());
                     },
@@ -593,6 +593,7 @@ namespace Popcorn.ViewModels.Windows
 
             MainWindowClosingCommand = new RelayCommand(async () =>
             {
+                await _userService.UpdateUser();
                 _localServer.Dispose();
                 await SaveCacheOnExit();
                 Cef.Shutdown();
@@ -739,7 +740,7 @@ namespace Popcorn.ViewModels.Windows
                 {
                     Logger.Error(ex);
                 }
-
+                
 #if !DEBUG
                 await StartUpdateProcessAsync();
 #endif

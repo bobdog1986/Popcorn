@@ -37,7 +37,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                 {
                     Task.Run(async () =>
                     {
-                        var movies = await UserService.GetSeenMovies(Page);
+                        var movies = UserService.GetSeenMovies(Page);
                         MaxNumberOfMovies = movies.nbMovies;
                         NeedSync = true;
                         await LoadMoviesAsync();
@@ -73,8 +73,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
             try
             {
                 IsLoadingMovies = true;
-                var imdbIds =
-                    await UserService.GetSeenMovies(Page);
+                var imdbIds = UserService.GetSeenMovies(Page);
                 if (!NeedSync)
                 {
                     var movies = new List<MovieLightJson>();
@@ -163,8 +162,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                 IsMovieFound = Movies.Any();
                 CurrentNumberOfMovies = Movies.Count;
                 MaxNumberOfMovies = imdbIds.nbMovies;
-                await UserService.SyncMovieHistoryAsync(Movies).ConfigureAwait(false);
-
+                UserService.SyncMovieHistory(Movies);
             }
             catch (Exception exception)
             {

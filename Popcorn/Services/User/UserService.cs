@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Akavache;
 using GalaSoft.MvvmLight.Messaging;
@@ -18,7 +17,6 @@ using Popcorn.Models.Subtitles;
 using Popcorn.Models.User;
 using Popcorn.Services.Movies.Movie;
 using Popcorn.Utils;
-using RestSharp;
 using WPFLocalizeExtension.Engine;
 using Popcorn.Services.Shows.Show;
 using Language = Popcorn.Models.User.Language;
@@ -51,6 +49,11 @@ namespace Popcorn.Services.User
         private Models.User.User User { get; set; }
 
         /// <summary>
+        /// True if user is synced
+        /// </summary>
+        private bool _isSynced;
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="movieService"><see cref="IMovieService"/></param>
@@ -63,68 +66,71 @@ namespace Popcorn.Services.User
 
         public async Task<Models.User.User> GetUser()
         {
-            var user = new Models.User.User
+            if (!_isSynced)
             {
-                Language = new Language()
-            };
+                await SyncUser();
+                _isSynced = true;
+            }
 
+            return User;
+        }
+
+        private async Task SyncUser()
+        {
+            User = new Models.User.User();
             try
             {
-                user = await BlobCache.UserAccount.GetObject<Models.User.User>("user");
+                User = await BlobCache.UserAccount.GetObject<Models.User.User>("user");
             }
             catch (Exception)
             {
 
             }
 
-            if (user.Language == null)
+            if (User.Language == null)
             {
-                user.Language = new Language();
+                User.Language = new Language();
             }
 
-            if (user.MovieHistory == null)
+            if (User.MovieHistory == null)
             {
-                user.MovieHistory = new List<MovieHistory>();
+                User.MovieHistory = new List<MovieHistory>();
             }
 
-            if (user.ShowHistory == null)
+            if (User.ShowHistory == null)
             {
-                user.ShowHistory = new List<ShowHistory>();
+                User.ShowHistory = new List<ShowHistory>();
             }
 
-            if (user.DefaultSubtitleSize == null)
+            if (User.DefaultSubtitleSize == null)
             {
-                user.DefaultSubtitleSize = new SubtitleSize
+                User.DefaultSubtitleSize = new SubtitleSize
                 {
                     Size = 16,
                     Label = LocalizationProviderHelper.GetLocalizedValue<string>("Normal")
                 };
             }
 
-            if (string.IsNullOrEmpty(user.DefaultSubtitleColor))
+            if (string.IsNullOrEmpty(User.DefaultSubtitleColor))
             {
-                user.DefaultSubtitleColor = "#FFFFFF";
+                User.DefaultSubtitleColor = "#FFFFFF";
             }
-
-            return user;
         }
 
-        private async Task UpdateUser(Models.User.User user)
+        public async Task UpdateUser()
         {
-            await BlobCache.UserAccount.InsertObject("user", user);
-            await BlobCache.UserAccount.Flush();
+            await BlobCache.UserAccount.InsertObject("user", User);
         }
 
         /// <summary>
         /// Set if movies have been seen or set as favorite
         /// </summary>
         /// <param name="movies">All movies to compute</param>
-        public async Task SyncMovieHistoryAsync(IEnumerable<IMovie> movies)
+        public void SyncMovieHistory(IEnumerable<IMovie> movies)
         {
             var watch = Stopwatch.StartNew();
             try
             {
-                User = await GetUser().ConfigureAwait(false);
                 foreach (var movie in movies)
                 {
                     var updatedMovie = User.MovieHistory.FirstOrDefault(p => p.ImdbId == movie.ImdbCode);
@@ -136,14 +142,14 @@ namespace Popcorn.Services.User
             catch (Exception exception)
             {
                 Logger.Error(
-                    $"SyncMovieHistoryAsync: {exception.Message}");
+                    $"SyncMovieHistory: {exception.Message}");
             }
             finally
             {
                 watch.Stop();
                 var elapsedMs = watch.ElapsedMilliseconds;
                 Logger.Debug(
-                    $"SyncMovieHistoryAsync in {elapsedMs} milliseconds.");
+                    $"SyncMovieHistory in {elapsedMs} milliseconds.");
             }
         }
 
@@ -151,12 +157,11 @@ namespace Popcorn.Services.User
         /// Set if shows have been seen or set as favorite
         /// </summary>
         /// <param name="shows">All shows to compute</param>
-        public async Task SyncShowHistoryAsync(IEnumerable<IShow> shows)
+        public void SyncShowHistory(IEnumerable<IShow> shows)
         {
             var watch = Stopwatch.StartNew();
             try
             {
-                User = await GetUser().ConfigureAwait(false);
                 foreach (var show in shows)
                 {
                     var updatedShow = User.ShowHistory.FirstOrDefault(p => p.ImdbId == show.ImdbId);
@@ -167,14 +172,14 @@ namespace Popcorn.Services.User
             catch (Exception exception)
             {
                 Logger.Error(
-                    $"SyncShowHistoryAsync: {exception.Message}");
+                    $"SyncShowHistory: {exception.Message}");
             }
             finally
             {
                 watch.Stop();
                 var elapsedMs = watch.ElapsedMilliseconds;
                 Logger.Debug(
-                    $"SyncShowHistoryAsync in {elapsedMs} milliseconds.");
+                    $"SyncShowHistory in {elapsedMs} milliseconds.");
             }
         }
 
@@ -182,7 +187,7 @@ namespace Popcorn.Services.User
         /// Set the movie
         /// </summary>
         /// <param name="movie">Movie</param>
-        public async Task SetMovieAsync(IMovie movie)
+        public void SetMovie(IMovie movie)
         {
             var watch = Stopwatch.StartNew();
             try
@@ -202,20 +207,18 @@ namespace Popcorn.Services.User
                     movieToUpdate.Seen = movie.HasBeenSeen;
                     movieToUpdate.Favorite = movie.IsFavorite;
                 }
-
-                await UpdateUser(User).ConfigureAwait(false);
             }
             catch (Exception exception)
             {
                 Logger.Error(
-                    $"SetMovieAsync: {exception.Message}");
+                    $"SetMovie: {exception.Message}");
             }
             finally
             {
                 watch.Stop();
                 var elapsedMs = watch.ElapsedMilliseconds;
                 Logger.Debug(
-                    $"SetMovieAsync ({movie.ImdbCode}) in {elapsedMs} milliseconds.");
+                    $"SetMovie ({movie.ImdbCode}) in {elapsedMs} milliseconds.");
             }
         }
 
@@ -223,38 +226,20 @@ namespace Popcorn.Services.User
         /// Set the show
         /// </summary>
         /// <param name="show">Show</param>
-        public async Task SetShowAsync(IShow show)
+        public void SetShow(IShow show)
         {
-            var watch = Stopwatch.StartNew();
-            try
+            var showToUpdate = User.ShowHistory.FirstOrDefault(a => a.ImdbId == show.ImdbId);
+            if (showToUpdate == null)
             {
-                var showToUpdate = User.ShowHistory.FirstOrDefault(a => a.ImdbId == show.ImdbId);
-                if (showToUpdate == null)
+                User.ShowHistory.Add(new ShowHistory
                 {
-                    User.ShowHistory.Add(new ShowHistory
-                    {
-                        ImdbId = show.ImdbId,
-                        Favorite = show.IsFavorite,
-                    });
-                }
-                else
-                {
-                    showToUpdate.Favorite = show.IsFavorite;
-                }
-
-                await UpdateUser(User).ConfigureAwait(false);
+                    ImdbId = show.ImdbId,
+                    Favorite = show.IsFavorite,
+                });
             }
-            catch (Exception exception)
+            else
             {
-                Logger.Error(
-                    $"SetShowAsync: {exception.Message}");
-            }
-            finally
-            {
-                watch.Stop();
-                var elapsedMs = watch.ElapsedMilliseconds;
-                Logger.Debug(
-                    $"SetShowAsync ({show.ImdbId}) in {elapsedMs} milliseconds.");
+                showToUpdate.Favorite = show.IsFavorite;
             }
         }
 
@@ -263,12 +248,11 @@ namespace Popcorn.Services.User
         /// </summary>
         /// <param name="page">Pagination</param>
         /// <returns>List of ImdbId</returns>
-        public async Task<(IEnumerable<string> movies, IEnumerable<string> allMovies, int nbMovies)>
+        public (IEnumerable<string> movies, IEnumerable<string> allMovies, int nbMovies)
             GetSeenMovies(int page)
         {
             try
             {
-                User = await GetUser().ConfigureAwait(false);
                 var movies = User.MovieHistory.Where(a => a.Seen).Select(a => a.ImdbId).ToList();
                 var skip = (page - 1) * Constants.MaxMoviesPerPage;
                 if (movies.Count <= Constants.MaxMoviesPerPage)
@@ -290,11 +274,10 @@ namespace Popcorn.Services.User
         /// </summary>
         /// <param name="page">Pagination</param>
         /// <returns>List of ImdbId</returns>
-        public async Task<(IEnumerable<string> shows, IEnumerable<string> allShows, int nbShows)> GetSeenShows(int page)
+        public (IEnumerable<string> shows, IEnumerable<string> allShows, int nbShows) GetSeenShows(int page)
         {
             try
             {
-                User = await GetUser().ConfigureAwait(false);
                 var shows = User.ShowHistory.Where(a => a.Seen).Select(a => a.ImdbId).ToList();
                 var skip = (page - 1) * Constants.MaxShowsPerPage;
                 if (shows.Count <= Constants.MaxShowsPerPage)
@@ -316,12 +299,10 @@ namespace Popcorn.Services.User
         /// </summary>
         /// <param name="page">Pagination</param>
         /// <returns>List of ImdbId</returns>
-        public async Task<(IEnumerable<string> movies, IEnumerable<string> allMovies, int nbMovies)>
-            GetFavoritesMovies(int page)
+        public (IEnumerable<string> movies, IEnumerable<string> allMovies, int nbMovies) GetFavoritesMovies(int page)
         {
             try
             {
-                User = await GetUser().ConfigureAwait(false);
                 var movies = User.MovieHistory.Where(a => a.Favorite).Select(a => a.ImdbId).ToList();
                 var skip = (page - 1) * Constants.MaxMoviesPerPage;
                 if (movies.Count <= Constants.MaxMoviesPerPage)
@@ -343,12 +324,10 @@ namespace Popcorn.Services.User
         /// </summary>
         /// <param name="page">Pagination</param>
         /// <returns>List of ImdbId</returns>
-        public async Task<(IEnumerable<string> shows, IEnumerable<string> allShows, int nbShows)>
-            GetFavoritesShows(int page)
+        public (IEnumerable<string> shows, IEnumerable<string> allShows, int nbShows) GetFavoritesShows(int page)
         {
             try
             {
-                User = await GetUser().ConfigureAwait(false);
                 var shows = User.ShowHistory.Where(a => a.Favorite).Select(a => a.ImdbId).ToList();
                 var skip = (page - 1) * Constants.MaxShowsPerPage;
                 if (shows.Count <= Constants.MaxShowsPerPage)
@@ -366,41 +345,13 @@ namespace Popcorn.Services.User
         }
 
         /// <summary>
-        /// Get the download rate
-        /// </summary>
-        /// <returns>Download rate</returns>
-        public async Task<int> GetDownloadLimit()
-        {
-            try
-            {
-                User = await GetUser().ConfigureAwait(false);
-                return User.DownloadLimit;
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-                return 0;
-            }
-        }
-
-
-        /// <summary>
         /// Set the download rate
         /// </summary>
         /// <param name="limit"></param>
         /// <returns></returns>
-        public async Task SetDownloadLimit(int limit)
+        public void SetDownloadLimit(int limit)
         {
-            try
-            {
-                User = await GetUser().ConfigureAwait(false);
-                User.DownloadLimit = limit;
-                await UpdateUser(User).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
+            User.DownloadLimit = limit;
         }
 
         /// <summary>
@@ -408,18 +359,9 @@ namespace Popcorn.Services.User
         /// </summary>
         /// <param name="limit"></param>
         /// <returns></returns>
-        public async Task SetUploadLimit(int limit)
+        public void SetUploadLimit(int limit)
         {
-            try
-            {
-                User = await GetUser().ConfigureAwait(false);
-                User.UploadLimit = limit;
-                await UpdateUser(User).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
+            User.UploadLimit = limit;
         }
 
         /// <summary>
@@ -427,18 +369,9 @@ namespace Popcorn.Services.User
         /// </summary>
         /// <param name="hd"></param>
         /// <returns></returns>
-        public async Task SetDefaultHdQuality(bool hd)
+        public void SetDefaultHdQuality(bool hd)
         {
-            try
-            {
-                User = await GetUser().ConfigureAwait(false);
-                User.DefaultHdQuality = hd;
-                await UpdateUser(User).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
+            User.DefaultHdQuality = hd;
         }
 
         /// <summary>
@@ -446,83 +379,27 @@ namespace Popcorn.Services.User
         /// </summary>
         /// <param name="englishName"></param>
         /// <returns></returns>
-        public async Task SetDefaultSubtitleLanguage(string englishName)
+        public void SetDefaultSubtitleLanguage(string englishName)
         {
-            try
-            {
-                User = await GetUser().ConfigureAwait(false);
-                User.DefaultSubtitleLanguage = englishName;
-                await UpdateUser(User).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
+            User.DefaultSubtitleLanguage = englishName;
         }
 
         /// <summary>
-        /// Set default HD quality
+        /// Set default subtitle color
         /// </summary>
-        /// <returns></returns>
-
-        public async Task<bool> GetDefaultHdQuality()
+        /// <param name="color"></param>
+        public void SetDefaultSubtitleColor(string color)
         {
-            try
-            {
-                User = await GetUser().ConfigureAwait(false);
-                return User.DefaultHdQuality;
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-                return false;
-            }
+            User.DefaultSubtitleColor = color;
         }
 
         /// <summary>
-        /// Get default subtitle language
+        /// Set default subtitle size
         /// </summary>
-        /// <returns></returns>
-        public async Task<string> GetDefaultSubtitleLanguage()
+        /// <param name="size"></param>
+        public void SetDefaultSubtitleSize(SubtitleSize size)
         {
-            try
-            {
-                User = await GetUser().ConfigureAwait(false);
-                return User.DefaultSubtitleLanguage;
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-                return "en";
-            }
-        }
-
-        public async Task SetDefaultSubtitleColor(string color)
-        {
-            try
-            {
-                User = await GetUser().ConfigureAwait(false);
-                User.DefaultSubtitleColor = color;
-                await UpdateUser(User).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
-        }
-
-        public async Task SetDefaultSubtitleSize(SubtitleSize size)
-        {
-            try
-            {
-                User = await GetUser().ConfigureAwait(false);
-                User.DefaultSubtitleSize = size;
-                await UpdateUser(User).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
+            User.DefaultSubtitleSize = size;
         }
 
         /// <summary>
@@ -550,78 +427,40 @@ namespace Popcorn.Services.User
         /// Get the current language of the application
         /// </summary>
         /// <returns>Current language</returns>
-        public async Task<Language> GetCurrentLanguageAsync()
+        public Language GetCurrentLanguage()
         {
-            try
+            Language currentLanguage;
+            var language = User.Language;
+            if (language != null)
             {
-                Language currentLanguage;
-                var watch = Stopwatch.StartNew();
-                User = await GetUser().ConfigureAwait(false);
-                var language = User.Language;
-                if (language != null)
+                switch (language.Culture)
                 {
-                    switch (language.Culture)
-                    {
-                        case "fr":
-                            currentLanguage = new FrenchLanguage();
-                            break;
-                        case "es":
-                            currentLanguage = new SpanishLanguage();
-                            break;
-                        default:
-                            currentLanguage = new EnglishLanguage();
-                            break;
-                    }
+                    case "fr":
+                        currentLanguage = new FrenchLanguage();
+                        break;
+                    case "es":
+                        currentLanguage = new SpanishLanguage();
+                        break;
+                    default:
+                        currentLanguage = new EnglishLanguage();
+                        break;
                 }
-                else
-                {
-                    currentLanguage = new EnglishLanguage();
-                }
-
-                watch.Stop();
-                var elapsedMs = watch.ElapsedMilliseconds;
-                Logger.Debug(
-                    $"GetCurrentLanguageAsync in {elapsedMs} milliseconds.");
-
-                return currentLanguage;
             }
-            catch (Exception ex)
+            else
             {
-                Logger.Error(ex);
-                return new EnglishLanguage();
+                currentLanguage = new EnglishLanguage();
             }
+
+            return currentLanguage;
         }
 
         /// <summary>
         /// Set the current language of the application
         /// </summary>
         /// <param name="language">Language</param>
-        public async Task SetCurrentLanguageAsync(Language language)
+        public void SetCurrentLanguage(Language language)
         {
-            try
-            {
-                var watch = Stopwatch.StartNew();
-                User = await GetUser().ConfigureAwait(false);
-                User.Language.Culture = language.Culture;
-                await UpdateUser(User).ConfigureAwait(false);
-                ChangeLanguage(User.Language);
-                watch.Stop();
-                var elapsedMs = watch.ElapsedMilliseconds;
-                Logger.Debug(
-                    $"SetCurrentLanguageAsync ({User.Language.Name}) in {elapsedMs} milliseconds.");
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
-        }
-
-        /// <summary>
-        /// Change language
-        /// </summary>
-        /// <param name="language"></param>
-        private void ChangeLanguage(Language language)
-        {
+            User.Language.Culture = language.Culture;
             MovieService.ChangeTmdbLanguage(language);
             ShowService.ChangeTmdbLanguage(language);
             LocalizeDictionary.Instance.Culture = new CultureInfo(language.Culture);

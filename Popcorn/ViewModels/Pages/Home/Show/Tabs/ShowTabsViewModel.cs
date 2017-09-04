@@ -312,14 +312,14 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
                         await Task.Delay(500 - (int)getShowEllapsedTime).ConfigureAwait(false);
                     }
 
-                    DispatcherHelper.CheckBeginInvokeOnUI(async () =>
+                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
                     {
                         Shows.AddRange(result.shows.Except(Shows, new ShowLightComparer()));
                         IsLoadingShows = false;
                         IsShowFound = Shows.Any();
                         CurrentNumberOfShows = Shows.Count;
                         MaxNumberOfShows = result.nbShows;
-                        await UserService.SyncShowHistoryAsync(Shows).ConfigureAwait(false);
+                        UserService.SyncShowHistory(Shows);
                     });
                 }).ConfigureAwait(false);
             }
@@ -367,9 +367,9 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
         {
             Messenger.Default.Register<ChangeFavoriteShowMessage>(
                 this,
-                async message =>
+                message =>
                 {
-                    await UserService.SyncShowHistoryAsync(Shows).ConfigureAwait(false);
+                    UserService.SyncShowHistory(Shows);
                 });
 
             Messenger.Default.Register<ChangeLanguageMessage>(
@@ -416,9 +416,9 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
         private void RegisterCommands()
         {
             SetFavoriteShowCommand =
-                new RelayCommand<ShowLightJson>(async show =>
+                new RelayCommand<ShowLightJson>(show =>
                 {
-                    await UserService.SetShowAsync(show).ConfigureAwait(false);
+                    UserService.SetShow(show);
                     Messenger.Default.Send(new ChangeFavoriteShowMessage());
                 });
 

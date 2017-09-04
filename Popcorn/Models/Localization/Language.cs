@@ -47,7 +47,7 @@ namespace Popcorn.Models.Localization
         /// </summary>
         public ICollection<User.Language> Languages
         {
-            get { return _languages; }
+            get => _languages;
             set { Set(() => Languages, ref _languages, value); }
         }
 
@@ -60,31 +60,17 @@ namespace Popcorn.Models.Localization
             set
             {
                 Set(() => CurrentLanguage, ref _currentLanguage, value);
-                Task.Run(async () => { await _userService.SetCurrentLanguageAsync(value); });
+                _userService.SetCurrentLanguage(value);
             }
         }
 
         /// <summary>
         /// Load languages
         /// </summary>
-        public async Task LoadLanguages()
+        public void LoadLanguages()
         {
-            try
-            {
-                var watchStart = Stopwatch.StartNew();
-
-                CurrentLanguage = await _userService.GetCurrentLanguageAsync();
-                Languages = _userService.GetAvailableLanguages();
-
-                watchStart.Stop();
-                var elapsedLanguageMs = watchStart.ElapsedMilliseconds;
-                Logger.Info(
-                    "Languages loaded in {0} milliseconds.", elapsedLanguageMs);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
+            CurrentLanguage = _userService.GetCurrentLanguage();
+            Languages = _userService.GetAvailableLanguages();
         }
     }
 }

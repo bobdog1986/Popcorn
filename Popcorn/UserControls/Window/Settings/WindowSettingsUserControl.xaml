@@ -24,9 +24,6 @@
         <i:EventTrigger EventName="GotFocus">
             <command:EventToCommand Command="{Binding Mode=OneWay, Path=UpdateCacheSizeCommand}" PassEventArgsToCommand="False" />
         </i:EventTrigger>
-        <i:EventTrigger EventName="Loaded">
-            <command:EventToCommand Command="{Binding Mode=OneWay, Path=InitializeAsyncCommand}" PassEventArgsToCommand="False" />
-        </i:EventTrigger>
     </i:Interaction.Triggers>
 
     <UserControl.Resources>

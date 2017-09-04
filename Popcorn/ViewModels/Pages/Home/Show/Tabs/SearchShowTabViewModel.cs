@@ -71,14 +71,14 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
                             Genre,
                             Rating * 10,
                             CancellationLoadingShows.Token).ConfigureAwait(false);
-                    DispatcherHelper.CheckBeginInvokeOnUI(async () =>
+                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
                     {
                         Shows.AddRange(result.shows.Except(Shows, new ShowLightComparer()));
                         IsLoadingShows = false;
                         IsShowFound = Shows.Any();
                         CurrentNumberOfShows = Shows.Count;
                         MaxNumberOfShows = result.nbShows;
-                        await UserService.SyncShowHistoryAsync(Shows).ConfigureAwait(false);
+                        UserService.SyncShowHistory(Shows);
                     });
                 }).ConfigureAwait(false);
             }
