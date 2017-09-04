@@ -1,4 +1,11 @@
-﻿# 2.7.0 - 28/08/2017 #
+﻿# 2.7.1 - 04/09/2017 #
+***
+Improved performances
+
+### Details ###
+* Improved performances with local data syncing.
+
+# 2.7.0 - 28/08/2017 #
 ***
 Add browsable Popcorn medias on http://localhost:9900/.
 
