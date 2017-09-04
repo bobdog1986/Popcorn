@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Async;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -9,11 +11,9 @@ using Popcorn.Models.Movie;
 using RestSharp;
 using TMDbLib.Client;
 using TMDbLib.Objects.Movies;
-using System.Collections.Async;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Threading;
 using Popcorn.Models.Genres;
-using Popcorn.Models.Trailer;
 using Popcorn.Models.User;
 using Popcorn.Utils.Exceptions;
 using Popcorn.ViewModels.Windows.Settings;
@@ -480,6 +480,25 @@ namespace Popcorn.Services.Movies.Movie
             }
 
             return uri;
+        }
+
+        public async Task<IEnumerable<MovieLightJson>> Discover(int page)
+        {
+            var discover = TmdbClient.DiscoverMoviesAsync();
+            var result = await discover.Query(page);
+            var movies = new ConcurrentBag<MovieLightJson>();
+            await result.Results.ParallelForEachAsync(async movie =>
+            {
+                var imdbMovie = await TmdbClient.GetMovieAsync(movie.Id);
+                if (imdbMovie == null)
+                    return;
+
+                var fetch = await GetMovieLightAsync(imdbMovie.ImdbId);
+                if (fetch != null)
+                    movies.Add(fetch);
+            });
+
+            return movies;
         }
     }
 }

@@ -27,7 +27,7 @@ namespace Popcorn.UserControls.Home.Movie.Tabs
             var vm = DataContext as MovieTabsViewModel;
             if (vm == null) return;
             if (vm is PopularMovieTabViewModel || vm is GreatestMovieTabViewModel || vm is RecentMovieTabViewModel ||
-                vm is FavoritesMovieTabViewModel || vm is SeenMovieTabViewModel)
+                vm is FavoritesMovieTabViewModel || vm is SeenMovieTabViewModel || vm is RecommendationsMovieTabViewModel)
             {
                 if (!vm.IsLoadingMovies && vm.NeedSync)
                 {
@@ -73,7 +73,7 @@ namespace Popcorn.UserControls.Home.Movie.Tabs
             }
 
             if (vm is PopularMovieTabViewModel || vm is GreatestMovieTabViewModel || vm is RecentMovieTabViewModel ||
-                vm is FavoritesMovieTabViewModel || vm is SeenMovieTabViewModel)
+                vm is FavoritesMovieTabViewModel || vm is SeenMovieTabViewModel || vm is RecommendationsMovieTabViewModel)
             {
                 if (!vm.IsLoadingMovies)
                     await vm.LoadMoviesAsync().ConfigureAwait(false);

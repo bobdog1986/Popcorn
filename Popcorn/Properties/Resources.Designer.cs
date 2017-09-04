@@ -754,6 +754,15 @@ namespace Popcorn.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Recommendations.
+        /// </summary>
+        public static string RecommendationsTitleTab {
+            get {
+                return ResourceManager.GetString("RecommendationsTitleTab", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Refresh.
         /// </summary>
         public static string RefreshLabel {

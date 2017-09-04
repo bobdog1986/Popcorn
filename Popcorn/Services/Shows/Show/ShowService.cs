@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Async;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
@@ -15,6 +16,7 @@ using GalaSoft.MvvmLight.Ioc;
 using Popcorn.Utils.Exceptions;
 using Popcorn.ViewModels.Windows.Settings;
 using Popcorn.YTVideoProvider;
+using TMDbLib.Objects.TvShows;
 using Video = TMDbLib.Objects.General.Video;
 
 namespace Popcorn.Services.Shows.Show
@@ -356,6 +358,25 @@ namespace Popcorn.Services.Shows.Show
             }
 
             return uri;
+        }
+
+        public async Task<IEnumerable<ShowLightJson>> Discover(int page)
+        {
+            var discover = TmdbClient.DiscoverTvShowsAsync();
+            var result = await discover.Query(page);
+            var shows = new ConcurrentBag<ShowLightJson>();
+            await result.Results.ParallelForEachAsync(async show =>
+            {
+                var imdbShow = await TmdbClient.GetTvShowAsync(show.Id, TvShowMethods.ExternalIds);
+                if (imdbShow?.ExternalIds == null)
+                    return;
+
+                var fetch = await GetShowLightAsync(imdbShow.ExternalIds.ImdbId);
+                if (fetch != null)
+                    shows.Add(fetch);
+            });
+
+            return shows;
         }
     }
 }

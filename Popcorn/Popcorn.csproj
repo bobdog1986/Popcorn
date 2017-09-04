@@ -563,6 +563,7 @@
     <Compile Include="ViewModels\Pages\Home\IPageViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\Movie\Download\DownloadMovieViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\Genres\GenreViewModel.cs" />
+    <Compile Include="ViewModels\Pages\Home\Movie\Tabs\RecommendationsMovieTabViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\Show\Details\ShowDetailsViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\Show\Download\DownloadShowViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\Show\Search\SearchShowViewModel.cs" />
@@ -570,6 +571,7 @@
     <Compile Include="ViewModels\Pages\Home\Show\Tabs\GreatestShowTabViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\Show\Tabs\PopularShowTabViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\Show\Tabs\RecentShowTabViewModel.cs" />
+    <Compile Include="ViewModels\Pages\Home\Show\Tabs\RecommendationsShowTabViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\Show\Tabs\SearchShowTabViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\Show\Tabs\ShowTabsViewModel.cs" />
     <Compile Include="ViewModels\Windows\WindowViewModel.cs" />

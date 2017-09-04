@@ -168,67 +168,74 @@ namespace Popcorn.AttachedProperties
 
                             await Task.Run(async () =>
                             {
-                                if (mustDownload)
+                                try
                                 {
-                                    using (var client = new HttpClient())
+                                    if (mustDownload)
                                     {
-                                        using (var ms = await client.GetStreamAsync(path).ConfigureAwait(false))
+                                        using (var client = new HttpClient())
                                         {
-                                            using (var stream = new MemoryStream())
+                                            using (var ms = await client.GetStreamAsync(path).ConfigureAwait(false))
                                             {
-                                                await ms.CopyToAsync(stream).ConfigureAwait(false);
-                                                if (!File.Exists(Constants.Assets + hash))
+                                                using (var stream = new MemoryStream())
                                                 {
-                                                    using (var fs =
-                                                        new FileStream(Constants.Assets + hash, FileMode.Create,
-                                                            FileAccess.ReadWrite, FileShare.ReadWrite, 4096, true))
+                                                    await ms.CopyToAsync(stream).ConfigureAwait(false);
+                                                    if (!File.Exists(Constants.Assets + hash))
                                                     {
-                                                        var writeAsync = stream.ToArray();
-                                                        await fs.WriteAsync(writeAsync, 0, writeAsync.Length)
-                                                            .ConfigureAwait(false);
+                                                        using (var fs =
+                                                            new FileStream(Constants.Assets + hash, FileMode.Create,
+                                                                FileAccess.ReadWrite, FileShare.ReadWrite, 4096, true))
+                                                        {
+                                                            var writeAsync = stream.ToArray();
+                                                            await fs.WriteAsync(writeAsync, 0, writeAsync.Length)
+                                                                .ConfigureAwait(false);
+                                                        }
                                                     }
                                                 }
                                             }
                                         }
                                     }
-                                }
 
-                                using (var fs = new FileStream(localFile, FileMode.Open, FileAccess.Read))
-                                {
-                                    var bitmapImage = new BitmapImage();
-                                    bitmapImage.BeginInit();
-                                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                                    if (imageType == ImageType.Thumbnail)
+                                    using (var fs = new FileStream(localFile, FileMode.Open, FileAccess.Read))
                                     {
-                                        bitmapImage.DecodePixelWidth = 400;
-                                        bitmapImage.DecodePixelHeight = 600;
-                                    }
-                                    else if(imageType == ImageType.Poster)
-                                    {
-                                        bitmapImage.DecodePixelWidth = 800;
-                                        bitmapImage.DecodePixelHeight = 1200;
-                                    }
-                                    else
-                                    {
-                                        bitmapImage.DecodePixelWidth = 1920;
-                                        bitmapImage.DecodePixelHeight = 1080;
-                                    }
-
-                                    bitmapImage.StreamSource = fs;
-                                    bitmapImage.EndInit();
-                                    bitmapImage.Freeze();
-                                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
-                                    {
-                                        image.RenderTransformOrigin = new Point(0, 0);
-                                        if (imageType != ImageType.Poster)
+                                        var bitmapImage = new BitmapImage();
+                                        bitmapImage.BeginInit();
+                                        bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                                        if (imageType == ImageType.Thumbnail)
                                         {
-                                            image.Stretch = Stretch.UniformToFill;
+                                            bitmapImage.DecodePixelWidth = 400;
+                                            bitmapImage.DecodePixelHeight = 600;
+                                        }
+                                        else if (imageType == ImageType.Poster)
+                                        {
+                                            bitmapImage.DecodePixelWidth = 800;
+                                            bitmapImage.DecodePixelHeight = 1200;
+                                        }
+                                        else
+                                        {
+                                            bitmapImage.DecodePixelWidth = 1920;
+                                            bitmapImage.DecodePixelHeight = 1080;
                                         }
 
-                                        image.RenderTransform = new TransformGroup();
-                                        RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.HighQuality);
-                                        image.Source = bitmapImage;
-                                    });
+                                        bitmapImage.StreamSource = fs;
+                                        bitmapImage.EndInit();
+                                        bitmapImage.Freeze();
+                                        DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                                        {
+                                            image.RenderTransformOrigin = new Point(0, 0);
+                                            if (imageType != ImageType.Poster)
+                                            {
+                                                image.Stretch = Stretch.UniformToFill;
+                                            }
+
+                                            image.RenderTransform = new TransformGroup();
+                                            RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.HighQuality);
+                                            image.Source = bitmapImage;
+                                        });
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    Logger.Error(ex);
                                 }
                             }).ConfigureAwait(false);
                         }

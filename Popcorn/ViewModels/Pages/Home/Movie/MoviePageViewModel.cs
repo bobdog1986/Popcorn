@@ -90,6 +90,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie
             Tabs.Add(new RecentMovieTabViewModel(ApplicationService, MovieService, UserService));
             Tabs.Add(new FavoritesMovieTabViewModel(ApplicationService, MovieService, UserService));
             Tabs.Add(new SeenMovieTabViewModel(ApplicationService, MovieService, UserService));
+            Tabs.Add(new RecommendationsMovieTabViewModel(ApplicationService, MovieService, UserService));
             SelectedTab = Tabs.First();
             SelectedMoviesIndexMenuTab = 0;
         }
@@ -204,6 +205,14 @@ namespace Popcorn.ViewModels.Pages.Home.Movie
                 foreach (var seenTab in Tabs.OfType<SeenMovieTabViewModel>().ToList())
                     SelectedTab = seenTab;
             });
+
+            SelectRecommendationsTab = new RelayCommand(() =>
+            {
+                if (SelectedTab is RecommendationsMovieTabViewModel)
+                    return;
+                foreach (var seenTab in Tabs.OfType<RecommendationsMovieTabViewModel>().ToList())
+                    SelectedTab = seenTab;
+            });
         }
 
         /// <summary>
@@ -253,6 +262,11 @@ namespace Popcorn.ViewModels.Pages.Home.Movie
         /// Command used to select the favorites movies tab
         /// </summary>
         public RelayCommand SelectFavoritesTab { get; private set; }
+
+        /// <summary>
+        /// Command used to select the recommendations movies tab
+        /// </summary>
+        public RelayCommand SelectRecommendationsTab { get; private set; }
 
         /// <summary>
         /// Selected index for movies menu

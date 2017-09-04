@@ -441,4 +441,7 @@
   <data name="TraktConnectLabel" xml:space="preserve">
     <value>Conéctese a su cuenta trakt</value>
   </data>
+  <data name="RecommendationsTitleTab" xml:space="preserve">
+    <value>Recomendaciones</value>
+  </data>
 </root>

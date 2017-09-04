@@ -3,10 +3,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Net.Sockets;
 using System.Reflection;
-using System.Security.Permissions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Navigation;
@@ -23,7 +21,6 @@ using Microsoft.Owin.Hosting;
 using Microsoft.Win32;
 using NetFwTypeLib;
 using NLog;
-using Polly;
 using Popcorn.Dialogs;
 using Popcorn.Extensions;
 using Popcorn.Helpers;
@@ -41,7 +38,6 @@ using Popcorn.ViewModels.Pages.Player;
 using Squirrel;
 using Popcorn.ViewModels.Windows.Settings;
 using Popcorn.Services.Subtitles;
-using Popcorn.Services.Trakt;
 
 namespace Popcorn.ViewModels.Windows
 {
@@ -497,6 +493,7 @@ namespace Popcorn.ViewModels.Windows
                     catch (Exception ex)
                     {
                         Logger.Error(ex);
+                        cts.TrySetException(ex);
                     }
                 };
                 await _dialogCoordinator.ShowMetroDialogAsync(this, castDialog);
@@ -514,9 +511,17 @@ namespace Popcorn.ViewModels.Windows
                 var cts = new TaskCompletionSource<object>();
                 vm.OnCloseAction = async () =>
                 {
-                    message.SelectedSubtitle = vm.SelectedSubtitle?.Sub;
-                    await _dialogCoordinator.HideMetroDialogAsync(this, subtitleDialog);
-                    cts.TrySetResult(null);
+                    try
+                    {
+                        message.SelectedSubtitle = vm.SelectedSubtitle?.Sub;
+                        await _dialogCoordinator.HideMetroDialogAsync(this, subtitleDialog);
+                        cts.TrySetResult(null);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(ex);
+                        cts.TrySetException(ex);
+                    }
                 };
                 await _dialogCoordinator.ShowMetroDialogAsync(this, subtitleDialog);
                 await cts.Task;
@@ -533,8 +538,16 @@ namespace Popcorn.ViewModels.Windows
                 var cts = new TaskCompletionSource<object>();
                 vm.CloseAction = async () =>
                 {
-                    await _dialogCoordinator.HideMetroDialogAsync(this, subtitleDialog);
-                    cts.TrySetResult(null);
+                    try
+                    {
+                        await _dialogCoordinator.HideMetroDialogAsync(this, subtitleDialog);
+                        cts.TrySetResult(null);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(ex);
+                        cts.TrySetException(ex);
+                    }
                 };
                 IsSettingsFlyoutOpen = false;
                 await _dialogCoordinator.ShowMetroDialogAsync(this, subtitleDialog);
@@ -957,6 +970,8 @@ namespace Popcorn.ViewModels.Windows
             {
                 _customSubtitleMessage?.Dispose();
                 _castMediaMessage?.Dispose();
+                _showSubtitleDialogMessage?.Dispose();
+                _showTraktDialogMessage?.Dispose();
             }
 
             _disposed = true;
