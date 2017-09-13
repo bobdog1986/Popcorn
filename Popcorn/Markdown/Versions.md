@@ -1,4 +1,11 @@
-﻿# 2.7.1 - 04/09/2017 #
+﻿# 2.8.0 - 13/09/2017 #
+***
+Add recommendations to movie collections
+
+### Details ###
+* Added recommendations for movies
+
+# 2.7.1 - 04/09/2017 #
 ***
 Improved performances
 
