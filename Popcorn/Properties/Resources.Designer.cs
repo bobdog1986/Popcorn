@@ -322,6 +322,15 @@ namespace Popcorn.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Discover.
+        /// </summary>
+        public static string DiscoverTitleTab {
+            get {
+                return ResourceManager.GetString("DiscoverTitleTab", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Downloading subtitles....
         /// </summary>
         public static string DownloadingSubtitlesLabel {

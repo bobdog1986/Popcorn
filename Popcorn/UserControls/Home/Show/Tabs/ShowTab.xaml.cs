@@ -23,7 +23,7 @@ namespace Popcorn.UserControls.Home.Show.Tabs
             var vm = DataContext as ShowTabsViewModel;
             if (vm == null) return;
             if (vm is PopularShowTabViewModel || vm is GreatestShowTabViewModel || vm is RecentShowTabViewModel ||
-                vm is FavoritesShowTabViewModel || vm is RecommendationsShowTabViewModel)
+                vm is FavoritesShowTabViewModel)
             {
                 if (!vm.IsLoadingShows && vm.NeedSync)
                 {
@@ -69,7 +69,7 @@ namespace Popcorn.UserControls.Home.Show.Tabs
             }
 
             if (vm is PopularShowTabViewModel || vm is GreatestShowTabViewModel || vm is RecentShowTabViewModel ||
-                vm is FavoritesShowTabViewModel || vm is RecommendationsShowTabViewModel)
+                vm is FavoritesShowTabViewModel)
             {
                 if (!vm.IsLoadingShows)
                     await vm.LoadShowsAsync().ConfigureAwait(false);

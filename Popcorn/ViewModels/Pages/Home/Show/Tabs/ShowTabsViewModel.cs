@@ -318,7 +318,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
                         IsLoadingShows = false;
                         IsShowFound = Shows.Any();
                         CurrentNumberOfShows = Shows.Count;
-                        MaxNumberOfShows = result.nbShows;
+                        MaxNumberOfShows = result.nbShows == 0 ? Shows.Count : result.nbShows;
                         UserService.SyncShowHistory(Shows);
                     });
                 }).ConfigureAwait(false);

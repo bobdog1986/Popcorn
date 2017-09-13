@@ -210,8 +210,8 @@ namespace Popcorn.ViewModels.Pages.Home.Movie
             {
                 if (SelectedTab is RecommendationsMovieTabViewModel)
                     return;
-                foreach (var seenTab in Tabs.OfType<RecommendationsMovieTabViewModel>().ToList())
-                    SelectedTab = seenTab;
+                foreach (var recommendationTab in Tabs.OfType<RecommendationsMovieTabViewModel>().ToList())
+                    SelectedTab = recommendationTab;
             });
         }
 

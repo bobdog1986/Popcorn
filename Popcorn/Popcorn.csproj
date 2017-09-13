@@ -117,8 +117,8 @@
     <Reference Include="Microsoft.ApplicationInsights, Version=2.4.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.ApplicationInsights.2.4.0\lib\net46\Microsoft.ApplicationInsights.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.ApplicationInsights.NLogTarget, Version=2.4.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.ApplicationInsights.NLogTarget.2.4.0\lib\net45\Microsoft.ApplicationInsights.NLogTarget.dll</HintPath>
+    <Reference Include="Microsoft.ApplicationInsights.NLogTarget, Version=2.4.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.NLogTarget.2.4.1\lib\net45\Microsoft.ApplicationInsights.NLogTarget.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Owin, Version=3.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -571,7 +571,6 @@
     <Compile Include="ViewModels\Pages\Home\Show\Tabs\GreatestShowTabViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\Show\Tabs\PopularShowTabViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\Show\Tabs\RecentShowTabViewModel.cs" />
-    <Compile Include="ViewModels\Pages\Home\Show\Tabs\RecommendationsShowTabViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\Show\Tabs\SearchShowTabViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\Show\Tabs\ShowTabsViewModel.cs" />
     <Compile Include="ViewModels\Windows\WindowViewModel.cs" />

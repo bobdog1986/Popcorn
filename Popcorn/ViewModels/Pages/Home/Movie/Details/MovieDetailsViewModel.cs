@@ -12,6 +12,7 @@ using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using NLog;
+using NuGet;
 using Popcorn.Helpers;
 using Popcorn.Messaging;
 using Popcorn.Models.Movie;
@@ -473,9 +474,13 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
                         async () =>
                         {
                             LoadingSimilar = true;
-                            await _movieService.GetMoviesSimilarAsync(Movie, SimilarMovies).ConfigureAwait(false);
-                            AnySimilar = SimilarMovies.Any();
-                            LoadingSimilar = false;
+                            var similars = await _movieService.GetMoviesSimilarAsync(Movie).ConfigureAwait(false);
+                            DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                            {
+                                SimilarMovies.AddRange(similars);
+                                AnySimilar = SimilarMovies.Any();
+                                LoadingSimilar = false;
+                            });
                         },
                         async () =>
                         {

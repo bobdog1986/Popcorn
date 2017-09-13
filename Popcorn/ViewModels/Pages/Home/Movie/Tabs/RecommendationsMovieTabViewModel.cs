@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Async;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
@@ -66,8 +67,12 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                 {
                     var getMoviesWatcher = new Stopwatch();
                     getMoviesWatcher.Start();
-                    var result =
-                        await MovieService.Discover(Page).ConfigureAwait(false);
+                    var seen = UserService.GetSeenMovies(Page);
+                    var favorites = UserService.GetFavoritesMovies(Page);
+                    var movies = seen.allMovies.Union(favorites.allMovies).Distinct().ToList();
+                    var result = await MovieService
+                        .GetSimilarAsync(Page, Utils.Constants.MaxMoviesPerPage, movies,
+                            new CancellationToken()).ConfigureAwait(false);
                     getMoviesWatcher.Stop();
                     var getMoviesEllapsedTime = getMoviesWatcher.ElapsedMilliseconds;
                     if (reset && getMoviesEllapsedTime < 500)
@@ -78,11 +83,11 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
 
                     DispatcherHelper.CheckBeginInvokeOnUI(() =>
                     {
-                        Movies.AddRange(result.Item1.Except(Movies, new MovieLightComparer()));
+                        Movies.AddRange(result.movies.Except(Movies, new MovieLightComparer()));
                         IsLoadingMovies = false;
                         IsMovieFound = Movies.Any();
                         CurrentNumberOfMovies = Movies.Count;
-                        MaxNumberOfMovies = result.nbMovies;
+                        MaxNumberOfMovies = result.nbMovies == 0 ? Movies.Count : result.nbMovies;
                         UserService.SyncMovieHistory(Movies);
                     });
                 }).ConfigureAwait(false);

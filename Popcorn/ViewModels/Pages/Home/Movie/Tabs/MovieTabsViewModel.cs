@@ -319,7 +319,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                         IsLoadingMovies = false;
                         IsMovieFound = Movies.Any();
                         CurrentNumberOfMovies = Movies.Count;
-                        MaxNumberOfMovies = result.nbMovies;
+                        MaxNumberOfMovies = result.nbMovies == 0 ? Movies.Count : result.nbMovies;
                         UserService.SyncMovieHistory(Movies);
                     });
                 }).ConfigureAwait(false);
@@ -415,7 +415,14 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
 
             Messenger.Default.Register<ChangeFavoriteMovieMessage>(
                 this,
-                message => UserService.SyncMovieHistory(Movies));
+                async message =>
+                {
+                    UserService.SyncMovieHistory(Movies);
+                    if(this is RecommendationsMovieTabViewModel && !(SelectedTab is RecommendationsMovieTabViewModel))
+                        NeedSync = true;
+                    else if(this is RecommendationsMovieTabViewModel && SelectedTab is RecommendationsMovieTabViewModel)
+                        await LoadMoviesAsync(true).ConfigureAwait(false);
+                });
         }
 
         /// <summary>

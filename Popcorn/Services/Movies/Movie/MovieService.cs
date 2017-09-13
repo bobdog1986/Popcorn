@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Async;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -41,14 +39,17 @@ namespace Popcorn.Services.Movies.Movie
                 MaxRetryCount = 50
             };
 
-            try
+            Task.Run(() =>
             {
-                TmdbClient.GetConfig();
-            }
-            catch (Exception)
-            {
-                // An issue occured with TmdbClient
-            }
+                try
+                {
+                    TmdbClient.GetConfig();
+                }
+                catch (Exception)
+                {
+                    // An issue occured with TmdbClient
+                }
+            });
         }
 
         /// <summary>
@@ -173,33 +174,18 @@ namespace Popcorn.Services.Movies.Movie
         /// Get movies similar async
         /// </summary>
         /// <param name="movie">Movie</param>
-        /// <param name="similars">Similars</param>
         /// <returns>Movies</returns>
-        public async Task GetMoviesSimilarAsync(MovieJson movie, IList<MovieLightJson> similars)
+        public async Task<IEnumerable<MovieLightJson>> GetMoviesSimilarAsync(MovieJson movie)
         {
             var watch = Stopwatch.StartNew();
+            (IEnumerable<MovieLightJson> movies, int nbMovies) similarMovies = (new List<MovieLightJson>(), 0);
             try
             {
                 if (movie.Similars != null && movie.Similars.Any())
                 {
-                    foreach(var imdbCode in movie.Similars)
-                    {
-                        try
-                        {
-                            var similar = await GetMovieLightAsync(imdbCode).ConfigureAwait(false);
-                            if (similar != null)
-                            {
-                                DispatcherHelper.CheckBeginInvokeOnUI(() =>
-                                {
-                                    similars.Add(similar);
-                                });
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.Error(ex);
-                        }
-                    }
+                    similarMovies = await GetSimilarAsync(0, Utils.Constants.MaxMoviesPerPage, movie.Similars,
+                            CancellationToken.None)
+                        .ConfigureAwait(false);
                 }
             }
             catch (Exception exception)
@@ -215,6 +201,9 @@ namespace Popcorn.Services.Movies.Movie
                 Logger.Debug(
                     $"GetMoviesSimilarAsync in {elapsedMs} milliseconds.");
             }
+
+            return similarMovies.movies.Where(
+                a => a.ImdbCode != movie.ImdbCode);
         }
 
         /// <summary>
@@ -294,10 +283,76 @@ namespace Popcorn.Services.Movies.Movie
         /// <returns></returns>
         private async Task ProcessTranslations(IEnumerable<IMovie> movies)
         {
-            foreach(var movie in movies)
+            foreach (var movie in movies)
             {
                 await TranslateMovieAsync(movie).ConfigureAwait(false);
             }
+        }
+
+        /// <summary>
+        /// Get similar movies
+        /// </summary>
+        /// <param name="page">Page to return</param>
+        /// <param name="limit">The maximum number of movies to return</param>
+        /// <param name="imdbIds">The imdbIds of the movies, split by comma</param>
+        /// <param name="ct">Cancellation token</param>
+        /// <returns>Similar movies</returns>
+        public async Task<(IEnumerable<MovieLightJson> movies, int nbMovies)> GetSimilarAsync(int page,
+            int limit,
+            IEnumerable<string> imdbIds,
+            CancellationToken ct)
+        {
+            var watch = Stopwatch.StartNew();
+            var wrapper = new MovieLightResponse();
+            if (limit < 1 || limit > 50)
+                limit = Utils.Constants.MaxMoviesPerPage;
+
+            if (page < 1)
+                page = 1;
+
+            var restClient = new RestClient(Utils.Constants.PopcornApi);
+            var request = new RestRequest("/{segment}/{subsegment}", Method.POST);
+            request.AddUrlSegment("segment", "movies");
+            request.AddUrlSegment("subsegment", "similar");
+            request.AddQueryParameter("limit", limit.ToString());
+            request.AddQueryParameter("page", page.ToString());
+            request.AddJsonBody(imdbIds);
+
+            try
+            {
+                var response = await restClient.ExecuteTaskAsync<MovieLightResponse>(request, ct);
+                if (response.ErrorException != null)
+                    throw response.ErrorException;
+
+                wrapper = response.Data;
+            }
+            catch (Exception exception) when (exception is TaskCanceledException)
+            {
+                Logger.Debug(
+                    "GetSimilarAsync cancelled.");
+            }
+            catch (Exception exception)
+            {
+                Logger.Error(
+                    $"GetSimilarAsync: {exception.Message}");
+                throw;
+            }
+            finally
+            {
+                watch.Stop();
+                var elapsedMs = watch.ElapsedMilliseconds;
+                Logger.Debug(
+                    $"GetSimilarAsync ({page}, {limit}, {imdbIds}) in {elapsedMs} milliseconds.");
+            }
+
+            var result = wrapper?.Movies ?? new List<MovieLightJson>();
+            Task.Run(async () =>
+            {
+                await ProcessTranslations(result).ConfigureAwait(false);
+            }).ConfigureAwait(false);
+
+            var nbResult = wrapper?.TotalMovies ?? 0;
+            return (result, nbResult);
         }
 
         /// <summary>
@@ -433,7 +488,8 @@ namespace Popcorn.Services.Movies.Movie
             var uri = string.Empty;
             try
             {
-                var tmdbMovie = await TmdbClient.GetMovieAsync(movie.ImdbCode, MovieMethods.Videos).ConfigureAwait(false);
+                var tmdbMovie = await TmdbClient.GetMovieAsync(movie.ImdbCode, MovieMethods.Videos)
+                    .ConfigureAwait(false);
                 var trailers = tmdbMovie?.Videos;
                 if (trailers != null && trailers.Results.Any())
                 {
@@ -480,30 +536,6 @@ namespace Popcorn.Services.Movies.Movie
             }
 
             return uri;
-        }
-
-        /// <summary>
-        /// Get recommendations by page
-        /// </summary>
-        /// <param name="page"></param>
-        /// <returns></returns>
-        public async Task<(IEnumerable<MovieLightJson>, int nbMovies)> Discover(int page)
-        {
-            var discover = TmdbClient.DiscoverMoviesAsync();
-            var result = await discover.Query(page);
-            var movies = new ConcurrentBag<MovieLightJson>();
-            await result.Results.ParallelForEachAsync(async movie =>
-            {
-                var imdbMovie = await TmdbClient.GetMovieAsync(movie.Id);
-                if (imdbMovie?.ImdbId == null)
-                    return;
-
-                var fetch = await GetMovieLightAsync(imdbMovie.ImdbId);
-                if (fetch != null)
-                    movies.Add(fetch);
-            });
-
-            return (movies, result.TotalResults);
         }
     }
 }

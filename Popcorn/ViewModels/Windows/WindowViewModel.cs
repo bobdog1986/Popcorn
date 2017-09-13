@@ -606,11 +606,18 @@ namespace Popcorn.ViewModels.Windows
 
             MainWindowClosingCommand = new RelayCommand(async () =>
             {
-                await _userService.UpdateUser();
-                _localServer.Dispose();
-                await SaveCacheOnExit();
-                Cef.Shutdown();
-                ClearFolders();
+                try
+                {
+                    await _userService.UpdateUser();
+                    _localServer.Dispose();
+                    await SaveCacheOnExit();
+                    Cef.Shutdown();
+                    ClearFolders();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                }
             });
 
             OpenSettingsCommand = new RelayCommand(() => IsSettingsFlyoutOpen = !IsSettingsFlyoutOpen);

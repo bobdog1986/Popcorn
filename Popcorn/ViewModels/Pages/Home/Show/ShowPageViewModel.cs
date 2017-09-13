@@ -68,11 +68,6 @@ namespace Popcorn.ViewModels.Pages.Home.Show
         public RelayCommand SelectFavoritesTab { get; private set; }
 
         /// <summary>
-        /// Command used to select the recommendations shows tab
-        /// </summary>
-        public RelayCommand SelectRecommendationsTab { get; private set; }
-
-        /// <summary>
         /// Manage genres
         /// </summary>
         private GenreViewModel _genreViewModel;
@@ -119,7 +114,6 @@ namespace Popcorn.ViewModels.Pages.Home.Show
             Tabs.Add(new GreatestShowTabViewModel(_applicationService, showService, userService));
             Tabs.Add(new RecentShowTabViewModel(_applicationService, showService, userService));
             Tabs.Add(new FavoritesShowTabViewModel(_applicationService, showService, userService));
-            Tabs.Add(new RecommendationsShowTabViewModel(_applicationService, showService, userService));
             SelectedTab = Tabs.First();
             SelectedShowsIndexMenuTab = 0;
         }
@@ -184,14 +178,6 @@ namespace Popcorn.ViewModels.Pages.Home.Show
                 if (SelectedTab is FavoritesShowTabViewModel)
                     return;
                 foreach (var favoritesTab in Tabs.OfType<FavoritesShowTabViewModel>().ToList())
-                    SelectedTab = favoritesTab;
-            });
-
-            SelectRecommendationsTab = new RelayCommand(() =>
-            {
-                if (SelectedTab is RecommendationsShowTabViewModel)
-                    return;
-                foreach (var favoritesTab in Tabs.OfType<RecommendationsShowTabViewModel>().ToList())
                     SelectedTab = favoritesTab;
             });
         }

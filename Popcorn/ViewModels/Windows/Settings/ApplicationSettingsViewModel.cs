@@ -322,33 +322,36 @@ namespace Popcorn.ViewModels.Windows.Settings
                     }
                 };
 
-                _downloadLimit = user.DownloadLimit;
-                _uploadLimit = user.UploadLimit;
+                DownloadLimit = user.DownloadLimit;
+                UploadLimit = user.UploadLimit;
                 var defaultSubtitleLanguage = user.DefaultSubtitleLanguage;
                 var subtitleSize = user.DefaultSubtitleSize;
-                _defaultHdQuality = user.DefaultHdQuality;
-                _selectedSubtitleSize = SubtitleSizes.FirstOrDefault(a => a.Size == subtitleSize.Size);
-                _subtitlesColor =
+                DefaultHdQuality = user.DefaultHdQuality;
+                SelectedSubtitleSize = SubtitleSizes.FirstOrDefault(a => a.Size == subtitleSize.Size);
+                SubtitlesColor =
                     (Color)ColorConverter.ConvertFromString(user.DefaultSubtitleColor);
-                RaisePropertyChanged(nameof(SubtitlesColor));
-                RaisePropertyChanged(nameof(DownloadLimit));
-                RaisePropertyChanged(nameof(UploadLimit));
-                RaisePropertyChanged(nameof(SelectedSubtitleSize));
-                RaisePropertyChanged(nameof(DefaultHdQuality));
-                LoadingSubtitles = true;
-                AvailableSubtitlesLanguages = new ObservableRangeCollection<string>();
-                var languages = (await _subtitlesService.GetSubLanguages()).Select(a => a.LanguageName)
-                    .OrderBy(a => a)
-                    .ToList();
-                languages.Insert(0,
-                    LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"));
-                AvailableSubtitlesLanguages.AddRange(
-                    new ObservableRangeCollection<string>(languages));
-                _defaultSubtitleLanguage = AvailableSubtitlesLanguages.Any(a => a == defaultSubtitleLanguage)
-                    ? defaultSubtitleLanguage
-                    : LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel");
-                RaisePropertyChanged(nameof(DefaultSubtitleLanguage));
-                LoadingSubtitles = false;
+
+#pragma warning disable CS4014
+                Task.Run(async () =>
+                {
+                    LoadingSubtitles = true;
+                    AvailableSubtitlesLanguages = new ObservableRangeCollection<string>();
+                    var languages = (await _subtitlesService.GetSubLanguages()).Select(a => a.LanguageName)
+                        .OrderBy(a => a)
+                        .ToList();
+                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                    {
+                        languages.Insert(0,
+                            LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"));
+                        AvailableSubtitlesLanguages.AddRange(
+                            new ObservableRangeCollection<string>(languages));
+                        DefaultSubtitleLanguage = AvailableSubtitlesLanguages.Any(a => a == defaultSubtitleLanguage)
+                            ? defaultSubtitleLanguage
+                            : LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel");
+                        LoadingSubtitles = false;
+                    });
+                });
+#pragma warning restore CS4014
             }
             catch (Exception ex)
             {
@@ -358,13 +361,12 @@ namespace Popcorn.ViewModels.Windows.Settings
                     LoadingSubtitles = false;
                     AvailableSubtitlesLanguages.Insert(0,
                         LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"));
-                    _defaultSubtitleLanguage = AvailableSubtitlesLanguages.FirstOrDefault();
-                    RaisePropertyChanged(nameof(DefaultSubtitleLanguage));
+                    DefaultSubtitleLanguage = AvailableSubtitlesLanguages.FirstOrDefault();
                 });
             }
-            _language = new Language(_userService);
+
+            Language = new Language(_userService);
             Language.LoadLanguages();
-            RaisePropertyChanged(nameof(Language));
         }
 
         /// <summary>

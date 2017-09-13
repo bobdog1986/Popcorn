@@ -444,4 +444,7 @@
   <data name="RecommendationsTitleTab" xml:space="preserve">
     <value>Recommendations</value>
   </data>
+  <data name="DiscoverTitleTab" xml:space="preserve">
+    <value>Discover</value>
+  </data>
 </root>

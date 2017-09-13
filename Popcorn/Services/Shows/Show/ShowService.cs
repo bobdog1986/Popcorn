@@ -52,14 +52,17 @@ namespace Popcorn.Services.Shows.Show
                 MaxRetryCount = 50
             };
 
-            try
+            Task.Run(() =>
             {
-                TmdbClient.GetConfig();
-            }
-            catch (Exception)
-            {
-                // An issue occured with TmdbClient
-            }
+                try
+                {
+                    TmdbClient.GetConfig();
+                }
+                catch (Exception)
+                {
+                    // An issue occured with TmdbClient
+                }
+            });
         }
 
         /// <summary>
@@ -294,7 +297,7 @@ namespace Popcorn.Services.Shows.Show
                 if (shows.Results.Any())
                 {
                     Video trailer = null;
-                    foreach(var tvShow in shows.Results)
+                    foreach (var tvShow in shows.Results)
                     {
                         try
                         {
@@ -318,7 +321,8 @@ namespace Popcorn.Services.Shows.Show
                     {
                         using (var service = Client.For(YouTube.Default))
                         {
-                            var videos = (await service.GetAllVideosAsync("https://youtube.com/watch?v=" + trailer.Key).ConfigureAwait(false))
+                            var videos = (await service.GetAllVideosAsync("https://youtube.com/watch?v=" + trailer.Key)
+                                    .ConfigureAwait(false))
                                 .ToList();
                             if (videos.Any())
                             {
@@ -338,7 +342,8 @@ namespace Popcorn.Services.Shows.Show
                     }
                 }
             }
-            catch (Exception exception) when (exception is TaskCanceledException || exception is OperationCanceledException)
+            catch (Exception exception) when (exception is TaskCanceledException ||
+                                              exception is OperationCanceledException)
             {
                 Logger.Debug(
                     "GetShowTrailerAsync cancelled.");
@@ -368,18 +373,19 @@ namespace Popcorn.Services.Shows.Show
         public async Task<(IEnumerable<ShowLightJson>, int nbMovies)> Discover(int page)
         {
             var discover = TmdbClient.DiscoverTvShowsAsync();
-            var result = await discover.Query(page);
+            var result = await discover.Query(page).ConfigureAwait(false);
             var shows = new ConcurrentBag<ShowLightJson>();
             await result.Results.ParallelForEachAsync(async show =>
             {
-                var imdbShow = await TmdbClient.GetTvShowAsync(show.Id, TvShowMethods.ExternalIds);
+                var imdbShow = await TmdbClient.GetTvShowAsync(show.Id, TvShowMethods.ExternalIds)
+                    .ConfigureAwait(false);
                 if (imdbShow?.ExternalIds?.ImdbId == null)
                     return;
 
-                var fetch = await GetShowLightAsync(imdbShow.ExternalIds.ImdbId);
+                var fetch = await GetShowLightAsync(imdbShow.ExternalIds.ImdbId).ConfigureAwait(false);
                 if (fetch != null)
                     shows.Add(fetch);
-            });
+            }).ConfigureAwait(false);
 
             return (shows, result.TotalResults);
         }
