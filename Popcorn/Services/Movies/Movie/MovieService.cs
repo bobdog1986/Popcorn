@@ -16,6 +16,8 @@ using Popcorn.Models.User;
 using Popcorn.Utils.Exceptions;
 using Popcorn.ViewModels.Windows.Settings;
 using Popcorn.YTVideoProvider;
+using Polly;
+using Polly.Timeout;
 
 namespace Popcorn.Services.Movies.Movie
 {
@@ -434,45 +436,59 @@ namespace Popcorn.Services.Movies.Movie
         public async Task TranslateMovieAsync(IMovie movieToTranslate)
         {
             if (!MustRefreshLanguage) return;
-            var watch = Stopwatch.StartNew();
+
+            var timeoutPolicy =
+                Policy.TimeoutAsync(2, TimeoutStrategy.Pessimistic);
+
             try
             {
-                var movie = await TmdbClient.GetMovieAsync(movieToTranslate.ImdbCode,
-                    MovieMethods.Credits).ConfigureAwait(false);
-                var refMovie = movieToTranslate as MovieJson;
-                if (refMovie != null)
+                await timeoutPolicy.ExecuteAsync(async () =>
                 {
-                    refMovie.Title = movie?.Title;
-                    refMovie.Genres = movie?.Genres?.Select(a => a.Name).ToList();
-                    refMovie.DescriptionFull = movie?.Overview;
-                    return;
-                }
+                    var watch = Stopwatch.StartNew();
+                    try
+                    {
+                        var movie = await TmdbClient.GetMovieAsync(movieToTranslate.ImdbCode,
+                            MovieMethods.Credits).ConfigureAwait(false);
+                        var refMovie = movieToTranslate as MovieJson;
+                        if (refMovie != null)
+                        {
+                            refMovie.Title = movie?.Title;
+                            refMovie.Genres = movie?.Genres?.Select(a => a.Name).ToList();
+                            refMovie.DescriptionFull = movie?.Overview;
+                            return;
+                        }
 
-                var refMovieLight = movieToTranslate as MovieLightJson;
-                if (refMovieLight != null)
-                {
-                    refMovieLight.Title = movie?.Title;
-                    refMovieLight.Genres = movie?.Genres != null
-                        ? string.Join(", ", movie.Genres?.Select(a => a.Name))
-                        : string.Empty;
-                }
+                        var refMovieLight = movieToTranslate as MovieLightJson;
+                        if (refMovieLight != null)
+                        {
+                            refMovieLight.Title = movie?.Title;
+                            refMovieLight.Genres = movie?.Genres != null
+                                    ? string.Join(", ", movie.Genres?.Select(a => a.Name))
+                                    : string.Empty;
+                        }
+                    }
+                    catch (Exception exception) when (exception is TaskCanceledException)
+                    {
+                        Logger.Debug(
+                                "TranslateMovieAsync cancelled.");
+                    }
+                    catch (Exception exception)
+                    {
+                        Logger.Error(
+                                $"TranslateMovieAsync: {exception.Message}");
+                    }
+                    finally
+                    {
+                        watch.Stop();
+                        var elapsedMs = watch.ElapsedMilliseconds;
+                        Logger.Debug(
+                                $"TranslateMovieAsync ({movieToTranslate.ImdbCode}) in {elapsedMs} milliseconds.");
+                    }
+                });
             }
-            catch (Exception exception) when (exception is TaskCanceledException)
+            catch (TimeoutRejectedException ex)
             {
-                Logger.Debug(
-                    "TranslateMovieAsync cancelled.");
-            }
-            catch (Exception exception)
-            {
-                Logger.Error(
-                    $"TranslateMovieAsync: {exception.Message}");
-            }
-            finally
-            {
-                watch.Stop();
-                var elapsedMs = watch.ElapsedMilliseconds;
-                Logger.Debug(
-                    $"TranslateMovieAsync ({movieToTranslate.ImdbCode}) in {elapsedMs} milliseconds.");
+                Logger.Warn($"Movie {movieToTranslate.ImdbCode} has not been translated in 2 seconds. Error {ex.Message}");
             }
         }
 

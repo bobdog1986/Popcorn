@@ -464,6 +464,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
                 await Task.Run(async () =>
                 {
                     Movie = await _movieService.GetMovieAsync(movie.ImdbCode).ConfigureAwait(false);
+                    await _movieService.TranslateMovieAsync(Movie).ConfigureAwait(false);
                     IsMovieLoading = false;
                     Movie.FullHdAvailable = Movie.Torrents.Any(torrent => torrent.Quality == "1080p");
                     var applicationSettings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
