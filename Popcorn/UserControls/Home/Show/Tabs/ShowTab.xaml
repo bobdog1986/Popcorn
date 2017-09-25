@@ -289,7 +289,7 @@
                             Width="200"
                             HorizontalAlignment="Left"
                             FontSize="14"
-                            Text="{Binding Title, Mode=OneTime}"
+                            Text="{Binding Title}"
                             TextOptions.TextHintingMode="Fixed"
                             TextTrimming="CharacterEllipsis" />
                         <TextBlock
@@ -297,7 +297,7 @@
                             HorizontalAlignment="Left"
                             FontSize="12"
                             Foreground="Gray"
-                            Text="{Binding Genres, Mode=OneTime}"
+                            Text="{Binding Genres}"
                             TextOptions.TextHintingMode="Fixed" />
                         <TextBlock
                             Width="200"
