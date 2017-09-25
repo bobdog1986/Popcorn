@@ -238,6 +238,8 @@ namespace Popcorn.ViewModels.Windows
         /// </summary>
         public RelayCommand OpenHelpCommand { get; private set; }
 
+        public RelayCommand OpenWelcomeCommand { get; private set; }
+
         /// <summary>
         /// Command used to load tabs
         /// </summary>
@@ -696,6 +698,18 @@ namespace Popcorn.ViewModels.Windows
             DragLeaveFileCommand = new RelayCommand<DragEventArgs>(e =>
             {
                 Messenger.Default.Send(new DropFileMessage(DropFileMessage.DropFileEvent.Leave));
+            });
+
+            OpenWelcomeCommand = new RelayCommand(async () =>
+            {
+                var welcomeDialog = new WelcomeDialog();
+                var vm = new WelcomeDialogViewModel(async () =>
+                {
+                    await _dialogCoordinator.HideMetroDialogAsync(this, welcomeDialog);
+                });
+
+                welcomeDialog.DataContext = vm;
+                await _dialogCoordinator.ShowMetroDialogAsync(this, welcomeDialog);
             });
 
             InitializeAsyncCommand = new RelayCommand(async () =>

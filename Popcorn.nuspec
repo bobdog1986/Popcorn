@@ -2,14 +2,14 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>Popcorn</id>
-        <version>2.8.0</version>
+        <version>2.9.0</version>
         <title>Popcorn</title>
         <authors>Benjamin Bougot</authors>
         <projectUrl>https://github.com/bbougot/Popcorn</projectUrl>
         <iconUrl>https://raw.githubusercontent.com/bbougot/Popcorn/master/Popcorn/icon.ico</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>A Powerful and Fast Popcorn Time Client</description>
-        <releaseNotes>Add recommendations to movie collections</releaseNotes>
+        <releaseNotes>Add welcome page</releaseNotes>
     </metadata>
     <files>
         <file src="en\Popcorn.resources.dll" target="lib\net45\en\Popcorn.resources.dll" />
@@ -574,7 +574,6 @@
         <file src="nb-NO\Humanizer.resources.dll" target="lib\net45\nb-NO\Humanizer.resources.dll" />
         <file src="nl\Humanizer.resources.dll" target="lib\net45\nl\Humanizer.resources.dll" />
         <file src="pl\Humanizer.resources.dll" target="lib\net45\pl\Humanizer.resources.dll" />
-        <file src="pt-BR\Humanizer.resources.dll" target="lib\net45\pt-BR\Humanizer.resources.dll" />
         <file src="ro\Humanizer.resources.dll" target="lib\net45\ro\Humanizer.resources.dll" />
         <file src="ru\Humanizer.resources.dll" target="lib\net45\ru\Humanizer.resources.dll" />
         <file src="sk\Humanizer.resources.dll" target="lib\net45\sk\Humanizer.resources.dll" />
@@ -588,5 +587,25 @@
         <file src="zh-CN\Humanizer.resources.dll" target="lib\net45\zh-CN\Humanizer.resources.dll" />
         <file src="zh-Hans\Humanizer.resources.dll" target="lib\net45\zh-Hans\Humanizer.resources.dll" />
         <file src="zh-Hant\Humanizer.resources.dll" target="lib\net45\zh-Hant\Humanizer.resources.dll" />
+        <file src="hr\Humanizer.resources.dll" target="lib\net45\hr\Humanizer.resources.dll" />
+        <file src="lv\Humanizer.resources.dll" target="lib\net45\lv\Humanizer.resources.dll" />
+        <file src="pt\Humanizer.resources.dll" target="lib\net45\pt\Humanizer.resources.dll" />
+        <file src="sl\Humanizer.resources.dll" target="lib\net45\sl\Humanizer.resources.dll" />
+        <file src="uk\Humanizer.resources.dll" target="lib\net45\uk\Humanizer.resources.dll" />
+        <file src="ControlzEx.dll" target="lib\net45\ControlzEx.dll" />
+        <file src="Mono.Cecil.Pdb.dll" target="lib\net45\Mono.Cecil.Pdb.dll" />
+        <file src="System.AppContext.dll" target="lib\net45\System.AppContext.dll" />
+        <file src="System.Console.dll" target="lib\net45\System.Console.dll" />
+        <file src="System.Diagnostics.Tracing.dll" target="lib\net45\System.Diagnostics.Tracing.dll" />
+        <file src="System.Globalization.Calendars.dll" target="lib\net45\System.Globalization.Calendars.dll" />
+        <file src="System.IO.Compression.dll" target="lib\net45\System.IO.Compression.dll" />
+        <file src="System.IO.Compression.ZipFile.dll" target="lib\net45\System.IO.Compression.ZipFile.dll" />
+        <file src="System.IO.FileSystem.dll" target="lib\net45\System.IO.FileSystem.dll" />
+        <file src="System.IO.FileSystem.Primitives.dll" target="lib\net45\System.IO.FileSystem.Primitives.dll" />
+        <file src="System.Net.Sockets.dll" target="lib\net45\System.Net.Sockets.dll" />
+        <file src="System.Reactive.dll" target="lib\net45\System.Reactive.dll" />
+        <file src="System.Runtime.InteropServices.dll" target="lib\net45\System.Runtime.InteropServices.dll" />
+        <file src="System.Runtime.InteropServices.RuntimeInformation.dll" target="lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll" />
+        <file src="System.Xml.ReaderWriter.dll" target="lib\net45\System.Xml.ReaderWriter.dll" />
     </files>
 </package>

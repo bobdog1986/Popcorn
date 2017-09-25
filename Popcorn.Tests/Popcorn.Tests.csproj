@@ -91,7 +91,6 @@
     <Compile Include="Converters\BoolToVisibilityConverterTest.cs" />
     <Compile Include="Converters\BoolToInverseVisibilityConverterTest.cs" />
     <Compile Include="Converters\WindowStateToBooleanConverterTest.cs" />
-    <Compile Include="LocalAddin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

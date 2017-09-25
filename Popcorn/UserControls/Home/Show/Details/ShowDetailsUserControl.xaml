@@ -174,7 +174,7 @@
             <Image
                 Grid.Row="0"
                 Grid.RowSpan="2"
-                attachedProperties:ImageAsyncHelper.ImagePath="{Binding Show.Images.Banner}"
+                attachedProperties:ImageAsyncHelper.ImagePath="{Binding Show.Images.Banner, IsAsync=True}"
                 attachedProperties:ImageAsyncHelper.Type="Backdrop"
                 Opacity="0.3" />
             <Grid
@@ -182,7 +182,7 @@
                 Grid.RowSpan="2"
                 Visibility="{Binding DownloadShow.IsDownloadingEpisode, Converter={StaticResource BoolToInverseVisibilityConverter}}">
                 <Image
-                    attachedProperties:ImageAsyncHelper.ImagePath="{Binding Show.Images.Banner}"
+                    attachedProperties:ImageAsyncHelper.ImagePath="{Binding Show.Images.Banner, IsAsync=True}"
                     attachedProperties:ImageAsyncHelper.Type="Backdrop"
                     Opacity="0.3" />
                 <ContentControl
@@ -214,7 +214,7 @@
                         Margin="0,10,0,0"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Top"
-                        attachedProperties:ImageAsyncHelper.ImagePath="{Binding Show.Images.Poster}"
+                        attachedProperties:ImageAsyncHelper.ImagePath="{Binding Show.Images.Poster, IsAsync=True}"
                         attachedProperties:ImageAsyncHelper.Type="Poster">
                         <Image.Effect>
                             <DropShadowEffect

@@ -342,7 +342,7 @@ namespace Popcorn.Services.Movies.Movie
                 watch.Stop();
                 var elapsedMs = watch.ElapsedMilliseconds;
                 Logger.Debug(
-                    $"GetSimilarAsync ({page}, {limit}, {imdbIds}) in {elapsedMs} milliseconds.");
+                    $"GetSimilarAsync ({page}, {limit}, {string.Join(",", imdbIds)}) in {elapsedMs} milliseconds.");
             }
 
             var result = wrapper?.Movies ?? new List<MovieLightJson>();

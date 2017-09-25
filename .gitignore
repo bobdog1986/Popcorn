@@ -83,3 +83,4 @@ Popcorn/edge
 Releases/
 /.vs/slnx.sqlite
 *.ide
+*.ide-journal
