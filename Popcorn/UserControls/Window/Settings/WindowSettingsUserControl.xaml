@@ -291,7 +291,7 @@
                     Margin="15,0,0,0"
                     Orientation="Vertical"
                     Visibility="{Binding UpdateDownloading, Converter={StaticResource BoolToInverseVisibilityConverter}}">
-                    <TextBlock Text="{Binding UpdateDownloadProgress, Converter={StaticResource UpdateLabelConverter}, ConverterParameter={lex:LocText DownloadingUpdate}}" />
+                    <TextBlock Text="{Binding UpdateDownloadProgress, Converter={StaticResource UpdateLabelConverter}, ConverterParameter=DownloadingUpdate}" />
                     <controls:MetroProgressBar
                         Margin="0,2.5,0,0"
                         IsIndeterminate="False"
@@ -303,7 +303,7 @@
                     Margin="15,0,0,0"
                     Orientation="Vertical"
                     Visibility="{Binding UpdateApplying, Converter={StaticResource BoolToInverseVisibilityConverter}}">
-                    <TextBlock Text="{Binding UpdateApplyProgress, Converter={StaticResource UpdateLabelConverter}, ConverterParameter={lex:LocText ApplyingUpdate}}" />
+                    <TextBlock Text="{Binding UpdateApplyProgress, Converter={StaticResource UpdateLabelConverter}, ConverterParameter=ApplyingUpdate}" />
                     <controls:MetroProgressBar
                         Margin="0,2.5,0,0"
                         IsIndeterminate="False"

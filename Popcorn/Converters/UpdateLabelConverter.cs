@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using Popcorn.Helpers;
 
 namespace Popcorn.Converters
 {
@@ -13,8 +14,8 @@ namespace Popcorn.Converters
         public object Convert(object value, Type targetType, object parameter,
             CultureInfo culture)
         {
-            var label = parameter as string;
-            return label.Replace("%PERCENTAGE%", $"{value.ToString()}%");
+            return LocalizationProviderHelper.GetLocalizedValue<string>(parameter.ToString())
+                .Replace("%PERCENTAGE%", $"{value.ToString()}%");
         }
 
         public object ConvertBack(object value, Type targetType, object parameter,

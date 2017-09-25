@@ -47,7 +47,7 @@
       <HintPath>..\packages\NUnit.3.8.1\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="Ploeh.AutoFixture, Version=3.50.0.0, Culture=neutral, PublicKeyToken=b24654c590009d4f, processorArchitecture=MSIL">
-      <HintPath>..\packages\AutoFixture.3.50.6\lib\net40\Ploeh.AutoFixture.dll</HintPath>
+      <HintPath>..\packages\AutoFixture.3.50.7\lib\net40\Ploeh.AutoFixture.dll</HintPath>
     </Reference>
     <Reference Include="Ploeh.AutoFixture.NUnit2, Version=3.50.0.0, Culture=neutral, PublicKeyToken=b24654c590009d4f, processorArchitecture=MSIL">
       <HintPath>..\packages\AutoFixture.NUnit2.3.50.6\lib\net40\Ploeh.AutoFixture.NUnit2.dll</HintPath>
