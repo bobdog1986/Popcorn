@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using GalaSoft.MvvmLight;
@@ -19,6 +21,7 @@ using Popcorn.Models.Subtitles;
 using Popcorn.Services.Subtitles;
 using Popcorn.Services.User;
 using Popcorn.Utils;
+using Squirrel;
 
 namespace Popcorn.ViewModels.Windows.Settings
 {
@@ -106,11 +109,51 @@ namespace Popcorn.ViewModels.Windows.Settings
         /// Command used to show the Trakt dialog
         /// </summary>
         private ICommand _showTraktDialogCommand;
+        
+        /// <summary>
+        /// Command used to restart app
+        /// </summary>
+        private ICommand _restartCommand;
 
         /// <summary>
         /// Command used to change subtitle color
         /// </summary>
         private ICommand _changeSubtitleColorCommand;
+
+        /// <summary>
+        /// If an update is available
+        /// </summary>
+        private bool _updateAvailable;
+
+        /// <summary>
+        /// If an update is downloading
+        /// </summary>
+        private bool _updateDownloading;
+
+        /// <summary>
+        /// If an update is applying
+        /// </summary>
+        private bool _updateApplying;
+
+        /// <summary>
+        /// Update download progress
+        /// </summary>
+        private int _updateDownloadProgress;
+
+        /// <summary>
+        /// Update apply progress
+        /// </summary>
+        private int _updateApplyProgress;
+
+        /// <summary>
+        /// If an update has been applied
+        /// </summary>
+        private bool _updateApplied;
+
+        /// <summary>
+        /// File path of the installed update
+        /// </summary>
+        private string _updateFilePath;
 
         /// <summary>
         /// Initializes a new instance of the ApplicationSettingsViewModel class.
@@ -246,6 +289,78 @@ namespace Popcorn.ViewModels.Windows.Settings
         }
 
         /// <summary>
+        /// True if update is downloading
+        /// </summary>
+        public bool UpdateDownloading
+        {
+            get => _updateDownloading;
+            set
+            {
+                Set(() => UpdateDownloading, ref _updateDownloading, value);
+            }
+        }
+
+        /// <summary>
+        /// True if update is available
+        /// </summary>
+        public bool UpdateAvailable
+        {
+            get => _updateAvailable;
+            set
+            {
+                Set(() => UpdateAvailable, ref _updateAvailable, value);
+            }
+        }
+
+        /// <summary>
+        /// True if update is applying
+        /// </summary>
+        public bool UpdateApplying
+        {
+            get => _updateApplying;
+            set
+            {
+                Set(() => UpdateApplying, ref _updateApplying, value);
+            }
+        }
+
+        /// <summary>
+        /// True if update has been applied
+        /// </summary>
+        public bool UpdateApplied
+        {
+            get => _updateApplied;
+            set
+            {
+                Set(() => UpdateApplied, ref _updateApplied, value);
+            }
+        }
+
+        /// <summary>
+        /// The update download progress
+        /// </summary>
+        public int UpdateDownloadProgress
+        {
+            get => _updateDownloadProgress;
+            set
+            {
+                Set(() => UpdateDownloadProgress, ref _updateDownloadProgress, value);
+            }
+        }
+
+        /// <summary>
+        /// The update apply progress
+        /// </summary>
+        public int UpdateApplyProgress
+        {
+            get => _updateApplyProgress;
+            set
+            {
+                Set(() => UpdateApplyProgress, ref _updateApplyProgress, value);
+            }
+        }
+
+        /// <summary>
         /// The language used through the application
         /// </summary>
         public Language Language
@@ -264,6 +379,18 @@ namespace Popcorn.ViewModels.Windows.Settings
         /// </summary>
         public RelayCommand UpdateCacheSizeCommand { get; private set; }
 
+        /// <summary>
+        /// Restart app
+        /// </summary>
+        public ICommand RestartCommand
+        {
+            get => _restartCommand;
+            set => Set(ref _restartCommand, value);
+        }
+
+        /// <summary>
+        /// Change subtitle
+        /// </summary>
         public ICommand ChangeSubtitleColorCommand
         {
             get => _changeSubtitleColorCommand;
@@ -292,7 +419,7 @@ namespace Popcorn.ViewModels.Windows.Settings
         {
             try
             {
-                var user = await _userService.GetUser();
+                var user = await _userService.GetUser().ConfigureAwait(false);
                 SubtitleSizes = new ObservableCollection<SubtitleSize>
                 {
                     new SubtitleSize
@@ -336,7 +463,7 @@ namespace Popcorn.ViewModels.Windows.Settings
                 {
                     LoadingSubtitles = true;
                     AvailableSubtitlesLanguages = new ObservableRangeCollection<string>();
-                    var languages = (await _subtitlesService.GetSubLanguages()).Select(a => a.LanguageName)
+                    var languages = (await _subtitlesService.GetSubLanguages().ConfigureAwait(false)).Select(a => a.LanguageName)
                         .OrderBy(a => a)
                         .ToList();
                     DispatcherHelper.CheckBeginInvokeOnUI(() =>
@@ -350,6 +477,10 @@ namespace Popcorn.ViewModels.Windows.Settings
                             : LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel");
                         LoadingSubtitles = false;
                     });
+
+#if !DEBUG
+                await StartUpdateProcessAsync().ConfigureAwait(false);
+#endif
                 });
 #pragma warning restore CS4014
             }
@@ -367,6 +498,70 @@ namespace Popcorn.ViewModels.Windows.Settings
 
             Language = new Language(_userService);
             Language.LoadLanguages();
+        }
+
+        /// <summary>
+        /// Look for update then download and apply if any
+        /// </summary>
+        private async Task StartUpdateProcessAsync()
+        {
+            var watchStart = Stopwatch.StartNew();
+
+            Logger.Info(
+                "Looking for updates...");
+            try
+            {
+                using (var updateManager = await UpdateManager.GitHubUpdateManager(Constants.GithubRepository))
+                {
+                    var updateInfo = await updateManager.CheckForUpdate();
+                    if (updateInfo == null)
+                    {
+                        Logger.Error(
+                            "Problem while trying to check new updates.");
+                        return;
+                    }
+
+                    if (updateInfo.ReleasesToApply.Any())
+                    {
+                        Messenger.Default.Send(new UpdateAvailableMessage());
+                        UpdateAvailable = true;
+                        Logger.Info(
+                            $"A new update has been found!\n Currently installed version: {updateInfo.CurrentlyInstalledVersion?.Version?.Version.Major}.{updateInfo.CurrentlyInstalledVersion?.Version?.Version.Minor}.{updateInfo.CurrentlyInstalledVersion?.Version?.Version.Build} - New update: {updateInfo.FutureReleaseEntry?.Version?.Version.Major}.{updateInfo.FutureReleaseEntry?.Version?.Version.Minor}.{updateInfo.FutureReleaseEntry?.Version?.Version.Build}");
+
+                        UpdateDownloading = true;
+                        await updateManager.DownloadReleases(updateInfo.ReleasesToApply, progress =>
+                        {
+                            UpdateDownloadProgress = progress;
+                        });
+                        UpdateDownloading = false;
+                        UpdateApplying = true;
+                        _updateFilePath = await updateManager.ApplyReleases(updateInfo, progress =>
+                        {
+                            UpdateApplyProgress = progress;
+                        });
+                        UpdateApplying = false;
+                        UpdateApplied = true;
+                        Logger.Info(
+                            "A new update has been applied.");
+                    }
+                    else
+                    {
+                        UpdateAvailable = false;
+                        Logger.Info(
+                            "No update available.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(
+                    $"Something went wrong when trying to update app. {ex.Message}");
+            }
+
+            watchStart.Stop();
+            var elapsedStartMs = watchStart.ElapsedMilliseconds;
+            Logger.Info(
+                $"Finished looking for updates in {elapsedStartMs}.");
         }
 
         /// <summary>
@@ -389,6 +584,15 @@ namespace Popcorn.ViewModels.Windows.Settings
             ChangeSubtitleColorCommand = new RelayCommand<EventArgs<Color>>(args =>
             {
                 SubtitlesColor = args.Value;
+            });
+
+            RestartCommand = new RelayCommand(() =>
+            {
+                Logger.Info(
+                    "Restarting...");
+
+                Process.Start($@"{_updateFilePath}\Popcorn.exe", "restart");
+                Application.Current.Shutdown();
             });
         }
 

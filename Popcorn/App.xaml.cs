@@ -76,7 +76,8 @@ namespace Popcorn
                 SquirrelAwareApp.HandleEvents(
                     onFirstRun: () =>
                     {
-                        _firstRun = true;
+                        // TODO: Must complete welcome.md page before activate this feature
+                        //_firstRun = true;
                     });
             }
             catch (Exception ex)

@@ -7,6 +7,7 @@
     xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:converters="clr-namespace:Popcorn.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:extensions="clr-namespace:Popcorn.Extensions"
     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:lex="http://wpflocalizeextension.codeplex.com"
@@ -29,6 +30,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <converters:BoolToInverseVisibilityConverter x:Key="BoolToInverseVisibilityConverter" />
+            <converters:UpdateLabelConverter x:Key="UpdateLabelConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid Width="400" Margin="10">
@@ -284,7 +286,43 @@
                 HorizontalAlignment="Right"
                 VerticalAlignment="Bottom"
                 Orientation="Horizontal">
-                <TextBlock VerticalAlignment="Center" Text="{Binding Version}" />
+                <TextBlock VerticalAlignment="Bottom" Text="{Binding Version}" />
+                <StackPanel
+                    Margin="15,0,0,0"
+                    Orientation="Vertical"
+                    Visibility="{Binding UpdateDownloading, Converter={StaticResource BoolToInverseVisibilityConverter}}">
+                    <TextBlock Text="{Binding UpdateDownloadProgress, Converter={StaticResource UpdateLabelConverter}, ConverterParameter={lex:LocText DownloadingUpdate}}" />
+                    <controls:MetroProgressBar
+                        Margin="0,2.5,0,0"
+                        IsIndeterminate="False"
+                        Maximum="100"
+                        Minimum="0"
+                        Value="{Binding UpdateDownloadProgress}" />
+                </StackPanel>
+                <StackPanel
+                    Margin="15,0,0,0"
+                    Orientation="Vertical"
+                    Visibility="{Binding UpdateApplying, Converter={StaticResource BoolToInverseVisibilityConverter}}">
+                    <TextBlock Text="{Binding UpdateApplyProgress, Converter={StaticResource UpdateLabelConverter}, ConverterParameter={lex:LocText ApplyingUpdate}}" />
+                    <controls:MetroProgressBar
+                        Margin="0,2.5,0,0"
+                        IsIndeterminate="False"
+                        Maximum="100"
+                        Minimum="0"
+                        Value="{Binding UpdateApplyProgress}" />
+                </StackPanel>
+                <StackPanel
+                    Margin="15,0,0,0"
+                    Orientation="Vertical"
+                    Visibility="{Binding UpdateApplied, Converter={StaticResource BoolToInverseVisibilityConverter}}">
+                    <TextBlock Text="{lex:LocText UpdateApplied}" />
+                    <Button
+                        Margin="0,2.5,0,0"
+                        controls:ButtonHelper.PreserveTextCase="True"
+                        Command="{Binding RestartCommand}"
+                        Content="{lex:LocText Restart}"
+                        Style="{StaticResource SquareButtonStyle}" />
+                </StackPanel>
             </StackPanel>
         </Grid>
     </Grid>

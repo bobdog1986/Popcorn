@@ -107,6 +107,11 @@ namespace Popcorn.ViewModels.Windows
         private bool _isSettingsFlyoutOpen;
 
         /// <summary>
+        /// If an update is available
+        /// </summary>
+        private bool _updateAvailable;
+
+        /// <summary>
         /// Application state
         /// </summary>
         private IApplicationService _applicationService;
@@ -199,6 +204,14 @@ namespace Popcorn.ViewModels.Windows
             set { Set(() => IsShowFlyoutOpen, ref _isShowFlyoutOpen, value); }
         }
 
+        /// <summary>
+        /// If an update is available
+        /// </summary>
+        public bool UpdateAvailable
+        {
+            get => _updateAvailable;
+            set { Set(() => UpdateAvailable, ref _updateAvailable, value); }
+        }
         /// <summary>
         /// Media player
         /// </summary>
@@ -477,6 +490,11 @@ namespace Popcorn.ViewModels.Windows
 
             Messenger.Default.Register<UnhandledExceptionMessage>(this, message => ManageException(message.Exception));
 
+            Messenger.Default.Register<UpdateAvailableMessage>(this, message =>
+            {
+                UpdateAvailable = true;
+            });
+
             _castMediaMessage = Messenger.Default.RegisterAsyncMessage<CastMediaMessage>(async message =>
             {
                 var vm = new ChromecastDialogViewModel(message);
@@ -712,7 +730,7 @@ namespace Popcorn.ViewModels.Windows
                 await _dialogCoordinator.ShowMetroDialogAsync(this, welcomeDialog);
             });
 
-            InitializeAsyncCommand = new RelayCommand(async () =>
+            InitializeAsyncCommand = new RelayCommand(() =>
             {
                 var cmd = Environment.GetCommandLineArgs();
                 if (cmd.Any() && cmd.Contains("restart"))
@@ -774,10 +792,6 @@ namespace Popcorn.ViewModels.Windows
                 {
                     Logger.Error(ex);
                 }
-                
-#if !DEBUG
-                await StartUpdateProcessAsync();
-#endif
             });
         }
 
@@ -840,88 +854,6 @@ namespace Popcorn.ViewModels.Windows
             {
                 FileHelper.DeleteFolder(Constants.MovieTorrentDownloads);
             }
-        }
-
-        /// <summary>
-        /// Look for update then download and apply if any
-        /// </summary>
-        private async Task StartUpdateProcessAsync()
-        {
-            var watchStart = Stopwatch.StartNew();
-
-            Logger.Info(
-                "Looking for updates...");
-            try
-            {
-                using (var updateManager = await UpdateManager.GitHubUpdateManager(Constants.GithubRepository))
-                {
-                    var updateInfo = await updateManager.CheckForUpdate();
-                    if (updateInfo == null)
-                    {
-                        Logger.Error(
-                            "Problem while trying to check new updates.");
-                        return;
-                    }
-
-                    if (updateInfo.ReleasesToApply.Any())
-                    {
-                        Logger.Info(
-                            $"A new update has been found!\n Currently installed version: {updateInfo.CurrentlyInstalledVersion?.Version?.Version.Major}.{updateInfo.CurrentlyInstalledVersion?.Version?.Version.Minor}.{updateInfo.CurrentlyInstalledVersion?.Version?.Version.Build} - New update: {updateInfo.FutureReleaseEntry?.Version?.Version.Major}.{updateInfo.FutureReleaseEntry?.Version?.Version.Minor}.{updateInfo.FutureReleaseEntry?.Version?.Version.Build}");
-
-                        await updateManager.DownloadReleases(updateInfo.ReleasesToApply);
-                        var latestExe = await updateManager.ApplyReleases(updateInfo);
-
-                        Logger.Info(
-                            "A new update has been applied.");
-
-                        var releaseInfos = string.Empty;
-                        foreach (var releaseInfo in updateInfo.FetchReleaseNotes())
-                        {
-                            var info = releaseInfo.Value;
-
-                            var pFrom = info.IndexOf("<p>", StringComparison.InvariantCulture) + "<p>".Length;
-                            var pTo = info.LastIndexOf("</p>", StringComparison.InvariantCulture);
-
-                            releaseInfos = string.Concat(releaseInfos, info.Substring(pFrom, pTo - pFrom),
-                                Environment.NewLine);
-                        }
-
-                        var updateDialog =
-                            new UpdateDialog(
-                                new UpdateDialogSettings(
-                                    LocalizationProviderHelper.GetLocalizedValue<string>("NewUpdateLabel"),
-                                    LocalizationProviderHelper.GetLocalizedValue<string>("NewUpdateDescriptionLabel"),
-                                    releaseInfos));
-                        await _dialogCoordinator.ShowMetroDialogAsync(this, updateDialog);
-                        var updateDialogResult = await updateDialog.WaitForButtonPressAsync();
-                        await _dialogCoordinator.HideMetroDialogAsync(this, updateDialog);
-
-                        if (!updateDialogResult.Restart) return;
-
-                        Logger.Info(
-                            "Restarting...");
-
-                        Process.Start($@"{latestExe}\Popcorn.exe", "restart");
-                        Application.Current.Shutdown();
-                    }
-                    else
-                    {
-                        Logger.Info(
-                            "No update available.");
-                        return;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(
-                    $"Something went wrong when trying to update app. {ex.Message}");
-            }
-
-            watchStart.Stop();
-            var elapsedStartMs = watchStart.ElapsedMilliseconds;
-            Logger.Info(
-                $"Finished looking for updates in {elapsedStartMs}.");
         }
 
         /// <summary>

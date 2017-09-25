@@ -42,6 +42,7 @@
     <Window.Resources>
         <ResourceDictionary>
             <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+            <converters:BoolToInverseVisibilityConverter x:Key="BoolToInverseVisibilityConverter" />
 
             <Style TargetType="{x:Type controls:WindowButtonCommands}">
                 <Setter Property="Foreground" Value="White" />
@@ -83,11 +84,23 @@
     <controls:MetroWindow.RightWindowCommands>
         <controls:WindowCommands Visibility="{Binding ApplicationService.IsMediaPlaying, Converter={StaticResource BoolToVisibilityConverter}}">
             <StackPanel Orientation="Horizontal">
+                <controls:Badged
+                    Margin="0,12,5,0"
+                    Badge="1"
+                    BadgePlacementMode="TopRight"
+                    Visibility="{Binding UpdateAvailable, Converter={StaticResource BoolToInverseVisibilityConverter}}">
+                    <Button
+                        Command="{Binding OpenSettingsCommand}"
+                        Content="{lex:LocText SettingsMenuTitle}"
+                        Foreground="White"
+                        ToolTip="{lex:LocText SettingsMenuTitle}" />
+                </controls:Badged>
                 <Button
                     Command="{Binding OpenSettingsCommand}"
                     Content="{lex:LocText SettingsMenuTitle}"
                     Foreground="White"
-                    ToolTip="{lex:LocText SettingsMenuTitle}" />
+                    ToolTip="{lex:LocText SettingsMenuTitle}"
+                    Visibility="{Binding UpdateAvailable, Converter={StaticResource BoolToVisibilityConverter}}" />
                 <Button
                     Command="{Binding OpenAboutCommand}"
                     Content="{lex:LocText AboutLabel}"

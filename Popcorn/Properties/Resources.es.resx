@@ -447,4 +447,16 @@
   <data name="DiscoverTitleTab" xml:space="preserve">
     <value>Descubrir</value>
   </data>
+  <data name="ApplyingUpdate" xml:space="preserve">
+    <value>Se está realizando una nueva actualización ... %PERCENTAGE% hecho.</value>
+  </data>
+  <data name="DownloadingUpdate" xml:space="preserve">
+    <value>Se está descargando una nueva actualización ... %PERCENTAGE% hecho.</value>
+  </data>
+  <data name="Restart" xml:space="preserve">
+    <value>Reanudar</value>
+  </data>
+  <data name="UpdateApplied" xml:space="preserve">
+    <value>Se ha aplicado una nueva actualización</value>
+  </data>
 </root>

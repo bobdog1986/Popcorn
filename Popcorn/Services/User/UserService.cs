@@ -463,7 +463,15 @@ namespace Popcorn.Services.User
             User.Language.Culture = language.Culture;
             MovieService.ChangeTmdbLanguage(language);
             ShowService.ChangeTmdbLanguage(language);
-            LocalizeDictionary.Instance.Culture = new CultureInfo(language.Culture);
+            try
+            {
+                LocalizeDictionary.Instance.Culture = new CultureInfo(language.Culture);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+
             Messenger.Default.Send(new ChangeLanguageMessage());
         }
     }

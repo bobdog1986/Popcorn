@@ -88,6 +88,15 @@ namespace Popcorn.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à A new update is applying... %PERCENTAGE% done..
+        /// </summary>
+        public static string ApplyingUpdate {
+            get {
+                return ResourceManager.GetString("ApplyingUpdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Average.
         /// </summary>
         public static string AverageLabel {
@@ -336,6 +345,15 @@ namespace Popcorn.Properties {
         public static string DownloadingSubtitlesLabel {
             get {
                 return ResourceManager.GetString("DownloadingSubtitlesLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à A new update is downloading... %PERCENTAGE% done..
+        /// </summary>
+        public static string DownloadingUpdate {
+            get {
+                return ResourceManager.GetString("DownloadingUpdate", resourceCulture);
             }
         }
         
@@ -790,6 +808,15 @@ namespace Popcorn.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Restart.
+        /// </summary>
+        public static string Restart {
+            get {
+                return ResourceManager.GetString("Restart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Save.
         /// </summary>
         public static string SaveButton {
@@ -975,6 +1002,15 @@ namespace Popcorn.Properties {
         public static string UnknownLabel {
             get {
                 return ResourceManager.GetString("UnknownLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à A new update has been applied..
+        /// </summary>
+        public static string UpdateApplied {
+            get {
+                return ResourceManager.GetString("UpdateApplied", resourceCulture);
             }
         }
         

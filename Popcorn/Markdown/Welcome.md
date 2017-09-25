@@ -1,2 +1,2 @@
 ﻿# Welcome to Popcorn
-![Home](https://github.com/bbougot/Popcorn/blob/master/Screenshots/Screen1.jpg)
+![Home](https://raw.githubusercontent.com/bbougot/Popcorn/master/Screenshots/Screen1.jpg)
