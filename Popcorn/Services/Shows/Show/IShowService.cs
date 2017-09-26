@@ -19,15 +19,17 @@ namespace Popcorn.Services.Shows.Show
         /// Get show by its Imdb code
         /// </summary>
         /// <param name="imdbId">Show's Imdb code</param>
+        /// <param name="ct">Cancellation</param>
         /// <returns>The show</returns>
-        Task<ShowJson> GetShowAsync(string imdbId);
+        Task<ShowJson> GetShowAsync(string imdbId, CancellationToken ct);
 
         /// <summary>
         /// Get show light by its Imdb code
         /// </summary>
         /// <param name="imdbId">Show's Imdb code</param>
+        /// <param name="ct">Cancellation</param>
         /// <returns>The show</returns>
-        Task<ShowLightJson> GetShowLightAsync(string imdbId);
+        Task<ShowLightJson> GetShowLightAsync(string imdbId, CancellationToken ct);
 
         /// <summary>
         /// Get popular shows by page
@@ -70,12 +72,5 @@ namespace Popcorn.Services.Shows.Show
         /// <param name="ct">Used to cancel loading trailer</param>
         /// <returns>Video trailer</returns>
         Task<string> GetShowTrailerAsync(ShowJson show, CancellationToken ct);
-
-        /// <summary>
-        /// Get recommendations by page
-        /// </summary>
-        /// <param name="page"></param>
-        /// <returns></returns>
-        Task<(IEnumerable<ShowLightJson>, int nbMovies)> Discover(int page);
     }
 }

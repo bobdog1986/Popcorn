@@ -405,13 +405,10 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
 
             Messenger.Default.Register<ChangeLanguageMessage>(
                 this,
-                async message =>
+                message =>
                 {
-                    await Task.Run(async () =>
-                    {
-                        if (!string.IsNullOrEmpty(Movie?.ImdbCode))
-                            await _movieService.TranslateMovieAsync(Movie).ConfigureAwait(false);
-                    }).ConfigureAwait(false);
+                    if (!string.IsNullOrEmpty(Movie?.ImdbCode))
+                        _movieService.TranslateMovie(Movie);
                 });
 
             Messenger.Default.Register<PropertyChangedMessage<bool>>(this, e =>
@@ -426,7 +423,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
         /// </summary>
         private void RegisterCommands()
         {
-            LoadMovieCommand = new RelayCommand<IMovie>(async movie => await LoadMovie(movie).ConfigureAwait(false));
+            LoadMovieCommand = new RelayCommand<IMovie>(async movie => await LoadMovie(movie, CancellationLoadingToken.Token).ConfigureAwait(false));
 
             PlayMovieCommand = new RelayCommand(() =>
             {
@@ -452,7 +449,8 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
         /// Load the requested movie
         /// </summary>
         /// <param name="movie">The movie to load</param>
-        private async Task LoadMovie(IMovie movie)
+        /// <param name="ct">Cancellation</param>
+        private async Task LoadMovie(IMovie movie, CancellationToken ct)
         {
             var watch = Stopwatch.StartNew();
             try
@@ -463,8 +461,8 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
                 SimilarMovies.Clear();
                 await Task.Run(async () =>
                 {
-                    Movie = await _movieService.GetMovieAsync(movie.ImdbCode).ConfigureAwait(false);
-                    await _movieService.TranslateMovieAsync(Movie).ConfigureAwait(false);
+                    Movie = await _movieService.GetMovieAsync(movie.ImdbCode, ct).ConfigureAwait(false);
+                    _movieService.TranslateMovie(Movie);
                     IsMovieLoading = false;
                     Movie.FullHdAvailable = Movie.Torrents.Any(torrent => torrent.Quality == "1080p");
                     var applicationSettings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
@@ -475,7 +473,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
                         async () =>
                         {
                             LoadingSimilar = true;
-                            var similars = await _movieService.GetMoviesSimilarAsync(Movie).ConfigureAwait(false);
+                            var similars = await _movieService.GetMoviesSimilarAsync(Movie, ct).ConfigureAwait(false);
                             DispatcherHelper.CheckBeginInvokeOnUI(() =>
                             {
                                 SimilarMovies.AddRange(similars);

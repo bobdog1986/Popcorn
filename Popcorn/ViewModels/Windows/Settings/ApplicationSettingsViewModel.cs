@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using Enterwell.Clients.Wpf.Notifications;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
+using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using NLog;
@@ -109,11 +111,6 @@ namespace Popcorn.ViewModels.Windows.Settings
         /// Command used to show the Trakt dialog
         /// </summary>
         private ICommand _showTraktDialogCommand;
-        
-        /// <summary>
-        /// Command used to restart app
-        /// </summary>
-        private ICommand _restartCommand;
 
         /// <summary>
         /// Command used to change subtitle color
@@ -156,12 +153,18 @@ namespace Popcorn.ViewModels.Windows.Settings
         private string _updateFilePath;
 
         /// <summary>
+        /// Notification manager
+        /// </summary>
+        private readonly NotificationMessageManager _manager;
+
+        /// <summary>
         /// Initializes a new instance of the ApplicationSettingsViewModel class.
         /// </summary>
         /// <param name="userService">User service</param>
         /// <param name="subtitlesService">Subtitles service</param>
-        public ApplicationSettingsViewModel(IUserService userService, ISubtitlesService subtitlesService)
+        public ApplicationSettingsViewModel(IUserService userService, ISubtitlesService subtitlesService, NotificationMessageManager manager)
         {
+            _manager = manager;
             _userService = userService;
             _subtitlesService = subtitlesService;
             Version = Constants.AppVersion;
@@ -378,16 +381,7 @@ namespace Popcorn.ViewModels.Windows.Settings
         /// Update size cache
         /// </summary>
         public RelayCommand UpdateCacheSizeCommand { get; private set; }
-
-        /// <summary>
-        /// Restart app
-        /// </summary>
-        public ICommand RestartCommand
-        {
-            get => _restartCommand;
-            set => Set(ref _restartCommand, value);
-        }
-
+        
         /// <summary>
         /// Change subtitle
         /// </summary>
@@ -543,6 +537,23 @@ namespace Popcorn.ViewModels.Windows.Settings
                         UpdateApplied = true;
                         Logger.Info(
                             "A new update has been applied.");
+                        _manager.CreateMessage()
+                            .Accent("#1751C3")
+                            .Background("#333")
+                            .HasBadge("Info")
+                            .HasMessage(LocalizationProviderHelper.GetLocalizedValue<string>("UpdateApplied"))
+                            .Dismiss().WithButton(LocalizationProviderHelper.GetLocalizedValue<string>("Restart"),
+                                button =>
+                                {
+                                    Logger.Info(
+                                        "Restarting...");
+
+                                    Process.Start($@"{_updateFilePath}\Popcorn.exe", "restart");
+                                    Application.Current.Shutdown();
+                                })
+                            .Dismiss().WithButton(LocalizationProviderHelper.GetLocalizedValue<string>("LaterLabel"),
+                                button => { })
+                            .Queue();
                     }
                     else
                     {
@@ -584,15 +595,6 @@ namespace Popcorn.ViewModels.Windows.Settings
             ChangeSubtitleColorCommand = new RelayCommand<EventArgs<Color>>(args =>
             {
                 SubtitlesColor = args.Value;
-            });
-
-            RestartCommand = new RelayCommand(() =>
-            {
-                Logger.Info(
-                    "Restarting...");
-
-                Process.Start($@"{_updateFilePath}\Popcorn.exe", "restart");
-                Application.Current.Shutdown();
             });
         }
 

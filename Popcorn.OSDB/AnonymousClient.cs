@@ -24,9 +24,13 @@ namespace Popcorn.OSDB
 
         internal void Login(string username, string password, string language, string userAgent)
         {
-            var response = Proxy.Login(username, password, language, userAgent);
-            VerifyResponseCode(response);
-            Token = response.token;
+            try
+            {
+                var response = Proxy.Login(username, password, language, userAgent);
+                VerifyResponseCode(response);
+                Token = response.token;
+            }
+            catch (Exception) { }
         }
 
         public Task<IList<Subtitle>> SearchSubtitlesFromImdb(string languages, string imdbId, int? season, int? episode)

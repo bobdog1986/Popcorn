@@ -311,18 +311,6 @@
                         Minimum="0"
                         Value="{Binding UpdateApplyProgress}" />
                 </StackPanel>
-                <StackPanel
-                    Margin="15,0,0,0"
-                    Orientation="Vertical"
-                    Visibility="{Binding UpdateApplied, Converter={StaticResource BoolToInverseVisibilityConverter}}">
-                    <TextBlock Text="{lex:LocText UpdateApplied}" />
-                    <Button
-                        Margin="0,2.5,0,0"
-                        controls:ButtonHelper.PreserveTextCase="True"
-                        Command="{Binding RestartCommand}"
-                        Content="{lex:LocText Restart}"
-                        Style="{StaticResource SquareButtonStyle}" />
-                </StackPanel>
             </StackPanel>
         </Grid>
     </Grid>

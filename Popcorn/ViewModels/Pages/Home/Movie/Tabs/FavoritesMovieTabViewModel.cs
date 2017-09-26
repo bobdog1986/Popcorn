@@ -3,6 +3,7 @@ using System.Collections.Async;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
@@ -48,7 +49,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
         /// </summary>
         public override async Task LoadMoviesAsync(bool reset = false)
         {
-            await LoadingSemaphore.WaitAsync();
+            await LoadingSemaphore.WaitAsync(CancellationLoadingMovies.Token);
             StopLoadingMovies();
             if (reset)
             {
@@ -79,7 +80,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                     {
                         try
                         {
-                            var movie = await MovieService.GetMovieLightAsync(imdbId);
+                            var movie = await MovieService.GetMovieLightAsync(imdbId, CancellationLoadingMovies.Token);
                             if (movie != null)
                             {
                                 movie.IsFavorite = true;
@@ -90,7 +91,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                         {
                             Logger.Error(ex);
                         }
-                    });
+                    }, CancellationLoadingMovies.Token);
                     var updatedMovies = movies.OrderBy(a => a.Title)
                         .Where(a => (Genre == null || a.Genres.Contains(Genre.EnglishName)) &&
                                     a.Rating >= Rating);
@@ -125,7 +126,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                     {
                         try
                         {
-                            var movie = await MovieService.GetMovieLightAsync(imdbId);
+                            var movie = await MovieService.GetMovieLightAsync(imdbId, CancellationLoadingMovies.Token);
                             if ((Genre == null || movie.Genres.Contains(Genre.EnglishName)) && movie.Rating >= Rating)
                             {
                                 moviesToAddAndToOrder.Add(movie);
@@ -135,7 +136,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                         {
                             Logger.Error(ex);
                         }
-                    });
+                    }, CancellationLoadingMovies.Token);
 
                     foreach (var movie in moviesToAddAndToOrder.Except(Movies.ToList(), new MovieLightComparer()))
                     {

@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Navigation;
 using Akavache;
 using CefSharp;
+using Enterwell.Clients.Wpf.Notifications;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Ioc;
@@ -21,6 +22,7 @@ using Microsoft.Owin.Hosting;
 using Microsoft.Win32;
 using NetFwTypeLib;
 using NLog;
+using Polly.Timeout;
 using Popcorn.Dialogs;
 using Popcorn.Extensions;
 using Popcorn.Helpers;
@@ -87,11 +89,6 @@ namespace Popcorn.ViewModels.Windows
         private readonly IDialogCoordinator _dialogCoordinator;
 
         /// <summary>
-        /// Specify if an exception is curently managed
-        /// </summary>
-        private bool _isManagingException;
-
-        /// <summary>
         /// Specify if movie flyout is open
         /// </summary>
         private bool _isMovieFlyoutOpen;
@@ -142,13 +139,21 @@ namespace Popcorn.ViewModels.Windows
         public NavigationService NavigationService { get; set; }
 
         /// <summary>
+        /// The notification manager
+        /// </summary>
+        private readonly NotificationMessageManager _manager;
+
+        /// <summary>
         /// Initializes a new instance of the WindowViewModel class.
         /// </summary>
         /// <param name="applicationService">Instance of Application state</param>
         /// <param name="userService">Instance of movie history service</param>
         /// <param name="subtitlesService">Instance of subtitles service</param>
-        public WindowViewModel(IApplicationService applicationService, IUserService userService, ISubtitlesService subtitlesService)
+        /// <param name="manager">The notification manager</param>
+        public WindowViewModel(IApplicationService applicationService, IUserService userService,
+            ISubtitlesService subtitlesService, NotificationMessageManager manager)
         {
+            _manager = manager;
             _subtitlesService = subtitlesService;
             _userService = userService;
             _dialogCoordinator = DialogCoordinator.Instance;
@@ -212,6 +217,7 @@ namespace Popcorn.ViewModels.Windows
             get => _updateAvailable;
             set { Set(() => UpdateAvailable, ref _updateAvailable, value); }
         }
+
         /// <summary>
         /// Media player
         /// </summary>
@@ -287,7 +293,8 @@ namespace Popcorn.ViewModels.Windows
             Messenger.Default.Register<PlayShowEpisodeMessage>(this, message => DispatcherHelper.CheckBeginInvokeOnUI(
                 async () =>
                 {
-                    MediaPlayer = new MediaPlayerViewModel(_subtitlesService, _applicationService, message.Episode.FilePath,
+                    MediaPlayer = new MediaPlayerViewModel(_subtitlesService, _applicationService,
+                        message.Episode.FilePath,
                         message.Episode.Title,
                         MediaType.Show,
                         () =>
@@ -319,91 +326,100 @@ namespace Popcorn.ViewModels.Windows
                     IgnoreTaskbarOnMaximize = true;
                 }));
 
-            Messenger.Default.Register<PlayMediaMessage>(this, message => DispatcherHelper.CheckBeginInvokeOnUI(async () =>
-            {
-                MediaPlayer = new MediaPlayerViewModel(_subtitlesService, _applicationService, message.MediaPath, message.MediaPath,
-                    MediaType.Unkown,
-                    () =>
+            Messenger.Default.Register<PlayMediaMessage>(this, message => DispatcherHelper.CheckBeginInvokeOnUI(
+                async () =>
+                {
+                    MediaPlayer = new MediaPlayerViewModel(_subtitlesService, _applicationService, message.MediaPath,
+                        message.MediaPath,
+                        MediaType.Unkown,
+                        () =>
+                        {
+                            Messenger.Default.Send(new StopPlayMediaMessage());
+                        },
+                        () =>
+                        {
+                            Messenger.Default.Send(new StopPlayMediaMessage());
+                        },
+                        message.BufferProgress,
+                        message.BandwidthRate);
+
+                    ApplicationService.IsMediaPlaying = true;
+                    IsShowFlyoutOpen = false;
+                    IsMovieFlyoutOpen = false;
+                    if (NavigationService.CurrentSource.OriginalString == "Popcorn;component/Pages/PlayerPage.xaml")
                     {
-                        Messenger.Default.Send(new StopPlayMediaMessage());
-                    },
-                    () =>
+                        NavigationService.Refresh();
+                    }
+                    else
                     {
-                        Messenger.Default.Send(new StopPlayMediaMessage());
-                    },
-                    message.BufferProgress,
-                    message.BandwidthRate);
+                        NavigationService.Navigate(new Uri("Popcorn;component/Pages/PlayerPage.xaml",
+                            UriKind.Relative));
+                    }
 
-                ApplicationService.IsMediaPlaying = true;
-                IsShowFlyoutOpen = false;
-                IsMovieFlyoutOpen = false;
-                if (NavigationService.CurrentSource.OriginalString == "Popcorn;component/Pages/PlayerPage.xaml")
+                    await Task.Delay(500);
+                    IgnoreTaskbarOnMaximize = true;
+                }));
+
+            Messenger.Default.Register<PlayMovieMessage>(this, message => DispatcherHelper.CheckBeginInvokeOnUI(
+                async () =>
                 {
-                    NavigationService.Refresh();
-                }
-                else
-                {
-                    NavigationService.Navigate(new Uri("Popcorn;component/Pages/PlayerPage.xaml", UriKind.Relative));
-                }
+                    MediaPlayer = new MediaPlayerViewModel(_subtitlesService, _applicationService,
+                        message.Movie.FilePath, message.Movie.Title,
+                        MediaType.Movie,
+                        () =>
+                        {
+                            Messenger.Default.Send(new StopPlayingMovieMessage());
+                        },
+                        () =>
+                        {
+                            _userService.SetMovie(message.Movie);
+                            Messenger.Default.Send(new ChangeSeenMovieMessage());
+                            Messenger.Default.Send(new StopPlayingMovieMessage());
+                        },
+                        message.BufferProgress,
+                        message.BandwidthRate,
+                        message.Movie.SelectedSubtitle?.FilePath,
+                        message.Movie.AvailableSubtitles);
 
-                await Task.Delay(500);
-                IgnoreTaskbarOnMaximize = true;
-            }));
-
-            Messenger.Default.Register<PlayMovieMessage>(this, message => DispatcherHelper.CheckBeginInvokeOnUI(async () =>
-            {
-                MediaPlayer = new MediaPlayerViewModel(_subtitlesService, _applicationService, message.Movie.FilePath, message.Movie.Title,
-                    MediaType.Movie,
-                    () =>
+                    ApplicationService.IsMediaPlaying = true;
+                    IsMovieFlyoutOpen = false;
+                    if (NavigationService.CurrentSource.OriginalString == "Popcorn;component/Pages/PlayerPage.xaml")
                     {
-                        Messenger.Default.Send(new StopPlayingMovieMessage());
-                    },
-                    () =>
+                        NavigationService.Refresh();
+                    }
+                    else
                     {
-                        _userService.SetMovie(message.Movie);
-                        Messenger.Default.Send(new ChangeSeenMovieMessage());
-                        Messenger.Default.Send(new StopPlayingMovieMessage());
-                    },
-                    message.BufferProgress,
-                    message.BandwidthRate,
-                    message.Movie.SelectedSubtitle?.FilePath,
-                    message.Movie.AvailableSubtitles);
+                        NavigationService.Navigate(new Uri("Popcorn;component/Pages/PlayerPage.xaml",
+                            UriKind.Relative));
+                    }
 
-                ApplicationService.IsMediaPlaying = true;
-                IsMovieFlyoutOpen = false;
-                if (NavigationService.CurrentSource.OriginalString == "Popcorn;component/Pages/PlayerPage.xaml")
-                {
-                    NavigationService.Refresh();
-                }
-                else
-                {
-                    NavigationService.Navigate(new Uri("Popcorn;component/Pages/PlayerPage.xaml", UriKind.Relative));
-                }
+                    await Task.Delay(500);
+                    IgnoreTaskbarOnMaximize = true;
+                }));
 
-                await Task.Delay(500);
-                IgnoreTaskbarOnMaximize = true;
-            }));
-
-            Messenger.Default.Register<PlayTrailerMessage>(this, message => DispatcherHelper.CheckBeginInvokeOnUI(async () =>
-            {
-                MediaPlayer = new MediaPlayerViewModel(_subtitlesService, _applicationService, message.TrailerUrl, message.MovieTitle,
-                    MediaType.Trailer,
-                    message.TrailerStoppedAction, message.TrailerEndedAction);
-                ApplicationService.IsMediaPlaying = true;
-                IsMovieFlyoutOpen = false;
-                IsShowFlyoutOpen = false;
-                if (NavigationService.CurrentSource.OriginalString == "Popcorn;component/Pages/PlayerPage.xaml")
+            Messenger.Default.Register<PlayTrailerMessage>(this, message => DispatcherHelper.CheckBeginInvokeOnUI(
+                async () =>
                 {
-                    NavigationService.Refresh();
-                }
-                else
-                {
-                    NavigationService.Navigate(new Uri("Popcorn;component/Pages/PlayerPage.xaml", UriKind.Relative));
-                }
+                    MediaPlayer = new MediaPlayerViewModel(_subtitlesService, _applicationService, message.TrailerUrl,
+                        message.MovieTitle,
+                        MediaType.Trailer,
+                        message.TrailerStoppedAction, message.TrailerEndedAction);
+                    ApplicationService.IsMediaPlaying = true;
+                    IsMovieFlyoutOpen = false;
+                    IsShowFlyoutOpen = false;
+                    if (NavigationService.CurrentSource.OriginalString == "Popcorn;component/Pages/PlayerPage.xaml")
+                    {
+                        NavigationService.Refresh();
+                    }
+                    else
+                    {
+                        NavigationService.Navigate(new Uri("Popcorn;component/Pages/PlayerPage.xaml",
+                            UriKind.Relative));
+                    }
 
-                await Task.Delay(500);
-                IgnoreTaskbarOnMaximize = true;
-            }));
+                    await Task.Delay(500);
+                    IgnoreTaskbarOnMaximize = true;
+                }));
 
             Messenger.Default.Register<StopPlayingTrailerMessage>(this, message =>
             {
@@ -520,32 +536,33 @@ namespace Popcorn.ViewModels.Windows
                 await cts.Task;
             });
 
-            _showSubtitleDialogMessage = Messenger.Default.RegisterAsyncMessage<ShowSubtitleDialogMessage>(async message =>
-            {
-                var vm = new SubtitleDialogViewModel(message.Subtitles, message.CurrentSubtitle);
-                var subtitleDialog = new SubtitleDialog
+            _showSubtitleDialogMessage = Messenger.Default.RegisterAsyncMessage<ShowSubtitleDialogMessage>(
+                async message =>
                 {
-                    DataContext = vm
-                };
+                    var vm = new SubtitleDialogViewModel(message.Subtitles, message.CurrentSubtitle);
+                    var subtitleDialog = new SubtitleDialog
+                    {
+                        DataContext = vm
+                    };
 
-                var cts = new TaskCompletionSource<object>();
-                vm.OnCloseAction = async () =>
-                {
-                    try
+                    var cts = new TaskCompletionSource<object>();
+                    vm.OnCloseAction = async () =>
                     {
-                        message.SelectedSubtitle = vm.SelectedSubtitle?.Sub;
-                        await _dialogCoordinator.HideMetroDialogAsync(this, subtitleDialog);
-                        cts.TrySetResult(null);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Error(ex);
-                        cts.TrySetException(ex);
-                    }
-                };
-                await _dialogCoordinator.ShowMetroDialogAsync(this, subtitleDialog);
-                await cts.Task;
-            });
+                        try
+                        {
+                            message.SelectedSubtitle = vm.SelectedSubtitle?.Sub;
+                            await _dialogCoordinator.HideMetroDialogAsync(this, subtitleDialog);
+                            cts.TrySetResult(null);
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Error(ex);
+                            cts.TrySetException(ex);
+                        }
+                    };
+                    await _dialogCoordinator.ShowMetroDialogAsync(this, subtitleDialog);
+                    await cts.Task;
+                });
 
             _showTraktDialogMessage = Messenger.Default.RegisterAsyncMessage<ShowTraktDialogMessage>(async message =>
             {
@@ -608,7 +625,8 @@ namespace Popcorn.ViewModels.Windows
             {
                 Messenger.Default.Send(new StopPlayingTrailerMessage(MediaType.Movie));
                 IsMovieFlyoutOpen = false;
-                if (NavigationService.CurrentSource.OriginalString != "Pages/HomePage.xaml" && NavigationService.CanGoBack)
+                if (NavigationService.CurrentSource.OriginalString != "Pages/HomePage.xaml" &&
+                    NavigationService.CanGoBack)
                 {
                     NavigationService.GoBack();
                 }
@@ -618,7 +636,8 @@ namespace Popcorn.ViewModels.Windows
             {
                 Messenger.Default.Send(new StopPlayingTrailerMessage(MediaType.Show));
                 IsShowFlyoutOpen = false;
-                if (NavigationService.CurrentSource.OriginalString != "Pages/HomePage.xaml" && NavigationService.CanGoBack)
+                if (NavigationService.CurrentSource.OriginalString != "Pages/HomePage.xaml" &&
+                    NavigationService.CanGoBack)
                 {
                     NavigationService.GoBack();
                 }
@@ -800,7 +819,7 @@ namespace Popcorn.ViewModels.Windows
             try
             {
                 Type tNetFwPolicy2 = Type.GetTypeFromProgID("HNetCfg.FwPolicy2");
-                INetFwPolicy2 fwPolicy2 = (INetFwPolicy2)Activator.CreateInstance(tNetFwPolicy2);
+                INetFwPolicy2 fwPolicy2 = (INetFwPolicy2) Activator.CreateInstance(tNetFwPolicy2);
                 foreach (INetFwRule rule in fwPolicy2.Rules)
                 {
                     if (rule.Name.IndexOf(ruleName, StringComparison.Ordinal) != -1)
@@ -877,27 +896,42 @@ namespace Popcorn.ViewModels.Windows
         /// <param name="exception">The exception to manage</param>
         private void ManageException(Exception exception)
         {
-            if (_isManagingException)
-                return;
-
-            _isManagingException = true;
-            IsMovieFlyoutOpen = false;
-            IsSettingsFlyoutOpen = false;
-
-            if (exception is WebException || exception is SocketException)
-                _applicationService.IsConnectionInError = true;
-
-            DispatcherHelper.CheckBeginInvokeOnUI(async () =>
+            DispatcherHelper.CheckBeginInvokeOnUI(() =>
             {
-                var exceptionDialog =
-                    new ExceptionDialog(
-                        new ExceptionDialogSettings(
-                            LocalizationProviderHelper.GetLocalizedValue<string>("EmbarrassingError"),
-                            exception.Message));
-                await _dialogCoordinator.ShowMetroDialogAsync(this, exceptionDialog);
-                await exceptionDialog.WaitForButtonPressAsync();
-                _isManagingException = false;
-                await _dialogCoordinator.HideMetroDialogAsync(this, exceptionDialog);
+                IsMovieFlyoutOpen = false;
+                IsShowFlyoutOpen = false;
+                IsSettingsFlyoutOpen = false;
+
+                if (exception is WebException || exception is SocketException || exception is TimeoutRejectedException)
+                {
+                    _applicationService.IsConnectionInError = true;
+                    _manager.CreateMessage()
+                        .Accent("#E82C0C")
+                        .Background("#333")
+                        .HasBadge("Error")
+                        .HasMessage(LocalizationProviderHelper.GetLocalizedValue<string>("EmbarrassingError"))
+                        .HasMessage(LocalizationProviderHelper.GetLocalizedValue<string>("ConnectionErrorDescriptionPopup"))
+                        .Dismiss().WithButton(LocalizationProviderHelper.GetLocalizedValue<string>("Ignore"),
+                            button => { })
+                        .Queue();
+                }
+                else
+                {
+                    _manager.CreateMessage()
+                        .Accent("#E82C0C")
+                        .Background("#333")
+                        .HasBadge("Error")
+                        .HasMessage(LocalizationProviderHelper.GetLocalizedValue<string>("EmbarrassingError"))
+                        .HasMessage(exception.Message)
+                        .WithButton(LocalizationProviderHelper.GetLocalizedValue<string>("Restart"), button =>
+                        {
+                            Process.Start(Application.ResourceAssembly.Location);
+                            Application.Current.Shutdown();
+                        })
+                        .Dismiss().WithButton(LocalizationProviderHelper.GetLocalizedValue<string>("Ignore"),
+                            button => { })
+                        .Queue();
+                }
             });
         }
 

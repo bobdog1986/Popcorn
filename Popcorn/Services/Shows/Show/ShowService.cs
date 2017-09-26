@@ -13,6 +13,8 @@ using TMDbLib.Client;
 using Popcorn.Models.User;
 using System.Linq;
 using GalaSoft.MvvmLight.Ioc;
+using Polly;
+using Polly.Timeout;
 using Popcorn.Utils.Exceptions;
 using Popcorn.ViewModels.Windows.Settings;
 using Popcorn.YTVideoProvider;
@@ -58,9 +60,9 @@ namespace Popcorn.Services.Shows.Show
                 {
                     TmdbClient.GetConfig();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    // An issue occured with TmdbClient
+                    Logger.Error(ex);
                 }
             });
         }
@@ -70,42 +72,56 @@ namespace Popcorn.Services.Shows.Show
         /// </summary>
         /// <param name="imdbId">Show's Imdb code</param>
         /// <returns>The show</returns>
-        public async Task<ShowJson> GetShowAsync(string imdbId)
+        public async Task<ShowJson> GetShowAsync(string imdbId, CancellationToken ct)
         {
-            var watch = Stopwatch.StartNew();
-            var restClient = new RestClient(Utils.Constants.PopcornApi);
-            var request = new RestRequest("/{segment}/{show}", Method.GET);
-            request.AddUrlSegment("segment", "shows");
-            request.AddUrlSegment("show", imdbId);
-            var show = new ShowJson();
+            var timeoutPolicy =
+                Policy.TimeoutAsync(5, TimeoutStrategy.Pessimistic);
             try
             {
-                var response = await restClient.ExecuteTaskAsync<ShowJson>(request).ConfigureAwait(false);
-                if (response.ErrorException != null)
-                    throw response.ErrorException;
+                return await timeoutPolicy.ExecuteAsync(async cancellation =>
+                {
+                    var watch = Stopwatch.StartNew();
+                    var restClient = new RestClient(Utils.Constants.PopcornApi);
+                    var request = new RestRequest("/{segment}/{show}", Method.GET);
+                    request.AddUrlSegment("segment", "shows");
+                    request.AddUrlSegment("show", imdbId);
+                    var show = new ShowJson();
+                    try
+                    {
+                        var response = await restClient.ExecuteTaskAsync<ShowJson>(request, cancellation)
+                            .ConfigureAwait(false);
+                        if (response.ErrorException != null)
+                            throw response.ErrorException;
 
-                show = response.Data;
+                        show = response.Data;
+                    }
+                    catch (Exception exception) when (exception is TaskCanceledException)
+                    {
+                        Logger.Debug(
+                            "GetShowAsync cancelled.");
+                    }
+                    catch (Exception exception)
+                    {
+                        Logger.Error(
+                            $"GetShowAsync: {exception.Message}");
+                        throw;
+                    }
+                    finally
+                    {
+                        watch.Stop();
+                        var elapsedMs = watch.ElapsedMilliseconds;
+                        Logger.Debug(
+                            $"GetShowAsync ({imdbId}) in {elapsedMs} milliseconds.");
+                    }
+
+                    return show;
+                }, ct).ConfigureAwait(false);
             }
-            catch (Exception exception) when (exception is TaskCanceledException)
+            catch (Exception ex)
             {
-                Logger.Debug(
-                    "GetShowAsync cancelled.");
-            }
-            catch (Exception exception)
-            {
-                Logger.Error(
-                    $"GetShowAsync: {exception.Message}");
+                Logger.Error(ex);
                 throw;
             }
-            finally
-            {
-                watch.Stop();
-                var elapsedMs = watch.ElapsedMilliseconds;
-                Logger.Debug(
-                    $"GetShowAsync ({imdbId}) in {elapsedMs} milliseconds.");
-            }
-
-            return show;
         }
 
         /// <summary>
@@ -113,42 +129,56 @@ namespace Popcorn.Services.Shows.Show
         /// </summary>
         /// <param name="imdbId">Show's Imdb code</param>
         /// <returns>The show</returns>
-        public async Task<ShowLightJson> GetShowLightAsync(string imdbId)
+        public async Task<ShowLightJson> GetShowLightAsync(string imdbId, CancellationToken ct)
         {
-            var watch = Stopwatch.StartNew();
-            var restClient = new RestClient(Utils.Constants.PopcornApi);
-            var request = new RestRequest("/{segment}/light/{show}", Method.GET);
-            request.AddUrlSegment("segment", "shows");
-            request.AddUrlSegment("show", imdbId);
-            var show = new ShowLightJson();
+            var timeoutPolicy =
+                Policy.TimeoutAsync(5, TimeoutStrategy.Pessimistic);
             try
             {
-                var response = await restClient.ExecuteTaskAsync<ShowLightJson>(request).ConfigureAwait(false);
-                if (response.ErrorException != null)
-                    throw response.ErrorException;
+                return await timeoutPolicy.ExecuteAsync(async cancellation =>
+                {
+                    var watch = Stopwatch.StartNew();
+                    var restClient = new RestClient(Utils.Constants.PopcornApi);
+                    var request = new RestRequest("/{segment}/light/{show}", Method.GET);
+                    request.AddUrlSegment("segment", "shows");
+                    request.AddUrlSegment("show", imdbId);
+                    var show = new ShowLightJson();
+                    try
+                    {
+                        var response = await restClient.ExecuteTaskAsync<ShowLightJson>(request, cancellation)
+                            .ConfigureAwait(false);
+                        if (response.ErrorException != null)
+                            throw response.ErrorException;
 
-                show = response.Data;
+                        show = response.Data;
+                    }
+                    catch (Exception exception) when (exception is TaskCanceledException)
+                    {
+                        Logger.Debug(
+                            "GetShowLightAsync cancelled.");
+                    }
+                    catch (Exception exception)
+                    {
+                        Logger.Error(
+                            $"GetShowLightAsync: {exception.Message}");
+                        throw;
+                    }
+                    finally
+                    {
+                        watch.Stop();
+                        var elapsedMs = watch.ElapsedMilliseconds;
+                        Logger.Debug(
+                            $"GetShowLightAsync ({imdbId}) in {elapsedMs} milliseconds.");
+                    }
+
+                    return show;
+                }, ct).ConfigureAwait(false);
             }
-            catch (Exception exception) when (exception is TaskCanceledException)
+            catch (Exception ex)
             {
-                Logger.Debug(
-                    "GetShowLightAsync cancelled.");
-            }
-            catch (Exception exception)
-            {
-                Logger.Error(
-                    $"GetShowLightAsync: {exception.Message}");
+                Logger.Error(ex);
                 throw;
             }
-            finally
-            {
-                watch.Stop();
-                var elapsedMs = watch.ElapsedMilliseconds;
-                Logger.Debug(
-                    $"GetShowLightAsync ({imdbId}) in {elapsedMs} milliseconds.");
-            }
-
-            return show;
         }
 
         /// <summary>
@@ -168,52 +198,66 @@ namespace Popcorn.Services.Shows.Show
             CancellationToken ct,
             GenreJson genre = null)
         {
-            var watch = Stopwatch.StartNew();
-            var wrapper = new ShowLightResponse();
-            if (limit < 1 || limit > 50)
-                limit = Utils.Constants.MaxShowsPerPage;
-
-            if (page < 1)
-                page = 1;
-
-            var restClient = new RestClient(Utils.Constants.PopcornApi);
-            var request = new RestRequest("/{segment}", Method.GET);
-            request.AddUrlSegment("segment", "shows");
-            request.AddParameter("limit", limit);
-            request.AddParameter("page", page);
-            if (genre != null) request.AddParameter("genre", genre.EnglishName);
-            request.AddParameter("minimum_rating", Convert.ToInt32(ratingFilter));
-            request.AddParameter("sort_by", sortBy);
+            var timeoutPolicy =
+                Policy.TimeoutAsync(5, TimeoutStrategy.Pessimistic);
             try
             {
-                var response = await restClient.ExecuteTaskAsync<ShowLightResponse>(request, ct).ConfigureAwait(false);
-                if (response.ErrorException != null)
-                    throw response.ErrorException;
+                return await timeoutPolicy.ExecuteAsync(async cancellation =>
+                {
+                    var watch = Stopwatch.StartNew();
+                    var wrapper = new ShowLightResponse();
+                    if (limit < 1 || limit > 50)
+                        limit = Utils.Constants.MaxShowsPerPage;
 
-                wrapper = response.Data;
+                    if (page < 1)
+                        page = 1;
+
+                    var restClient = new RestClient(Utils.Constants.PopcornApi);
+                    var request = new RestRequest("/{segment}", Method.GET);
+                    request.AddUrlSegment("segment", "shows");
+                    request.AddParameter("limit", limit);
+                    request.AddParameter("page", page);
+                    if (genre != null) request.AddParameter("genre", genre.EnglishName);
+                    request.AddParameter("minimum_rating", Convert.ToInt32(ratingFilter));
+                    request.AddParameter("sort_by", sortBy);
+                    try
+                    {
+                        var response = await restClient.ExecuteTaskAsync<ShowLightResponse>(request, cancellation)
+                            .ConfigureAwait(false);
+                        if (response.ErrorException != null)
+                            throw response.ErrorException;
+
+                        wrapper = response.Data;
+                    }
+                    catch (Exception exception) when (exception is TaskCanceledException)
+                    {
+                        Logger.Debug(
+                            "GetShowsAsync cancelled.");
+                    }
+                    catch (Exception exception)
+                    {
+                        Logger.Error(
+                            $"GetShowsAsync: {exception.Message}");
+                        throw;
+                    }
+                    finally
+                    {
+                        watch.Stop();
+                        var elapsedMs = watch.ElapsedMilliseconds;
+                        Logger.Debug(
+                            $"GetShowsAsync ({page}, {limit}) in {elapsedMs} milliseconds.");
+                    }
+
+                    var shows = wrapper?.Shows ?? new List<ShowLightJson>();
+                    var nbShows = wrapper?.TotalShows ?? 0;
+                    return (shows, nbShows);
+                }, ct).ConfigureAwait(false);
             }
-            catch (Exception exception) when (exception is TaskCanceledException)
+            catch (Exception ex)
             {
-                Logger.Debug(
-                    "GetShowsAsync cancelled.");
-            }
-            catch (Exception exception)
-            {
-                Logger.Error(
-                    $"GetShowsAsync: {exception.Message}");
+                Logger.Error(ex);
                 throw;
             }
-            finally
-            {
-                watch.Stop();
-                var elapsedMs = watch.ElapsedMilliseconds;
-                Logger.Debug(
-                    $"GetShowsAsync ({page}, {limit}) in {elapsedMs} milliseconds.");
-            }
-
-            var shows = wrapper?.Shows ?? new List<ShowLightJson>();
-            var nbShows = wrapper?.TotalShows ?? 0;
-            return (shows, nbShows);
         }
 
         /// <summary>
@@ -233,52 +277,66 @@ namespace Popcorn.Services.Shows.Show
             double ratingFilter,
             CancellationToken ct)
         {
-            var watch = Stopwatch.StartNew();
-            var wrapper = new ShowLightResponse();
-            if (limit < 1 || limit > 50)
-                limit = Utils.Constants.MaxShowsPerPage;
-
-            if (page < 1)
-                page = 1;
-
-            var restClient = new RestClient(Utils.Constants.PopcornApi);
-            var request = new RestRequest("/{segment}", Method.GET);
-            request.AddUrlSegment("segment", "shows");
-            request.AddParameter("limit", limit);
-            request.AddParameter("page", page);
-            if (genre != null) request.AddParameter("genre", genre.EnglishName);
-            request.AddParameter("minimum_rating", Convert.ToInt32(ratingFilter));
-            request.AddParameter("query_term", criteria);
+            var timeoutPolicy =
+                Policy.TimeoutAsync(5, TimeoutStrategy.Pessimistic);
             try
             {
-                var response = await restClient.ExecuteTaskAsync<ShowLightResponse>(request, ct).ConfigureAwait(false);
-                if (response.ErrorException != null)
-                    throw response.ErrorException;
+                return await timeoutPolicy.ExecuteAsync(async cancellation =>
+                {
+                    var watch = Stopwatch.StartNew();
+                    var wrapper = new ShowLightResponse();
+                    if (limit < 1 || limit > 50)
+                        limit = Utils.Constants.MaxShowsPerPage;
 
-                wrapper = response.Data;
+                    if (page < 1)
+                        page = 1;
+
+                    var restClient = new RestClient(Utils.Constants.PopcornApi);
+                    var request = new RestRequest("/{segment}", Method.GET);
+                    request.AddUrlSegment("segment", "shows");
+                    request.AddParameter("limit", limit);
+                    request.AddParameter("page", page);
+                    if (genre != null) request.AddParameter("genre", genre.EnglishName);
+                    request.AddParameter("minimum_rating", Convert.ToInt32(ratingFilter));
+                    request.AddParameter("query_term", criteria);
+                    try
+                    {
+                        var response = await restClient.ExecuteTaskAsync<ShowLightResponse>(request, cancellation)
+                            .ConfigureAwait(false);
+                        if (response.ErrorException != null)
+                            throw response.ErrorException;
+
+                        wrapper = response.Data;
+                    }
+                    catch (Exception exception) when (exception is TaskCanceledException)
+                    {
+                        Logger.Debug(
+                            "SearchShowsAsync cancelled.");
+                    }
+                    catch (Exception exception)
+                    {
+                        Logger.Error(
+                            $"SearchShowsAsync: {exception.Message}");
+                        throw;
+                    }
+                    finally
+                    {
+                        watch.Stop();
+                        var elapsedMs = watch.ElapsedMilliseconds;
+                        Logger.Debug(
+                            $"SearchShowsAsync ({criteria}, {page}, {limit}) in {elapsedMs} milliseconds.");
+                    }
+
+                    var result = wrapper?.Shows ?? new List<ShowLightJson>();
+                    var nbResult = wrapper?.TotalShows ?? 0;
+                    return (result, nbResult);
+                }, ct).ConfigureAwait(false);
             }
-            catch (Exception exception) when (exception is TaskCanceledException)
+            catch(Exception ex)
             {
-                Logger.Debug(
-                    "SearchShowsAsync cancelled.");
-            }
-            catch (Exception exception)
-            {
-                Logger.Error(
-                    $"SearchShowsAsync: {exception.Message}");
+                Logger.Error(ex);
                 throw;
             }
-            finally
-            {
-                watch.Stop();
-                var elapsedMs = watch.ElapsedMilliseconds;
-                Logger.Debug(
-                    $"SearchShowsAsync ({criteria}, {page}, {limit}) in {elapsedMs} milliseconds.");
-            }
-
-            var result = wrapper?.Shows ?? new List<ShowLightJson>();
-            var nbResult = wrapper?.TotalShows ?? 0;
-            return (result, nbResult);
         }
 
         /// <summary>
@@ -289,105 +347,98 @@ namespace Popcorn.Services.Shows.Show
         /// <returns>Video trailer</returns>
         public async Task<string> GetShowTrailerAsync(ShowJson show, CancellationToken ct)
         {
-            var watch = Stopwatch.StartNew();
-            var uri = string.Empty;
+            var timeoutPolicy =
+                Policy.TimeoutAsync(5, TimeoutStrategy.Pessimistic);
             try
             {
-                var shows = await TmdbClient.SearchTvShowAsync(show.Title).ConfigureAwait(false);
-                if (shows.Results.Any())
+                return await timeoutPolicy.ExecuteAsync(async cancellation =>
                 {
-                    Video trailer = null;
-                    foreach (var tvShow in shows.Results)
+                    var watch = Stopwatch.StartNew();
+                    var uri = string.Empty;
+                    try
                     {
-                        try
+                        var shows = await TmdbClient.SearchTvShowAsync(show.Title).ConfigureAwait(false);
+                        if (shows.Results.Any())
                         {
-                            var result = await TmdbClient.GetTvShowExternalIdsAsync(tvShow.Id).ConfigureAwait(false);
-                            if (result.ImdbId == show.ImdbId)
+                            Video trailer = null;
+                            foreach (var tvShow in shows.Results)
                             {
-                                var videos = await TmdbClient.GetTvShowVideosAsync(result.Id).ConfigureAwait(false);
-                                if (videos != null && videos.Results.Any())
+                                try
                                 {
-                                    trailer = videos.Results.FirstOrDefault();
+                                    var result = await TmdbClient.GetTvShowExternalIdsAsync(tvShow.Id)
+                                        .ConfigureAwait(false);
+                                    if (result.ImdbId == show.ImdbId)
+                                    {
+                                        var videos = await TmdbClient.GetTvShowVideosAsync(result.Id)
+                                            .ConfigureAwait(false);
+                                        if (videos != null && videos.Results.Any())
+                                        {
+                                            trailer = videos.Results.FirstOrDefault();
+                                        }
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    Logger.Error(ex);
                                 }
                             }
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.Error(ex);
-                        }
-                    }
 
-                    if (trailer != null)
-                    {
-                        using (var service = Client.For(YouTube.Default))
-                        {
-                            var videos = (await service.GetAllVideosAsync("https://youtube.com/watch?v=" + trailer.Key)
-                                    .ConfigureAwait(false))
-                                .ToList();
-                            if (videos.Any())
+                            if (trailer != null)
                             {
-                                var settings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
-                                var maxRes = settings.DefaultHdQuality ? 1080 : 720;
-                                uri =
-                                    await videos
-                                        .Where(a => !a.Is3D && a.Resolution <= maxRes && a.Format == VideoFormat.Mp4 &&
-                                                    a.AudioBitrate > 0)
-                                        .Aggregate((i1, i2) => i1.Resolution > i2.Resolution ? i1 : i2).GetUriAsync();
+                                using (var service = Client.For(YouTube.Default))
+                                {
+                                    var videos = (await service
+                                            .GetAllVideosAsync("https://youtube.com/watch?v=" + trailer.Key)
+                                            .ConfigureAwait(false))
+                                        .ToList();
+                                    if (videos.Any())
+                                    {
+                                        var settings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
+                                        var maxRes = settings.DefaultHdQuality ? 1080 : 720;
+                                        uri =
+                                            await videos
+                                                .Where(a => !a.Is3D && a.Resolution <= maxRes &&
+                                                            a.Format == VideoFormat.Mp4 &&
+                                                            a.AudioBitrate > 0)
+                                                .Aggregate((i1, i2) => i1.Resolution > i2.Resolution ? i1 : i2)
+                                                .GetUriAsync();
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                throw new PopcornException("No trailer found.");
                             }
                         }
                     }
-                    else
+                    catch (Exception exception) when (exception is TaskCanceledException ||
+                                                      exception is OperationCanceledException)
                     {
-                        throw new PopcornException("No trailer found.");
+                        Logger.Debug(
+                            "GetShowTrailerAsync cancelled.");
                     }
-                }
+                    catch (Exception exception)
+                    {
+                        Logger.Error(
+                            $"GetShowTrailerAsync: {exception.Message}");
+                        throw;
+                    }
+                    finally
+                    {
+                        watch.Stop();
+                        var elapsedMs = watch.ElapsedMilliseconds;
+                        Logger.Debug(
+                            $"GetShowTrailerAsync ({show.ImdbId}) in {elapsedMs} milliseconds.");
+                    }
+
+                    return uri;
+                }, ct).ConfigureAwait(false);
             }
-            catch (Exception exception) when (exception is TaskCanceledException ||
-                                              exception is OperationCanceledException)
+            catch (Exception ex)
             {
-                Logger.Debug(
-                    "GetShowTrailerAsync cancelled.");
-            }
-            catch (Exception exception)
-            {
-                Logger.Error(
-                    $"GetShowTrailerAsync: {exception.Message}");
+                Logger.Error(ex);
                 throw;
             }
-            finally
-            {
-                watch.Stop();
-                var elapsedMs = watch.ElapsedMilliseconds;
-                Logger.Debug(
-                    $"GetShowTrailerAsync ({show.ImdbId}) in {elapsedMs} milliseconds.");
-            }
-
-            return uri;
-        }
-
-        /// <summary>
-        /// Get recommendations by page
-        /// </summary>
-        /// <param name="page"></param>
-        /// <returns></returns>
-        public async Task<(IEnumerable<ShowLightJson>, int nbMovies)> Discover(int page)
-        {
-            var discover = TmdbClient.DiscoverTvShowsAsync();
-            var result = await discover.Query(page).ConfigureAwait(false);
-            var shows = new ConcurrentBag<ShowLightJson>();
-            await result.Results.ParallelForEachAsync(async show =>
-            {
-                var imdbShow = await TmdbClient.GetTvShowAsync(show.Id, TvShowMethods.ExternalIds)
-                    .ConfigureAwait(false);
-                if (imdbShow?.ExternalIds?.ImdbId == null)
-                    return;
-
-                var fetch = await GetShowLightAsync(imdbShow.ExternalIds.ImdbId).ConfigureAwait(false);
-                if (fetch != null)
-                    shows.Add(fetch);
-            }).ConfigureAwait(false);
-
-            return (shows, result.TotalResults);
         }
     }
 }

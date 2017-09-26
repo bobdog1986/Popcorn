@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Enterwell.Clients.Wpf.Notifications;
 using GalaSoft.MvvmLight.Ioc;
 using Microsoft.Practices.ServiceLocation;
 using Popcorn.Services.Application;
@@ -42,6 +43,7 @@ namespace Popcorn.ViewModels
             SimpleIoc.Default.Register<ISubtitlesService, SubtitlesService>();
             SimpleIoc.Default.Register<IGenreService, GenreService>();
             SimpleIoc.Default.Register<ITraktService, TraktService>();
+            SimpleIoc.Default.Register<NotificationMessageManager>();
 
             #endregion
 
@@ -101,5 +103,14 @@ namespace Popcorn.ViewModels
             Justification = "This non-static member is needed for data binding purposes.")]
         public ApplicationSettingsViewModel ApplicationSettings
             => ServiceLocator.Current.GetInstance<ApplicationSettingsViewModel>();
+
+        /// <summary>
+        /// Gets the NotificationMessageManager property.
+        /// </summary>
+        [SuppressMessage("Microsoft.Performance",
+            "CA1822:MarkMembersAsStatic",
+            Justification = "This non-static member is needed for data binding purposes.")]
+        public NotificationMessageManager Manager
+            => ServiceLocator.Current.GetInstance<NotificationMessageManager>();
     }
 }

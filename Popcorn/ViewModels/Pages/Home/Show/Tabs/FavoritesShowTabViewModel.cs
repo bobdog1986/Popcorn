@@ -82,7 +82,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
                     {
                         try
                         {
-                            var show = await ShowService.GetShowLightAsync(imdbId);
+                            var show = await ShowService.GetShowLightAsync(imdbId, CancellationLoadingShows.Token);
                             if (show != null)
                             {
                                 show.IsFavorite = true;
@@ -129,7 +129,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
                     {
                         try
                         {
-                            var show = await ShowService.GetShowLightAsync(imdbId);
+                            var show = await ShowService.GetShowLightAsync(imdbId, CancellationLoadingShows.Token);
                             if ((Genre == null || show.Genres.Contains(Genre.EnglishName)) && show.Rating.Percentage >= Rating * 10)
                             {
                                 showsToAddAndToOrder.Add(show);

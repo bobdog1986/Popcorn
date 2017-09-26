@@ -459,4 +459,7 @@
   <data name="UpdateApplied" xml:space="preserve">
     <value>Une nouvelle mise à jour a été installée.</value>
   </data>
+  <data name="Ignore" xml:space="preserve">
+    <value>Ignorer</value>
+  </data>
 </root>

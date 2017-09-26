@@ -39,7 +39,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
         /// </summary>
         public override async Task LoadMoviesAsync(bool reset = false)
         {
-            await LoadingSemaphore.WaitAsync();
+            await LoadingSemaphore.WaitAsync(CancellationLoadingMovies.Token);
             if (reset)
             {
                 Movies.Clear();
@@ -72,13 +72,13 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                     var movies = seen.allMovies.Union(favorites.allMovies).Distinct().ToList();
                     var result = await MovieService
                         .GetSimilarAsync(Page, Utils.Constants.MaxMoviesPerPage, movies,
-                            new CancellationToken()).ConfigureAwait(false);
+                            CancellationLoadingMovies.Token).ConfigureAwait(false);
                     getMoviesWatcher.Stop();
                     var getMoviesEllapsedTime = getMoviesWatcher.ElapsedMilliseconds;
                     if (reset && getMoviesEllapsedTime < 500)
                     {
                         // Wait for VerticalOffset to reach 0 (animation lasts 500ms)
-                        await Task.Delay(500 - (int) getMoviesEllapsedTime).ConfigureAwait(false);
+                        await Task.Delay(500 - (int) getMoviesEllapsedTime, CancellationLoadingMovies.Token).ConfigureAwait(false);
                     }
 
                     DispatcherHelper.CheckBeginInvokeOnUI(() =>
@@ -90,7 +90,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                         MaxNumberOfMovies = result.nbMovies == 0 ? Movies.Count : result.nbMovies;
                         UserService.SyncMovieHistory(Movies);
                     });
-                }).ConfigureAwait(false);
+                }, CancellationLoadingMovies.Token).ConfigureAwait(false);
             }
             catch (Exception exception)
             {

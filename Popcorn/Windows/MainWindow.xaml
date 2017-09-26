@@ -5,6 +5,7 @@
     xmlns:attachedProperties="clr-namespace:Popcorn.AttachedProperties"
     xmlns:command="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Platform"
     xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+    xmlns:controls1="clr-namespace:Enterwell.Clients.Wpf.Notifications.Controls;assembly=Enterwell.Clients.Wpf.Notifications"
     xmlns:converters="clr-namespace:Popcorn.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:details="clr-namespace:Popcorn.UserControls.Home.Movie.Details"
@@ -42,7 +43,6 @@
     <Window.Resources>
         <ResourceDictionary>
             <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-            <converters:BoolToInverseVisibilityConverter x:Key="BoolToInverseVisibilityConverter" />
 
             <Style TargetType="{x:Type controls:WindowButtonCommands}">
                 <Setter Property="Foreground" Value="White" />
@@ -84,23 +84,11 @@
     <controls:MetroWindow.RightWindowCommands>
         <controls:WindowCommands Visibility="{Binding ApplicationService.IsMediaPlaying, Converter={StaticResource BoolToVisibilityConverter}}">
             <StackPanel Orientation="Horizontal">
-                <controls:Badged
-                    Margin="0,12,5,0"
-                    Badge="1"
-                    BadgePlacementMode="TopRight"
-                    Visibility="{Binding UpdateAvailable, Converter={StaticResource BoolToInverseVisibilityConverter}}">
-                    <Button
-                        Command="{Binding OpenSettingsCommand}"
-                        Content="{lex:LocText SettingsMenuTitle}"
-                        Foreground="White"
-                        ToolTip="{lex:LocText SettingsMenuTitle}" />
-                </controls:Badged>
                 <Button
                     Command="{Binding OpenSettingsCommand}"
                     Content="{lex:LocText SettingsMenuTitle}"
                     Foreground="White"
-                    ToolTip="{lex:LocText SettingsMenuTitle}"
-                    Visibility="{Binding UpdateAvailable, Converter={StaticResource BoolToVisibilityConverter}}" />
+                    ToolTip="{lex:LocText SettingsMenuTitle}" />
                 <Button
                     Command="{Binding OpenAboutCommand}"
                     Content="{lex:LocText AboutLabel}"
@@ -151,8 +139,15 @@
             </controls:Flyout>
         </controls:FlyoutsControl>
     </controls:MetroWindow.Flyouts>
-    <Frame
-        x:Name="MainFrame"
-        NavigationUIVisibility="Hidden"
-        Source="/Pages/HomePage.xaml" />
+    <Grid>
+        <Frame
+            x:Name="MainFrame"
+            NavigationUIVisibility="Hidden"
+            Source="/Pages/HomePage.xaml" />
+        <controls1:NotificationMessageContainer
+            Width="600"
+            Margin="0,50,0,0"
+            HorizontalAlignment="Center"
+            Manager="{Binding Manager, Source={StaticResource Locator}}" />
+    </Grid>
 </controls:MetroWindow>

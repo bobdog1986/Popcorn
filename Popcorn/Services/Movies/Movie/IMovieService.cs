@@ -19,15 +19,17 @@ namespace Popcorn.Services.Movies.Movie
         /// Get movie by its Imdb code
         /// </summary>
         /// <param name="imdbCode">Movie's Imdb code</param>
+        /// <param name="ct">Cancellation</param>
         /// <returns>The movie</returns>
-        Task<MovieJson> GetMovieAsync(string imdbCode);
+        Task<MovieJson> GetMovieAsync(string imdbCode, CancellationToken ct);
 
         /// <summary>
         /// Get movie light by its Imdb code
         /// </summary>
         /// <param name="imdbCode">Movie's Imdb code</param>
+        /// <param name="ct">Cancellation</param>
         /// <returns>The movie</returns>
-        Task<MovieLightJson> GetMovieLightAsync(string imdbCode);
+        Task<MovieLightJson> GetMovieLightAsync(string imdbCode, CancellationToken ct);
 
         /// <summary>
         /// Get popular movies by page
@@ -81,7 +83,7 @@ namespace Popcorn.Services.Movies.Movie
         /// </summary>
         /// <param name="movieToTranslate">Movie to translate</param>
         /// <returns>Task</returns>
-        Task TranslateMovieAsync(IMovie movieToTranslate);
+        void TranslateMovie(IMovie movieToTranslate);
 
         /// <summary>
         /// Get the youtube trailer of a movie
@@ -95,7 +97,8 @@ namespace Popcorn.Services.Movies.Movie
         /// Get movies similar async
         /// </summary>
         /// <param name="movie">Movie</param>
+        /// <param name="ct">Cancellation</param>
         /// <returns>Movies</returns>
-        Task<IEnumerable<MovieLightJson>> GetMoviesSimilarAsync(MovieJson movie);
+        Task<IEnumerable<MovieLightJson>> GetMoviesSimilarAsync(MovieJson movie, CancellationToken ct);
     }
 }

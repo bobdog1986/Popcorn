@@ -25,13 +25,20 @@ namespace Popcorn.Services.Subtitles
                     TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))
                 );
 
-            return await retryGetSubLanguagesPolicy.ExecuteAsync(async () =>
+            try
             {
-                using (var osdb = new Osdb().Login(Constants.OsdbUa))
+                return await retryGetSubLanguagesPolicy.ExecuteAsync(async () =>
                 {
-                    return await osdb.GetSubLanguages();
-                }
-            });
+                    using (var osdb = new Osdb().Login(Constants.OsdbUa))
+                    {
+                        return await osdb.GetSubLanguages();
+                    }
+                });
+            }
+            catch (Exception)
+            {
+                return new List<Language>();
+            }
         }
 
         /// <summary>

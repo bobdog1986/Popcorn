@@ -201,8 +201,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Details
                 IsShowLoading = true;
                 await Task.Run(async () =>
                 {
-                    Show = await _showService.GetShowAsync(show.ImdbId).ConfigureAwait(false);
-                    IsShowLoading = false;
+                    Show = await _showService.GetShowAsync(show.ImdbId, CancellationToken.None).ConfigureAwait(false);
                     foreach (var episode in Show.Episodes)
                     {
                         episode.ImdbId = Show.ImdbId;
@@ -214,7 +213,11 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Details
                 Logger.Error(
                     $"Failed loading show : {show.ImdbId}. {ex.Message}");
             }
-            
+            finally
+            {
+                IsShowLoading = false;
+            }
+
             watch.Stop();
             var elapsedMs = watch.ElapsedMilliseconds;
             Logger.Debug($"LoadShow ({show.ImdbId}) in {elapsedMs} milliseconds.");

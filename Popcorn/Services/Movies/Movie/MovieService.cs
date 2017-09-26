@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
 using NLog;
@@ -10,7 +12,6 @@ using RestSharp;
 using TMDbLib.Client;
 using TMDbLib.Objects.Movies;
 using GalaSoft.MvvmLight.Ioc;
-using GalaSoft.MvvmLight.Threading;
 using Popcorn.Models.Genres;
 using Popcorn.Models.User;
 using Popcorn.Utils.Exceptions;
@@ -18,6 +19,7 @@ using Popcorn.ViewModels.Windows.Settings;
 using Popcorn.YTVideoProvider;
 using Polly;
 using Polly.Timeout;
+using Popcorn.Extensions;
 
 namespace Popcorn.Services.Movies.Movie
 {
@@ -32,10 +34,16 @@ namespace Popcorn.Services.Movies.Movie
         private static Logger Logger { get; } = LogManager.GetCurrentClassLogger();
 
         /// <summary>
+        /// Movies to translate
+        /// </summary>
+        private readonly Subject<IMovie> _moviesToTranslateObservable;
+
+        /// <summary>
         /// Initialize a new instance of MovieService class
         /// </summary>
         public MovieService()
         {
+            _moviesToTranslateObservable = new Subject<IMovie>();
             TmdbClient = new TMDbClient(Utils.Constants.TmDbClientId, true)
             {
                 MaxRetryCount = 50
@@ -46,10 +54,56 @@ namespace Popcorn.Services.Movies.Movie
                 try
                 {
                     TmdbClient.GetConfig();
+                    _moviesToTranslateObservable.Drain(s => Observable.Return(s).Delay(TimeSpan.FromMilliseconds(250)))
+                        .Subscribe(async movieToTranslate =>
+                        {
+                            var timeBeforeTimeOut = 3;
+                            var timeoutPolicy =
+                                Policy.TimeoutAsync(timeBeforeTimeOut, TimeoutStrategy.Pessimistic);
+                            try
+                            {
+                                await timeoutPolicy.ExecuteAsync(async () =>
+                                {
+                                    try
+                                    {
+                                        var movie = await TmdbClient.GetMovieAsync(movieToTranslate.ImdbCode,
+                                            MovieMethods.Credits).ConfigureAwait(false);
+                                        if (movieToTranslate is MovieJson refMovie)
+                                        {
+                                            refMovie.Title = movie?.Title;
+                                            refMovie.Genres = movie?.Genres?.Select(a => a.Name).ToList();
+                                            refMovie.DescriptionFull = movie?.Overview;
+                                        }
+                                        else if (movieToTranslate is MovieLightJson refMovieLight)
+                                        {
+                                            refMovieLight.Title = movie?.Title;
+                                            refMovieLight.Genres = movie?.Genres != null
+                                                ? string.Join(", ", movie.Genres?.Select(a => a.Name))
+                                                : string.Empty;
+                                        }
+                                    }
+                                    catch (Exception exception) when (exception is TaskCanceledException)
+                                    {
+                                        Logger.Debug(
+                                            "TranslateMovieAsync cancelled.");
+                                    }
+                                    catch (Exception exception)
+                                    {
+                                        Logger.Error(
+                                            $"TranslateMovieAsync: {exception.Message}");
+                                    }
+                                }).ConfigureAwait(false);
+                            }
+                            catch (TimeoutRejectedException ex)
+                            {
+                                Logger.Warn(
+                                    $"Movie {movieToTranslate.ImdbCode} has not been translated in {timeBeforeTimeOut} seconds. Error {ex.Message}");
+                            }
+                        });
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    // An issue occured with TmdbClient
+                    Logger.Error(ex);
                 }
             });
         }
@@ -60,25 +114,11 @@ namespace Popcorn.Services.Movies.Movie
         private TMDbClient TmdbClient { get; }
 
         /// <summary>
-        /// True if movie languages must be refreshed
-        /// </summary>
-        private bool MustRefreshLanguage { get; set; }
-
-        /// <summary>
         /// Change the culture of TMDb
         /// </summary>
         /// <param name="language">Language to set</param>
         public void ChangeTmdbLanguage(Language language)
         {
-            if (TmdbClient.DefaultLanguage == null)
-            {
-                MustRefreshLanguage = false;
-            }
-            else
-            {
-                MustRefreshLanguage = TmdbClient.DefaultLanguage != language.Culture;
-            }
-
             TmdbClient.DefaultLanguage = language.Culture;
         }
 
@@ -86,126 +126,170 @@ namespace Popcorn.Services.Movies.Movie
         /// Get movie by its Imdb code
         /// </summary>
         /// <param name="imdbCode">Movie's Imdb code</param>
+        /// <param name="ct">Cancellation</param>
         /// <returns>The movie</returns>
-        public async Task<MovieJson> GetMovieAsync(string imdbCode)
+        public async Task<MovieJson> GetMovieAsync(string imdbCode, CancellationToken ct)
         {
-            var watch = Stopwatch.StartNew();
-
-            var restClient = new RestClient(Utils.Constants.PopcornApi);
-            var request = new RestRequest("/{segment}/{movie}", Method.GET);
-            request.AddUrlSegment("segment", "movies");
-            request.AddUrlSegment("movie", imdbCode);
-            var movie = new MovieJson();
-
+            var timeoutPolicy =
+                Policy.TimeoutAsync(5, TimeoutStrategy.Pessimistic);
             try
             {
-                var response = await restClient.ExecuteTaskAsync<MovieJson>(request).ConfigureAwait(false);
-                if (response.ErrorException != null)
-                    throw response.ErrorException;
+                return await timeoutPolicy.ExecuteAsync(async cancellation =>
+                {
+                    var watch = Stopwatch.StartNew();
 
-                movie = response.Data;
+                    var restClient = new RestClient(Utils.Constants.PopcornApi);
+                    var request = new RestRequest("/{segment}/{movie}", Method.GET);
+                    request.AddUrlSegment("segment", "movies");
+                    request.AddUrlSegment("movie", imdbCode);
+                    var movie = new MovieJson();
+
+                    try
+                    {
+                        var response = await restClient.ExecuteTaskAsync<MovieJson>(request, cancellation)
+                            .ConfigureAwait(false);
+                        if (response.ErrorException != null)
+                            throw response.ErrorException;
+
+                        movie = response.Data;
+                    }
+                    catch (Exception exception) when (exception is TaskCanceledException)
+                    {
+                        Logger.Debug(
+                            "GetMovieAsync cancelled.");
+                    }
+                    catch (Exception exception)
+                    {
+                        Logger.Error(
+                            $"GetMovieAsync: {exception.Message}");
+                        throw;
+                    }
+                    finally
+                    {
+                        watch.Stop();
+                        var elapsedMs = watch.ElapsedMilliseconds;
+                        Logger.Debug(
+                            $"GetMovieAsync ({imdbCode}) in {elapsedMs} milliseconds.");
+                    }
+
+                    return movie;
+                }, ct).ConfigureAwait(false);
             }
-            catch (Exception exception) when (exception is TaskCanceledException)
+            catch (Exception ex)
             {
-                Logger.Debug(
-                    "GetMovieAsync cancelled.");
-            }
-            catch (Exception exception)
-            {
-                Logger.Error(
-                    $"GetMovieAsync: {exception.Message}");
+                Logger.Error(ex);
                 throw;
             }
-            finally
-            {
-                watch.Stop();
-                var elapsedMs = watch.ElapsedMilliseconds;
-                Logger.Debug(
-                    $"GetMovieAsync ({imdbCode}) in {elapsedMs} milliseconds.");
-            }
-
-            return movie;
         }
 
         /// <summary>
         /// Get light movie by its Imdb code
         /// </summary>
         /// <param name="imdbCode">Movie's Imdb code</param>
+        /// <param name="ct">Cancellation</param>
         /// <returns>The movie</returns>
-        public async Task<MovieLightJson> GetMovieLightAsync(string imdbCode)
+        public async Task<MovieLightJson> GetMovieLightAsync(string imdbCode, CancellationToken ct)
         {
-            var watch = Stopwatch.StartNew();
-
-            var restClient = new RestClient(Utils.Constants.PopcornApi);
-            var request = new RestRequest("/{segment}/light/{movie}", Method.GET);
-            request.AddUrlSegment("segment", "movies");
-            request.AddUrlSegment("movie", imdbCode);
-            var movie = new MovieLightJson();
-
+            var timeoutPolicy =
+                Policy.TimeoutAsync(5, TimeoutStrategy.Pessimistic);
             try
             {
-                var response = await restClient.ExecuteTaskAsync<MovieLightJson>(request).ConfigureAwait(false);
-                if (response.ErrorException != null)
-                    throw response.ErrorException;
+                return await timeoutPolicy.ExecuteAsync(async cancellation =>
+                {
+                    var watch = Stopwatch.StartNew();
 
-                movie = response.Data;
+                    var restClient = new RestClient(Utils.Constants.PopcornApi);
+                    var request = new RestRequest("/{segment}/light/{movie}", Method.GET);
+                    request.AddUrlSegment("segment", "movies");
+                    request.AddUrlSegment("movie", imdbCode);
+                    var movie = new MovieLightJson();
+
+                    try
+                    {
+                        var response = await restClient.ExecuteTaskAsync<MovieLightJson>(request, cancellation)
+                            .ConfigureAwait(false);
+                        if (response.ErrorException != null)
+                            throw response.ErrorException;
+
+                        movie = response.Data;
+                    }
+                    catch (Exception exception) when (exception is TaskCanceledException)
+                    {
+                        Logger.Debug(
+                            "GetMovieLightAsync cancelled.");
+                    }
+                    catch (Exception exception)
+                    {
+                        Logger.Error(
+                            $"GetMovieLightAsync: {exception.Message}");
+                        throw;
+                    }
+                    finally
+                    {
+                        watch.Stop();
+                        var elapsedMs = watch.ElapsedMilliseconds;
+                        Logger.Debug(
+                            $"GetMovieLightAsync ({imdbCode}) in {elapsedMs} milliseconds.");
+                    }
+
+                    return movie;
+                }, ct).ConfigureAwait(false);
             }
-            catch (Exception exception) when (exception is TaskCanceledException)
+            catch (Exception ex)
             {
-                Logger.Debug(
-                    "GetMovieLightAsync cancelled.");
-            }
-            catch (Exception exception)
-            {
-                Logger.Error(
-                    $"GetMovieLightAsync: {exception.Message}");
+                Logger.Error(ex);
                 throw;
             }
-            finally
-            {
-                watch.Stop();
-                var elapsedMs = watch.ElapsedMilliseconds;
-                Logger.Debug(
-                    $"GetMovieLightAsync ({imdbCode}) in {elapsedMs} milliseconds.");
-            }
-
-            return movie;
         }
 
         /// <summary>
         /// Get movies similar async
         /// </summary>
         /// <param name="movie">Movie</param>
+        /// <param name="ct">Cancellation</param>
         /// <returns>Movies</returns>
-        public async Task<IEnumerable<MovieLightJson>> GetMoviesSimilarAsync(MovieJson movie)
+        public async Task<IEnumerable<MovieLightJson>> GetMoviesSimilarAsync(MovieJson movie, CancellationToken ct)
         {
-            var watch = Stopwatch.StartNew();
-            (IEnumerable<MovieLightJson> movies, int nbMovies) similarMovies = (new List<MovieLightJson>(), 0);
+            var timeoutPolicy =
+                Policy.TimeoutAsync(5, TimeoutStrategy.Pessimistic);
             try
             {
-                if (movie.Similars != null && movie.Similars.Any())
+                return await timeoutPolicy.ExecuteAsync(async cancellation =>
                 {
-                    similarMovies = await GetSimilarAsync(0, Utils.Constants.MaxMoviesPerPage, movie.Similars,
-                            CancellationToken.None)
-                        .ConfigureAwait(false);
-                }
+                    var watch = Stopwatch.StartNew();
+                    (IEnumerable<MovieLightJson> movies, int nbMovies) similarMovies = (new List<MovieLightJson>(), 0);
+                    try
+                    {
+                        if (movie.Similars != null && movie.Similars.Any())
+                        {
+                            similarMovies = await GetSimilarAsync(0, Utils.Constants.MaxMoviesPerPage, movie.Similars,
+                                    CancellationToken.None)
+                                .ConfigureAwait(false);
+                        }
+                    }
+                    catch (Exception exception)
+                    {
+                        Logger.Error(
+                            $"GetMoviesSimilarAsync: {exception.Message}");
+                        throw;
+                    }
+                    finally
+                    {
+                        watch.Stop();
+                        var elapsedMs = watch.ElapsedMilliseconds;
+                        Logger.Debug(
+                            $"GetMoviesSimilarAsync in {elapsedMs} milliseconds.");
+                    }
+
+                    return similarMovies.movies.Where(
+                        a => a.ImdbCode != movie.ImdbCode);
+                }, ct).ConfigureAwait(false);
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                Logger.Error(
-                    $"GetMoviesSimilarAsync: {exception.Message}");
+                Logger.Error(ex);
                 throw;
             }
-            finally
-            {
-                watch.Stop();
-                var elapsedMs = watch.ElapsedMilliseconds;
-                Logger.Debug(
-                    $"GetMoviesSimilarAsync in {elapsedMs} milliseconds.");
-            }
-
-            return similarMovies.movies.Where(
-                a => a.ImdbCode != movie.ImdbCode);
         }
 
         /// <summary>
@@ -225,57 +309,67 @@ namespace Popcorn.Services.Movies.Movie
             CancellationToken ct,
             GenreJson genre = null)
         {
-            var watch = Stopwatch.StartNew();
-            var wrapper = new MovieLightResponse();
-            if (limit < 1 || limit > 50)
-                limit = Utils.Constants.MaxMoviesPerPage;
-
-            if (page < 1)
-                page = 1;
-
-            var restClient = new RestClient(Utils.Constants.PopcornApi);
-            var request = new RestRequest("/{segment}", Method.GET);
-            request.AddUrlSegment("segment", "movies");
-            request.AddParameter("limit", limit);
-            request.AddParameter("page", page);
-            if (genre != null) request.AddParameter("genre", genre.EnglishName);
-            request.AddParameter("minimum_rating", Convert.ToInt32(ratingFilter));
-            request.AddParameter("sort_by", sortBy);
+            var timeoutPolicy =
+                Policy.TimeoutAsync(5, TimeoutStrategy.Pessimistic);
             try
             {
-                var response = await restClient.ExecuteTaskAsync<MovieLightResponse>(request, ct).ConfigureAwait(false);
-                if (response.ErrorException != null)
-                    throw response.ErrorException;
+                return await timeoutPolicy.ExecuteAsync(async cancellation =>
+                {
+                    var watch = Stopwatch.StartNew();
+                    var wrapper = new MovieLightResponse();
+                    if (limit < 1 || limit > 50)
+                        limit = Utils.Constants.MaxMoviesPerPage;
 
-                wrapper = response.Data;
+                    if (page < 1)
+                        page = 1;
+
+                    var restClient = new RestClient(Utils.Constants.PopcornApi);
+                    var request = new RestRequest("/{segment}", Method.GET);
+                    request.AddUrlSegment("segment", "movies");
+                    request.AddParameter("limit", limit);
+                    request.AddParameter("page", page);
+                    if (genre != null) request.AddParameter("genre", genre.EnglishName);
+                    request.AddParameter("minimum_rating", Convert.ToInt32(ratingFilter));
+                    request.AddParameter("sort_by", sortBy);
+                    try
+                    {
+                        var response = await restClient.ExecuteTaskAsync<MovieLightResponse>(request, cancellation)
+                            .ConfigureAwait(false);
+                        if (response.ErrorException != null)
+                            throw response.ErrorException;
+
+                        wrapper = response.Data;
+                    }
+                    catch (Exception exception) when (exception is TaskCanceledException)
+                    {
+                        Logger.Debug(
+                            "GetMoviesAsync cancelled.");
+                    }
+                    catch (Exception exception)
+                    {
+                        Logger.Error(
+                            $"GetMoviesAsync: {exception.Message}");
+                        throw;
+                    }
+                    finally
+                    {
+                        watch.Stop();
+                        var elapsedMs = watch.ElapsedMilliseconds;
+                        Logger.Debug(
+                            $"GetMoviesAsync ({page}, {limit}) in {elapsedMs} milliseconds.");
+                    }
+
+                    var result = wrapper?.Movies ?? new List<MovieLightJson>();
+                    ProcessTranslations(result);
+                    var nbResult = wrapper?.TotalMovies ?? 0;
+                    return (result, nbResult);
+                }, ct).ConfigureAwait(false);
             }
-            catch (Exception exception) when (exception is TaskCanceledException)
+            catch (Exception ex)
             {
-                Logger.Debug(
-                    "GetMoviesAsync cancelled.");
-            }
-            catch (Exception exception)
-            {
-                Logger.Error(
-                    $"GetMoviesAsync: {exception.Message}");
+                Logger.Error(ex);
                 throw;
             }
-            finally
-            {
-                watch.Stop();
-                var elapsedMs = watch.ElapsedMilliseconds;
-                Logger.Debug(
-                    $"GetMoviesAsync ({page}, {limit}) in {elapsedMs} milliseconds.");
-            }
-
-            var result = wrapper?.Movies ?? new List<MovieLightJson>();
-            Task.Run(async () =>
-            {
-                await ProcessTranslations(result).ConfigureAwait(false);
-            }).ConfigureAwait(false);
-
-            var nbResult = wrapper?.TotalMovies ?? 0;
-            return (result, nbResult);
         }
 
         /// <summary>
@@ -283,11 +377,11 @@ namespace Popcorn.Services.Movies.Movie
         /// </summary>
         /// <param name="movies"></param>
         /// <returns></returns>
-        private async Task ProcessTranslations(IEnumerable<IMovie> movies)
+        private void ProcessTranslations(IEnumerable<IMovie> movies)
         {
             foreach (var movie in movies)
             {
-                await TranslateMovieAsync(movie).ConfigureAwait(false);
+                TranslateMovie(movie);
             }
         }
 
@@ -304,57 +398,66 @@ namespace Popcorn.Services.Movies.Movie
             IEnumerable<string> imdbIds,
             CancellationToken ct)
         {
-            var watch = Stopwatch.StartNew();
-            var wrapper = new MovieLightResponse();
-            if (limit < 1 || limit > 50)
-                limit = Utils.Constants.MaxMoviesPerPage;
-
-            if (page < 1)
-                page = 1;
-
-            var restClient = new RestClient(Utils.Constants.PopcornApi);
-            var request = new RestRequest("/{segment}/{subsegment}", Method.POST);
-            request.AddUrlSegment("segment", "movies");
-            request.AddUrlSegment("subsegment", "similar");
-            request.AddQueryParameter("limit", limit.ToString());
-            request.AddQueryParameter("page", page.ToString());
-            request.AddJsonBody(imdbIds);
-
+            var timeoutPolicy =
+                Policy.TimeoutAsync(5, TimeoutStrategy.Pessimistic);
             try
             {
-                var response = await restClient.ExecuteTaskAsync<MovieLightResponse>(request, ct);
-                if (response.ErrorException != null)
-                    throw response.ErrorException;
+                return await timeoutPolicy.ExecuteAsync(async cancellation =>
+                {
+                    var watch = Stopwatch.StartNew();
+                    var wrapper = new MovieLightResponse();
+                    if (limit < 1 || limit > 50)
+                        limit = Utils.Constants.MaxMoviesPerPage;
 
-                wrapper = response.Data;
+                    if (page < 1)
+                        page = 1;
+
+                    var restClient = new RestClient(Utils.Constants.PopcornApi);
+                    var request = new RestRequest("/{segment}/{subsegment}", Method.POST);
+                    request.AddUrlSegment("segment", "movies");
+                    request.AddUrlSegment("subsegment", "similar");
+                    request.AddQueryParameter("limit", limit.ToString());
+                    request.AddQueryParameter("page", page.ToString());
+                    request.AddJsonBody(imdbIds);
+
+                    try
+                    {
+                        var response = await restClient.ExecuteTaskAsync<MovieLightResponse>(request, cancellation);
+                        if (response.ErrorException != null)
+                            throw response.ErrorException;
+
+                        wrapper = response.Data;
+                    }
+                    catch (Exception exception) when (exception is TaskCanceledException)
+                    {
+                        Logger.Debug(
+                            "GetSimilarAsync cancelled.");
+                    }
+                    catch (Exception exception)
+                    {
+                        Logger.Error(
+                            $"GetSimilarAsync: {exception.Message}");
+                        throw;
+                    }
+                    finally
+                    {
+                        watch.Stop();
+                        var elapsedMs = watch.ElapsedMilliseconds;
+                        Logger.Debug(
+                            $"GetSimilarAsync ({page}, {limit}, {string.Join(",", imdbIds)}) in {elapsedMs} milliseconds.");
+                    }
+
+                    var result = wrapper?.Movies ?? new List<MovieLightJson>();
+                    ProcessTranslations(result);
+                    var nbResult = wrapper?.TotalMovies ?? 0;
+                    return (result, nbResult);
+                }, ct).ConfigureAwait(false);
             }
-            catch (Exception exception) when (exception is TaskCanceledException)
+            catch (Exception ex)
             {
-                Logger.Debug(
-                    "GetSimilarAsync cancelled.");
-            }
-            catch (Exception exception)
-            {
-                Logger.Error(
-                    $"GetSimilarAsync: {exception.Message}");
+                Logger.Error(ex);
                 throw;
             }
-            finally
-            {
-                watch.Stop();
-                var elapsedMs = watch.ElapsedMilliseconds;
-                Logger.Debug(
-                    $"GetSimilarAsync ({page}, {limit}, {string.Join(",", imdbIds)}) in {elapsedMs} milliseconds.");
-            }
-
-            var result = wrapper?.Movies ?? new List<MovieLightJson>();
-            Task.Run(async () =>
-            {
-                await ProcessTranslations(result).ConfigureAwait(false);
-            }).ConfigureAwait(false);
-
-            var nbResult = wrapper?.TotalMovies ?? 0;
-            return (result, nbResult);
         }
 
         /// <summary>
@@ -374,58 +477,67 @@ namespace Popcorn.Services.Movies.Movie
             double ratingFilter,
             CancellationToken ct)
         {
-            var watch = Stopwatch.StartNew();
-            var wrapper = new MovieLightResponse();
-            if (limit < 1 || limit > 50)
-                limit = Utils.Constants.MaxMoviesPerPage;
-
-            if (page < 1)
-                page = 1;
-
-            var restClient = new RestClient(Utils.Constants.PopcornApi);
-            var request = new RestRequest("/{segment}", Method.GET);
-            request.AddUrlSegment("segment", "movies");
-            request.AddParameter("limit", limit);
-            request.AddParameter("page", page);
-            if (genre != null) request.AddParameter("genre", genre.EnglishName);
-            request.AddParameter("minimum_rating", Convert.ToInt32(ratingFilter));
-            request.AddParameter("query_term", criteria);
-
+            var timeoutPolicy =
+                Policy.TimeoutAsync(5, TimeoutStrategy.Pessimistic);
             try
             {
-                var response = await restClient.ExecuteTaskAsync<MovieLightResponse>(request, ct);
-                if (response.ErrorException != null)
-                    throw response.ErrorException;
+                return await timeoutPolicy.ExecuteAsync(async cancellation =>
+                {
+                    var watch = Stopwatch.StartNew();
+                    var wrapper = new MovieLightResponse();
+                    if (limit < 1 || limit > 50)
+                        limit = Utils.Constants.MaxMoviesPerPage;
 
-                wrapper = response.Data;
+                    if (page < 1)
+                        page = 1;
+
+                    var restClient = new RestClient(Utils.Constants.PopcornApi);
+                    var request = new RestRequest("/{segment}", Method.GET);
+                    request.AddUrlSegment("segment", "movies");
+                    request.AddParameter("limit", limit);
+                    request.AddParameter("page", page);
+                    if (genre != null) request.AddParameter("genre", genre.EnglishName);
+                    request.AddParameter("minimum_rating", Convert.ToInt32(ratingFilter));
+                    request.AddParameter("query_term", criteria);
+
+                    try
+                    {
+                        var response = await restClient.ExecuteTaskAsync<MovieLightResponse>(request, cancellation);
+                        if (response.ErrorException != null)
+                            throw response.ErrorException;
+
+                        wrapper = response.Data;
+                    }
+                    catch (Exception exception) when (exception is TaskCanceledException)
+                    {
+                        Logger.Debug(
+                            "SearchMoviesAsync cancelled.");
+                    }
+                    catch (Exception exception)
+                    {
+                        Logger.Error(
+                            $"SearchMoviesAsync: {exception.Message}");
+                        throw;
+                    }
+                    finally
+                    {
+                        watch.Stop();
+                        var elapsedMs = watch.ElapsedMilliseconds;
+                        Logger.Debug(
+                            $"SearchMoviesAsync ({criteria}, {page}, {limit}) in {elapsedMs} milliseconds.");
+                    }
+
+                    var result = wrapper?.Movies ?? new List<MovieLightJson>();
+                    ProcessTranslations(result);
+                    var nbResult = wrapper?.TotalMovies ?? 0;
+                    return (result, nbResult);
+                }, ct).ConfigureAwait(false);
             }
-            catch (Exception exception) when (exception is TaskCanceledException)
+            catch (Exception ex)
             {
-                Logger.Debug(
-                    "SearchMoviesAsync cancelled.");
-            }
-            catch (Exception exception)
-            {
-                Logger.Error(
-                    $"SearchMoviesAsync: {exception.Message}");
+                Logger.Error(ex);
                 throw;
             }
-            finally
-            {
-                watch.Stop();
-                var elapsedMs = watch.ElapsedMilliseconds;
-                Logger.Debug(
-                    $"SearchMoviesAsync ({criteria}, {page}, {limit}) in {elapsedMs} milliseconds.");
-            }
-
-            var result = wrapper?.Movies ?? new List<MovieLightJson>();
-            Task.Run(async () =>
-            {
-                await ProcessTranslations(result).ConfigureAwait(false);
-            }).ConfigureAwait(false);
-
-            var nbResult = wrapper?.TotalMovies ?? 0;
-            return (result, nbResult);
         }
 
         /// <summary>
@@ -433,63 +545,9 @@ namespace Popcorn.Services.Movies.Movie
         /// </summary>
         /// <param name="movieToTranslate">Movie to translate</param>
         /// <returns>Task</returns>
-        public async Task TranslateMovieAsync(IMovie movieToTranslate)
+        public void TranslateMovie(IMovie movieToTranslate)
         {
-            if (!MustRefreshLanguage) return;
-
-            var timeoutPolicy =
-                Policy.TimeoutAsync(2, TimeoutStrategy.Pessimistic);
-
-            try
-            {
-                await timeoutPolicy.ExecuteAsync(async () =>
-                {
-                    var watch = Stopwatch.StartNew();
-                    try
-                    {
-                        var movie = await TmdbClient.GetMovieAsync(movieToTranslate.ImdbCode,
-                            MovieMethods.Credits).ConfigureAwait(false);
-                        var refMovie = movieToTranslate as MovieJson;
-                        if (refMovie != null)
-                        {
-                            refMovie.Title = movie?.Title;
-                            refMovie.Genres = movie?.Genres?.Select(a => a.Name).ToList();
-                            refMovie.DescriptionFull = movie?.Overview;
-                            return;
-                        }
-
-                        var refMovieLight = movieToTranslate as MovieLightJson;
-                        if (refMovieLight != null)
-                        {
-                            refMovieLight.Title = movie?.Title;
-                            refMovieLight.Genres = movie?.Genres != null
-                                    ? string.Join(", ", movie.Genres?.Select(a => a.Name))
-                                    : string.Empty;
-                        }
-                    }
-                    catch (Exception exception) when (exception is TaskCanceledException)
-                    {
-                        Logger.Debug(
-                                "TranslateMovieAsync cancelled.");
-                    }
-                    catch (Exception exception)
-                    {
-                        Logger.Error(
-                                $"TranslateMovieAsync: {exception.Message}");
-                    }
-                    finally
-                    {
-                        watch.Stop();
-                        var elapsedMs = watch.ElapsedMilliseconds;
-                        Logger.Debug(
-                                $"TranslateMovieAsync ({movieToTranslate.ImdbCode}) in {elapsedMs} milliseconds.");
-                    }
-                });
-            }
-            catch (TimeoutRejectedException ex)
-            {
-                Logger.Warn($"Movie {movieToTranslate.ImdbCode} has not been translated in 2 seconds. Error {ex.Message}");
-            }
+            _moviesToTranslateObservable.OnNext(movieToTranslate);
         }
 
         /// <summary>
@@ -500,58 +558,72 @@ namespace Popcorn.Services.Movies.Movie
         /// <returns>Video trailer</returns>
         public async Task<string> GetMovieTrailerAsync(MovieJson movie, CancellationToken ct)
         {
-            var watch = Stopwatch.StartNew();
-            var uri = string.Empty;
+            var timeoutPolicy =
+                Policy.TimeoutAsync(5, TimeoutStrategy.Pessimistic);
             try
             {
-                var tmdbMovie = await TmdbClient.GetMovieAsync(movie.ImdbCode, MovieMethods.Videos)
-                    .ConfigureAwait(false);
-                var trailers = tmdbMovie?.Videos;
-                if (trailers != null && trailers.Results.Any())
+                return await timeoutPolicy.ExecuteAsync(async cancellation =>
                 {
-                    using (var service = Client.For(YouTube.Default))
+                    var watch = Stopwatch.StartNew();
+                    var uri = string.Empty;
+                    try
                     {
-                        var videos =
-                            (await service.GetAllVideosAsync("https://youtube.com/watch?v=" + trailers.Results
-                                                                 .FirstOrDefault()
-                                                                 .Key).ConfigureAwait(false))
-                            .ToList();
-                        if (videos.Any())
+                        var tmdbMovie = await TmdbClient.GetMovieAsync(movie.ImdbCode, MovieMethods.Videos)
+                            .ConfigureAwait(false);
+                        var trailers = tmdbMovie?.Videos;
+                        if (trailers != null && trailers.Results.Any())
                         {
-                            var settings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
-                            var maxRes = settings.DefaultHdQuality ? 1080 : 720;
-                            uri =
-                                await videos.Where(a => !a.Is3D && a.Resolution <= maxRes &&
-                                                        a.Format == VideoFormat.Mp4 && a.AudioBitrate > 0)
-                                    .Aggregate((i1, i2) => i1.Resolution > i2.Resolution ? i1 : i2).GetUriAsync();
+                            using (var service = Client.For(YouTube.Default))
+                            {
+                                var videos =
+                                    (await service.GetAllVideosAsync("https://youtube.com/watch?v=" + trailers.Results
+                                                                         .FirstOrDefault()
+                                                                         .Key).ConfigureAwait(false))
+                                    .ToList();
+                                if (videos.Any())
+                                {
+                                    var settings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
+                                    var maxRes = settings.DefaultHdQuality ? 1080 : 720;
+                                    uri =
+                                        await videos.Where(a => !a.Is3D && a.Resolution <= maxRes &&
+                                                                a.Format == VideoFormat.Mp4 && a.AudioBitrate > 0)
+                                            .Aggregate((i1, i2) => i1.Resolution > i2.Resolution ? i1 : i2)
+                                            .GetUriAsync();
+                                }
+                            }
+                        }
+                        else
+                        {
+                            throw new PopcornException("No trailer found.");
                         }
                     }
-                }
-                else
-                {
-                    throw new PopcornException("No trailer found.");
-                }
+                    catch (Exception exception) when (exception is TaskCanceledException)
+                    {
+                        Logger.Debug(
+                            "GetMovieTrailerAsync cancelled.");
+                    }
+                    catch (Exception exception)
+                    {
+                        Logger.Error(
+                            $"GetMovieTrailerAsync: {exception.Message}");
+                        throw;
+                    }
+                    finally
+                    {
+                        watch.Stop();
+                        var elapsedMs = watch.ElapsedMilliseconds;
+                        Logger.Debug(
+                            $"GetMovieTrailerAsync ({movie.ImdbCode}) in {elapsedMs} milliseconds.");
+                    }
+
+                    return uri;
+                }, ct).ConfigureAwait(false);
             }
-            catch (Exception exception) when (exception is TaskCanceledException)
+            catch (Exception ex)
             {
-                Logger.Debug(
-                    "GetMovieTrailerAsync cancelled.");
-            }
-            catch (Exception exception)
-            {
-                Logger.Error(
-                    $"GetMovieTrailerAsync: {exception.Message}");
+                Logger.Error(ex);
                 throw;
             }
-            finally
-            {
-                watch.Stop();
-                var elapsedMs = watch.ElapsedMilliseconds;
-                Logger.Debug(
-                    $"GetMovieTrailerAsync ({movie.ImdbCode}) in {elapsedMs} milliseconds.");
-            }
-
-            return uri;
         }
     }
 }

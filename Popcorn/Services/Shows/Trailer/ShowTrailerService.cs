@@ -8,6 +8,8 @@ using Popcorn.Utils.Exceptions;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Polly;
+using Polly.Timeout;
 
 namespace Popcorn.Services.Shows.Trailer
 {
@@ -39,51 +41,63 @@ namespace Popcorn.Services.Shows.Trailer
         /// <param name="ct">Cancellation token</param>
         public async Task LoadTrailerAsync(ShowJson show, CancellationToken ct)
         {
+            var timeoutPolicy =
+                Policy.TimeoutAsync(5, TimeoutStrategy.Pessimistic);
             try
             {
-                var trailer = await ShowService.GetShowTrailerAsync(show, ct);
-                if (!ct.IsCancellationRequested && string.IsNullOrEmpty(trailer))
+                await timeoutPolicy.ExecuteAsync(async cancellation =>
                 {
-                    Logger.Error(
-                        $"Failed loading show's trailer: {show.Title}");
-                    Messenger.Default.Send(
-                        new ManageExceptionMessage(
-                            new PopcornException(
-                                LocalizationProviderHelper.GetLocalizedValue<string>("TrailerNotAvailable"))));
-                    Messenger.Default.Send(new StopPlayingTrailerMessage(Utils.MediaType.Show));
-                    return;
-                }
+                    try
+                    {
+                        var trailer = await ShowService.GetShowTrailerAsync(show, cancellation);
+                        if (!ct.IsCancellationRequested && string.IsNullOrEmpty(trailer))
+                        {
+                            Logger.Error(
+                                $"Failed loading show's trailer: {show.Title}");
+                            Messenger.Default.Send(
+                                new ManageExceptionMessage(
+                                    new PopcornException(
+                                        LocalizationProviderHelper.GetLocalizedValue<string>("TrailerNotAvailable"))));
+                            Messenger.Default.Send(new StopPlayingTrailerMessage(Utils.MediaType.Show));
+                            return;
+                        }
 
-                if (!ct.IsCancellationRequested)
-                {
-                    Logger.Debug(
-                        $"Show's trailer loaded: {show.Title}");
-                    Messenger.Default.Send(new PlayTrailerMessage(trailer, show.Title, () =>
+                        if (!ct.IsCancellationRequested)
                         {
-                            Messenger.Default.Send(new StopPlayingTrailerMessage(Utils.MediaType.Show));
-                        },
-                        () =>
-                        {
-                            Messenger.Default.Send(new StopPlayingTrailerMessage(Utils.MediaType.Show));
-                        }, Utils.MediaType.Show));
-                }
+                            Logger.Debug(
+                                $"Show's trailer loaded: {show.Title}");
+                            Messenger.Default.Send(new PlayTrailerMessage(trailer, show.Title, () =>
+                                {
+                                    Messenger.Default.Send(new StopPlayingTrailerMessage(Utils.MediaType.Show));
+                                },
+                                () =>
+                                {
+                                    Messenger.Default.Send(new StopPlayingTrailerMessage(Utils.MediaType.Show));
+                                }, Utils.MediaType.Show));
+                        }
+                    }
+                    catch (Exception exception) when (exception is TaskCanceledException)
+                    {
+                        Logger.Debug(
+                            "LoadTrailerAsync cancelled.");
+                        Messenger.Default.Send(new StopPlayingTrailerMessage(Utils.MediaType.Show));
+                    }
+                    catch (Exception exception)
+                    {
+                        Logger.Error(
+                            $"LoadTrailerAsync: {exception.Message}");
+                        Messenger.Default.Send(
+                            new ManageExceptionMessage(
+                                new PopcornException(
+                                    LocalizationProviderHelper.GetLocalizedValue<string>(
+                                        "TrailerNotAvailable"))));
+                        Messenger.Default.Send(new StopPlayingTrailerMessage(Utils.MediaType.Show));
+                    }
+                }, ct).ConfigureAwait(false);
             }
-            catch (Exception exception) when (exception is TaskCanceledException)
+            catch (Exception ex)
             {
-                Logger.Debug(
-                    "LoadTrailerAsync cancelled.");
-                Messenger.Default.Send(new StopPlayingTrailerMessage(Utils.MediaType.Show));
-            }
-            catch (Exception exception)
-            {
-                Logger.Error(
-                    $"LoadTrailerAsync: {exception.Message}");
-                Messenger.Default.Send(
-                    new ManageExceptionMessage(
-                        new PopcornException(
-                            LocalizationProviderHelper.GetLocalizedValue<string>(
-                                "TrailerNotAvailable"))));
-                Messenger.Default.Send(new StopPlayingTrailerMessage(Utils.MediaType.Show));
+                Logger.Error(ex);
             }
         }
     }
