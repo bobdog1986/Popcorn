@@ -20,6 +20,7 @@ using Popcorn.YTVideoProvider;
 using Polly;
 using Polly.Timeout;
 using Popcorn.Extensions;
+using Utf8Json;
 
 namespace Popcorn.Services.Movies.Movie
 {
@@ -146,12 +147,12 @@ namespace Popcorn.Services.Movies.Movie
 
                     try
                     {
-                        var response = await restClient.ExecuteTaskAsync<MovieJson>(request, cancellation)
+                        var response = await restClient.ExecuteTaskAsync(request, cancellation)
                             .ConfigureAwait(false);
                         if (response.ErrorException != null)
                             throw response.ErrorException;
 
-                        movie = response.Data;
+                        movie = JsonSerializer.Deserialize<MovieJson>(response.RawBytes);
                     }
                     catch (Exception exception) when (exception is TaskCanceledException)
                     {
@@ -206,12 +207,12 @@ namespace Popcorn.Services.Movies.Movie
 
                     try
                     {
-                        var response = await restClient.ExecuteTaskAsync<MovieLightJson>(request, cancellation)
+                        var response = await restClient.ExecuteTaskAsync(request, cancellation)
                             .ConfigureAwait(false);
                         if (response.ErrorException != null)
                             throw response.ErrorException;
 
-                        movie = response.Data;
+                        movie = JsonSerializer.Deserialize<MovieLightJson>(response.RawBytes);
                     }
                     catch (Exception exception) when (exception is TaskCanceledException)
                     {
@@ -333,12 +334,12 @@ namespace Popcorn.Services.Movies.Movie
                     request.AddParameter("sort_by", sortBy);
                     try
                     {
-                        var response = await restClient.ExecuteTaskAsync<MovieLightResponse>(request, cancellation)
+                        var response = await restClient.ExecuteTaskAsync(request, cancellation)
                             .ConfigureAwait(false);
                         if (response.ErrorException != null)
                             throw response.ErrorException;
 
-                        wrapper = response.Data;
+                        wrapper = JsonSerializer.Deserialize<MovieLightResponse>(response.RawBytes);
                     }
                     catch (Exception exception) when (exception is TaskCanceledException)
                     {
@@ -422,11 +423,11 @@ namespace Popcorn.Services.Movies.Movie
 
                     try
                     {
-                        var response = await restClient.ExecuteTaskAsync<MovieLightResponse>(request, cancellation);
+                        var response = await restClient.ExecuteTaskAsync(request, cancellation);
                         if (response.ErrorException != null)
                             throw response.ErrorException;
 
-                        wrapper = response.Data;
+                        wrapper = JsonSerializer.Deserialize<MovieLightResponse>(response.RawBytes);
                     }
                     catch (Exception exception) when (exception is TaskCanceledException)
                     {
@@ -502,11 +503,11 @@ namespace Popcorn.Services.Movies.Movie
 
                     try
                     {
-                        var response = await restClient.ExecuteTaskAsync<MovieLightResponse>(request, cancellation);
+                        var response = await restClient.ExecuteTaskAsync(request, cancellation);
                         if (response.ErrorException != null)
                             throw response.ErrorException;
 
-                        wrapper = response.Data;
+                        wrapper = JsonSerializer.Deserialize<MovieLightResponse>(response.RawBytes);
                     }
                     catch (Exception exception) when (exception is TaskCanceledException)
                     {

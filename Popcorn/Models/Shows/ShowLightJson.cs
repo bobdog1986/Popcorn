@@ -1,4 +1,5 @@
-﻿using GalaSoft.MvvmLight;
+﻿using System.Runtime.Serialization;
+using GalaSoft.MvvmLight;
 using Popcorn.Models.Image;
 using Popcorn.Models.Rating;
 using RestSharp.Deserializers;
@@ -23,21 +24,21 @@ namespace Popcorn.Models.Shows
 
         private RatingJson _rating;
 
-        [DeserializeAs(Name = "imdb_id")]
+        [DataMember(Name = "imdb_id")]
         public string ImdbId
         {
             get => _imdbId;
             set => Set(ref _imdbId, value);
         }
 
-        [DeserializeAs(Name = "tvdb_id")]
+        [DataMember(Name = "tvdb_id")]
         public string TvdbId
         {
             get => _tvdbId;
             set => Set(ref _tvdbId, value);
         }
 
-        [DeserializeAs(Name = "title")]
+        [DataMember(Name = "title")]
         public string Title
         {
             get => _title;
@@ -48,28 +49,28 @@ namespace Popcorn.Models.Shows
             }
         }
 
-        [DeserializeAs(Name = "year")]
+        [DataMember(Name = "year")]
         public int Year
         {
             get => _year;
             set => Set(ref _year, value);
         }
 
-        [DeserializeAs(Name = "genres")]
+        [DataMember(Name = "genres")]
         public string Genres
         {
             get => _genres;
             set => Set(ref _genres, value);
         }
 
-        [DeserializeAs(Name = "images")]
+        [DataMember(Name = "images")]
         public ImageShowJson Images
         {
             get => _images;
             set => Set(ref _images, value);
         }
 
-        [DeserializeAs(Name = "rating")]
+        [DataMember(Name = "rating")]
         public RatingJson Rating
         {
             get => _rating;

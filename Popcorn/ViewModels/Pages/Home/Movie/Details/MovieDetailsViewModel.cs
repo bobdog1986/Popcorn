@@ -506,6 +506,8 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
         /// </summary>
         private void ComputeTorrentHealth()
         {
+            if (Movie.Torrents == null) return;
+
             SelectedTorrent = Movie.WatchInFullHdQuality
                 ? Movie.Torrents.FirstOrDefault(a => a.Quality == "1080p")
                 : Movie.Torrents.FirstOrDefault(a => a.Quality == "720p");

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.Serialization;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
@@ -61,231 +62,231 @@ namespace Popcorn.Models.Movie
         private string _ytTrailerCode;
         private List<string> _similars;
 
-        [DeserializeAs(Name = "url")]
+        [DataMember(Name = "url")]
         public string Url
         {
             get => _url;
             set { Set(() => Url, ref _url, value); }
         }
 
-        [DeserializeAs(Name = "imdb_code")]
+        [DataMember(Name = "imdb_code")]
         public string ImdbCode
         {
             get => _imdbCode;
             set { Set(() => ImdbCode, ref _imdbCode, value); }
         }
 
-        [DeserializeAs(Name = "title")]
+        [DataMember(Name = "title")]
         public string Title
         {
             get => _title;
             set { Set(() => Title, ref _title, value); }
         }
 
-        [DeserializeAs(Name = "title_long")]
+        [DataMember(Name = "title_long")]
         public string TitleLong
         {
             get => _titleLong;
             set { Set(() => TitleLong, ref _titleLong, value); }
         }
 
-        [DeserializeAs(Name = "slug")]
+        [DataMember(Name = "slug")]
         public string Slug
         {
             get => _slug;
             set { Set(() => Slug, ref _slug, value); }
         }
 
-        [DeserializeAs(Name = "year")]
+        [DataMember(Name = "year")]
         public int Year
         {
             get => _year;
             set { Set(() => Year, ref _year, value); }
         }
 
-        [DeserializeAs(Name = "rating")]
+        [DataMember(Name = "rating")]
         public double Rating
         {
             get => _rating;
             set { Set(() => Rating, ref _rating, value); }
         }
 
-        [DeserializeAs(Name = "runtime")]
+        [DataMember(Name = "runtime")]
         public int Runtime
         {
             get => _runtime;
             set { Set(() => Runtime, ref _runtime, value); }
         }
 
-        [DeserializeAs(Name = "genres")]
+        [DataMember(Name = "genres")]
         public List<string> Genres
         {
             get => _genres;
             set { Set(() => Genres, ref _genres, value); }
         }
 
-        [DeserializeAs(Name = "language")]
+        [DataMember(Name = "language")]
         public string Language
         {
             get => _language;
             set { Set(() => Language, ref _language, value); }
         }
 
-        [DeserializeAs(Name = "mpa_rating")]
+        [DataMember(Name = "mpa_rating")]
         public string MpaRating
         {
             get => _mpaRating;
             set { Set(() => MpaRating, ref _mpaRating, value); }
         }
 
-        [DeserializeAs(Name = "download_count")]
+        [DataMember(Name = "download_count")]
         public int DownloadCount
         {
             get => _downloadCount;
             set { Set(() => DownloadCount, ref _downloadCount, value); }
         }
 
-        [DeserializeAs(Name = "like_count")]
+        [DataMember(Name = "like_count")]
         public int LikeCount
         {
             get => _likeCount;
             set { Set(() => LikeCount, ref _likeCount, value); }
         }
 
-        [DeserializeAs(Name = "description_intro")]
+        [DataMember(Name = "description_intro")]
         public string DescriptionIntro
         {
             get => _descriptionIntro;
             set { Set(() => DescriptionIntro, ref _descriptionIntro, value); }
         }
 
-        [DeserializeAs(Name = "description_full")]
+        [DataMember(Name = "description_full")]
         public string DescriptionFull
         {
             get => _descriptionFull;
             set { Set(() => DescriptionFull, ref _descriptionFull, value); }
         }
 
-        [DeserializeAs(Name = "yt_trailer_code")]
+        [DataMember(Name = "yt_trailer_code")]
         public string YtTrailerCode
         {
             get => _ytTrailerCode;
             set { Set(() => YtTrailerCode, ref _ytTrailerCode, value); }
         }
 
-        [DeserializeAs(Name = "cast")]
+        [DataMember(Name = "cast")]
         public List<CastJson> Cast
         {
             get => _cast;
             set { Set(() => Cast, ref _cast, value); }
         }
 
-        [DeserializeAs(Name = "torrents")]
+        [DataMember(Name = "torrents")]
         public List<TorrentJson> Torrents
         {
             get => _torrents;
             set { Set(() => Torrents, ref _torrents, value); }
         }
 
-        [DeserializeAs(Name = "date_uploaded")]
+        [DataMember(Name = "date_uploaded")]
         public string DateUploaded
         {
             get => _dateUploaded;
             set { Set(() => DateUploaded, ref _dateUploaded, value); }
         }
 
-        [DeserializeAs(Name = "poster_image")]
+        [DataMember(Name = "poster_image")]
         public string PosterImage
         {
             get => _posterImage;
             set { Set(() => PosterImage, ref _posterImage, value); }
         }
 
-        [DeserializeAs(Name = "backdrop_image")]
+        [DataMember(Name = "backdrop_image")]
         public string BackdropImage
         {
             get => _backdropImage;
             set { Set(() => BackdropImage, ref _backdropImage, value); }
         }
 
-        [DeserializeAs(Name = "date_uploaded_unix")]
+        [DataMember(Name = "date_uploaded_unix")]
         public int DateUploadedUnix
         {
             get => _dateUploadedUnix;
             set { Set(() => DateUploadedUnix, ref _dateUploadedUnix, value); }
         }
 
-        [DeserializeAs(Name = "background_image")]
+        [DataMember(Name = "background_image")]
         public string BackgroundImage
         {
             get => _backgroundImage;
             set { Set(() => BackgroundImage, ref _backgroundImage, value); }
         }
 
-        [DeserializeAs(Name = "small_cover_image")]
+        [DataMember(Name = "small_cover_image")]
         public string SmallCoverImage
         {
             get => _smallCoverImage;
             set { Set(() => SmallCoverImage, ref _smallCoverImage, value); }
         }
 
-        [DeserializeAs(Name = "medium_cover_image")]
+        [DataMember(Name = "medium_cover_image")]
         public string MediumCoverImage
         {
             get => _mediumCoverImage;
             set { Set(() => MediumCoverImage, ref _mediumCoverImage, value); }
         }
 
-        [DeserializeAs(Name = "large_cover_image")]
+        [DataMember(Name = "large_cover_image")]
         public string LargeCoverImage
         {
             get => _largeCoverImage;
             set { Set(() => LargeCoverImage, ref _largeCoverImage, value); }
         }
 
-        [DeserializeAs(Name = "medium_screenshot_image1")]
+        [DataMember(Name = "medium_screenshot_image1")]
         public string MediumScreenshotImage1
         {
             get => _mediumScreenshotImage1;
             set { Set(() => MediumScreenshotImage1, ref _mediumScreenshotImage1, value); }
         }
 
-        [DeserializeAs(Name = "medium_screenshot_image2")]
+        [DataMember(Name = "medium_screenshot_image2")]
         public string MediumScreenshotImage2
         {
             get => _mediumScreenshotImage2;
             set { Set(() => MediumScreenshotImage2, ref _mediumScreenshotImage2, value); }
         }
 
-        [DeserializeAs(Name = "medium_screenshot_image3")]
+        [DataMember(Name = "medium_screenshot_image3")]
         public string MediumScreenshotImage3
         {
             get => _mediumScreenshotImage3;
             set { Set(() => MediumScreenshotImage3, ref _mediumScreenshotImage3, value); }
         }
 
-        [DeserializeAs(Name = "large_screenshot_image1")]
+        [DataMember(Name = "large_screenshot_image1")]
         public string LargeScreenshotImage1
         {
             get => _largeScreenshotImage1;
             set { Set(() => LargeScreenshotImage1, ref _largeScreenshotImage1, value); }
         }
 
-        [DeserializeAs(Name = "large_screenshot_image2")]
+        [DataMember(Name = "large_screenshot_image2")]
         public string LargeScreenshotImage2
         {
             get => _largeScreenshotImage2;
             set { Set(() => LargeScreenshotImage2, ref _largeScreenshotImage2, value); }
         }
 
-        [DeserializeAs(Name = "large_screenshot_image3")]
+        [DataMember(Name = "large_screenshot_image3")]
         public string LargeScreenshotImage3
         {
             get => _largeScreenshotImage3;
             set { Set(() => LargeScreenshotImage3, ref _largeScreenshotImage3, value); }
         }
 
-        [DeserializeAs(Name = "similar")]
+        [DataMember(Name = "similar")]
         public List<string> Similars
         {
             get => _similars;

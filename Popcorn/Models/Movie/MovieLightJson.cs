@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
 using GalaSoft.MvvmLight;
 using RestSharp.Deserializers;
 
@@ -15,42 +16,42 @@ namespace Popcorn.Models.Movie
         private string _title;
         private int _year;
 
-        [DeserializeAs(Name = "imdb_code")]
+        [DataMember(Name = "imdb_code")]
         public string ImdbCode
         {
             get => _imdbCode;
             set { Set(() => ImdbCode, ref _imdbCode, value); }
         }
 
-        [DeserializeAs(Name = "title")]
+        [DataMember(Name = "title")]
         public string Title
         {
             get => _title;
             set { Set(() => Title, ref _title, value); }
         }
 
-        [DeserializeAs(Name = "year")]
+        [DataMember(Name = "year")]
         public int Year
         {
             get => _year;
             set { Set(() => Year, ref _year, value); }
         }
 
-        [DeserializeAs(Name = "rating")]
+        [DataMember(Name = "rating")]
         public double Rating
         {
             get => _rating;
             set { Set(() => Rating, ref _rating, value); }
         }
 
-        [DeserializeAs(Name = "genres")]
+        [DataMember(Name = "genres")]
         public string Genres
         {
             get => _genres;
             set { Set(() => Genres, ref _genres, value); }
         }
 
-        [DeserializeAs(Name = "poster_image")]
+        [DataMember(Name = "poster_image")]
         public string PosterImage
         {
             get => _posterImage;

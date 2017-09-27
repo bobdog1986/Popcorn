@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -10,13 +11,13 @@ namespace Popcorn.Models.Image
 {
     public class ImageShowJson
     {
-        [DeserializeAs(Name = "poster")]
+        [DataMember(Name = "poster")]
         public string Poster { get; set; }
 
-        [DeserializeAs(Name = "fanart")]
+        [DataMember(Name = "fanart")]
         public string Fanart { get; set; }
 
-        [DeserializeAs(Name = "banner")]
+        [DataMember(Name = "banner")]
         public string Banner { get; set; }
     }
 }

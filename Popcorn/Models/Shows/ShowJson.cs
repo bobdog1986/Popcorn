@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight;
@@ -54,21 +55,21 @@ namespace Popcorn.Models.Shows
 
         private List<string> _similars;
 
-        [DeserializeAs(Name = "imdb_id")]
+        [DataMember(Name = "imdb_id")]
         public string ImdbId
         {
             get => _imdbId;
             set => Set(ref _imdbId, value);
         }
 
-        [DeserializeAs(Name = "tvdb_id")]
+        [DataMember(Name = "tvdb_id")]
         public string TvdbId
         {
             get => _tvdbId;
             set => Set(ref _tvdbId, value);
         }
 
-        [DeserializeAs(Name = "title")]
+        [DataMember(Name = "title")]
         public string Title
         {
             get => _title;
@@ -79,112 +80,112 @@ namespace Popcorn.Models.Shows
             }
         }
 
-        [DeserializeAs(Name = "year")]
+        [DataMember(Name = "year")]
         public int Year
         {
             get => _year;
             set => Set(ref _year, value);
         }
 
-        [DeserializeAs(Name = "slug")]
+        [DataMember(Name = "slug")]
         public string Slug
         {
             get => _slug;
             set => Set(ref _slug, value);
         }
 
-        [DeserializeAs(Name = "synopsis")]
+        [DataMember(Name = "synopsis")]
         public string Synopsis
         {
             get => _synopsis;
             set => Set(ref _synopsis, value);
         }
 
-        [DeserializeAs(Name = "runtime")]
+        [DataMember(Name = "runtime")]
         public string Runtime
         {
             get => _runtime;
             set => Set(ref _runtime, value);
         }
 
-        [DeserializeAs(Name = "country")]
+        [DataMember(Name = "country")]
         public string Country
         {
             get => _country;
             set => Set(ref _country, value);
         }
 
-        [DeserializeAs(Name = "network")]
+        [DataMember(Name = "network")]
         public string Network
         {
             get => _network;
             set => Set(ref _network, value);
         }
 
-        [DeserializeAs(Name = "air_day")]
+        [DataMember(Name = "air_day")]
         public string AirDay
         {
             get => _airDay;
             set => Set(ref _airDay, value);
         }
 
-        [DeserializeAs(Name = "air_time")]
+        [DataMember(Name = "air_time")]
         public string AirTime
         {
             get => _airTime;
             set => Set(ref _airTime, value);
         }
 
-        [DeserializeAs(Name = "status")]
+        [DataMember(Name = "status")]
         public string Status
         {
             get => _status;
             set => Set(ref _status, value);
         }
 
-        [DeserializeAs(Name = "num_seasons")]
+        [DataMember(Name = "num_seasons")]
         public int NumSeasons
         {
             get => _numSeasons;
             set => Set(ref _numSeasons, value);
         }
 
-        [DeserializeAs(Name = "last_updated")]
+        [DataMember(Name = "last_updated")]
         public long LastUpdated
         {
             get => _lastUpdated;
             set => Set(ref _lastUpdated, value);
         }
 
-        [DeserializeAs(Name = "episodes")]
+        [DataMember(Name = "episodes")]
         public List<EpisodeShowJson> Episodes
         {
             get => _episodes;
             set => Set(ref _episodes, value);
         }
 
-        [DeserializeAs(Name = "genres")]
+        [DataMember(Name = "genres")]
         public List<string> Genres
         {
             get => _genres;
             set => Set(ref _genres, value);
         }
 
-        [DeserializeAs(Name = "images")]
+        [DataMember(Name = "images")]
         public ImageShowJson Images
         {
             get => _images;
             set => Set(ref _images, value);
         }
 
-        [DeserializeAs(Name = "rating")]
+        [DataMember(Name = "rating")]
         public RatingJson Rating
         {
             get => _rating;
             set => Set(ref _rating, value);
         }
 
-        [DeserializeAs(Name = "similar")]
+        [DataMember(Name = "similar")]
         public List<string> Similars
         {
             get => _similars;

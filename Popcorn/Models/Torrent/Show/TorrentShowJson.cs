@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using RestSharp.Deserializers;
@@ -9,16 +10,16 @@ namespace Popcorn.Models.Torrent.Show
 {
     public class TorrentShowJson
     {
-        [DeserializeAs(Name = "provider")]
+        [DataMember(Name = "provider")]
         public string Provider { get; set; }
 
-        [DeserializeAs(Name = "peers")]
+        [DataMember(Name = "peers")]
         public int? Peers { get; set; }
 
-        [DeserializeAs(Name = "seeds")]
+        [DataMember(Name = "seeds")]
         public int? Seeds { get; set; }
 
-        [DeserializeAs(Name = "url")]
+        [DataMember(Name = "url")]
         public string Url { get; set; }
     }
 }

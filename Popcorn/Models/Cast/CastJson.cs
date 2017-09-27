@@ -1,4 +1,5 @@
-﻿using GalaSoft.MvvmLight;
+﻿using System.Runtime.Serialization;
+using GalaSoft.MvvmLight;
 using RestSharp.Deserializers;
 
 namespace Popcorn.Models.Cast
@@ -10,28 +11,28 @@ namespace Popcorn.Models.Cast
         private string _smallImage;
         private string _imdbCode;
 
-        [DeserializeAs(Name = "name")]
+        [DataMember(Name = "name")]
         public string Name
         {
             get => _name;
             set { Set(() => Name, ref _name, value); }
         }
 
-        [DeserializeAs(Name = "character_name")]
+        [DataMember(Name = "character_name")]
         public string CharacterName
         {
             get => _characterName;
             set { Set(() => CharacterName, ref _characterName, value); }
         }
 
-        [DeserializeAs(Name = "url_small_image")]
+        [DataMember(Name = "url_small_image")]
         public string SmallImage
         {
             get => _smallImage;
             set { Set(() => SmallImage, ref _smallImage, value); }
         }
         
-        [DeserializeAs(Name = "imdb_code")]
+        [DataMember(Name = "imdb_code")]
         public string ImdbCode
         {
             get => _imdbCode;

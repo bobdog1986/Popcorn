@@ -19,6 +19,7 @@ using Popcorn.Utils.Exceptions;
 using Popcorn.ViewModels.Windows.Settings;
 using Popcorn.YTVideoProvider;
 using TMDbLib.Objects.TvShows;
+using Utf8Json;
 using Video = TMDbLib.Objects.General.Video;
 
 namespace Popcorn.Services.Shows.Show
@@ -88,12 +89,12 @@ namespace Popcorn.Services.Shows.Show
                     var show = new ShowJson();
                     try
                     {
-                        var response = await restClient.ExecuteTaskAsync<ShowJson>(request, cancellation)
+                        var response = await restClient.ExecuteTaskAsync(request, cancellation)
                             .ConfigureAwait(false);
                         if (response.ErrorException != null)
                             throw response.ErrorException;
 
-                        show = response.Data;
+                        show = JsonSerializer.Deserialize<ShowJson>(response.RawBytes);
                     }
                     catch (Exception exception) when (exception is TaskCanceledException)
                     {
@@ -145,12 +146,12 @@ namespace Popcorn.Services.Shows.Show
                     var show = new ShowLightJson();
                     try
                     {
-                        var response = await restClient.ExecuteTaskAsync<ShowLightJson>(request, cancellation)
+                        var response = await restClient.ExecuteTaskAsync(request, cancellation)
                             .ConfigureAwait(false);
                         if (response.ErrorException != null)
                             throw response.ErrorException;
 
-                        show = response.Data;
+                        show = JsonSerializer.Deserialize<ShowLightJson>(response.RawBytes);
                     }
                     catch (Exception exception) when (exception is TaskCanceledException)
                     {
@@ -222,12 +223,12 @@ namespace Popcorn.Services.Shows.Show
                     request.AddParameter("sort_by", sortBy);
                     try
                     {
-                        var response = await restClient.ExecuteTaskAsync<ShowLightResponse>(request, cancellation)
+                        var response = await restClient.ExecuteTaskAsync(request, cancellation)
                             .ConfigureAwait(false);
                         if (response.ErrorException != null)
                             throw response.ErrorException;
 
-                        wrapper = response.Data;
+                        wrapper = JsonSerializer.Deserialize<ShowLightResponse>(response.RawBytes);
                     }
                     catch (Exception exception) when (exception is TaskCanceledException)
                     {
@@ -301,12 +302,12 @@ namespace Popcorn.Services.Shows.Show
                     request.AddParameter("query_term", criteria);
                     try
                     {
-                        var response = await restClient.ExecuteTaskAsync<ShowLightResponse>(request, cancellation)
+                        var response = await restClient.ExecuteTaskAsync(request, cancellation)
                             .ConfigureAwait(false);
                         if (response.ErrorException != null)
                             throw response.ErrorException;
 
-                        wrapper = response.Data;
+                        wrapper = JsonSerializer.Deserialize<ShowLightResponse>(response.RawBytes);
                     }
                     catch (Exception exception) when (exception is TaskCanceledException)
                     {

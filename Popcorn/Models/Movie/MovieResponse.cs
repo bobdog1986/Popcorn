@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -10,10 +11,10 @@ namespace Popcorn.Models.Movie
 {
     public class MovieResponse
     {
-        [DeserializeAs(Name = "totalMovies")]
+        [DataMember(Name = "totalMovies")]
         public int TotalMovies { get; set; }
 
-        [DeserializeAs(Name = "movies")]
+        [DataMember(Name = "movies")]
         public List<MovieJson> Movies { get; set; }
     }
 }

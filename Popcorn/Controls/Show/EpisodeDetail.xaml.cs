@@ -102,6 +102,8 @@ namespace Popcorn.Controls.Show
         /// </summary>
         private static void ComputeTorrentHealth(EpisodeShowJson episode, EpisodeDetail detail)
         {
+            if (episode.SelectedTorrent == null) return;
+
             var torrent = episode.SelectedTorrent;
             if (torrent != null && torrent.Seeds < 4)
             {
