@@ -80,7 +80,9 @@ namespace Popcorn.Services.User
             User = new Models.User.User();
             try
             {
-                User = await BlobCache.UserAccount.GetObject<Models.User.User>("user");
+                var user = await BlobCache.UserAccount.GetObject<Models.User.User>("user");
+                if (user != null)
+                    User = user;
             }
             catch (Exception)
             {

@@ -465,4 +465,7 @@
   <data name="Logout" xml:space="preserve">
     <value>Cerrar sesión</value>
   </data>
+  <data name="Dismiss" xml:space="preserve">
+    <value>Despedir</value>
+  </data>
 </root>

@@ -331,6 +331,15 @@ namespace Popcorn.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Dismiss.
+        /// </summary>
+        public static string Dismiss {
+            get {
+                return ResourceManager.GetString("Dismiss", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Downloading subtitles....
         /// </summary>
         public static string DownloadingSubtitlesLabel {

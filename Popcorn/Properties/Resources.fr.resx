@@ -465,4 +465,7 @@
   <data name="Logout" xml:space="preserve">
     <value>Se déconnecter</value>
   </data>
+  <data name="Dismiss" xml:space="preserve">
+    <value>Ok</value>
+  </data>
 </root>

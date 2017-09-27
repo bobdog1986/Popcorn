@@ -56,7 +56,7 @@ namespace Popcorn.Services.Shows.Trailer
                                 $"Failed loading show's trailer: {show.Title}");
                             Messenger.Default.Send(
                                 new ManageExceptionMessage(
-                                    new PopcornException(
+                                    new TrailerNotAvailableException(
                                         LocalizationProviderHelper.GetLocalizedValue<string>("TrailerNotAvailable"))));
                             Messenger.Default.Send(new StopPlayingTrailerMessage(Utils.MediaType.Show));
                             return;
@@ -88,7 +88,7 @@ namespace Popcorn.Services.Shows.Trailer
                             $"LoadTrailerAsync: {exception.Message}");
                         Messenger.Default.Send(
                             new ManageExceptionMessage(
-                                new PopcornException(
+                                new TrailerNotAvailableException(
                                     LocalizationProviderHelper.GetLocalizedValue<string>(
                                         "TrailerNotAvailable"))));
                         Messenger.Default.Send(new StopPlayingTrailerMessage(Utils.MediaType.Show));

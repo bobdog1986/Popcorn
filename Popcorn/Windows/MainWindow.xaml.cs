@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -67,7 +68,7 @@ namespace Popcorn.Windows
                 }
             });
         }
-
+        
         private void OnStateChanged(object sender, EventArgs e)
         {
             MovieDetailsUc.Margin = WindowState == WindowState.Maximized

@@ -907,9 +907,9 @@ namespace Popcorn.ViewModels.Windows
         {
             DispatcherHelper.CheckBeginInvokeOnUI(() =>
             {
-                IsMovieFlyoutOpen = false;
-                IsShowFlyoutOpen = false;
-                IsSettingsFlyoutOpen = false;
+                //IsMovieFlyoutOpen = false;
+                //IsShowFlyoutOpen = false;
+                //IsSettingsFlyoutOpen = false;
 
                 if (exception is WebException || exception is SocketException || exception is TimeoutRejectedException)
                 {
@@ -921,6 +921,17 @@ namespace Popcorn.ViewModels.Windows
                         .HasMessage(LocalizationProviderHelper.GetLocalizedValue<string>("EmbarrassingError"))
                         .HasMessage(LocalizationProviderHelper.GetLocalizedValue<string>("ConnectionErrorDescriptionPopup"))
                         .Dismiss().WithButton(LocalizationProviderHelper.GetLocalizedValue<string>("Ignore"),
+                            button => { })
+                        .Queue();
+                }
+                else if (exception is TrailerNotAvailableException)
+                {
+                    _manager.CreateMessage()
+                        .Accent("#E0A030")
+                        .Background("#333")
+                        .HasBadge("Warning")
+                        .HasMessage(exception.Message)
+                        .Dismiss().WithButton(LocalizationProviderHelper.GetLocalizedValue<string>("Dismiss"),
                             button => { })
                         .Queue();
                 }

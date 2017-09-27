@@ -2,14 +2,14 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>Popcorn</id>
-        <version>2.9.0</version>
+        <version>3.0.0</version>
         <title>Popcorn</title>
         <authors>Benjamin Bougot</authors>
         <projectUrl>https://github.com/bbougot/Popcorn</projectUrl>
         <iconUrl>https://raw.githubusercontent.com/bbougot/Popcorn/master/Popcorn/icon.ico</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>A Powerful and Fast Popcorn Time Client</description>
-        <releaseNotes>Improve available update information and fix bugs</releaseNotes>
+        <releaseNotes>Fix bugs and improve notification manager</releaseNotes>
     </metadata>
     <files>
         <file src="en\Popcorn.resources.dll" target="lib\net45\en\Popcorn.resources.dll" />
@@ -607,5 +607,113 @@
         <file src="System.Runtime.InteropServices.dll" target="lib\net45\System.Runtime.InteropServices.dll" />
         <file src="System.Runtime.InteropServices.RuntimeInformation.dll" target="lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll" />
         <file src="System.Xml.ReaderWriter.dll" target="lib\net45\System.Xml.ReaderWriter.dll" />
+        <file src="Enterwell.Clients.Wpf.Notifications.dll" target="lib\net45\Enterwell.Clients.Wpf.Notifications.dll" />
+        <file src="netstandard.dll" target="lib\net45\netstandard.dll" />
+        <file src="Popcorn.Adorners.dll" target="lib\net45\Popcorn.Adorners.dll" />
+        <file src="System.Collections.Concurrent.dll" target="lib\net45\System.Collections.Concurrent.dll" />
+        <file src="System.Collections.dll" target="lib\net45\System.Collections.dll" />
+        <file src="System.Collections.NonGeneric.dll" target="lib\net45\System.Collections.NonGeneric.dll" />
+        <file src="System.Collections.Specialized.dll" target="lib\net45\System.Collections.Specialized.dll" />
+        <file src="System.ComponentModel.dll" target="lib\net45\System.ComponentModel.dll" />
+        <file src="System.ComponentModel.EventBasedAsync.dll" target="lib\net45\System.ComponentModel.EventBasedAsync.dll" />
+        <file src="System.ComponentModel.Primitives.dll" target="lib\net45\System.ComponentModel.Primitives.dll" />
+        <file src="System.ComponentModel.TypeConverter.dll" target="lib\net45\System.ComponentModel.TypeConverter.dll" />
+        <file src="System.Data.Common.dll" target="lib\net45\System.Data.Common.dll" />
+        <file src="System.Diagnostics.Contracts.dll" target="lib\net45\System.Diagnostics.Contracts.dll" />
+        <file src="System.Diagnostics.Debug.dll" target="lib\net45\System.Diagnostics.Debug.dll" />
+        <file src="System.Diagnostics.FileVersionInfo.dll" target="lib\net45\System.Diagnostics.FileVersionInfo.dll" />
+        <file src="System.Diagnostics.Process.dll" target="lib\net45\System.Diagnostics.Process.dll" />
+        <file src="System.Diagnostics.StackTrace.dll" target="lib\net45\System.Diagnostics.StackTrace.dll" />
+        <file src="System.Diagnostics.TextWriterTraceListener.dll" target="lib\net45\System.Diagnostics.TextWriterTraceListener.dll" />
+        <file src="System.Diagnostics.Tools.dll" target="lib\net45\System.Diagnostics.Tools.dll" />
+        <file src="System.Diagnostics.TraceSource.dll" target="lib\net45\System.Diagnostics.TraceSource.dll" />
+        <file src="System.Drawing.Primitives.dll" target="lib\net45\System.Drawing.Primitives.dll" />
+        <file src="System.Dynamic.Runtime.dll" target="lib\net45\System.Dynamic.Runtime.dll" />
+        <file src="System.Globalization.dll" target="lib\net45\System.Globalization.dll" />
+        <file src="System.Globalization.Extensions.dll" target="lib\net45\System.Globalization.Extensions.dll" />
+        <file src="System.IO.FileSystem.DriveInfo.dll" target="lib\net45\System.IO.FileSystem.DriveInfo.dll" />
+        <file src="System.IO.FileSystem.Watcher.dll" target="lib\net45\System.IO.FileSystem.Watcher.dll" />
+        <file src="System.IO.IsolatedStorage.dll" target="lib\net45\System.IO.IsolatedStorage.dll" />
+        <file src="System.IO.MemoryMappedFiles.dll" target="lib\net45\System.IO.MemoryMappedFiles.dll" />
+        <file src="System.IO.Pipes.dll" target="lib\net45\System.IO.Pipes.dll" />
+        <file src="System.IO.UnmanagedMemoryStream.dll" target="lib\net45\System.IO.UnmanagedMemoryStream.dll" />
+        <file src="System.Linq.dll" target="lib\net45\System.Linq.dll" />
+        <file src="System.Linq.Parallel.dll" target="lib\net45\System.Linq.Parallel.dll" />
+        <file src="System.Linq.Queryable.dll" target="lib\net45\System.Linq.Queryable.dll" />
+        <file src="System.Linq.Expressions.dll" target="lib\net45\System.Linq.Expressions.dll" />
+        <file src="System.Net.NameResolution.dll" target="lib\net45\System.Net.NameResolution.dll" />
+        <file src="System.Net.NetworkInformation.dll" target="lib\net45\System.Net.NetworkInformation.dll" />
+        <file src="System.Net.Ping.dll" target="lib\net45\System.Net.Ping.dll" />
+        <file src="System.Net.Requests.dll" target="lib\net45\System.Net.Requests.dll" />
+        <file src="System.Net.Security.dll" target="lib\net45\System.Net.Security.dll" />
+        <file src="System.Net.WebHeaderCollection.dll" target="lib\net45\System.Net.WebHeaderCollection.dll" />
+        <file src="System.Net.WebSockets.Client.dll" target="lib\net45\System.Net.WebSockets.Client.dll" />
+        <file src="System.Net.WebSockets.dll" target="lib\net45\System.Net.WebSockets.dll" />
+        <file src="System.ObjectModel.dll" target="lib\net45\System.ObjectModel.dll" />
+        <file src="System.Reflection.Extensions.dll" target="lib\net45\System.Reflection.Extensions.dll" />
+        <file src="System.Reflection.Primitives.dll" target="lib\net45\System.Reflection.Primitives.dll" />
+        <file src="System.Resources.Reader.dll" target="lib\net45\System.Resources.Reader.dll" />
+        <file src="System.Resources.ResourceManager.dll" target="lib\net45\System.Resources.ResourceManager.dll" />
+        <file src="System.Resources.Writer.dll" target="lib\net45\System.Resources.Writer.dll" />
+        <file src="System.Runtime.CompilerServices.VisualC.dll" target="lib\net45\System.Runtime.CompilerServices.VisualC.dll" />
+        <file src="System.Runtime.Handles.dll" target="lib\net45\System.Runtime.Handles.dll" />
+        <file src="System.Runtime.Numerics.dll" target="lib\net45\System.Runtime.Numerics.dll" />
+        <file src="System.Runtime.Serialization.Formatters.dll" target="lib\net45\System.Runtime.Serialization.Formatters.dll" />
+        <file src="System.Runtime.Serialization.Json.dll" target="lib\net45\System.Runtime.Serialization.Json.dll" />
+        <file src="System.Runtime.Serialization.Primitives.dll" target="lib\net45\System.Runtime.Serialization.Primitives.dll" />
+        <file src="System.Runtime.Serialization.Xml.dll" target="lib\net45\System.Runtime.Serialization.Xml.dll" />
+        <file src="System.Security.Claims.dll" target="lib\net45\System.Security.Claims.dll" />
+        <file src="System.Security.Cryptography.Csp.dll" target="lib\net45\System.Security.Cryptography.Csp.dll" />
+        <file src="System.Security.Principal.dll" target="lib\net45\System.Security.Principal.dll" />
+        <file src="System.Security.SecureString.dll" target="lib\net45\System.Security.SecureString.dll" />
+        <file src="System.Text.Encoding.dll" target="lib\net45\System.Text.Encoding.dll" />
+        <file src="System.Text.Encoding.Extensions.dll" target="lib\net45\System.Text.Encoding.Extensions.dll" />
+        <file src="System.Text.RegularExpressions.dll" target="lib\net45\System.Text.RegularExpressions.dll" />
+        <file src="System.Threading.dll" target="lib\net45\System.Threading.dll" />
+        <file src="System.Threading.Overlapped.dll" target="lib\net45\System.Threading.Overlapped.dll" />
+        <file src="System.Threading.Tasks.dll" target="lib\net45\System.Threading.Tasks.dll" />
+        <file src="System.Threading.Tasks.Extensions.dll" target="lib\net45\System.Threading.Tasks.Extensions.dll" />
+        <file src="System.Threading.Tasks.Parallel.dll" target="lib\net45\System.Threading.Tasks.Parallel.dll" />
+        <file src="System.Threading.Thread.dll" target="lib\net45\System.Threading.Thread.dll" />
+        <file src="System.Threading.ThreadPool.dll" target="lib\net45\System.Threading.ThreadPool.dll" />
+        <file src="System.Threading.Timer.dll" target="lib\net45\System.Threading.Timer.dll" />
+        <file src="System.Xml.ReaderWriter.dll" target="lib\net45\System.Xml.ReaderWriter.dll" />
+        <file src="System.Xml.XDocument.dll" target="lib\net45\System.Xml.XDocument.dll" />
+        <file src="System.Xml.XmlDocument.dll" target="lib\net45\System.Xml.XmlDocument.dll" />
+        <file src="System.Xml.XmlSerializer.dll" target="lib\net45\System.Xml.XmlSerializer.dll" />
+        <file src="System.Xml.XPath.dll" target="lib\net45\System.Xml.XPath.dll" />
+        <file src="System.Xml.XPath.XDocument.dll" target="lib\net45\System.Xml.XPath.XDocument.dll" />
+        <file src="Utf8Json.dll" target="lib\net45\Utf8Json.dll" />
+        <file src="Microsoft.Data.Edm.dll" target="lib\net45\Microsoft.Data.Edm.dll" />
+        <file src="Microsoft.Data.OData.dll" target="lib\net45\Microsoft.Data.OData.dll" />
+        <file src="System.Spatial.dll" target="lib\net45\System.Spatial.dll" />
+        <file src="System.Net.Primitives.dll" target="lib\net45\System.Net.Primitives.dll" />
+        <file src="de\Microsoft.Data.Edm.resources.dll" target="lib\net45\de\Microsoft.Data.Edm.resources.dll" />
+        <file src="de\Microsoft.Data.OData.resources.dll" target="lib\net45\de\Microsoft.Data.OData.resources.dll" />
+        <file src="de\System.Spatial.resources.dll" target="lib\net45\de\System.Spatial.resources.dll" />
+        <file src="es\Microsoft.Data.Edm.resources.dll" target="lib\net45\es\Microsoft.Data.Edm.resources.dll" />
+        <file src="es\Microsoft.Data.OData.resources.dll" target="lib\net45\es\Microsoft.Data.OData.resources.dll" />
+        <file src="es\System.Spatial.resources.dll" target="lib\net45\es\System.Spatial.resources.dll" />
+        <file src="fr\Microsoft.Data.Edm.resources.dll" target="lib\net45\fr\Microsoft.Data.Edm.resources.dll" />
+        <file src="fr\Microsoft.Data.OData.resources.dll" target="lib\net45\fr\Microsoft.Data.OData.resources.dll" />
+        <file src="fr\System.Spatial.resources.dll" target="lib\net45\fr\System.Spatial.resources.dll" />
+        <file src="it\Microsoft.Data.Edm.resources.dll" target="lib\net45\it\Microsoft.Data.Edm.resources.dll" />
+        <file src="it\Microsoft.Data.OData.resources.dll" target="lib\net45\it\Microsoft.Data.OData.resources.dll" />
+        <file src="it\System.Spatial.resources.dll" target="lib\net45\it\System.Spatial.resources.dll" />
+        <file src="ja\Microsoft.Data.Edm.resources.dll" target="lib\net45\ja\Microsoft.Data.Edm.resources.dll" />
+        <file src="ja\Microsoft.Data.OData.resources.dll" target="lib\net45\ja\Microsoft.Data.OData.resources.dll" />
+        <file src="ja\System.Spatial.resources.dll" target="lib\net45\ja\System.Spatial.resources.dll" />
+        <file src="ko\Microsoft.Data.Edm.resources.dll" target="lib\net45\ko\Microsoft.Data.Edm.resources.dll" />
+        <file src="ko\Microsoft.Data.OData.resources.dll" target="lib\net45\ko\Microsoft.Data.OData.resources.dll" />
+        <file src="ko\System.Spatial.resources.dll" target="lib\net45\ko\System.Spatial.resources.dll" />
+        <file src="ru\Microsoft.Data.Edm.resources.dll" target="lib\net45\ru\Microsoft.Data.Edm.resources.dll" />
+        <file src="ru\Microsoft.Data.OData.resources.dll" target="lib\net45\ru\Microsoft.Data.OData.resources.dll" />
+        <file src="ru\System.Spatial.resources.dll" target="lib\net45\ru\System.Spatial.resources.dll" />
+        <file src="zh-Hant\Microsoft.Data.Edm.resources.dll" target="lib\net45\zh-Hant\Microsoft.Data.Edm.resources.dll" />
+        <file src="zh-Hant\Microsoft.Data.OData.resources.dll" target="lib\net45\zh-Hant\Microsoft.Data.OData.resources.dll" />
+        <file src="zh-Hant\System.Spatial.resources.dll" target="lib\net45\zh-Hant\System.Spatial.resources.dll" />
+        <file src="zh-Hans\Microsoft.Data.Edm.resources.dll" target="lib\net45\zh-Hans\Microsoft.Data.Edm.resources.dll" />
+        <file src="zh-Hans\Microsoft.Data.OData.resources.dll" target="lib\net45\zh-Hans\Microsoft.Data.OData.resources.dll" />
+        <file src="zh-Hans\System.Spatial.resources.dll" target="lib\net45\zh-Hans\System.Spatial.resources.dll" />
     </files>
 </package>
