@@ -30,6 +30,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <converters:BoolToInverseVisibilityConverter x:Key="BoolToInverseVisibilityConverter" />
+            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
             <converters:UpdateLabelConverter x:Key="UpdateLabelConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
@@ -249,7 +250,17 @@
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
                     Command="{Binding ShowTraktDialogCommand}"
-                    Content="{lex:LocText Connect}" />
+                    Content="{lex:LocText Login}"
+                    Visibility="{Binding IsTraktLoggedIn, Converter={StaticResource BoolToVisibilityConverter}}" />
+                <Button
+                    Width="100"
+                    Height="30"
+                    Margin="10,0,0,0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Command="{Binding LogoutTraktCommand}"
+                    Content="{lex:LocText Logout}"
+                    Visibility="{Binding IsTraktLoggedIn, Converter={StaticResource BoolToInverseVisibilityConverter}}" />
             </StackPanel>
         </Grid>
         <Grid

@@ -20,7 +20,7 @@ namespace Popcorn.ViewModels.Dialogs
 
         public readonly ITraktService _traktService;
 
-        private TraktAuthorization _traktAuthorization;
+        private readonly TraktAuthorization _traktAuthorization;
 
         private ICommand _initializeAsyncCommand;
 
@@ -32,9 +32,9 @@ namespace Popcorn.ViewModels.Dialogs
 
         private bool _isLoading;
 
-        public TraktDialogViewModel()
+        public TraktDialogViewModel(ITraktService traktService)
         {
-            _traktService = new TraktService();
+            _traktService = traktService;
             CloseCommand = new RelayCommand(() =>
             {
                 CloseAction.Invoke();
@@ -42,19 +42,40 @@ namespace Popcorn.ViewModels.Dialogs
 
             InitializeAsyncCommand = new RelayCommand(async () =>
             {
-                IsLoading = true;
-                IsLoggedIn = await _traktService.IsLoggedIn();
-                IsLoading = false;
-                TraktOAuthUrl = !IsLoggedIn ? _traktService.GetAuthorizationUrl() : string.Empty;
+                try
+                {
+                    IsLoading = true;
+                    IsLoggedIn = await _traktService.IsLoggedIn();
+                    TraktOAuthUrl = !IsLoggedIn ? _traktService.GetAuthorizationUrl() : string.Empty;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                }
+                finally
+                {
+                    IsLoading = false;
+                }
             });
         }
 
         public async Task ValidateOAuthCode(string code)
         {
-            IsLoading = true;
-            await _traktService.AuthorizeAsync(code);
-            IsLoading = false;
-            CloseAction.Invoke();
+            try
+            {
+                IsLoading = true;
+                await _traktService.AuthorizeAsync(code);
+                IsLoggedIn = true;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+            finally
+            {
+                IsLoading = false;
+                CloseAction.Invoke();
+            }
         }
 
         public Action CloseAction;

@@ -40,6 +40,7 @@ using Popcorn.ViewModels.Pages.Player;
 using Squirrel;
 using Popcorn.ViewModels.Windows.Settings;
 using Popcorn.Services.Subtitles;
+using Popcorn.Services.Trakt;
 
 namespace Popcorn.ViewModels.Windows
 {
@@ -124,6 +125,11 @@ namespace Popcorn.ViewModels.Windows
         private readonly IUserService _userService;
 
         /// <summary>
+        /// The Trakt service
+        /// </summary>
+        private readonly ITraktService _traktService;
+
+        /// <summary>
         /// <see cref="MediaPlayer"/>
         /// </summary>
         private MediaPlayerViewModel _mediaPlayer;
@@ -149,10 +155,12 @@ namespace Popcorn.ViewModels.Windows
         /// <param name="applicationService">Instance of Application state</param>
         /// <param name="userService">Instance of movie history service</param>
         /// <param name="subtitlesService">Instance of subtitles service</param>
+        /// <param name="traktService">Instance of Trakt service</param>
         /// <param name="manager">The notification manager</param>
         public WindowViewModel(IApplicationService applicationService, IUserService userService,
-            ISubtitlesService subtitlesService, NotificationMessageManager manager)
+            ISubtitlesService subtitlesService, ITraktService traktService, NotificationMessageManager manager)
         {
+            _traktService = traktService;
             _manager = manager;
             _subtitlesService = subtitlesService;
             _userService = userService;
@@ -566,7 +574,7 @@ namespace Popcorn.ViewModels.Windows
 
             _showTraktDialogMessage = Messenger.Default.RegisterAsyncMessage<ShowTraktDialogMessage>(async message =>
             {
-                var vm = new TraktDialogViewModel();
+                var vm = new TraktDialogViewModel(_traktService);
                 var subtitleDialog = new TraktDialog
                 {
                     DataContext = vm
@@ -577,6 +585,7 @@ namespace Popcorn.ViewModels.Windows
                 {
                     try
                     {
+                        message.IsLoggedIn = vm.IsLoggedIn;
                         await _dialogCoordinator.HideMetroDialogAsync(this, subtitleDialog);
                         cts.TrySetResult(null);
                     }

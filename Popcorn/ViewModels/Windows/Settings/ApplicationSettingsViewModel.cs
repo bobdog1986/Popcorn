@@ -21,6 +21,7 @@ using Popcorn.Messaging;
 using Popcorn.Models.Localization;
 using Popcorn.Models.Subtitles;
 using Popcorn.Services.Subtitles;
+using Popcorn.Services.Trakt;
 using Popcorn.Services.User;
 using Popcorn.Utils;
 using Squirrel;
@@ -46,6 +47,11 @@ namespace Popcorn.ViewModels.Windows.Settings
         /// Subtitle service
         /// </summary>
         private readonly ISubtitlesService _subtitlesService;
+
+        /// <summary>
+        /// Trakt service
+        /// </summary>
+        private readonly ITraktService _traktService;
 
         /// <summary>
         /// The download limit
@@ -118,6 +124,11 @@ namespace Popcorn.ViewModels.Windows.Settings
         private ICommand _changeSubtitleColorCommand;
 
         /// <summary>
+        /// Command used to logout from Trakt
+        /// </summary>
+        private ICommand _logoutTraktCommand;
+
+        /// <summary>
         /// If an update is available
         /// </summary>
         private bool _updateAvailable;
@@ -158,12 +169,19 @@ namespace Popcorn.ViewModels.Windows.Settings
         private readonly NotificationMessageManager _manager;
 
         /// <summary>
+        /// True if Trakt is connected
+        /// </summary>
+        private bool _isTraktLoggedIn;
+
+        /// <summary>
         /// Initializes a new instance of the ApplicationSettingsViewModel class.
         /// </summary>
         /// <param name="userService">User service</param>
         /// <param name="subtitlesService">Subtitles service</param>
-        public ApplicationSettingsViewModel(IUserService userService, ISubtitlesService subtitlesService, NotificationMessageManager manager)
+        /// <param name="traktService">Trakt service</param>
+        public ApplicationSettingsViewModel(IUserService userService, ISubtitlesService subtitlesService, ITraktService traktService, NotificationMessageManager manager)
         {
+            _traktService = traktService;
             _manager = manager;
             _userService = userService;
             _subtitlesService = subtitlesService;
@@ -373,6 +391,15 @@ namespace Popcorn.ViewModels.Windows.Settings
         }
 
         /// <summary>
+        /// True if Trakt is connected
+        /// </summary>
+        public bool IsTraktLoggedIn
+        {
+            get => _isTraktLoggedIn;
+            set { Set(() => IsTraktLoggedIn, ref _isTraktLoggedIn, value); }
+        }
+
+        /// <summary>
         /// Clear the cache
         /// </summary>
         public RelayCommand ClearCacheCommand { get; private set; }
@@ -389,6 +416,15 @@ namespace Popcorn.ViewModels.Windows.Settings
         {
             get => _changeSubtitleColorCommand;
             set => Set(ref _changeSubtitleColorCommand, value);
+        }
+
+        /// <summary>
+        /// Change subtitle
+        /// </summary>
+        public ICommand LogoutTraktCommand
+        {
+            get => _logoutTraktCommand;
+            set => Set(ref _logoutTraktCommand, value);
         }
 
         /// <summary>
@@ -455,6 +491,7 @@ namespace Popcorn.ViewModels.Windows.Settings
 #pragma warning disable CS4014
                 Task.Run(async () =>
                 {
+                    IsTraktLoggedIn = await _traktService.IsLoggedIn();
                     LoadingSubtitles = true;
                     AvailableSubtitlesLanguages = new ObservableRangeCollection<string>();
                     var languages = (await _subtitlesService.GetSubLanguages().ConfigureAwait(false)).Select(a => a.LanguageName)
@@ -589,12 +626,20 @@ namespace Popcorn.ViewModels.Windows.Settings
 
             ShowTraktDialogCommand = new RelayCommand(async () =>
             {
-                await Messenger.Default.SendAsync(new ShowTraktDialogMessage());
+                var message = new ShowTraktDialogMessage();
+                await Messenger.Default.SendAsync(message);
+                IsTraktLoggedIn = message.IsLoggedIn ?? false;
             });
 
             ChangeSubtitleColorCommand = new RelayCommand<EventArgs<Color>>(args =>
             {
                 SubtitlesColor = args.Value;
+            });
+
+            LogoutTraktCommand = new RelayCommand(async () =>
+            {
+                await _traktService.Logout();
+                IsTraktLoggedIn = false;
             });
         }
 

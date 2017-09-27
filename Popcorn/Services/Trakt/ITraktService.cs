@@ -11,5 +11,6 @@ namespace Popcorn.Services.Trakt
         string GetAuthorizationUrl();
         Task AuthorizeAsync(string code);
         Task<bool> IsLoggedIn();
+        Task Logout();
     }
 }

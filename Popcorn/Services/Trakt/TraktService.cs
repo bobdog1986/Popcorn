@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reactive.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Akavache;
 using NLog;
@@ -60,6 +57,13 @@ namespace Popcorn.Services.Trakt
             }
         }
 
+        public async Task Logout()
+        {
+            await _client.OAuth.RevokeAuthorizationAsync(await GetAccessToken());
+            await BlobCache.UserAccount.Invalidate("trakt");
+            await BlobCache.UserAccount.Flush();
+        }
+
         public string GetAuthorizationUrl()
         {
             try
@@ -90,6 +94,7 @@ namespace Popcorn.Services.Trakt
             catch (Exception ex)
             {
                 Logger.Error(ex);
+                throw;
             }
         }
     }

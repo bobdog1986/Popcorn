@@ -250,15 +250,6 @@ namespace Popcorn.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Connect.
-        /// </summary>
-        public static string Connect {
-            get {
-                return ResourceManager.GetString("Connect", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Recherche une chaîne localisée semblable à CONNECTING TO CHROMECAST.
         /// </summary>
         public static string ConnectingToChomecastLabel {
@@ -567,9 +558,27 @@ namespace Popcorn.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à Login.
         /// </summary>
+        public static string Login {
+            get {
+                return ResourceManager.GetString("Login", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Login.
+        /// </summary>
         public static string LoginLabel {
             get {
                 return ResourceManager.GetString("LoginLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Logout.
+        /// </summary>
+        public static string Logout {
+            get {
+                return ResourceManager.GetString("Logout", resourceCulture);
             }
         }
         

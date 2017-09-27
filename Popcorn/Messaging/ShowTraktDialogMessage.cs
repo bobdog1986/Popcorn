@@ -9,5 +9,11 @@ namespace Popcorn.Messaging
 {
     public class ShowTraktDialogMessage : MessageBase
     {
+        public bool? IsLoggedIn { get; set; }
+
+        public ShowTraktDialogMessage(bool? isLoggedIn = null)
+        {
+            IsLoggedIn = isLoggedIn;
+        }
     }
 }

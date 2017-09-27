@@ -429,7 +429,7 @@
   <data name="SubtitlesSizeLabel" xml:space="preserve">
     <value>Subtitle size</value>
   </data>
-  <data name="Connect" xml:space="preserve">
+  <data name="Login" xml:space="preserve">
     <value>Connect</value>
   </data>
   <data name="SyncTraktLabel" xml:space="preserve">
@@ -461,5 +461,8 @@
   </data>
   <data name="Ignore" xml:space="preserve">
     <value>Ignore</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>Logout</value>
   </data>
 </root>
