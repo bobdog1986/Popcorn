@@ -95,7 +95,7 @@ namespace Popcorn.Services.Movies.Movie
                                     }
                                 }).ConfigureAwait(false);
                             }
-                            catch (TimeoutRejectedException ex)
+                            catch (Exception ex)
                             {
                                 Logger.Warn(
                                     $"Movie {movieToTranslate.ImdbCode} has not been translated in {timeBeforeTimeOut} seconds. Error {ex.Message}");

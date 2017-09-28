@@ -487,7 +487,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
                         }
                     };
 
-                    await Task.WhenAll(tasks.Select(task => task()).ToArray()).ConfigureAwait(false);    
+                    await Task.WhenAll(tasks.Select(task => task()).ToArray()).ConfigureAwait(false);
                 }).ConfigureAwait(false);
             }
             catch (Exception ex)
@@ -562,13 +562,16 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
         /// </summary>
         private void StopLoadingMovie()
         {
-            Logger.Info(
-                $"Stop loading movie: {Movie.Title}.");
+            if (IsMovieLoading)
+            {
+                Logger.Info(
+                    $"Stop loading movie: {Movie.Title}.");
 
-            IsMovieLoading = false;
-            CancellationLoadingToken.Cancel();
-            CancellationLoadingToken.Dispose();
-            CancellationLoadingToken = new CancellationTokenSource();
+                IsMovieLoading = false;
+                CancellationLoadingToken.Cancel();
+                CancellationLoadingToken.Dispose();
+                CancellationLoadingToken = new CancellationTokenSource();
+            }
         }
 
         /// <summary>
@@ -576,14 +579,17 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
         /// </summary>
         private void StopLoadingTrailer()
         {
-            Logger.Info(
-                $"Stop loading movie's trailer: {Movie.Title}.");
+            if (IsTrailerLoading)
+            {
+                Logger.Info(
+                    $"Stop loading movie's trailer: {Movie.Title}.");
 
-            IsTrailerLoading = false;
-            CancellationLoadingTrailerToken.Cancel();
-            CancellationLoadingTrailerToken.Dispose();
-            CancellationLoadingTrailerToken = new CancellationTokenSource();
-            StopPlayingTrailer();
+                IsTrailerLoading = false;
+                CancellationLoadingTrailerToken.Cancel();
+                CancellationLoadingTrailerToken.Dispose();
+                CancellationLoadingTrailerToken = new CancellationTokenSource();
+                StopPlayingTrailer();
+            }
         }
 
         /// <summary>
@@ -591,10 +597,13 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
         /// </summary>
         private void StopPlayingTrailer()
         {
-            Logger.Info(
-                $"Stop playing movie's trailer: {Movie.Title}.");
+            if (IsPlayingTrailer)
+            {
+                Logger.Info(
+                    $"Stop playing movie's trailer: {Movie.Title}.");
 
-            IsPlayingTrailer = false;
+                IsPlayingTrailer = false;
+            }
         }
 
         /// <summary>
@@ -602,11 +611,14 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
         /// </summary>
         private void StopPlayingMovie()
         {
-            Logger.Info(
-                $"Stop playing movie: {Movie.Title}.");
+            if (IsDownloadingMovie)
+            {
+                Logger.Info(
+                    $"Stop playing movie: {Movie.Title}.");
 
-            IsDownloadingMovie = false;
-            DownloadMovie.StopDownloadingMovie();
+                IsDownloadingMovie = false;
+                DownloadMovie.StopDownloadingMovie();
+            }
         }
 
         /// <summary>

@@ -68,7 +68,7 @@ namespace Popcorn.Windows
                 }
             });
         }
-        
+
         private void OnStateChanged(object sender, EventArgs e)
         {
             MovieDetailsUc.Margin = WindowState == WindowState.Maximized

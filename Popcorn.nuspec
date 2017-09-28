@@ -603,7 +603,6 @@
         <file src="System.IO.FileSystem.dll" target="lib\net45\System.IO.FileSystem.dll" />
         <file src="System.IO.FileSystem.Primitives.dll" target="lib\net45\System.IO.FileSystem.Primitives.dll" />
         <file src="System.Net.Sockets.dll" target="lib\net45\System.Net.Sockets.dll" />
-        <file src="System.Reactive.dll" target="lib\net45\System.Reactive.dll" />
         <file src="System.Runtime.InteropServices.dll" target="lib\net45\System.Runtime.InteropServices.dll" />
         <file src="System.Runtime.InteropServices.RuntimeInformation.dll" target="lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll" />
         <file src="System.Xml.ReaderWriter.dll" target="lib\net45\System.Xml.ReaderWriter.dll" />

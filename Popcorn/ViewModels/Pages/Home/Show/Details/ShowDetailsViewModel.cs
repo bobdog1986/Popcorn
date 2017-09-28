@@ -228,14 +228,17 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Details
         /// </summary>
         private void StopLoadingTrailer()
         {
-            Logger.Info(
-                $"Stop loading show's trailer: {Show.Title}.");
+            if (IsTrailerLoading)
+            {
+                Logger.Info(
+                    $"Stop loading show's trailer: {Show.Title}.");
 
-            IsTrailerLoading = false;
-            CancellationLoadingTrailerToken.Cancel();
-            CancellationLoadingTrailerToken.Dispose();
-            CancellationLoadingTrailerToken = new CancellationTokenSource();
-            StopPlayingTrailer();
+                IsTrailerLoading = false;
+                CancellationLoadingTrailerToken.Cancel();
+                CancellationLoadingTrailerToken.Dispose();
+                CancellationLoadingTrailerToken = new CancellationTokenSource();
+                StopPlayingTrailer();
+            }
         }
 
         /// <summary>
@@ -243,10 +246,13 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Details
         /// </summary>
         private void StopPlayingTrailer()
         {
-            Logger.Info(
-                $"Stop playing show's trailer: {Show.Title}.");
+            if (IsPlayingTrailer)
+            {
+                Logger.Info(
+                    $"Stop playing show's trailer: {Show.Title}.");
 
-            IsPlayingTrailer = false;
+                IsPlayingTrailer = false;
+            }
         }
 
         /// <summary>
