@@ -23,6 +23,7 @@ using System.Runtime.CompilerServices;
 using System.ComponentModel;
 using System.Linq;
 using GalaSoft.MvvmLight.CommandWpf;
+using Popcorn.Vlc.Wpf;
 
 namespace Popcorn.UserControls.Player
 {
@@ -122,6 +123,11 @@ namespace Popcorn.UserControls.Player
             };
             InitializeComponent();
             Loaded += OnLoaded;
+            Unloaded += PlayerUserControl_Unloaded;
+        }
+
+        private void PlayerUserControl_Unloaded(object sender, RoutedEventArgs e)
+        {
         }
 
         /// <summary>
@@ -339,7 +345,7 @@ namespace Popcorn.UserControls.Player
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void OnStopped(object sender, Meta.Vlc.ObjectEventArgs<Meta.Vlc.Interop.Media.MediaState> e)
+        private void OnStopped(object sender, Popcorn.Vlc.ObjectEventArgs<Popcorn.Vlc.Interop.Media.MediaState> e)
         {
             DispatcherHelper.CheckBeginInvokeOnUI(() =>
             {
@@ -352,7 +358,7 @@ namespace Popcorn.UserControls.Player
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void OnPlaying(object sender, Meta.Vlc.ObjectEventArgs<Meta.Vlc.Interop.Media.MediaState> e)
+        private void OnPlaying(object sender, Popcorn.Vlc.ObjectEventArgs<Popcorn.Vlc.Interop.Media.MediaState> e)
         {
             DispatcherHelper.CheckBeginInvokeOnUI(() =>
             {
@@ -880,12 +886,7 @@ namespace Popcorn.UserControls.Player
                 vm.BandwidthRate.ProgressChanged -= OnBandwidthChanged;
             }
 
-            Task.Run(async () =>
-            {
-                await Task.Delay(500);
-                Player.Dispose();
-            });
-
+            Player.Dispose();
             _disposed = true;
             if (disposing)
                 GC.SuppressFinalize(this);

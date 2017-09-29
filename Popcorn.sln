@@ -27,6 +27,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Popcorn.Handler", "Popcorn.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Popcorn.Adorners", "Popcorn.Adorners\Popcorn.Adorners.csproj", "{9D7B857D-71E4-42CD-ADCE-F9B2DEC1BB52}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Popcorn.Vlc", "Popcorn.Vlc\Popcorn.Vlc.csproj", "{174900EB-956F-4435-87F2-677F014DD5DB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Popcorn.Vlc.Wpf", "Popcorn.Vlc.Wpf\Popcorn.Vlc.Wpf.csproj", "{C53E6715-C8BF-4BE4-943D-C003F0F01876}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Analysis|x86 = Analysis|x86
@@ -104,6 +108,18 @@ Global
 		{9D7B857D-71E4-42CD-ADCE-F9B2DEC1BB52}.Debug|x86.Build.0 = Debug|x86
 		{9D7B857D-71E4-42CD-ADCE-F9B2DEC1BB52}.Release|x86.ActiveCfg = Release|x86
 		{9D7B857D-71E4-42CD-ADCE-F9B2DEC1BB52}.Release|x86.Build.0 = Release|x86
+		{174900EB-956F-4435-87F2-677F014DD5DB}.Analysis|x86.ActiveCfg = Release|x86
+		{174900EB-956F-4435-87F2-677F014DD5DB}.Analysis|x86.Build.0 = Release|x86
+		{174900EB-956F-4435-87F2-677F014DD5DB}.Debug|x86.ActiveCfg = Debug|x86
+		{174900EB-956F-4435-87F2-677F014DD5DB}.Debug|x86.Build.0 = Debug|x86
+		{174900EB-956F-4435-87F2-677F014DD5DB}.Release|x86.ActiveCfg = Release|x86
+		{174900EB-956F-4435-87F2-677F014DD5DB}.Release|x86.Build.0 = Release|x86
+		{C53E6715-C8BF-4BE4-943D-C003F0F01876}.Analysis|x86.ActiveCfg = Release|x86
+		{C53E6715-C8BF-4BE4-943D-C003F0F01876}.Analysis|x86.Build.0 = Release|x86
+		{C53E6715-C8BF-4BE4-943D-C003F0F01876}.Debug|x86.ActiveCfg = Debug|x86
+		{C53E6715-C8BF-4BE4-943D-C003F0F01876}.Debug|x86.Build.0 = Debug|x86
+		{C53E6715-C8BF-4BE4-943D-C003F0F01876}.Release|x86.ActiveCfg = Release|x86
+		{C53E6715-C8BF-4BE4-943D-C003F0F01876}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

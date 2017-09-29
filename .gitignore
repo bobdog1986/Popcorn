@@ -70,6 +70,10 @@ Popcorn.Handler/Bin
 Popcorn.Handler/Obj
 Popcorn.Adorners/Bin
 Popcorn.Adorners/Obj
+Popcorn.Vlc/Bin
+Popcorn.Vlc/Obj
+Popcorn.Vlc.Wpf/Bin
+Popcorn.Vlc.Wpf/Obj
 Popcorn/edge
 
 # User files

@@ -116,12 +116,6 @@
     <Reference Include="MahApps.Metro.IconPacks, Version=1.9.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.IconPacks.1.9.1\lib\net46\MahApps.Metro.IconPacks.dll</HintPath>
     </Reference>
-    <Reference Include="Meta.Vlc, Version=16.5.1.0, Culture=neutral, PublicKeyToken=721a8c5379fa4056, processorArchitecture=x86">
-      <HintPath>..\packages\Meta.Vlc.17.06.20\lib\net45\x86\Meta.Vlc.dll</HintPath>
-    </Reference>
-    <Reference Include="Meta.Vlc.Wpf, Version=16.5.1.0, Culture=neutral, PublicKeyToken=721a8c5379fa4056, processorArchitecture=x86">
-      <HintPath>..\packages\Meta.Vlc.Wpf.17.06.20\lib\net45\x86\Meta.Vlc.Wpf.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.ApplicationInsights, Version=2.4.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.ApplicationInsights.2.4.0\lib\net46\Microsoft.ApplicationInsights.dll</HintPath>
     </Reference>
@@ -870,6 +864,14 @@
     <ProjectReference Include="..\Popcorn.Markdown\Popcorn.Markdown.csproj">
       <Project>{34186c3b-c308-4cae-b462-db7b5f5e378c}</Project>
       <Name>Popcorn.Markdown</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Popcorn.Vlc.Wpf\Popcorn.Vlc.Wpf.csproj">
+      <Project>{c53e6715-c8bf-4be4-943d-c003f0f01876}</Project>
+      <Name>Popcorn.Vlc.Wpf</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Popcorn.Vlc\Popcorn.Vlc.csproj">
+      <Project>{174900eb-956f-4435-87f2-677f014dd5db}</Project>
+      <Name>Popcorn.Vlc</Name>
     </ProjectReference>
     <ProjectReference Include="..\Popcorn.YTVideoProvider\Popcorn.YTVideoProvider.csproj">
       <Project>{5617bef3-671d-4705-ad37-eb2c290c6e04}</Project>

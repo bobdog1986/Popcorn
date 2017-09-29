@@ -346,8 +346,8 @@
         <file src="ltnet.dll" target="lib\net45\ltnet.dll" />
         <file src="MahApps.Metro.dll" target="lib\net45\MahApps.Metro.dll" />
         <file src="MahApps.Metro.IconPacks.dll" target="lib\net45\MahApps.Metro.IconPacks.dll" />
-        <file src="Meta.Vlc.dll" target="lib\net45\Meta.Vlc.dll" />
-        <file src="Meta.Vlc.Wpf.dll" target="lib\net45\Meta.Vlc.Wpf.dll" />
+        <file src="Popcorn.Vlc.dll" target="lib\net45\Popcorn.Vlc.dll" />
+        <file src="Popcorn.Vlc.Wpf.dll" target="lib\net45\Popcorn.Vlc.Wpf.dll" />
         <file src="Microsoft.Practices.ServiceLocation.dll" target="lib\net45\Microsoft.Practices.ServiceLocation.dll" />
         <file src="Microsoft.Win32.Primitives.dll" target="lib\net45\Microsoft.Win32.Primitives.dll" />
         <file src="Mono.Cecil.dll" target="lib\net45\Mono.Cecil.dll" />

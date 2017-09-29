@@ -9,7 +9,7 @@
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:lex="http://wpflocalizeextension.codeplex.com"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:wpf="clr-namespace:Meta.Vlc.Wpf;assembly=Meta.Vlc.Wpf"
+    xmlns:wpf="clr-namespace:Popcorn.Vlc.Wpf;assembly=Popcorn.Vlc.Wpf"
     x:Name="PlayerUc"
     mc:Ignorable="d">
     <UserControl.Resources>
