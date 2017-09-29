@@ -509,7 +509,7 @@ namespace Popcorn.ViewModels.Windows.Settings
                         LoadingSubtitles = false;
                     });
 
-#if !DEBUG
+#if DEBUG
                 await StartUpdateProcessAsync().ConfigureAwait(false);
 #endif
                 });
@@ -574,23 +574,26 @@ namespace Popcorn.ViewModels.Windows.Settings
                         UpdateApplied = true;
                         Logger.Info(
                             "A new update has been applied.");
-                        _manager.CreateMessage()
-                            .Accent("#1751C3")
-                            .Background("#333")
-                            .HasBadge("Info")
-                            .HasMessage(LocalizationProviderHelper.GetLocalizedValue<string>("UpdateApplied"))
-                            .Dismiss().WithButton(LocalizationProviderHelper.GetLocalizedValue<string>("Restart"),
-                                button =>
-                                {
-                                    Logger.Info(
-                                        "Restarting...");
+                        DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                        {
+                            _manager.CreateMessage()
+                                .Accent("#1751C3")
+                                .Background("#333")
+                                .HasBadge("Info")
+                                .HasMessage(LocalizationProviderHelper.GetLocalizedValue<string>("UpdateApplied"))
+                                .Dismiss().WithButton(LocalizationProviderHelper.GetLocalizedValue<string>("Restart"),
+                                    button =>
+                                    {
+                                        Logger.Info(
+                                            "Restarting...");
 
-                                    Process.Start($@"{_updateFilePath}\Popcorn.exe", "restart");
-                                    Application.Current.Shutdown();
-                                })
-                            .Dismiss().WithButton(LocalizationProviderHelper.GetLocalizedValue<string>("LaterLabel"),
-                                button => { })
-                            .Queue();
+                                        Process.Start($@"{_updateFilePath}\Popcorn.exe", "restart");
+                                        Application.Current.Shutdown();
+                                    })
+                                .Dismiss().WithButton(LocalizationProviderHelper.GetLocalizedValue<string>("LaterLabel"),
+                                    button => { })
+                                .Queue();
+                        });
                     }
                     else
                     {
