@@ -21,26 +21,19 @@ using Popcorn.Utils.Exceptions;
 using Popcorn.ViewModels.Windows.Settings;
 using System.Runtime.CompilerServices;
 using System.ComponentModel;
-using System.Linq;
 using GalaSoft.MvvmLight.CommandWpf;
-using Popcorn.Vlc.Wpf;
 
 namespace Popcorn.UserControls.Player
 {
     /// <summary>
     /// Interaction logic for PlayerUserControl.xaml
     /// </summary>
-    public partial class PlayerUserControl : IDisposable, INotifyPropertyChanged
+    public partial class PlayerUserControl : INotifyPropertyChanged
     {
         /// <summary>
         /// Logger of the class
         /// </summary>
         private static Logger Logger { get; } = LogManager.GetCurrentClassLogger();
-
-        /// <summary>
-        /// If control is disposed
-        /// </summary>
-        private bool _disposed;
 
         /// <summary>
         /// Indicates if a media is playing
@@ -123,11 +116,6 @@ namespace Popcorn.UserControls.Player
             };
             InitializeComponent();
             Loaded += OnLoaded;
-            Unloaded += PlayerUserControl_Unloaded;
-        }
-
-        private void PlayerUserControl_Unloaded(object sender, RoutedEventArgs e)
-        {
         }
 
         /// <summary>
@@ -184,12 +172,7 @@ namespace Popcorn.UserControls.Player
         }
 
         public string[] VlcOptions { get; set; }
-
-        /// <summary>
-        /// Free resources
-        /// </summary>
-        public void Dispose() => Dispose(true);
-
+        
         /// <summary>
         /// Subscribe to events and play the movie when control has been loaded
         /// </summary>
@@ -201,7 +184,7 @@ namespace Popcorn.UserControls.Player
             if (window != null)
             {
                 window.KeyDown += OnKeyDown;
-                window.Closing += (s1, e1) => Dispose();
+                window.Closing += (s1, e1) => Unload();
             }
 
             var vm = DataContext as MediaPlayerViewModel;
@@ -625,7 +608,7 @@ namespace Popcorn.UserControls.Player
         /// </summary>
         /// <param name="sender">Sender object</param>
         /// <param name="e">EventArgs</param>
-        private void OnStoppedMedia(object sender, EventArgs e) => Dispose();
+        private void OnStoppedMedia(object sender, EventArgs e) => Unload();
 
         /// <summary>
         /// Each time the CanExecute play command change, update the visibility of Play/Pause buttons in the player
@@ -843,53 +826,53 @@ namespace Popcorn.UserControls.Player
         /// <summary>
         /// Dispose the control
         /// </summary>
-        /// <param name="disposing">If a disposing is already processing</param>
-        private void Dispose(bool disposing)
+        private void Unload()
         {
-            if (_disposed)
-                return;
-
-            Loaded -= OnLoaded;
-            ActivityTimer.Tick -= OnInactivity;
-            ActivityTimer.Stop();
-
-            InputManager.Current.PreProcessInput -= OnActivity;
-
-            Player.TimeChanged -= OnTimeChanged;
-            Player.VlcMediaPlayer.EncounteredError -= EncounteredError;
-            Player.VlcMediaPlayer.EndReached -= MediaPlayerEndReached;
-            MediaPlayerIsPlaying = false;
-            var window = System.Windows.Window.GetWindow(this);
-            if (window != null)
+            try
             {
-                window.KeyDown -= OnKeyDown;
-                window.Cursor = Cursors.Arrow;
-            }
+                Loaded -= OnLoaded;
+                ActivityTimer.Tick -= OnInactivity;
+                ActivityTimer.Stop();
 
-            var vm = DataContext as MediaPlayerViewModel;
-            if (vm != null)
+                InputManager.Current.PreProcessInput -= OnActivity;
+
+                Player.TimeChanged -= OnTimeChanged;
+                Player.VlcMediaPlayer.EncounteredError -= EncounteredError;
+                Player.VlcMediaPlayer.EndReached -= MediaPlayerEndReached;
+                MediaPlayerIsPlaying = false;
+                var window = System.Windows.Window.GetWindow(this);
+                if (window != null)
+                {
+                    window.KeyDown -= OnKeyDown;
+                    window.Cursor = Cursors.Arrow;
+                }
+
+                var vm = DataContext as MediaPlayerViewModel;
+                if (vm != null)
+                {
+                    vm.CastPlayerTimeChanged -= CastPlayerTimeChanged;
+                    vm.SubtitleChosen -= OnSubtitleChosen;
+                    vm.StoppedMedia -= OnStoppedMedia;
+                    vm.ResumedMedia -= OnResumedMedia;
+                    vm.PausedMedia -= OnPausedMedia;
+                }
+
+                if (vm?.BufferProgress != null)
+                {
+                    vm.BufferProgress.ProgressChanged -= OnBufferProgressChanged;
+                }
+
+                if (vm?.BandwidthRate != null)
+                {
+                    vm.BandwidthRate.ProgressChanged -= OnBandwidthChanged;
+                }
+
+                Player.Dispose();
+            }
+            catch (Exception ex)
             {
-                vm.CastPlayerTimeChanged -= CastPlayerTimeChanged;
-                vm.SubtitleChosen -= OnSubtitleChosen;
-                vm.StoppedMedia -= OnStoppedMedia;
-                vm.ResumedMedia -= OnResumedMedia;
-                vm.PausedMedia -= OnPausedMedia;
+                Logger.Error(ex);
             }
-
-            if (vm?.BufferProgress != null)
-            {
-                vm.BufferProgress.ProgressChanged -= OnBufferProgressChanged;
-            }
-
-            if (vm?.BandwidthRate != null)
-            {
-                vm.BandwidthRate.ProgressChanged -= OnBandwidthChanged;
-            }
-
-            Player.Dispose();
-            _disposed = true;
-            if (disposing)
-                GC.SuppressFinalize(this);
         }
     }
 }
