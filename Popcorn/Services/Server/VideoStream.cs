@@ -38,7 +38,7 @@ namespace Popcorn.Services.Server
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return;
             }
