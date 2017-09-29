@@ -509,7 +509,7 @@ namespace Popcorn.ViewModels.Windows.Settings
                         LoadingSubtitles = false;
                     });
 
-#if DEBUG
+#if !DEBUG
                 await StartUpdateProcessAsync().ConfigureAwait(false);
 #endif
                 });
