@@ -1,4 +1,12 @@
-﻿# 3.0.0 - 27/09/2017 #
+﻿# 3.0.1 - 02/10/2017 #
+***
+Various improvements
+
+### Details ###
+* Fix issues
+* Add torrent and magnet association
+
+# 3.0.0 - 27/09/2017 #
 ***
 Various improvements
 

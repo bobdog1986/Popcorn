@@ -2,14 +2,14 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>Popcorn</id>
-        <version>3.0.0</version>
+        <version>3.0.1</version>
         <title>Popcorn</title>
         <authors>Benjamin Bougot</authors>
         <projectUrl>https://github.com/bbougot/Popcorn</projectUrl>
         <iconUrl>https://raw.githubusercontent.com/bbougot/Popcorn/master/Popcorn/icon.ico</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>A Powerful and Fast Popcorn Time Client</description>
-        <releaseNotes>Fix bugs and improve notification manager</releaseNotes>
+        <releaseNotes>Fix bugs and torrent association</releaseNotes>
     </metadata>
     <files>
         <file src="en\Popcorn.resources.dll" target="lib\net45\en\Popcorn.resources.dll" />
@@ -714,5 +714,30 @@
         <file src="zh-Hans\Microsoft.Data.Edm.resources.dll" target="lib\net45\zh-Hans\Microsoft.Data.Edm.resources.dll" />
         <file src="zh-Hans\Microsoft.Data.OData.resources.dll" target="lib\net45\zh-Hans\Microsoft.Data.OData.resources.dll" />
         <file src="zh-Hans\System.Spatial.resources.dll" target="lib\net45\zh-Hans\System.Spatial.resources.dll" />
+        <file src="Microsoft.AspNetCore.Http.Features.dll" target="lib\net45\Microsoft.AspNetCore.Http.Features.dll" />
+        <file src="Microsoft.AspNetCore.SignalR.Client.Core.dll" target="lib\net45\Microsoft.AspNetCore.SignalR.Client.Core.dll" />
+        <file src="Microsoft.AspNetCore.SignalR.Client.dll" target="lib\net45\Microsoft.AspNetCore.SignalR.Client.dll" />
+        <file src="Microsoft.AspNetCore.SignalR.Common.dll" target="lib\net45\Microsoft.AspNetCore.SignalR.Common.dll" />
+        <file src="Microsoft.AspNetCore.Sockets.Abstractions.dll" target="lib\net45\Microsoft.AspNetCore.Sockets.Abstractions.dll" />
+        <file src="Microsoft.AspNetCore.Sockets.Client.Http.dll" target="lib\net45\Microsoft.AspNetCore.Sockets.Client.Http.dll" />
+        <file src="Microsoft.AspNetCore.Sockets.Common.Http.dll" target="lib\net45\Microsoft.AspNetCore.Sockets.Common.Http.dll" />
+        <file src="Microsoft.Extensions.Configuration.Abstractions.dll" target="lib\net45\Microsoft.Extensions.Configuration.Abstractions.dll" />
+        <file src="Microsoft.Extensions.DependencyInjection.Abstractions.dll" target="lib\net45\Microsoft.Extensions.DependencyInjection.Abstractions.dll" />
+        <file src="Microsoft.Extensions.Logging.Abstractions.dll" target="lib\net45\Microsoft.Extensions.Logging.Abstractions.dll" />
+        <file src="Microsoft.Extensions.Logging.Console.dll" target="lib\net45\Microsoft.Extensions.Logging.Console.dll" />
+        <file src="Microsoft.Extensions.Logging.dll" target="lib\net45\Microsoft.Extensions.Logging.dll" />
+        <file src="Microsoft.Extensions.Options.dll" target="lib\net45\Microsoft.Extensions.Options.dll" />
+        <file src="Microsoft.Extensions.Primitives.dll" target="lib\net45\Microsoft.Extensions.Primitives.dll" />
+        <file src="System.Binary.dll" target="lib\net45\System.Binary.dll" />
+        <file src="System.Buffers.dll" target="lib\net45\System.Buffers.dll" />
+        <file src="System.Buffers.Primitives.dll" target="lib\net45\System.Buffers.Primitives.dll" />
+        <file src="System.Collections.Sequences.dll" target="lib\net45\System.Collections.Sequences.dll" />
+        <file src="System.IO.Pipelines.dll" target="lib\net45\System.IO.Pipelines.dll" />
+        <file src="System.IO.Pipelines.Extensions.dll" target="lib\net45\System.IO.Pipelines.Extensions.dll" />
+        <file src="System.Memory.dll" target="lib\net45\System.Memory.dll" />
+        <file src="System.Numerics.Vectors.dll" target="lib\net45\System.Numerics.Vectors.dll" />
+        <file src="System.Runtime.CompilerServices.Unsafe.dll" target="lib\net45\System.Runtime.CompilerServices.Unsafe.dll" />
+        <file src="System.Threading.Tasks.Channels.dll" target="lib\net45\System.Threading.Tasks.Channels.dll" />
+        <file src="MsgPack.dll" target="lib\net45\MsgPack.dll" />
     </files>
 </package>

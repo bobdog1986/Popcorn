@@ -775,9 +775,11 @@ namespace Popcorn.ViewModels.Windows
                 var cmd = Environment.GetCommandLineArgs();
                 if (cmd.Any())
                 {
-                    if(cmd.Contains("restart"))
+                    if (cmd.Contains("restart"))
+                    {
                         OpenAboutCommand.Execute(null);
-                    else if (cmd.Length == 2)
+                    }
+                    else if (cmd.Length == 2 && (cmd[1].StartsWith("magnet") || cmd[1].EndsWith("torrent")))
                     {
                         var path = cmd[1];
                         var filePath = string.Empty;
