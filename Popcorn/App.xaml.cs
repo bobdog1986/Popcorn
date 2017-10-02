@@ -51,6 +51,11 @@ namespace Popcorn
         private static bool _firstRun;
 
         /// <summary>
+        /// Loading semaphore
+        /// </summary>
+        private readonly SemaphoreSlim _windowLoadedSemaphore = new SemaphoreSlim(1, 1);
+
+        /// <summary>
         /// Initializes a new instance of the App class.
         /// </summary>
         static App()
@@ -67,10 +72,7 @@ namespace Popcorn
             DispatcherHelper.Initialize();
             LocalizeDictionary.Instance.SetCurrentThreadCulture = true;
             BlobCache.ApplicationName = "Popcorn";
-            if (!Directory.Exists(Constants.Assets))
-            {
-                Directory.CreateDirectory(Constants.Assets);
-            }
+            FileHelper.CreateFolders();
 
             try
             {
@@ -178,19 +180,25 @@ namespace Popcorn
             var mainWindow = new MainWindow();
             MainWindow = mainWindow;
             mainWindow.Loaded += async (sender2, e2) =>
-                await mainWindow.Dispatcher.InvokeAsync(() =>
+                await mainWindow.Dispatcher.InvokeAsync(async () =>
                 {
-                    _splashScreenDispatcher.BeginInvokeShutdown(DispatcherPriority.Background);
+                    await _windowLoadedSemaphore.WaitAsync();
+                    if (!WatchStart.IsRunning)
+                        return;
+                    _splashScreenDispatcher.InvokeShutdown();
                     mainWindow.Activate();
                     var vm = mainWindow.DataContext as WindowViewModel;
-                    if (_firstRun && vm != null)
+                    if (vm != null)
                     {
-                        vm.OpenWelcomeCommand.Execute(null);
+                        vm.InitializeAsyncCommand.Execute(null);
+                        if(_firstRun)
+                            vm.OpenWelcomeCommand.Execute(null);
                     }
                     WatchStart.Stop();
                     var elapsedStartMs = WatchStart.ElapsedMilliseconds;
                     Logger.Info(
                         $"Popcorn started in {elapsedStartMs} milliseconds.");
+                    _windowLoadedSemaphore.Release();
                 });
 
             mainWindow.Show();

@@ -26,9 +26,11 @@
             <TextBlock
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
-                FontSize="24"
+                FontSize="20"
                 Foreground="White"
-                Text="{Binding TorrentPath}" />
+                Text="{Binding TorrentPath}"
+                TextTrimming="WordEllipsis"
+                TextWrapping="Wrap" />
             <StackPanel
                 Margin="0,15,0,0"
                 HorizontalAlignment="Center"

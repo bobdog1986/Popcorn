@@ -7,6 +7,7 @@ using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
+using NLog;
 using Popcorn.Messaging;
 using Popcorn.Models.Bandwidth;
 using Popcorn.Models.Media;
@@ -17,6 +18,11 @@ namespace Popcorn.ViewModels.Dialogs
 {
     public class DropTorrentDialogViewModel : ViewModelBase
     {
+        /// <summary>
+        /// Logger of the class
+        /// </summary>
+        private static Logger Logger { get; } = LogManager.GetCurrentClassLogger();
+
         private readonly IDownloadService<MediaFile> _downloadService;
 
         private string _torrentPath;
@@ -80,8 +86,15 @@ namespace Popcorn.ViewModels.Dialogs
             TorrentPath = torrentPath;
             CancelCommand = new RelayCommand(() =>
             {
-                CancellationDownloadingToken.Cancel();
-                CancellationDownloadingToken.Dispose();
+                try
+                {
+                    CancellationDownloadingToken.Cancel();
+                    CancellationDownloadingToken.Dispose();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                }
             });
 
             Messenger.Default.Register<StopPlayMediaMessage>(this, e =>

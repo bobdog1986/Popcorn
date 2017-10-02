@@ -4,6 +4,7 @@ using GalaSoft.MvvmLight.Ioc;
 using Microsoft.Practices.ServiceLocation;
 using Popcorn.Services.Application;
 using Popcorn.Services.Genres;
+using Popcorn.Services.Hub;
 using Popcorn.Services.Movies.Movie;
 using Popcorn.Services.Movies.Trailer;
 using Popcorn.Services.Shows.Show;
@@ -43,6 +44,7 @@ namespace Popcorn.ViewModels
             SimpleIoc.Default.Register<ISubtitlesService, SubtitlesService>();
             SimpleIoc.Default.Register<IGenreService, GenreService>();
             SimpleIoc.Default.Register<ITraktService, TraktService>();
+            SimpleIoc.Default.Register<IPopcornHubService, PopcornHubService>();
             SimpleIoc.Default.Register<NotificationMessageManager>();
 
             #endregion

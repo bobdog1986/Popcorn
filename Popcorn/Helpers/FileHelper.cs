@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using NLog;
+using Popcorn.Utils;
 
 namespace Popcorn.Helpers
 {
@@ -21,6 +22,68 @@ namespace Popcorn.Helpers
         {
             var di = new DirectoryInfo(folderPath);
             return di.EnumerateFiles("*", SearchOption.AllDirectories).Sum(fi => fi.Length);
+        }
+
+        /// <summary>
+        /// Create download folders
+        /// </summary>
+        public static void CreateFolders()
+        {
+            if (!Directory.Exists(Constants.Subtitles))
+            {
+                Directory.CreateDirectory(Constants.Subtitles);
+            }
+
+            if (!Directory.Exists(Constants.MovieDownloads))
+            {
+                Directory.CreateDirectory(Constants.MovieDownloads);
+            }
+
+            if (!Directory.Exists(Constants.DropFilesDownloads))
+            {
+                Directory.CreateDirectory(Constants.DropFilesDownloads);
+            }
+
+            if (!Directory.Exists(Constants.ShowDownloads))
+            {
+                Directory.CreateDirectory(Constants.ShowDownloads);
+            }
+
+            if (!Directory.Exists(Constants.MovieTorrentDownloads))
+            {
+                Directory.CreateDirectory(Constants.MovieTorrentDownloads);
+            }
+        }
+
+        /// <summary>
+        /// Clear download folders
+        /// </summary>
+        public static void ClearFolders()
+        {
+            if (Directory.Exists(Constants.Subtitles))
+            {
+                DeleteFolder(Constants.Subtitles);
+            }
+
+            if (Directory.Exists(Constants.MovieDownloads))
+            {
+                DeleteFolder(Constants.MovieDownloads);
+            }
+
+            if (Directory.Exists(Constants.DropFilesDownloads))
+            {
+                DeleteFolder(Constants.DropFilesDownloads);
+            }
+
+            if (Directory.Exists(Constants.ShowDownloads))
+            {
+                DeleteFolder(Constants.ShowDownloads);
+            }
+
+            if (Directory.Exists(Constants.MovieTorrentDownloads))
+            {
+                DeleteFolder(Constants.MovieTorrentDownloads);
+            }
         }
 
         /// <summary>

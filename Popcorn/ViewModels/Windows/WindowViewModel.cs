@@ -28,6 +28,7 @@ using Popcorn.Extensions;
 using Popcorn.Helpers;
 using Popcorn.Messaging;
 using Popcorn.Services.Application;
+using Popcorn.Services.Hub;
 using Popcorn.Services.Server;
 using Popcorn.Services.User;
 using Popcorn.Utils;
@@ -130,6 +131,11 @@ namespace Popcorn.ViewModels.Windows
         private readonly ITraktService _traktService;
 
         /// <summary>
+        /// The popcorn hub service
+        /// </summary>
+        private readonly IPopcornHubService _popcornHubService;
+
+        /// <summary>
         /// <see cref="MediaPlayer"/>
         /// </summary>
         private MediaPlayerViewModel _mediaPlayer;
@@ -150,16 +156,23 @@ namespace Popcorn.ViewModels.Windows
         private readonly NotificationMessageManager _manager;
 
         /// <summary>
+        /// If initialized
+        /// </summary>
+        private bool _initialized;
+
+        /// <summary>
         /// Initializes a new instance of the WindowViewModel class.
         /// </summary>
         /// <param name="applicationService">Instance of Application state</param>
         /// <param name="userService">Instance of movie history service</param>
         /// <param name="subtitlesService">Instance of subtitles service</param>
         /// <param name="traktService">Instance of Trakt service</param>
+        /// <param name="popcornHubService">Instance of Popcorn Hub service</param>
         /// <param name="manager">The notification manager</param>
         public WindowViewModel(IApplicationService applicationService, IUserService userService,
-            ISubtitlesService subtitlesService, ITraktService traktService, NotificationMessageManager manager)
+            ISubtitlesService subtitlesService, ITraktService traktService, IPopcornHubService popcornHubService, NotificationMessageManager manager)
         {
+            _popcornHubService = popcornHubService;
             _traktService = traktService;
             _manager = manager;
             _subtitlesService = subtitlesService;
@@ -169,7 +182,6 @@ namespace Popcorn.ViewModels.Windows
             RegisterMessages();
             RegisterCommands();
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
-            ClearFolders();
         }
 
         /// <summary>
@@ -657,10 +669,10 @@ namespace Popcorn.ViewModels.Windows
                 try
                 {
                     await _userService.UpdateUser();
-                    _localServer.Dispose();
+                    _localServer?.Dispose();
                     await SaveCacheOnExit();
                     Cef.Shutdown();
-                    ClearFolders();
+                    FileHelper.ClearFolders();
                 }
                 catch (Exception ex)
                 {
@@ -758,12 +770,58 @@ namespace Popcorn.ViewModels.Windows
                 await _dialogCoordinator.ShowMetroDialogAsync(this, welcomeDialog);
             });
 
-            InitializeAsyncCommand = new RelayCommand(() =>
+            InitializeAsyncCommand = new RelayCommand(async () =>
             {
                 var cmd = Environment.GetCommandLineArgs();
-                if (cmd.Any() && cmd.Contains("restart"))
+                if (cmd.Any())
                 {
-                    OpenAboutCommand.Execute(null);
+                    if(cmd.Contains("restart"))
+                        OpenAboutCommand.Execute(null);
+                    else if (cmd.Length == 2)
+                    {
+                        var path = cmd[1];
+                        var filePath = string.Empty;
+                        if (path.StartsWith("magnet"))
+                        {
+                            filePath = $"{Constants.DropFilesDownloads}{Guid.NewGuid()}.torrent";
+                            using (var file = File.Create(filePath))
+                            using (var stream = new StreamWriter(file))
+                            {
+                                await stream.WriteLineAsync(path);
+                            }
+                        }
+                        else if (path.EndsWith("torrent"))
+                        {
+                            filePath = path;
+                        }
+
+                        var vm = new DropTorrentDialogViewModel(filePath);
+                        var dropTorrentDialog = new DropTorrentDialog
+                        {
+                            DataContext = vm
+                        };
+
+                        try
+                        {
+                            Task.Run(async () =>
+                            {
+                                await _dialogCoordinator.ShowMetroDialogAsync(this, dropTorrentDialog);
+                                var settings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
+                                await vm.Download(settings.UploadLimit, settings.DownloadLimit,
+                                    async () =>
+                                    {
+                                        await _dialogCoordinator.HideMetroDialogAsync(this, dropTorrentDialog);
+                                    }, async () =>
+                                    {
+                                        await _dialogCoordinator.HideMetroDialogAsync(this, dropTorrentDialog);
+                                    });
+                            });
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Error(ex);
+                        }
+                    }
                 }
 
                 try
@@ -815,6 +873,9 @@ namespace Popcorn.ViewModels.Windows
                     {
                         _localServer = WebApp.Start<Startup>(Constants.ServerUrl);
                     }
+
+                    await _popcornHubService.Start();
+                    Utils.Associations.FileAssociations.EnsureAssociationsSet();
                 }
                 catch (Exception ex)
                 {
@@ -854,37 +915,6 @@ namespace Popcorn.ViewModels.Windows
         }
 
         /// <summary>
-        /// Clear download folders
-        /// </summary>
-        private void ClearFolders()
-        {
-            if (Directory.Exists(Constants.Subtitles))
-            {
-                FileHelper.DeleteFolder(Constants.Subtitles);
-            }
-
-            if (Directory.Exists(Constants.MovieDownloads))
-            {
-                FileHelper.DeleteFolder(Constants.MovieDownloads);
-            }
-
-            if (Directory.Exists(Constants.DropFilesDownloads))
-            {
-                FileHelper.DeleteFolder(Constants.DropFilesDownloads);
-            }
-
-            if (Directory.Exists(Constants.ShowDownloads))
-            {
-                FileHelper.DeleteFolder(Constants.ShowDownloads);
-            }
-
-            if (Directory.Exists(Constants.MovieTorrentDownloads))
-            {
-                FileHelper.DeleteFolder(Constants.MovieTorrentDownloads);
-            }
-        }
-
-        /// <summary>
         /// Display a dialog on unhandled exception
         /// </summary>
         /// <param name="sender">Sender</param>
@@ -907,10 +937,6 @@ namespace Popcorn.ViewModels.Windows
         {
             DispatcherHelper.CheckBeginInvokeOnUI(() =>
             {
-                //IsMovieFlyoutOpen = false;
-                //IsShowFlyoutOpen = false;
-                //IsSettingsFlyoutOpen = false;
-
                 if (exception is WebException || exception is SocketException || exception is TimeoutRejectedException)
                 {
                     _applicationService.IsConnectionInError = true;
