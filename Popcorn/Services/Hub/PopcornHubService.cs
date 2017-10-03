@@ -4,11 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
+using NLog;
 
 namespace Popcorn.Services.Hub
 {
     public class PopcornHubService : IPopcornHubService
     {
+        /// <summary>
+        /// Logger of the class
+        /// </summary>
+        private static Logger Logger { get; } = LogManager.GetCurrentClassLogger();
+
         private readonly HubConnection _connection;
 
         public PopcornHubService()
@@ -16,7 +22,7 @@ namespace Popcorn.Services.Hub
             _connection = new HubConnectionBuilder()
                 .WithUrl($"{Utils.Constants.PopcornApi.Replace("/api", "/popcorn")}")
                 .Build();
-            _connection.On<int>("OnUserConnected", (message) =>
+            _connection.On<int>("OnUserConnected", message =>
             {
 
             });
@@ -24,7 +30,14 @@ namespace Popcorn.Services.Hub
 
         public async Task Start()
         {
-            //await _connection.StartAsync();
+            try
+            {
+                await _connection.StartAsync();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
         }
     }
 }
