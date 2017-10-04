@@ -4,6 +4,7 @@ using Popcorn.Models.Movie;
 using System;
 using Popcorn.Models.Bandwidth;
 using Popcorn.Models.Media;
+using Popcorn.Services.Cache;
 
 namespace Popcorn.Services.Download
 {
@@ -13,6 +14,10 @@ namespace Popcorn.Services.Download
     /// <typeparam name="T"><see cref="IMediaFile"/></typeparam>
     public class DownloadMovieService<T> : DownloadService<T> where T : MovieJson
     {
+        public DownloadMovieService(ICacheService cacheService) : base(cacheService)
+        {
+        }
+
         /// <summary>
         /// Action to execute when a movie has been buffered
         /// </summary>

@@ -14,6 +14,7 @@ using Popcorn.Utils;
 using Popcorn.ViewModels.Windows.Settings;
 using GalaSoft.MvvmLight.Ioc;
 using Popcorn.Models.Bandwidth;
+using Popcorn.Services.Cache;
 using Popcorn.Services.Download;
 
 namespace Popcorn.ViewModels.Pages.Home.Show.Download
@@ -76,13 +77,20 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Download
         private CancellationTokenSource CancellationDownloadingEpisode { get; set; }
 
         /// <summary>
+        /// The cache service
+        /// </summary>
+        private readonly ICacheService _cacheService;
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="downloadService">The download service</param>
         /// <param name="subtitlesService">The subtitles service</param>
+        /// <param name="cacheService">The cache service</param>
         public DownloadShowViewModel(IDownloadService<EpisodeShowJson> downloadService,
-            ISubtitlesService subtitlesService)
+            ISubtitlesService subtitlesService, ICacheService cacheService)
         {
+            _cacheService = cacheService;
             _downloadService = downloadService;
             _subtitlesService = subtitlesService;
             CancellationDownloadingEpisode = new CancellationTokenSource();
@@ -206,7 +214,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Download
                             message.Episode.SelectedSubtitle.Sub.LanguageName !=
                             LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"))
                         {
-                            var path = Path.Combine(Constants.Subtitles + message.Episode.ImdbId);
+                            var path = Path.Combine(_cacheService.Subtitles + message.Episode.ImdbId);
                             Directory.CreateDirectory(path);
                             var subtitlePath =
                                 await _subtitlesService.DownloadSubtitleToPath(path,

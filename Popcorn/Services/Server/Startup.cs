@@ -5,12 +5,14 @@ using System.Net.Http.Formatting;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
+using GalaSoft.MvvmLight.Ioc;
 using Microsoft.Owin.FileSystems;
 using Microsoft.Owin.Hosting;
 using Microsoft.Owin.StaticFiles;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Owin;
+using Popcorn.Services.Cache;
 using Popcorn.Utils;
 
 namespace Popcorn.Services.Server
@@ -35,11 +37,12 @@ namespace Popcorn.Services.Server
                 };
 
             appBuilder.UseWebApi(config);
+            var cacheService = SimpleIoc.Default.GetInstance<ICacheService>();
             var options = new FileServerOptions
             {
                 EnableDirectoryBrowsing = true,
                 EnableDefaultFiles = false,
-                FileSystem = new PhysicalFileSystem(Constants.PopcornTemp),
+                FileSystem = new PhysicalFileSystem(cacheService.PopcornTemp),
                 StaticFileOptions = { ContentTypeProvider = new CustomContentTypeProvider() }
             };
 

@@ -249,8 +249,10 @@
                     Margin="10,0,0,0"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
+                    controls:ControlsHelper.ContentCharacterCasing="Normal"
                     Command="{Binding ShowTraktDialogCommand}"
                     Content="{lex:LocText Login}"
+                    Style="{DynamicResource SquareButtonStyle}"
                     Visibility="{Binding IsTraktLoggedIn, Converter={StaticResource BoolToVisibilityConverter}}" />
                 <Button
                     Width="100"
@@ -258,8 +260,10 @@
                     Margin="10,0,0,0"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
+                    controls:ControlsHelper.ContentCharacterCasing="Normal"
                     Command="{Binding LogoutTraktCommand}"
                     Content="{lex:LocText Logout}"
+                    Style="{DynamicResource SquareButtonStyle}"
                     Visibility="{Binding IsTraktLoggedIn, Converter={StaticResource BoolToInverseVisibilityConverter}}" />
             </StackPanel>
         </Grid>
@@ -288,8 +292,20 @@
                     Margin="10,0,0,0"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
+                    controls:ControlsHelper.ContentCharacterCasing="Normal"
                     Command="{Binding ClearCacheCommand}"
-                    Content="{lex:LocText ClearButton}" />
+                    Content="{lex:LocText ClearButton}"
+                    Style="{DynamicResource SquareButtonStyle}" />
+                <Button
+                    Width="100"
+                    Height="30"
+                    Margin="10,0,0,0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    controls:ControlsHelper.ContentCharacterCasing="Normal"
+                    Command="{Binding ChangeCacheLocationCommand}"
+                    Content="{lex:LocText ChangeLocation}"
+                    Style="{DynamicResource SquareButtonStyle}" />
             </StackPanel>
         </Grid>
         <Grid Grid.Row="9" Grid.Column="1">

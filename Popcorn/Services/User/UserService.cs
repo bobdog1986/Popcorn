@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -102,6 +103,11 @@ namespace Popcorn.Services.User
             if (User.ShowHistory == null)
             {
                 User.ShowHistory = new List<ShowHistory>();
+            }
+
+            if (User.CacheLocation == null)
+            {
+                User.CacheLocation = Path.GetTempPath() + @"\Popcorn\";
             }
 
             if (User.DefaultSubtitleSize == null)
@@ -402,6 +408,16 @@ namespace Popcorn.Services.User
         public void SetDefaultSubtitleSize(SubtitleSize size)
         {
             User.DefaultSubtitleSize = size;
+        }
+
+        public string GetCacheLocationPath()
+        {
+            return User.CacheLocation;
+        }
+
+        public void SetCacheLocationPath(string path)
+        {
+            User.CacheLocation = path;
         }
 
         /// <summary>

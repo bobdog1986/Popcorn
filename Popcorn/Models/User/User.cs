@@ -24,5 +24,7 @@ namespace Popcorn.Models.User
         public List<MovieHistory> MovieHistory { get; set; }
 
         public List<ShowHistory> ShowHistory { get; set; }
+
+        public string CacheLocation { get; set; }
     }
 }

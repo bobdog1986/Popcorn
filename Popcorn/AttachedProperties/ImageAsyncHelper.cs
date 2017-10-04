@@ -10,8 +10,10 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Threading;
 using NLog;
+using Popcorn.Services.Cache;
 using Popcorn.Utils;
 
 namespace Popcorn.AttachedProperties
@@ -124,9 +126,10 @@ namespace Popcorn.AttachedProperties
                             string localFile;
                             var hash = Convert.ToBase64String(Encoding.UTF8.GetBytes(path));
                             var mustDownload = false;
-                            if (File.Exists(Constants.Assets + hash))
+                            var cacheService = SimpleIoc.Default.GetInstance<ICacheService>();
+                            if (File.Exists(cacheService.Assets + hash))
                             {
-                                localFile = Constants.Assets + hash;
+                                localFile = cacheService.Assets + hash;
                             }
                             else
                             {
@@ -163,7 +166,7 @@ namespace Popcorn.AttachedProperties
                                     image.RenderTransform = loadingAnimationTransform;
                                 }
 
-                                localFile = Constants.Assets + hash;
+                                localFile = cacheService.Assets + hash;
                             }
 
                             await Task.Run(async () =>
@@ -179,10 +182,10 @@ namespace Popcorn.AttachedProperties
                                                 using (var stream = new MemoryStream())
                                                 {
                                                     await ms.CopyToAsync(stream).ConfigureAwait(false);
-                                                    if (!File.Exists(Constants.Assets + hash))
+                                                    if (!File.Exists(cacheService.Assets + hash))
                                                     {
                                                         using (var fs =
-                                                            new FileStream(Constants.Assets + hash, FileMode.Create,
+                                                            new FileStream(cacheService.Assets + hash, FileMode.Create,
                                                                 FileAccess.ReadWrite, FileShare.ReadWrite, 4096, true))
                                                         {
                                                             var writeAsync = stream.ToArray();

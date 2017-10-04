@@ -28,6 +28,7 @@ using Popcorn.Extensions;
 using Popcorn.Helpers;
 using Popcorn.Messaging;
 using Popcorn.Services.Application;
+using Popcorn.Services.Cache;
 using Popcorn.Services.Hub;
 using Popcorn.Services.Server;
 using Popcorn.Services.User;
@@ -161,6 +162,11 @@ namespace Popcorn.ViewModels.Windows
         private bool _initialized;
 
         /// <summary>
+        /// The cache service
+        /// </summary>
+        private readonly ICacheService _cacheService;
+
+        /// <summary>
         /// Initializes a new instance of the WindowViewModel class.
         /// </summary>
         /// <param name="applicationService">Instance of Application state</param>
@@ -168,10 +174,13 @@ namespace Popcorn.ViewModels.Windows
         /// <param name="subtitlesService">Instance of subtitles service</param>
         /// <param name="traktService">Instance of Trakt service</param>
         /// <param name="popcornHubService">Instance of Popcorn Hub service</param>
+        /// <param name="cacheService">Instance of cache service</param>
         /// <param name="manager">The notification manager</param>
         public WindowViewModel(IApplicationService applicationService, IUserService userService,
-            ISubtitlesService subtitlesService, ITraktService traktService, IPopcornHubService popcornHubService, NotificationMessageManager manager)
+            ISubtitlesService subtitlesService, ITraktService traktService, IPopcornHubService popcornHubService,
+            ICacheService cacheService, NotificationMessageManager manager)
         {
+            _cacheService = cacheService;
             _popcornHubService = popcornHubService;
             _traktService = traktService;
             _manager = manager;
@@ -313,7 +322,7 @@ namespace Popcorn.ViewModels.Windows
             Messenger.Default.Register<PlayShowEpisodeMessage>(this, message => DispatcherHelper.CheckBeginInvokeOnUI(
                 async () =>
                 {
-                    MediaPlayer = new MediaPlayerViewModel(_subtitlesService, _applicationService,
+                    MediaPlayer = new MediaPlayerViewModel(_subtitlesService, _applicationService, _cacheService,
                         message.Episode.FilePath,
                         message.Episode.Title,
                         MediaType.Show,
@@ -349,7 +358,8 @@ namespace Popcorn.ViewModels.Windows
             Messenger.Default.Register<PlayMediaMessage>(this, message => DispatcherHelper.CheckBeginInvokeOnUI(
                 async () =>
                 {
-                    MediaPlayer = new MediaPlayerViewModel(_subtitlesService, _applicationService, message.MediaPath,
+                    MediaPlayer = new MediaPlayerViewModel(_subtitlesService, _applicationService, _cacheService,
+                        message.MediaPath,
                         message.MediaPath,
                         MediaType.Unkown,
                         () =>
@@ -383,7 +393,7 @@ namespace Popcorn.ViewModels.Windows
             Messenger.Default.Register<PlayMovieMessage>(this, message => DispatcherHelper.CheckBeginInvokeOnUI(
                 async () =>
                 {
-                    MediaPlayer = new MediaPlayerViewModel(_subtitlesService, _applicationService,
+                    MediaPlayer = new MediaPlayerViewModel(_subtitlesService, _applicationService, _cacheService,
                         message.Movie.FilePath, message.Movie.Title,
                         MediaType.Movie,
                         () =>
@@ -420,7 +430,8 @@ namespace Popcorn.ViewModels.Windows
             Messenger.Default.Register<PlayTrailerMessage>(this, message => DispatcherHelper.CheckBeginInvokeOnUI(
                 async () =>
                 {
-                    MediaPlayer = new MediaPlayerViewModel(_subtitlesService, _applicationService, message.TrailerUrl,
+                    MediaPlayer = new MediaPlayerViewModel(_subtitlesService, _applicationService, _cacheService,
+                        message.TrailerUrl,
                         message.MovieTitle,
                         MediaType.Trailer,
                         message.TrailerStoppedAction, message.TrailerEndedAction);
@@ -692,7 +703,7 @@ namespace Popcorn.ViewModels.Windows
                         var torrentFile = files?.FirstOrDefault(a => a.Contains("torrent"));
                         if (torrentFile != null)
                         {
-                            var vm = new DropTorrentDialogViewModel(torrentFile);
+                            var vm = new DropTorrentDialogViewModel(_cacheService, torrentFile);
                             var dropTorrentDialog = new DropTorrentDialog
                             {
                                 DataContext = vm
@@ -785,7 +796,7 @@ namespace Popcorn.ViewModels.Windows
                         var filePath = string.Empty;
                         if (path.StartsWith("magnet"))
                         {
-                            filePath = $"{Constants.DropFilesDownloads}{Guid.NewGuid()}.torrent";
+                            filePath = $"{_cacheService.DropFilesDownloads}{Guid.NewGuid()}.torrent";
                             using (var file = File.Create(filePath))
                             using (var stream = new StreamWriter(file))
                             {
@@ -797,7 +808,7 @@ namespace Popcorn.ViewModels.Windows
                             filePath = path;
                         }
 
-                        var vm = new DropTorrentDialogViewModel(filePath);
+                        var vm = new DropTorrentDialogViewModel(_cacheService, filePath);
                         var dropTorrentDialog = new DropTorrentDialog
                         {
                             DataContext = vm
@@ -947,7 +958,8 @@ namespace Popcorn.ViewModels.Windows
                         .Background("#333")
                         .HasBadge("Error")
                         .HasMessage(LocalizationProviderHelper.GetLocalizedValue<string>("EmbarrassingError"))
-                        .HasMessage(LocalizationProviderHelper.GetLocalizedValue<string>("ConnectionErrorDescriptionPopup"))
+                        .HasMessage(
+                            LocalizationProviderHelper.GetLocalizedValue<string>("ConnectionErrorDescriptionPopup"))
                         .Dismiss().WithButton(LocalizationProviderHelper.GetLocalizedValue<string>("Ignore"),
                             button => { })
                         .Queue();

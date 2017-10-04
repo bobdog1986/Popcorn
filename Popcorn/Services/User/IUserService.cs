@@ -130,5 +130,17 @@ namespace Popcorn.Services.User
         /// </summary>
         /// <returns></returns>
         void SetDefaultSubtitleSize(SubtitleSize size);
+
+        /// <summary>
+        /// Get cache location
+        /// </summary>
+        /// <returns></returns>
+        string GetCacheLocationPath();
+
+        /// <summary>
+        /// Set cache location
+        /// </summary>
+        /// <param name="path"></param>
+        void SetCacheLocationPath(string path);
     }
 }

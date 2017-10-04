@@ -13,6 +13,7 @@ using Popcorn.Models.Episode;
 using Popcorn.Services.Shows.Trailer;
 using System.Threading;
 using System.Threading.Tasks;
+using Popcorn.Services.Cache;
 using Popcorn.Services.Shows.Show;
 
 namespace Popcorn.ViewModels.Pages.Home.Show.Details
@@ -70,7 +71,8 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Details
         /// <param name="showService">The show service</param>
         /// <param name="subtitlesService">The subtitles service</param>
         /// <param name="showTrailerService">The show trailer service</param>
-        public ShowDetailsViewModel(IShowService showService, ISubtitlesService subtitlesService, IShowTrailerService showTrailerService)
+        /// <param name="cacheService">The cache service</param>
+        public ShowDetailsViewModel(IShowService showService, ISubtitlesService subtitlesService, IShowTrailerService showTrailerService, ICacheService cacheService)
         {
             _showTrailerService = showTrailerService;
             _showService = showService;
@@ -78,8 +80,8 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Details
             RegisterCommands();
             RegisterMessages();
             CancellationLoadingTrailerToken = new CancellationTokenSource();
-            var downloadService = new DownloadShowService<EpisodeShowJson>();
-            DownloadShow = new DownloadShowViewModel(downloadService, subtitlesService);
+            var downloadService = new DownloadShowService<EpisodeShowJson>(cacheService);
+            DownloadShow = new DownloadShowViewModel(downloadService, subtitlesService, cacheService);
         }
 
         /// <summary>
@@ -88,6 +90,10 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Details
         private void RegisterCommands()
         {
             LoadShowCommand = new RelayCommand<ShowLightJson>(async show => await LoadShow(show).ConfigureAwait(false));
+            GoToImdbCommand = new RelayCommand<string>(e =>
+            {
+                Process.Start($"http://www.imdb.com/title/{e}");
+            });
 
             PlayTrailerCommand = new RelayCommand(async () =>
             {
@@ -135,6 +141,11 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Details
         /// Command used to load the show's trailer
         /// </summary>
         public RelayCommand PlayTrailerCommand { get; private set; }
+
+        /// <summary>
+        /// Command used to browse Imdb
+        /// </summary>
+        public RelayCommand<string> GoToImdbCommand { get; private set; }
 
         /// <summary>
         /// Command used to load the show

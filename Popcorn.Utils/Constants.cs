@@ -71,40 +71,5 @@ namespace Popcorn.Utils
         /// Url of the server updates
         /// </summary>
         public const string GithubRepository = "https://github.com/bbougot/Popcorn";
-
-        /// <summary>
-        /// Directory of assets
-        /// </summary>
-        public static string Assets { get; } = Path.GetTempPath() + "Popcorn\\Assets\\";
-
-        /// <summary>
-        /// Directory of downloaded movies
-        /// </summary>
-        public static string MovieDownloads { get; } = Path.GetTempPath() + "Popcorn\\Downloads\\Movies\\";
-
-        /// <summary>
-        /// Directory of dropped files
-        /// </summary>
-        public static string DropFilesDownloads { get; } = Path.GetTempPath() + "Popcorn\\Downloads\\Dropped\\";
-
-        /// <summary>
-        /// Directory of downloaded shows
-        /// </summary>
-        public static string ShowDownloads { get; } = Path.GetTempPath() + "Popcorn\\Downloads\\Shows\\";
-
-        /// <summary>
-        /// Directory of downloaded movie torrents
-        /// </summary>
-        public static string MovieTorrentDownloads { get; } = Path.GetTempPath() + "Popcorn\\Torrents\\Movies\\";
-
-        /// <summary>
-        /// Subtitles directory
-        /// </summary>
-        public static string Subtitles { get; } = Path.GetTempPath() + "Popcorn\\Subtitles\\";
-
-        /// <summary>
-        /// Popcorn temp directory
-        /// </summary>
-        public static string PopcornTemp { get; } = Path.GetTempPath() + "Popcorn\\";
     }
 }

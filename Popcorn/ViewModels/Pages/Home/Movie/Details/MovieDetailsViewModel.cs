@@ -21,6 +21,7 @@ using Popcorn.Services.Movies.Trailer;
 using Popcorn.Services.Subtitles;
 using Popcorn.ViewModels.Pages.Home.Movie.Download;
 using Popcorn.Models.Torrent.Movie;
+using Popcorn.Services.Cache;
 using Popcorn.Services.Download;
 using Popcorn.ViewModels.Windows.Settings;
 using Subtitle = Popcorn.Models.Subtitles.Subtitle;
@@ -133,8 +134,9 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
         /// <param name="movieService">Service used to interact with movies</param>
         /// <param name="movieTrailerService">The movie trailer service</param>
         /// <param name="subtitlesService">The subtitles service</param>
+        /// <param name="cacheService">The cache service</param>
         public MovieDetailsViewModel(IMovieService movieService, IMovieTrailerService movieTrailerService,
-            ISubtitlesService subtitlesService)
+            ISubtitlesService subtitlesService, ICacheService cacheService)
         {
             _movieTrailerService = movieTrailerService;
             _movieService = movieService;
@@ -143,7 +145,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
             SubtitlesService = subtitlesService;
             CancellationLoadingToken = new CancellationTokenSource();
             CancellationLoadingTrailerToken = new CancellationTokenSource();
-            DownloadMovie = new DownloadMovieViewModel(subtitlesService, new DownloadMovieService<MovieJson>());
+            DownloadMovie = new DownloadMovieViewModel(subtitlesService, new DownloadMovieService<MovieJson>(cacheService), cacheService);
             RegisterMessages();
             RegisterCommands();
         }

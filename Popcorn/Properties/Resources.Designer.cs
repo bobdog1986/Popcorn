@@ -196,6 +196,15 @@ namespace Popcorn.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Change location.
+        /// </summary>
+        public static string ChangeLocation {
+            get {
+                return ResourceManager.GetString("ChangeLocation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Choose a Chromecast.
         /// </summary>
         public static string ChooseChromecastLabel {
@@ -1038,6 +1047,15 @@ namespace Popcorn.Properties {
         public static string UpdateApplied {
             get {
                 return ResourceManager.GetString("UpdateApplied", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Updated.
+        /// </summary>
+        public static string UpdatedTitleTab {
+            get {
+                return ResourceManager.GetString("UpdatedTitleTab", resourceCulture);
             }
         }
         

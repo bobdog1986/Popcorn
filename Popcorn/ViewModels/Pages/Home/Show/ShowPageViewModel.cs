@@ -68,6 +68,11 @@ namespace Popcorn.ViewModels.Pages.Home.Show
         public RelayCommand SelectFavoritesTab { get; private set; }
 
         /// <summary>
+        /// Command used to select the updated shows tab
+        /// </summary>
+        public RelayCommand SelectUpdatedTab { get; private set; }
+
+        /// <summary>
         /// Manage genres
         /// </summary>
         private GenreViewModel _genreViewModel;
@@ -114,6 +119,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show
             Tabs.Add(new GreatestShowTabViewModel(_applicationService, showService, userService));
             Tabs.Add(new RecentShowTabViewModel(_applicationService, showService, userService));
             Tabs.Add(new FavoritesShowTabViewModel(_applicationService, showService, userService));
+            Tabs.Add(new UpdatedShowTabViewModel(_applicationService, showService, userService));
             SelectedTab = Tabs.First();
             SelectedShowsIndexMenuTab = 0;
         }
@@ -171,6 +177,14 @@ namespace Popcorn.ViewModels.Pages.Home.Show
                     return;
                 foreach (var recentTab in Tabs.OfType<RecentShowTabViewModel>().ToList())
                     SelectedTab = recentTab;
+            });
+
+            SelectUpdatedTab = new RelayCommand(() =>
+            {
+                if (SelectedTab is UpdatedShowTabViewModel)
+                    return;
+                foreach (var updatedTab in Tabs.OfType<UpdatedShowTabViewModel>().ToList())
+                    SelectedTab = updatedTab;
             });
 
             SelectFavoritesTab = new RelayCommand(() =>

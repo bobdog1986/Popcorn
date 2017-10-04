@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using GalaSoft.MvvmLight.Ioc;
 using NLog;
+using Popcorn.Services.Cache;
 using Popcorn.Utils;
 
 namespace Popcorn.Helpers
@@ -12,6 +14,8 @@ namespace Popcorn.Helpers
         /// Logger of the class
         /// </summary>
         private static Logger Logger { get; } = LogManager.GetCurrentClassLogger();
+
+        private static readonly ICacheService _cacheService;
 
         /// <summary>
         /// Get directory size
@@ -24,34 +28,44 @@ namespace Popcorn.Helpers
             return di.EnumerateFiles("*", SearchOption.AllDirectories).Sum(fi => fi.Length);
         }
 
+        static FileHelper()
+        {
+            _cacheService = SimpleIoc.Default.GetInstance<ICacheService>();
+        }
+
         /// <summary>
         /// Create download folders
         /// </summary>
         public static void CreateFolders()
         {
-            if (!Directory.Exists(Constants.Subtitles))
+            if (!Directory.Exists(_cacheService.Assets))
             {
-                Directory.CreateDirectory(Constants.Subtitles);
+                Directory.CreateDirectory(_cacheService.Assets);
             }
 
-            if (!Directory.Exists(Constants.MovieDownloads))
+            if (!Directory.Exists(_cacheService.Subtitles))
             {
-                Directory.CreateDirectory(Constants.MovieDownloads);
+                Directory.CreateDirectory(_cacheService.Subtitles);
             }
 
-            if (!Directory.Exists(Constants.DropFilesDownloads))
+            if (!Directory.Exists(_cacheService.MovieDownloads))
             {
-                Directory.CreateDirectory(Constants.DropFilesDownloads);
+                Directory.CreateDirectory(_cacheService.MovieDownloads);
             }
 
-            if (!Directory.Exists(Constants.ShowDownloads))
+            if (!Directory.Exists(_cacheService.DropFilesDownloads))
             {
-                Directory.CreateDirectory(Constants.ShowDownloads);
+                Directory.CreateDirectory(_cacheService.DropFilesDownloads);
             }
 
-            if (!Directory.Exists(Constants.MovieTorrentDownloads))
+            if (!Directory.Exists(_cacheService.ShowDownloads))
             {
-                Directory.CreateDirectory(Constants.MovieTorrentDownloads);
+                Directory.CreateDirectory(_cacheService.ShowDownloads);
+            }
+
+            if (!Directory.Exists(_cacheService.MovieTorrentDownloads))
+            {
+                Directory.CreateDirectory(_cacheService.MovieTorrentDownloads);
             }
         }
 
@@ -60,29 +74,34 @@ namespace Popcorn.Helpers
         /// </summary>
         public static void ClearFolders()
         {
-            if (Directory.Exists(Constants.Subtitles))
+            if (Directory.Exists(_cacheService.Assets))
             {
-                DeleteFolder(Constants.Subtitles);
+                DeleteFolder(_cacheService.Assets);
             }
 
-            if (Directory.Exists(Constants.MovieDownloads))
+            if (Directory.Exists(_cacheService.Subtitles))
             {
-                DeleteFolder(Constants.MovieDownloads);
+                DeleteFolder(_cacheService.Subtitles);
             }
 
-            if (Directory.Exists(Constants.DropFilesDownloads))
+            if (Directory.Exists(_cacheService.MovieDownloads))
             {
-                DeleteFolder(Constants.DropFilesDownloads);
+                DeleteFolder(_cacheService.MovieDownloads);
             }
 
-            if (Directory.Exists(Constants.ShowDownloads))
+            if (Directory.Exists(_cacheService.DropFilesDownloads))
             {
-                DeleteFolder(Constants.ShowDownloads);
+                DeleteFolder(_cacheService.DropFilesDownloads);
             }
 
-            if (Directory.Exists(Constants.MovieTorrentDownloads))
+            if (Directory.Exists(_cacheService.ShowDownloads))
             {
-                DeleteFolder(Constants.MovieTorrentDownloads);
+                DeleteFolder(_cacheService.ShowDownloads);
+            }
+
+            if (Directory.Exists(_cacheService.MovieTorrentDownloads))
+            {
+                DeleteFolder(_cacheService.MovieTorrentDownloads);
             }
         }
 

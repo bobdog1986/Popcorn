@@ -11,6 +11,7 @@ using Popcorn.Helpers;
 using Popcorn.Messaging;
 using Popcorn.Models.Bandwidth;
 using Popcorn.Models.Media;
+using Popcorn.Services.Cache;
 using Popcorn.Utils.Exceptions;
 
 namespace Popcorn.Services.Download
@@ -25,6 +26,13 @@ namespace Popcorn.Services.Download
         /// Logger of the class
         /// </summary>
         private Logger Logger { get; } = LogManager.GetCurrentClassLogger();
+
+        private readonly ICacheService _cacheService;
+
+        public DownloadService(ICacheService cacheService)
+        {
+            _cacheService = cacheService;
+        }
 
         /// <summary>
         /// Action to execute when a movie has been buffered
@@ -66,13 +74,13 @@ namespace Popcorn.Services.Download
                     switch (mediaType)
                     {
                         case MediaType.Movie:
-                            savePath = Constants.MovieDownloads;
+                            savePath = _cacheService.MovieDownloads;
                             break;
                         case MediaType.Show:
-                            savePath = Constants.ShowDownloads;
+                            savePath = _cacheService.ShowDownloads;
                             break;
                         case MediaType.Unkown:
-                            savePath = Constants.DropFilesDownloads;
+                            savePath = _cacheService.DropFilesDownloads;
                             break;
                     }
 

@@ -21,6 +21,7 @@ using Popcorn.Chromecast.Models;
 using Popcorn.Chromecast.Services;
 using Popcorn.Services.Subtitles;
 using Popcorn.Events;
+using Popcorn.Services.Cache;
 using Popcorn.Utils.Exceptions;
 
 namespace Popcorn.ViewModels.Pages.Player
@@ -162,6 +163,11 @@ namespace Popcorn.ViewModels.Pages.Player
         public event EventHandler<EventArgs> CastStopped;
 
         /// <summary>
+        /// The cache service
+        /// </summary>
+        private readonly ICacheService _cacheService;
+
+        /// <summary>
         /// Show subtitle button
         /// </summary>
         public bool ShowSubtitleButton
@@ -190,6 +196,7 @@ namespace Popcorn.ViewModels.Pages.Player
         /// </summary>
         /// <param name="subtitlesService"></param>
         /// <param name="applicationService">Application service</param>
+        /// <param name="cacheService">Caching service</param>
         /// <param name="mediaPath">Media path</param>
         /// <param name="mediaName">Media name</param>
         /// <param name="type">Media type</param>
@@ -199,7 +206,7 @@ namespace Popcorn.ViewModels.Pages.Player
         /// <param name="bandwidthRate">THe bandwidth rate</param>
         /// <param name="subtitleFilePath">Subtitle file path</param>
         /// <param name="subtitles">Subtitles</param>
-        public MediaPlayerViewModel(ISubtitlesService subtitlesService, IApplicationService applicationService,
+        public MediaPlayerViewModel(ISubtitlesService subtitlesService, IApplicationService applicationService, ICacheService cacheService,
             string mediaPath,
             string mediaName, MediaType type, Action mediaStoppedAction,
             Action mediaEndedAction, Progress<double> bufferProgress = null,
@@ -349,7 +356,7 @@ namespace Popcorn.ViewModels.Pages.Player
                         message.SelectedSubtitle.SubtitleId != "custom")
                     {
                         OnResumedMedia(new EventArgs());
-                        var path = Path.Combine(Constants.Subtitles + message.SelectedSubtitle.ImdbId);
+                        var path = Path.Combine(_cacheService.Subtitles + message.SelectedSubtitle.ImdbId);
                         Directory.CreateDirectory(path);
                         var subtitlePath = await
                             _subtitlesService.DownloadSubtitleToPath(path,

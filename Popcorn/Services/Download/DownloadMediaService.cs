@@ -3,6 +3,7 @@ using Popcorn.Messaging;
 using Popcorn.Models.Media;
 using System;
 using Popcorn.Models.Bandwidth;
+using Popcorn.Services.Cache;
 
 namespace Popcorn.Services.Download
 {
@@ -12,6 +13,10 @@ namespace Popcorn.Services.Download
     /// <typeparam name="T"><see cref="IMediaFile"/></typeparam>
     public class DownloadMediaService<T> : DownloadService<T> where T : MediaFile
     {
+        public DownloadMediaService(ICacheService cacheService) : base(cacheService)
+        {
+        }
+
         /// <summary>
         /// Action to execute when a media has been buffered
         /// </summary>

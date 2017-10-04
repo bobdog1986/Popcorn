@@ -13,6 +13,7 @@ using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using NLog;
 using Popcorn.ColorPicker;
 using Popcorn.Extensions;
@@ -20,6 +21,7 @@ using Popcorn.Helpers;
 using Popcorn.Messaging;
 using Popcorn.Models.Localization;
 using Popcorn.Models.Subtitles;
+using Popcorn.Services.Cache;
 using Popcorn.Services.Subtitles;
 using Popcorn.Services.Trakt;
 using Popcorn.Services.User;
@@ -174,19 +176,25 @@ namespace Popcorn.ViewModels.Windows.Settings
         private bool _isTraktLoggedIn;
 
         /// <summary>
+        /// The cache service
+        /// </summary>
+        private readonly ICacheService _cacheService;
+
+        /// <summary>
         /// Initializes a new instance of the ApplicationSettingsViewModel class.
         /// </summary>
         /// <param name="userService">User service</param>
         /// <param name="subtitlesService">Subtitles service</param>
         /// <param name="traktService">Trakt service</param>
-        public ApplicationSettingsViewModel(IUserService userService, ISubtitlesService subtitlesService, ITraktService traktService, NotificationMessageManager manager)
+        /// <param name="cacheService">Cache service</param>
+        public ApplicationSettingsViewModel(IUserService userService, ISubtitlesService subtitlesService, ITraktService traktService, ICacheService cacheService, NotificationMessageManager manager)
         {
+            _cacheService = cacheService;
             _traktService = traktService;
             _manager = manager;
             _userService = userService;
             _subtitlesService = subtitlesService;
             Version = Constants.AppVersion;
-            RefreshCacheSize();
             RegisterCommands();
         }
 
@@ -405,6 +413,11 @@ namespace Popcorn.ViewModels.Windows.Settings
         public RelayCommand ClearCacheCommand { get; private set; }
 
         /// <summary>
+        /// Command used to change cache location
+        /// </summary>
+        public RelayCommand ChangeCacheLocationCommand { get; private set; }
+
+        /// <summary>
         /// Update size cache
         /// </summary>
         public RelayCommand UpdateCacheSizeCommand { get; private set; }
@@ -450,6 +463,8 @@ namespace Popcorn.ViewModels.Windows.Settings
             try
             {
                 var user = await _userService.GetUser().ConfigureAwait(false);
+                FileHelper.CreateFolders();
+                RefreshCacheSize();
                 SubtitleSizes = new ObservableCollection<SubtitleSize>
                 {
                     new SubtitleSize
@@ -623,7 +638,7 @@ namespace Popcorn.ViewModels.Windows.Settings
             UpdateCacheSizeCommand = new RelayCommand(RefreshCacheSize);
             ClearCacheCommand = new RelayCommand(() =>
             {
-                FileHelper.DeleteFolder(Constants.Assets);
+                FileHelper.DeleteFolder(_cacheService.Assets);
                 RefreshCacheSize();
             });
 
@@ -644,6 +659,39 @@ namespace Popcorn.ViewModels.Windows.Settings
                 await _traktService.Logout();
                 IsTraktLoggedIn = false;
             });
+
+            ChangeCacheLocationCommand = new RelayCommand(() =>
+            {
+                try
+                {
+                    var dialog = new CommonOpenFileDialog
+                    {
+                        IsFolderPicker = true,
+                        InitialDirectory = _userService.GetCacheLocationPath(),
+                        AddToMostRecentlyUsedList = false,
+                        AllowNonFileSystemItems = false,
+                        DefaultDirectory = _userService.GetCacheLocationPath(),
+                        EnsureFileExists = true,
+                        EnsurePathExists = true,
+                        EnsureReadOnly = false,
+                        EnsureValidNames = true,
+                        Multiselect = false,
+                        ShowPlacesList = true
+                    };
+
+                    var result = dialog.ShowDialog();
+                    if (result == CommonFileDialogResult.Ok)
+                    {
+                        FileHelper.ClearFolders();
+                        _userService.SetCacheLocationPath(dialog.FileName);
+                        FileHelper.CreateFolders();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                }
+            });
         }
 
         /// <summary>
@@ -651,7 +699,7 @@ namespace Popcorn.ViewModels.Windows.Settings
         /// </summary>
         private void RefreshCacheSize()
         {
-            var cache = FileHelper.GetDirectorySize(Constants.Assets);
+            var cache = FileHelper.GetDirectorySize(_cacheService.Assets);
             CacheSize =
                 (cache / 1024 / 1024)
                 .ToString(CultureInfo.InvariantCulture);

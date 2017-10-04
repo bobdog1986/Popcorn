@@ -468,4 +468,10 @@
   <data name="Dismiss" xml:space="preserve">
     <value>Despedir</value>
   </data>
+  <data name="UpdatedTitleTab" xml:space="preserve">
+    <value>Actualizado</value>
+  </data>
+  <data name="ChangeLocation" xml:space="preserve">
+    <value>Cambiar locación</value>
+  </data>
 </root>

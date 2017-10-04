@@ -16,6 +16,7 @@ using Popcorn.ViewModels.Windows.Settings;
 using Popcorn.Services.Download;
 using GalaSoft.MvvmLight.Ioc;
 using Popcorn.Models.Bandwidth;
+using Popcorn.Services.Cache;
 
 namespace Popcorn.ViewModels.Pages.Home.Movie.Download
 {
@@ -80,12 +81,19 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Download
         private CancellationTokenSource CancellationDownloadingMovie { get; set; }
 
         /// <summary>
+        /// The cache service
+        /// </summary>
+        private readonly ICacheService _cacheService;
+
+        /// <summary>
         /// Initializes a new instance of the DownloadMovieViewModel class.
         /// </summary>
         /// <param name="subtitlesService">Instance of SubtitlesService</param>
         /// <param name="downloadService">Download service</param>
-        public DownloadMovieViewModel(ISubtitlesService subtitlesService, IDownloadService<MovieJson> downloadService)
+        /// <param name="cacheService">Cache service</param>
+        public DownloadMovieViewModel(ISubtitlesService subtitlesService, IDownloadService<MovieJson> downloadService, ICacheService cacheService)
         {
+            _cacheService = cacheService;
             _subtitlesService = subtitlesService;
             _downloadService = downloadService;
             CancellationDownloadingMovie = new CancellationTokenSource();
@@ -208,7 +216,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Download
                             message.Movie.SelectedSubtitle.Sub.LanguageName !=
                             LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"))
                         {
-                            var path = Path.Combine(Constants.Subtitles + message.Movie.ImdbCode);
+                            var path = Path.Combine(_cacheService.Subtitles + message.Movie.ImdbCode);
                             Directory.CreateDirectory(path);
                             var subtitlePath = await
                                 _subtitlesService.DownloadSubtitleToPath(path,
@@ -232,7 +240,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Download
                             var result =
                                 await
                                     DownloadFileHelper.DownloadFileTaskAsync(torrentUrl,
-                                        Constants.MovieTorrentDownloads + Movie.ImdbCode + ".torrent");
+                                        _cacheService.MovieTorrentDownloads + Movie.ImdbCode + ".torrent");
                             var torrentPath = string.Empty;
                             if (result.Item3 == null && !string.IsNullOrEmpty(result.Item2))
                                 torrentPath = result.Item2;

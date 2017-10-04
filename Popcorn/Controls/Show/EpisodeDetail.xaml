@@ -155,7 +155,8 @@
                         controls1:ControlsHelper.ContentCharacterCasing="Normal"
                         Command="{Binding PlayCommand, ElementName=EpisodeDetailUc}"
                         Content="Watch"
-                        FontSize="14" />
+                        FontSize="14"
+                        Style="{DynamicResource SquareButtonStyle}" />
                 </Grid>
             </Grid>
         </controls:AnimatedScrollViewer>

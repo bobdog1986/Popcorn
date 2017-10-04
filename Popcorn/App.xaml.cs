@@ -72,7 +72,6 @@ namespace Popcorn
             DispatcherHelper.Initialize();
             LocalizeDictionary.Instance.SetCurrentThreadCulture = true;
             BlobCache.ApplicationName = "Popcorn";
-            FileHelper.CreateFolders();
 
             try
             {

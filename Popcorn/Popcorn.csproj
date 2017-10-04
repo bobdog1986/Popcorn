@@ -122,6 +122,9 @@
     <Reference Include="Microsoft.ApplicationInsights.NLogTarget, Version=2.4.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.ApplicationInsights.NLogTarget.2.4.1\lib\net45\Microsoft.ApplicationInsights.NLogTarget.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.ApplicationInsights.SnapshotCollector, Version=1.0.10.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.SnapshotCollector.1.0.10\lib\net45\Microsoft.ApplicationInsights.SnapshotCollector.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.AspNetCore.Http.Features, Version=2.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNetCore.Http.Features.2.0.0\lib\netstandard2.0\Microsoft.AspNetCore.Http.Features.dll</HintPath>
     </Reference>
@@ -197,6 +200,15 @@
     </Reference>
     <Reference Include="Microsoft.Threading.Tasks.Extensions.Desktop, Version=1.0.168.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.Desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.WindowsAPICodePack-Core.1.1.0.0\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack.Shell, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.WindowsAPICodePack-Shell.1.1.0.0\lib\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack.ShellExtensions, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.WindowsAPICodePack-Shell.1.1.0.0\lib\Microsoft.WindowsAPICodePack.ShellExtensions.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil, Version=0.9.6.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
       <HintPath>..\packages\Mono.Cecil.0.9.6.4\lib\net45\Mono.Cecil.dll</HintPath>
@@ -352,8 +364,8 @@
     <Reference Include="TraktApiSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\TraktApiSharp.1.0.0-alpha2\lib\netstandard1.1\TraktApiSharp.dll</HintPath>
     </Reference>
-    <Reference Include="Utf8Json, Version=1.1.1.0, Culture=neutral, PublicKeyToken=8a73d3ba7e392e27, processorArchitecture=MSIL">
-      <HintPath>..\packages\Utf8Json.1.1.1\lib\net45\Utf8Json.dll</HintPath>
+    <Reference Include="Utf8Json, Version=1.1.2.0, Culture=neutral, PublicKeyToken=8a73d3ba7e392e27, processorArchitecture=MSIL">
+      <HintPath>..\packages\Utf8Json.1.1.2\lib\net45\Utf8Json.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
@@ -535,6 +547,7 @@
     <Compile Include="Models\Localization\Language.cs" />
     <Compile Include="Models\Subtitles\Subtitle.cs" />
     <Compile Include="Models\Trailer\Trailer.cs" />
+    <Compile Include="Services\Cache\CacheService.cs" />
     <Compile Include="Services\Download\DownloadMediaService.cs" />
     <Compile Include="Services\Download\DownloadMovieService.cs" />
     <Compile Include="Services\Download\DownloadService.cs" />
@@ -544,6 +557,7 @@
     <Compile Include="Services\Genres\IGenreService.cs" />
     <Compile Include="Services\Hub\IPopcornHubService.cs" />
     <Compile Include="Services\Hub\PopcornHubService.cs" />
+    <Compile Include="Services\Cache\ICacheService.cs" />
     <Compile Include="Services\Server\CustomContentTypeProvider.cs" />
     <Compile Include="Services\Server\FileController.cs" />
     <Compile Include="Services\Server\Startup.cs" />
@@ -642,6 +656,7 @@
     <Compile Include="ViewModels\Pages\Home\Show\Tabs\RecentShowTabViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\Show\Tabs\SearchShowTabViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\Show\Tabs\ShowTabsViewModel.cs" />
+    <Compile Include="ViewModels\Pages\Home\Show\Tabs\UpdatedShowTabViewModel.cs" />
     <Compile Include="ViewModels\Windows\WindowViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\Movie\MoviePageViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\PagesViewModel.cs" />
@@ -853,6 +868,7 @@
     <EmbeddedResource Include="Markdown\About.md" />
     <EmbeddedResource Include="Markdown\Help.md" />
     <EmbeddedResource Include="Markdown\Welcome.md" />
+    <None Include="ApplicationInsights.config" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -1018,6 +1034,7 @@ xcopy /s /y "$(SolutionDir)packages\Microsoft.VC120.CRT.JetBrains.12.0.21005.2\D
     <Error Condition="!Exists('..\packages\SQLitePCLRaw.lib.e_sqlite3.v110_xp.1.1.8\build\net35\SQLitePCLRaw.lib.e_sqlite3.v110_xp.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SQLitePCLRaw.lib.e_sqlite3.v110_xp.1.1.8\build\net35\SQLitePCLRaw.lib.e_sqlite3.v110_xp.targets'))" />
     <Error Condition="!Exists('..\packages\NETStandard.Library.2.0.0\build\netstandard2.0\NETStandard.Library.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NETStandard.Library.2.0.0\build\netstandard2.0\NETStandard.Library.targets'))" />
     <Error Condition="!Exists('..\packages\SQLitePCLRaw.lib.e_sqlite3.osx.1.1.8\build\net35\SQLitePCLRaw.lib.e_sqlite3.osx.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SQLitePCLRaw.lib.e_sqlite3.osx.1.1.8\build\net35\SQLitePCLRaw.lib.e_sqlite3.osx.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.ApplicationInsights.SnapshotCollector.1.0.10\build\Microsoft.ApplicationInsights.SnapshotCollector.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.ApplicationInsights.SnapshotCollector.1.0.10\build\Microsoft.ApplicationInsights.SnapshotCollector.targets'))" />
   </Target>
   <Import Project="..\packages\cef.redist.x64.3.2987.1601\build\cef.redist.x64.targets" Condition="Exists('..\packages\cef.redist.x64.3.2987.1601\build\cef.redist.x64.targets')" />
   <Import Project="..\packages\cef.redist.x86.3.2987.1601\build\cef.redist.x86.targets" Condition="Exists('..\packages\cef.redist.x86.3.2987.1601\build\cef.redist.x86.targets')" />
@@ -1027,6 +1044,7 @@ xcopy /s /y "$(SolutionDir)packages\Microsoft.VC120.CRT.JetBrains.12.0.21005.2\D
   <Import Project="..\packages\SQLitePCLRaw.lib.e_sqlite3.v110_xp.1.1.8\build\net35\SQLitePCLRaw.lib.e_sqlite3.v110_xp.targets" Condition="Exists('..\packages\SQLitePCLRaw.lib.e_sqlite3.v110_xp.1.1.8\build\net35\SQLitePCLRaw.lib.e_sqlite3.v110_xp.targets')" />
   <Import Project="..\packages\NETStandard.Library.2.0.0\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.0\build\netstandard2.0\NETStandard.Library.targets')" />
   <Import Project="..\packages\SQLitePCLRaw.lib.e_sqlite3.osx.1.1.8\build\net35\SQLitePCLRaw.lib.e_sqlite3.osx.targets" Condition="Exists('..\packages\SQLitePCLRaw.lib.e_sqlite3.osx.1.1.8\build\net35\SQLitePCLRaw.lib.e_sqlite3.osx.targets')" />
+  <Import Project="..\packages\Microsoft.ApplicationInsights.SnapshotCollector.1.0.10\build\Microsoft.ApplicationInsights.SnapshotCollector.targets" Condition="Exists('..\packages\Microsoft.ApplicationInsights.SnapshotCollector.1.0.10\build\Microsoft.ApplicationInsights.SnapshotCollector.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

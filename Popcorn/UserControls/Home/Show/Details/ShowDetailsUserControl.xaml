@@ -10,6 +10,7 @@
     xmlns:download="clr-namespace:Popcorn.ViewModels.Pages.Home.Show.Download"
     xmlns:download1="clr-namespace:Popcorn.UserControls.Home.Show.Download"
     xmlns:episode="clr-namespace:Popcorn.Models.Episode"
+    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:lex="http://wpflocalizeextension.codeplex.com"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:show="clr-namespace:Popcorn.Controls.Show"
@@ -174,7 +175,7 @@
             <Image
                 Grid.Row="0"
                 Grid.RowSpan="2"
-                attachedProperties:ImageAsyncHelper.ImagePath="{Binding Show.Images.Banner, IsAsync=True}"
+                attachedProperties:ImageAsyncHelper.ImagePath="{Binding Show.Images.Banner}"
                 attachedProperties:ImageAsyncHelper.Type="Backdrop"
                 Opacity="0.3" />
             <Grid
@@ -182,7 +183,7 @@
                 Grid.RowSpan="2"
                 Visibility="{Binding DownloadShow.IsDownloadingEpisode, Converter={StaticResource BoolToInverseVisibilityConverter}}">
                 <Image
-                    attachedProperties:ImageAsyncHelper.ImagePath="{Binding Show.Images.Banner, IsAsync=True}"
+                    attachedProperties:ImageAsyncHelper.ImagePath="{Binding Show.Images.Banner}"
                     attachedProperties:ImageAsyncHelper.Type="Backdrop"
                     Opacity="0.3" />
                 <ContentControl
@@ -214,7 +215,7 @@
                         Margin="0,10,0,0"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Top"
-                        attachedProperties:ImageAsyncHelper.ImagePath="{Binding Show.Images.Poster, IsAsync=True}"
+                        attachedProperties:ImageAsyncHelper.ImagePath="{Binding Show.Images.Poster}"
                         attachedProperties:ImageAsyncHelper.Type="Poster">
                         <Image.Effect>
                             <DropShadowEffect
@@ -242,6 +243,39 @@
                             attachedProperties:TextParenthesis.Text="{Binding Show.Year}"
                             FontSize="18"
                             Foreground="White" />
+                        <StackPanel Margin="20,5,0,0" Orientation="Horizontal">
+                            <iconPacks:PackIconFontAwesome
+                                Width="20"
+                                Height="20"
+                                VerticalAlignment="Center"
+                                Foreground="White"
+                                Kind="Television" />
+                            <TextBlock
+                                Margin="5,0,0,0"
+                                VerticalAlignment="Center"
+                                FontSize="16"
+                                Foreground="WhiteSmoke"
+                                Text="{Binding Show.Network}" />
+                        </StackPanel>
+                        <StackPanel Margin="20,5,0,0" Orientation="Horizontal">
+                            <iconPacks:PackIconFontAwesome
+                                Width="20"
+                                Height="20"
+                                VerticalAlignment="Center"
+                                Kind="ClockOutline" />
+                            <TextBlock
+                                Margin="5,0,0,0"
+                                VerticalAlignment="Center"
+                                FontSize="16"
+                                Foreground="WhiteSmoke"
+                                Text="{Binding Show.AirDay}" />
+                            <TextBlock
+                                Margin="5,0,0,0"
+                                VerticalAlignment="Center"
+                                FontSize="16"
+                                Foreground="WhiteSmoke"
+                                Text="{Binding Show.AirTime}" />
+                        </StackPanel>
                         <controls:RatingStar
                             Width="80"
                             Margin="20,5,0,0"
@@ -258,16 +292,37 @@
                         Foreground="WhiteSmoke">
                         <controls:GenresLabel Genres="{Binding Show.Genres}" />
                     </TextBlock>
-                    <Button
+                    <StackPanel
                         Grid.Row="2"
-                        Width="100"
-                        Height="30"
                         Margin="0,15,0,0"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Center"
-                        Command="{Binding PlayTrailerCommand}"
-                        Content="{lex:LocText TrailerButton}"
-                        IsTabStop="False" />
+                        Orientation="Horizontal">
+                        <Button
+                            Width="100"
+                            Height="30"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            controls1:ControlsHelper.ContentCharacterCasing="Normal"
+                            Command="{Binding PlayTrailerCommand}"
+                            Content="{lex:LocText TrailerButton}"
+                            IsTabStop="False"
+                            Style="{DynamicResource SquareButtonStyle}" />
+                        <Button
+                            Width="100"
+                            Height="30"
+                            Margin="10,0,0,0"
+                            controls1:ControlsHelper.ContentCharacterCasing="Normal"
+                            Command="{Binding GoToImdbCommand}"
+                            CommandParameter="{Binding Show.ImdbId}"
+                            Style="{DynamicResource SquareButtonStyle}">
+                            <iconPacks:PackIconFontAwesome
+                                Width="30"
+                                Height="30"
+                                VerticalAlignment="Center"
+                                Background="White"
+                                Foreground="{DynamicResource WhiteBrush}"
+                                Kind="Imdb" />
+                        </Button>
+                    </StackPanel>
                     <controls:AnimatedScrollViewer
                         Grid.Row="3"
                         Margin="0,15,0,0"
@@ -386,8 +441,10 @@
                         Width="100"
                         Height="30"
                         Margin="0,30,0,0"
+                        controls1:ControlsHelper.ContentCharacterCasing="Normal"
                         Command="{Binding StopLoadingTrailerCommand}"
                         Content="{lex:LocText CancelButton}"
+                        Style="{DynamicResource SquareButtonStyle}"
                         Visibility="{Binding IsTrailerLoading, Converter={StaticResource BoolToInverseVisibilityConverter}}" />
                 </StackPanel>
             </Grid>

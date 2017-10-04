@@ -122,8 +122,10 @@
                 Margin="0"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
+                controls:ControlsHelper.ContentCharacterCasing="Normal"
                 Command="{Binding StopDownloadingEpisodeCommand}"
-                Content="{lex:LocText CancelButton}" />
+                Content="{lex:LocText CancelButton}"
+                Style="{DynamicResource SquareButtonStyle}" />
         </Grid>
     </Grid>
 </UserControl>

@@ -3,6 +3,7 @@ using Enterwell.Clients.Wpf.Notifications;
 using GalaSoft.MvvmLight.Ioc;
 using Microsoft.Practices.ServiceLocation;
 using Popcorn.Services.Application;
+using Popcorn.Services.Cache;
 using Popcorn.Services.Genres;
 using Popcorn.Services.Hub;
 using Popcorn.Services.Movies.Movie;
@@ -45,6 +46,7 @@ namespace Popcorn.ViewModels
             SimpleIoc.Default.Register<IGenreService, GenreService>();
             SimpleIoc.Default.Register<ITraktService, TraktService>();
             SimpleIoc.Default.Register<IPopcornHubService, PopcornHubService>();
+            SimpleIoc.Default.Register<ICacheService, CacheService>();
             SimpleIoc.Default.Register<NotificationMessageManager>();
 
             #endregion
