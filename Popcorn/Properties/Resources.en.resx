@@ -474,4 +474,7 @@
   <data name="ChangeLocation" xml:space="preserve">
     <value>Change location</value>
   </data>
+  <data name="DroppedFileIssue" xml:space="preserve">
+    <value>An issue has occurred while processing the dropped file.</value>
+  </data>
 </root>

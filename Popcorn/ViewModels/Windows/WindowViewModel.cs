@@ -726,12 +726,20 @@ namespace Popcorn.ViewModels.Windows
 
                         Messenger.Default.Send(new DropFileMessage(DropFileMessage.DropFileEvent.Leave));
                     }
+                    else
+                    {
+                        Messenger.Default.Send(new DropFileMessage(DropFileMessage.DropFileEvent.Leave));
+                        Messenger.Default.Send(
+                            new UnhandledExceptionMessage(
+                                new NoDataInDroppedFileException(LocalizationProviderHelper.GetLocalizedValue<string>("NoMediaInDroppedTorrent"))));
+                    }
                 }
                 catch (Exception)
                 {
+                    Messenger.Default.Send(new DropFileMessage(DropFileMessage.DropFileEvent.Leave));
                     Messenger.Default.Send(
                         new UnhandledExceptionMessage(
-                            new PopcornException("An issue has occured while processing the dropped file.")));
+                            new PopcornException(LocalizationProviderHelper.GetLocalizedValue<string>("DroppedFileIssue"))));
                 }
             });
 
@@ -965,6 +973,17 @@ namespace Popcorn.ViewModels.Windows
                         .Queue();
                 }
                 else if (exception is TrailerNotAvailableException)
+                {
+                    _manager.CreateMessage()
+                        .Accent("#E0A030")
+                        .Background("#333")
+                        .HasBadge("Warning")
+                        .HasMessage(exception.Message)
+                        .Dismiss().WithButton(LocalizationProviderHelper.GetLocalizedValue<string>("Dismiss"),
+                            button => { })
+                        .Queue();
+                }
+                else if (exception is NoDataInDroppedFileException)
                 {
                     _manager.CreateMessage()
                         .Accent("#E0A030")

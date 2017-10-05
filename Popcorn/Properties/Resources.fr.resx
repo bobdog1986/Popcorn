@@ -474,4 +474,7 @@
   <data name="ChangeLocation" xml:space="preserve">
     <value>Changer l'emplacement</value>
   </data>
+  <data name="DroppedFileIssue" xml:space="preserve">
+    <value>Une erreur est survenue lors du traitement du fichier glissé.</value>
+  </data>
 </root>

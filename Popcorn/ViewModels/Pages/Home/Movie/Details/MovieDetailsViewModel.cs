@@ -274,6 +274,11 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
         public RelayCommand PlayMovieCommand { get; private set; }
 
         /// <summary>
+        /// Command used to browse Imdb
+        /// </summary>
+        public RelayCommand<string> GoToImdbCommand { get; private set; }
+
+        /// <summary>
         /// Command used to play the trailer
         /// </summary>
         public RelayCommand PlayTrailerCommand { get; private set; }
@@ -426,6 +431,10 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
         private void RegisterCommands()
         {
             LoadMovieCommand = new RelayCommand<IMovie>(async movie => await LoadMovie(movie, CancellationLoadingToken.Token).ConfigureAwait(false));
+            GoToImdbCommand = new RelayCommand<string>(e =>
+            {
+                Process.Start($"http://www.imdb.com/title/{e}");
+            });
 
             PlayMovieCommand = new RelayCommand(() =>
             {

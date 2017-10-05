@@ -370,7 +370,7 @@
                                     <Button
                                         Width="100"
                                         Height="30"
-                                        Margin="0,10,10,0"
+                                        Margin="0,10,0,0"
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Center"
                                         controls:ControlsHelper.ContentCharacterCasing="Normal"
@@ -381,7 +381,7 @@
                                     <Button
                                         Width="100"
                                         Height="30"
-                                        Margin="0,10,0,0"
+                                        Margin="10,10,0,0"
                                         HorizontalAlignment="Right"
                                         VerticalAlignment="Center"
                                         controls:ControlsHelper.ContentCharacterCasing="Normal"
@@ -389,6 +389,22 @@
                                         Content="{lex:LocText WatchButton}"
                                         IsTabStop="False"
                                         Style="{DynamicResource SquareButtonStyle}" />
+                                    <Button
+                                        Width="100"
+                                        Height="30"
+                                        Margin="10,10,0,0"
+                                        controls:ControlsHelper.ContentCharacterCasing="Normal"
+                                        Command="{Binding GoToImdbCommand}"
+                                        CommandParameter="{Binding Movie.ImdbCode}"
+                                        Style="{DynamicResource SquareButtonStyle}">
+                                        <iconPacks:PackIconFontAwesome
+                                            Width="30"
+                                            Height="30"
+                                            VerticalAlignment="Center"
+                                            Background="White"
+                                            Foreground="{DynamicResource WhiteBrush}"
+                                            Kind="Imdb" />
+                                    </Button>
                                 </StackPanel>
                                 <StackPanel Grid.Column="2" Orientation="Horizontal">
 

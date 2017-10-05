@@ -58,6 +58,7 @@
     <Compile Include="Associations\FileAssociations.cs" />
     <Compile Include="CommandLineHarness.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Exceptions\NoDataInDroppedFileException.cs" />
     <Compile Include="Exceptions\PopcornException.cs" />
     <Compile Include="Exceptions\TrailerNotAvailableException.cs" />
     <Compile Include="Extensions\HttpContentExtensions.cs" />

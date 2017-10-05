@@ -385,6 +385,15 @@ namespace Popcorn.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à An issue has occurred while processing the dropped file..
+        /// </summary>
+        public static string DroppedFileIssue {
+            get {
+                return ResourceManager.GetString("DroppedFileIssue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Email....
         /// </summary>
         public static string EmailWatermark {
