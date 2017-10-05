@@ -107,7 +107,7 @@ namespace Popcorn.Services.User
 
             if (User.CacheLocation == null)
             {
-                User.CacheLocation = Path.GetTempPath() + @"\Popcorn\";
+                User.CacheLocation = Path.GetTempPath() + @"Popcorn";
             }
 
             if (User.DefaultSubtitleSize == null)

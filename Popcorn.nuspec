@@ -746,5 +746,8 @@
         <file src="SnapshotCollectorFiles\ProductionBreakpoints_x86.dll" target="lib\net45\SnapshotCollectorFiles\ProductionBreakpoints_x86.dll" />
         <file src="SnapshotCollectorFiles\SnapshotHolder_x64.exe" target="lib\net45\SnapshotCollectorFiles\SnapshotHolder_x64.exe" />
         <file src="SnapshotCollectorFiles\SnapshotHolder_x86.exe" target="lib\net45\SnapshotCollectorFiles\SnapshotHolder_x86.exe" />
+        <file src="Microsoft.WindowsAPICodePack.dll" target="lib\net45\Microsoft.WindowsAPICodePack.dll" />
+        <file src="Microsoft.WindowsAPICodePack.Shell.dll" target="lib\net45\Microsoft.WindowsAPICodePack.Shell.dll" />
+        <file src="Microsoft.WindowsAPICodePack.ShellExtensions.dll" target="lib\net45\Microsoft.WindowsAPICodePack.ShellExtensions.dll" />
     </files>
 </package>
