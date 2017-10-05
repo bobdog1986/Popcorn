@@ -318,8 +318,10 @@
                         BorderThickness="{TemplateBinding Border.BorderThickness}"
                         SnapsToDevicePixels="True">
                         <controls:AnimatedScrollViewer
+                            x:Name="ShowScrollViewer"
                             Padding="{TemplateBinding Control.Padding}"
-                            Focusable="False"
+                            FocusVisualStyle="{x:Null}"
+                            Focusable="True"
                             ScrollChanged="ScrollViewerScrollChanged"
                             TargetVerticalOffset="{Binding VerticalScroll, Mode=TwoWay}"
                             VerticalScrollBarVisibility="Auto">

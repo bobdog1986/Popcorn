@@ -26,7 +26,6 @@
             </Style>
 
             <converters:BoolToInverseVisibilityConverter x:Key="BoolToInverseVisibilityConverter" />
-            <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
             <converters:MultiBooleanToVisibilityConverter x:Key="MultiBooleanToVisibilityConverter" />
             <converters:BoolToInverseBoolConverter x:Key="BoolToInverseBoolConverter" />
         </ResourceDictionary>
@@ -354,8 +353,10 @@
                         BorderThickness="{TemplateBinding Border.BorderThickness}"
                         SnapsToDevicePixels="True">
                         <customControls:AnimatedScrollViewer
+                            x:Name="MovieScrollViewer"
                             Padding="{TemplateBinding Control.Padding}"
-                            Focusable="False"
+                            FocusVisualStyle="{x:Null}"
+                            Focusable="True"
                             ScrollChanged="ScrollViewerScrollChanged"
                             TargetVerticalOffset="{Binding VerticalScroll, Mode=TwoWay}"
                             VerticalScrollBarVisibility="Auto">

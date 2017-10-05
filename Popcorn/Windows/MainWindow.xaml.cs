@@ -6,8 +6,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using GalaSoft.MvvmLight.Messaging;
+using Popcorn.Controls;
 using Popcorn.Extensions;
 using Popcorn.Messaging;
+using Popcorn.Utils;
 using Popcorn.ViewModels.Windows;
 
 namespace Popcorn.Windows
@@ -17,12 +19,16 @@ namespace Popcorn.Windows
     /// </summary>
     public partial class MainWindow
     {
+        private LowLevelKeyboardListener _listener;
+
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
         /// </summary>
         public MainWindow()
         {
+            Initialized += OnInitialized;
             InitializeComponent();
+            Closing += OnClosing;
             var vm = DataContext as WindowViewModel;
             if (vm != null)
             {
@@ -67,6 +73,34 @@ namespace Popcorn.Windows
                     BeginAnimation(OpacityProperty, da);
                 }
             });
+        }
+
+        private void OnInitialized(object sender, EventArgs e)
+        {
+            _listener = new LowLevelKeyboardListener();
+            _listener.OnKeyPressed += OnKeyPressed;
+            _listener.HookKeyboard();
+        }
+
+        private void OnClosing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            _listener.UnHookKeyboard();
+        }
+
+        private void OnKeyPressed(object sender, KeyPressedArgs e)
+        {
+            if (e.KeyPressed == Key.Down || e.KeyPressed == Key.Up)
+            {
+                var movieScrollviewer =
+                    this.FindChild<AnimatedScrollViewer>("MovieScrollViewer");
+                var showScrollviewer =
+                    this.FindChild<AnimatedScrollViewer>("ShowScrollViewer");
+                if (movieScrollviewer != null && movieScrollviewer.IsVisible)
+                    movieScrollviewer.Focus();
+
+                if (showScrollviewer != null && showScrollviewer.IsVisible)
+                    showScrollviewer.Focus();
+            }
         }
 
         private void OnStateChanged(object sender, EventArgs e)

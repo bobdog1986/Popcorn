@@ -132,7 +132,7 @@ namespace Popcorn.Services.Movies.Movie
         public async Task<MovieJson> GetMovieAsync(string imdbCode, CancellationToken ct)
         {
             var timeoutPolicy =
-                Policy.TimeoutAsync(5, TimeoutStrategy.Pessimistic);
+                Policy.TimeoutAsync(Utils.Constants.DefaultRequestTimeoutInSecond, TimeoutStrategy.Pessimistic);
             try
             {
                 return await timeoutPolicy.ExecuteAsync(async cancellation =>
@@ -192,7 +192,7 @@ namespace Popcorn.Services.Movies.Movie
         public async Task<MovieLightJson> GetMovieLightAsync(string imdbCode, CancellationToken ct)
         {
             var timeoutPolicy =
-                Policy.TimeoutAsync(5, TimeoutStrategy.Pessimistic);
+                Policy.TimeoutAsync(Utils.Constants.DefaultRequestTimeoutInSecond, TimeoutStrategy.Pessimistic);
             try
             {
                 return await timeoutPolicy.ExecuteAsync(async cancellation =>
@@ -252,7 +252,7 @@ namespace Popcorn.Services.Movies.Movie
         public async Task<IEnumerable<MovieLightJson>> GetMoviesSimilarAsync(MovieJson movie, CancellationToken ct)
         {
             var timeoutPolicy =
-                Policy.TimeoutAsync(5, TimeoutStrategy.Pessimistic);
+                Policy.TimeoutAsync(Utils.Constants.DefaultRequestTimeoutInSecond, TimeoutStrategy.Pessimistic);
             try
             {
                 return await timeoutPolicy.ExecuteAsync(async cancellation =>
@@ -289,7 +289,7 @@ namespace Popcorn.Services.Movies.Movie
             catch (Exception ex)
             {
                 Logger.Error(ex);
-                throw;
+                return new List<MovieLightJson>();
             }
         }
 
@@ -311,7 +311,7 @@ namespace Popcorn.Services.Movies.Movie
             GenreJson genre = null)
         {
             var timeoutPolicy =
-                Policy.TimeoutAsync(5, TimeoutStrategy.Pessimistic);
+                Policy.TimeoutAsync(Utils.Constants.DefaultRequestTimeoutInSecond, TimeoutStrategy.Pessimistic);
             try
             {
                 return await timeoutPolicy.ExecuteAsync(async cancellation =>
@@ -400,7 +400,7 @@ namespace Popcorn.Services.Movies.Movie
             CancellationToken ct)
         {
             var timeoutPolicy =
-                Policy.TimeoutAsync(5, TimeoutStrategy.Pessimistic);
+                Policy.TimeoutAsync(Utils.Constants.DefaultRequestTimeoutInSecond, TimeoutStrategy.Pessimistic);
             try
             {
                 return await timeoutPolicy.ExecuteAsync(async cancellation =>
@@ -457,7 +457,7 @@ namespace Popcorn.Services.Movies.Movie
             catch (Exception ex)
             {
                 Logger.Error(ex);
-                throw;
+                return (new List<MovieLightJson>(), 0);
             }
         }
 
@@ -479,7 +479,7 @@ namespace Popcorn.Services.Movies.Movie
             CancellationToken ct)
         {
             var timeoutPolicy =
-                Policy.TimeoutAsync(5, TimeoutStrategy.Pessimistic);
+                Policy.TimeoutAsync(Utils.Constants.DefaultRequestTimeoutInSecond, TimeoutStrategy.Pessimistic);
             try
             {
                 return await timeoutPolicy.ExecuteAsync(async cancellation =>
@@ -560,7 +560,7 @@ namespace Popcorn.Services.Movies.Movie
         public async Task<string> GetMovieTrailerAsync(MovieJson movie, CancellationToken ct)
         {
             var timeoutPolicy =
-                Policy.TimeoutAsync(5, TimeoutStrategy.Pessimistic);
+                Policy.TimeoutAsync(Utils.Constants.DefaultRequestTimeoutInSecond, TimeoutStrategy.Pessimistic);
             try
             {
                 return await timeoutPolicy.ExecuteAsync(async cancellation =>

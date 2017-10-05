@@ -76,7 +76,7 @@ namespace Popcorn.Services.Shows.Show
         public async Task<ShowJson> GetShowAsync(string imdbId, CancellationToken ct)
         {
             var timeoutPolicy =
-                Policy.TimeoutAsync(5, TimeoutStrategy.Pessimistic);
+                Policy.TimeoutAsync(Utils.Constants.DefaultRequestTimeoutInSecond, TimeoutStrategy.Pessimistic);
             try
             {
                 return await timeoutPolicy.ExecuteAsync(async cancellation =>
@@ -133,7 +133,7 @@ namespace Popcorn.Services.Shows.Show
         public async Task<ShowLightJson> GetShowLightAsync(string imdbId, CancellationToken ct)
         {
             var timeoutPolicy =
-                Policy.TimeoutAsync(5, TimeoutStrategy.Pessimistic);
+                Policy.TimeoutAsync(Utils.Constants.DefaultRequestTimeoutInSecond, TimeoutStrategy.Pessimistic);
             try
             {
                 return await timeoutPolicy.ExecuteAsync(async cancellation =>
@@ -200,7 +200,7 @@ namespace Popcorn.Services.Shows.Show
             GenreJson genre = null)
         {
             var timeoutPolicy =
-                Policy.TimeoutAsync(5, TimeoutStrategy.Pessimistic);
+                Policy.TimeoutAsync(Utils.Constants.DefaultRequestTimeoutInSecond, TimeoutStrategy.Pessimistic);
             try
             {
                 return await timeoutPolicy.ExecuteAsync(async cancellation =>
@@ -279,7 +279,7 @@ namespace Popcorn.Services.Shows.Show
             CancellationToken ct)
         {
             var timeoutPolicy =
-                Policy.TimeoutAsync(5, TimeoutStrategy.Pessimistic);
+                Policy.TimeoutAsync(Utils.Constants.DefaultRequestTimeoutInSecond, TimeoutStrategy.Pessimistic);
             try
             {
                 return await timeoutPolicy.ExecuteAsync(async cancellation =>
@@ -349,7 +349,7 @@ namespace Popcorn.Services.Shows.Show
         public async Task<string> GetShowTrailerAsync(ShowJson show, CancellationToken ct)
         {
             var timeoutPolicy =
-                Policy.TimeoutAsync(5, TimeoutStrategy.Pessimistic);
+                Policy.TimeoutAsync(Utils.Constants.DefaultRequestTimeoutInSecond, TimeoutStrategy.Pessimistic);
             try
             {
                 return await timeoutPolicy.ExecuteAsync(async cancellation =>

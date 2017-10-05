@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using Popcorn.ViewModels.Pages.Home.Movie.Tabs;
 
 namespace Popcorn.UserControls.Home.Movie.Tabs

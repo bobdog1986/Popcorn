@@ -72,9 +72,9 @@ namespace Popcorn.Helpers
         /// <summary>
         /// Clear download folders
         /// </summary>
-        public static void ClearFolders()
+        public static void ClearFolders(bool removeAlsoAssets = false)
         {
-            if (Directory.Exists(_cacheService.Assets))
+            if (removeAlsoAssets && Directory.Exists(_cacheService.Assets))
             {
                 DeleteFolder(_cacheService.Assets);
             }

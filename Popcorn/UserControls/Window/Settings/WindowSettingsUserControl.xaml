@@ -34,7 +34,7 @@
             <converters:UpdateLabelConverter x:Key="UpdateLabelConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid Width="400" Margin="10">
+    <Grid Width="500" Margin="10">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
@@ -297,7 +297,6 @@
                     Content="{lex:LocText ClearButton}"
                     Style="{DynamicResource SquareButtonStyle}" />
                 <Button
-                    Width="100"
                     Height="30"
                     Margin="10,0,0,0"
                     HorizontalAlignment="Right"

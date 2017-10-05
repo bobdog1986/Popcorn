@@ -53,6 +53,7 @@
     </Reference>
     <Reference Include="System.Net.Http.WebRequest" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Associations\FileAssociations.cs" />
@@ -62,6 +63,7 @@
     <Compile Include="Exceptions\PopcornException.cs" />
     <Compile Include="Exceptions\TrailerNotAvailableException.cs" />
     <Compile Include="Extensions\HttpContentExtensions.cs" />
+    <Compile Include="LowLevelKeyboardListener.cs" />
     <Compile Include="MediaType.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

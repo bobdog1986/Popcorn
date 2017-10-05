@@ -1,4 +1,12 @@
-﻿# 3.0.2 - 05/10/2017 #
+﻿# 3.0.3 - 05/10/2017 #
+***
+Fixed issues
+
+### Details ###
+* Fixed cache issue
+* Add arrow navigation
+
+# 3.0.2 - 05/10/2017 #
 ***
 Fixed issues
 

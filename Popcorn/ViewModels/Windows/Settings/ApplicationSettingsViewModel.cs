@@ -682,7 +682,7 @@ namespace Popcorn.ViewModels.Windows.Settings
                     var result = dialog.ShowDialog();
                     if (result == CommonFileDialogResult.Ok)
                     {
-                        FileHelper.ClearFolders();
+                        FileHelper.ClearFolders(true);
                         _userService.SetCacheLocationPath(dialog.FileName);
                         FileHelper.CreateFolders();
                     }

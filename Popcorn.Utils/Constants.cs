@@ -10,7 +10,7 @@ namespace Popcorn.Utils
         /// <summary>
         /// App version
         /// </summary>
-        public const string AppVersion = "3.0.2";
+        public const string AppVersion = "3.0.3";
 
         /// <summary>
         /// Endpoint to API
@@ -71,5 +71,10 @@ namespace Popcorn.Utils
         /// Url of the server updates
         /// </summary>
         public const string GithubRepository = "https://github.com/bbougot/Popcorn";
+
+        /// <summary>
+        /// Default request timeout
+        /// </summary>
+        public const int DefaultRequestTimeoutInSecond = 10;
     }
 }
