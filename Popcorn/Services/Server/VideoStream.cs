@@ -32,7 +32,7 @@ namespace Popcorn.Services.Server
 
                     while (length > 0 && bytesRead > 0)
                     {
-                        bytesRead = video.Read(buffer, 0, Math.Min(length, buffer.Length));
+                        bytesRead = await video.ReadAsync(buffer, 0, Math.Min(length, buffer.Length));
                         await outputStream.WriteAsync(buffer, 0, bytesRead);
                         length -= bytesRead;
                     }
