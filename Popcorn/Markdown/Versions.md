@@ -1,4 +1,12 @@
-﻿# 3.0.1 - 02/10/2017 #
+﻿# 3.0.2 - 05/10/2017 #
+***
+Fixed issues
+
+### Details ###
+* Fixed #101
+* Fixed #98
+
+# 3.0.1 - 02/10/2017 #
 ***
 Various improvements
 
