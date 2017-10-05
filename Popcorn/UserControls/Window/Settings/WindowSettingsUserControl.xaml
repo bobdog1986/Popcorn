@@ -320,6 +320,7 @@
                     <TextBlock Text="{Binding UpdateDownloadProgress, Converter={StaticResource UpdateLabelConverter}, ConverterParameter=DownloadingUpdate}" />
                     <controls:MetroProgressBar
                         Margin="0,2.5,0,0"
+                        Foreground="{DynamicResource AccentColorBrush}"
                         IsIndeterminate="False"
                         Maximum="100"
                         Minimum="0"
@@ -332,6 +333,7 @@
                     <TextBlock Text="{Binding UpdateApplyProgress, Converter={StaticResource UpdateLabelConverter}, ConverterParameter=ApplyingUpdate}" />
                     <controls:MetroProgressBar
                         Margin="0,2.5,0,0"
+                        Foreground="{DynamicResource AccentColorBrush}"
                         IsIndeterminate="False"
                         Maximum="100"
                         Minimum="0"

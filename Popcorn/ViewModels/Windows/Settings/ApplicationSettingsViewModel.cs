@@ -603,7 +603,7 @@ namespace Popcorn.ViewModels.Windows.Settings
                                             "Restarting...");
 
                                         Process.Start($@"{_updateFilePath}\Popcorn.exe", "restart");
-                                        Application.Current.Shutdown();
+                                        Application.Current.MainWindow.Close();
                                     })
                                 .Dismiss().WithButton(LocalizationProviderHelper.GetLocalizedValue<string>("LaterLabel"),
                                     button => { })
