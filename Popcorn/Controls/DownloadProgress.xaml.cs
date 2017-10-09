@@ -106,7 +106,7 @@ namespace Popcorn.Controls
         {
             if (Type == MediaType.Movie)
             {
-                if (Progress >= Utils.Constants.MinimumMovieBuffering)
+                if (Progress >= Constants.MinimumMovieBuffering)
                     DisplayText.Text =
                         $"{LocalizationProviderHelper.GetLocalizedValue<string>("CurrentlyPlayingLabel")} : {Title}";
                 else
@@ -116,7 +116,7 @@ namespace Popcorn.Controls
             }
             else if (Type == MediaType.Show)
             {
-                if (Progress >= Utils.Constants.MinimumShowBuffering)
+                if (Progress >= Constants.MinimumShowBuffering)
                     DisplayText.Text =
                         $"{LocalizationProviderHelper.GetLocalizedValue<string>("CurrentlyPlayingLabel")} : {Title}";
                 else
