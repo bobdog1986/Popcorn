@@ -323,7 +323,7 @@ namespace Popcorn.ViewModels.Windows
             Messenger.Default.Register<PlayShowEpisodeMessage>(this, message => DispatcherHelper.CheckBeginInvokeOnUI(
                 async () =>
                 {
-                    MediaPlayer = new MediaPlayerViewModel(_subtitlesService, _applicationService, _cacheService,
+                    MediaPlayer = new MediaPlayerViewModel(_subtitlesService, _cacheService,
                         message.Episode.FilePath,
                         message.Episode.Title,
                         MediaType.Show,
@@ -359,7 +359,7 @@ namespace Popcorn.ViewModels.Windows
             Messenger.Default.Register<PlayMediaMessage>(this, message => DispatcherHelper.CheckBeginInvokeOnUI(
                 async () =>
                 {
-                    MediaPlayer = new MediaPlayerViewModel(_subtitlesService, _applicationService, _cacheService,
+                    MediaPlayer = new MediaPlayerViewModel(_subtitlesService, _cacheService,
                         message.MediaPath,
                         message.MediaPath,
                         MediaType.Unkown,
@@ -394,7 +394,7 @@ namespace Popcorn.ViewModels.Windows
             Messenger.Default.Register<PlayMovieMessage>(this, message => DispatcherHelper.CheckBeginInvokeOnUI(
                 async () =>
                 {
-                    MediaPlayer = new MediaPlayerViewModel(_subtitlesService, _applicationService, _cacheService,
+                    MediaPlayer = new MediaPlayerViewModel(_subtitlesService, _cacheService,
                         message.Movie.FilePath, message.Movie.Title,
                         MediaType.Movie,
                         () =>
@@ -431,7 +431,7 @@ namespace Popcorn.ViewModels.Windows
             Messenger.Default.Register<PlayTrailerMessage>(this, message => DispatcherHelper.CheckBeginInvokeOnUI(
                 async () =>
                 {
-                    MediaPlayer = new MediaPlayerViewModel(_subtitlesService, _applicationService, _cacheService,
+                    MediaPlayer = new MediaPlayerViewModel(_subtitlesService, _cacheService,
                         message.TrailerUrl,
                         message.MovieTitle,
                         MediaType.Trailer,

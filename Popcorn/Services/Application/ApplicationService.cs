@@ -64,18 +64,20 @@ namespace Popcorn.Services.Application
             set { Set(() => IsFullScreen, ref _isFullScreen, value); }
         }
 
+        private bool _enableConstantDisplayAndPower;
+
         /// <summary>
         /// Prevent Windows from sleeping
         /// </summary>
         /// <summary>
         /// Prevent screensaver, display dimming and power saving. This function wraps PInvokes on Win32 API. 
         /// </summary>
-        /// <param name="enableConstantDisplayAndPower">True to get a constant display and power - False to clear the settings</param>
-        public void EnableConstantDisplayAndPower(bool enableConstantDisplayAndPower)
+        /// <param name="enableConstantDisplay"></param>
+        public void SwitchConstantDisplayAndPower(bool enableConstantDisplay)
         {
             try
             {
-                if (enableConstantDisplayAndPower)
+                if (enableConstantDisplay && !_enableConstantDisplayAndPower)
                 {
                     // Set up the diagnostic string
                     _powerRequestContext.Version = NativeMethods.POWER_REQUEST_CONTEXT_VERSION;
@@ -90,8 +92,9 @@ namespace Popcorn.Services.Application
                         NativeMethods.PowerRequestType.PowerRequestSystemRequired);
                     NativeMethods.PowerSetRequest(_powerRequest,
                         NativeMethods.PowerRequestType.PowerRequestDisplayRequired);
+                    _enableConstantDisplayAndPower = true;
                 }
-                else
+                else if(!enableConstantDisplay && _enableConstantDisplayAndPower)
                 {
                     // Clear the request
                     NativeMethods.PowerClearRequest(_powerRequest,
@@ -100,6 +103,7 @@ namespace Popcorn.Services.Application
                         NativeMethods.PowerRequestType.PowerRequestDisplayRequired);
 
                     NativeMethods.CloseHandle(_powerRequest);
+                    _enableConstantDisplayAndPower = false;
                 }
             }
             catch (Exception ex)

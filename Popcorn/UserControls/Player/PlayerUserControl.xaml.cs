@@ -65,6 +65,11 @@ namespace Popcorn.UserControls.Player
         private ICommand _setHigherSubtitleSizeCommand;
 
         /// <summary>
+        /// Application service
+        /// </summary>
+        private readonly IApplicationService _applicationService;
+
+        /// <summary>
         /// Subtitle size
         /// </summary>
         private int _subtitleSize;
@@ -107,6 +112,7 @@ namespace Popcorn.UserControls.Player
             }
 
             var applicationSettings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
+            _applicationService = SimpleIoc.Default.GetInstance<IApplicationService>();
             _subtitleSize = applicationSettings.SelectedSubtitleSize.Size;
             VlcOptions = new[]
             {
@@ -580,6 +586,7 @@ namespace Popcorn.UserControls.Player
                 vm.PlayCastCommand.Execute(null);
             }
 
+            _applicationService.SwitchConstantDisplayAndPower(true);
             Player.Play();
             MediaPlayerIsPlaying = true;
             MediaPlayerStatusBarItemPlay.Visibility = Visibility.Collapsed;
@@ -597,6 +604,7 @@ namespace Popcorn.UserControls.Player
                 vm.PauseCastCommand.Execute(null);
             }
 
+            _applicationService.SwitchConstantDisplayAndPower(false);
             Player.Pause();
             MediaPlayerIsPlaying = false;
             MediaPlayerStatusBarItemPlay.Visibility = Visibility.Visible;
@@ -868,6 +876,7 @@ namespace Popcorn.UserControls.Player
                 }
 
                 Player.Dispose();
+                _applicationService.SwitchConstantDisplayAndPower(false);
             }
             catch (Exception ex)
             {

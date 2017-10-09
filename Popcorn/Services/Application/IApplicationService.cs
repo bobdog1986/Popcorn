@@ -17,6 +17,6 @@
         /// </summary>
         bool IsMediaPlaying { get; set; }
 
-        void EnableConstantDisplayAndPower(bool enableConstantDisplayAndPower);
+        void SwitchConstantDisplayAndPower(bool enableConstantDisplay);
     }
 }

@@ -177,11 +177,6 @@ namespace Popcorn.ViewModels.Pages.Player
         }
 
         /// <summary>
-        /// Application service
-        /// </summary>
-        private readonly IApplicationService _applicationService;
-
-        /// <summary>
         /// Subtitle service
         /// </summary>
         private readonly ISubtitlesService _subtitlesService;
@@ -195,7 +190,6 @@ namespace Popcorn.ViewModels.Pages.Player
         /// Initializes a new instance of the MediaPlayerViewModel class.
         /// </summary>
         /// <param name="subtitlesService"></param>
-        /// <param name="applicationService">Application service</param>
         /// <param name="cacheService">Caching service</param>
         /// <param name="mediaPath">Media path</param>
         /// <param name="mediaName">Media name</param>
@@ -206,7 +200,7 @@ namespace Popcorn.ViewModels.Pages.Player
         /// <param name="bandwidthRate">THe bandwidth rate</param>
         /// <param name="subtitleFilePath">Subtitle file path</param>
         /// <param name="subtitles">Subtitles</param>
-        public MediaPlayerViewModel(ISubtitlesService subtitlesService, IApplicationService applicationService, ICacheService cacheService,
+        public MediaPlayerViewModel(ISubtitlesService subtitlesService, ICacheService cacheService,
             string mediaPath,
             string mediaName, MediaType type, Action mediaStoppedAction,
             Action mediaEndedAction, Progress<double> bufferProgress = null,
@@ -218,7 +212,6 @@ namespace Popcorn.ViewModels.Pages.Player
             RegisterCommands();
             _chromecastService = new ChromecastService();
             _subtitlesService = subtitlesService;
-            _applicationService = applicationService;
             MediaPath = mediaPath;
             MediaName = mediaName;
             MediaType = type;
@@ -230,8 +223,6 @@ namespace Popcorn.ViewModels.Pages.Player
             BandwidthRate = bandwidthRate;
             ShowSubtitleButton = MediaType != MediaType.Trailer;
             _subtitles = subtitles;
-            // Prevent windows from sleeping
-            _applicationService.EnableConstantDisplayAndPower(true);
             _castPlayerTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
             _castPlayerTimer.Tick += OnCastPlayerTimerChanged;
         }
@@ -414,7 +405,6 @@ namespace Popcorn.ViewModels.Pages.Player
 
                     _castPlayerTimer.Tick -= OnCastPlayerTimerChanged;
                     _mediaStoppedAction?.Invoke();
-                    _applicationService.EnableConstantDisplayAndPower(false);
                     OnStoppedMedia(new EventArgs());
                 });
 
@@ -669,7 +659,7 @@ namespace Popcorn.ViewModels.Pages.Player
         {
             Logger.Debug(
                 "Resumed playing a media");
-
+            
             var handler = ResumedMedia;
             handler?.Invoke(this, e);
         }
