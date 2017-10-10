@@ -121,7 +121,26 @@ namespace Popcorn.UserControls.Player
                 $"--freetype-rel-fontsize={applicationSettings.SelectedSubtitleSize.Size}"
             };
             InitializeComponent();
+            EventManager.RegisterClassHandler(
+                typeof(UIElement),
+                Keyboard.PreviewKeyDownEvent,
+                new KeyEventHandler(OnPreviewKeyDownEvent));
+
             Loaded += OnLoaded;
+        }
+
+        private void OnPreviewKeyDownEvent(object sender,
+            RoutedEventArgs e)
+        {
+            KeyEventArgs ke = e as KeyEventArgs;
+            if (ke.Key == Key.Space)
+            {
+                ke.Handled = true;
+                if (MediaPlayerIsPlaying)
+                    PauseMedia();
+                else
+                    PlayMedia();
+            }
         }
 
         /// <summary>
@@ -178,7 +197,7 @@ namespace Popcorn.UserControls.Player
         }
 
         public string[] VlcOptions { get; set; }
-        
+
         /// <summary>
         /// Subscribe to events and play the movie when control has been loaded
         /// </summary>
@@ -271,7 +290,7 @@ namespace Popcorn.UserControls.Player
 
         private void OnCastStopped(object sender, EventArgs e)
         {
-            if(Player.VlcMediaPlayer.IsMute)
+            if (Player.VlcMediaPlayer.IsMute)
                 Player.VlcMediaPlayer.ToggleMute();
         }
 
@@ -877,6 +896,8 @@ namespace Popcorn.UserControls.Player
 
                 Player.Dispose();
                 _applicationService.SwitchConstantDisplayAndPower(false);
+                RemoveHandler(Keyboard.PreviewKeyDownEvent,
+                    new KeyEventHandler(OnPreviewKeyDownEvent));
             }
             catch (Exception ex)
             {
