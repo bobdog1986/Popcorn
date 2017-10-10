@@ -400,43 +400,58 @@ namespace Popcorn.ViewModels.Pages.Player
             StopPlayingMediaCommand =
                 new RelayCommand(async () =>
                 {
-                    if(IsCasting)
-                        await StopCastPlayer();
+                    try
+                    {
+                        if (IsCasting)
+                            await StopCastPlayer();
 
-                    _castPlayerTimer.Tick -= OnCastPlayerTimerChanged;
-                    _mediaStoppedAction?.Invoke();
-                    OnStoppedMedia(new EventArgs());
+                        _castPlayerTimer.Tick -= OnCastPlayerTimerChanged;
+                        _mediaStoppedAction?.Invoke();
+                        OnStoppedMedia(new EventArgs());
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(ex);
+                    }
                 });
 
             CastCommand = new RelayCommand(async () =>
             {
-                if (_castServer != null)
+                try
                 {
-                    await StopCastPlayer();
-                }
-                else
-                {
-                    IsCasting = false;
-                    OnPausedMedia(new EventArgs());
-                    var message = new CastMediaMessage {CastCancellationTokenSource = new CancellationTokenSource()};
-                    _castPlayerCancellationTokenSource = message.CastCancellationTokenSource;
-                    message.StartCast = async chromecastReseiver =>
-                    {
-                        await LoadMedia(chromecastReseiver, message.CloseCastDialog);
-                    };
-                    await Messenger.Default.SendAsync(message);
-                    if (message.CastCancellationTokenSource.IsCancellationRequested)
+                    if (_castServer != null)
                     {
                         await StopCastPlayer();
                     }
-                    else if (message.ChromecastReceiver == null)
-                    {
-                        OnResumedMedia(new EventArgs());
-                    }
                     else
                     {
-                        ChromecastReceiver = message.ChromecastReceiver;
+                        IsCasting = false;
+                        OnPausedMedia(new EventArgs());
+                        var message =
+                            new CastMediaMessage {CastCancellationTokenSource = new CancellationTokenSource()};
+                        _castPlayerCancellationTokenSource = message.CastCancellationTokenSource;
+                        message.StartCast = async chromecastReseiver =>
+                        {
+                            await LoadMedia(chromecastReseiver, message.CloseCastDialog);
+                        };
+                        await Messenger.Default.SendAsync(message);
+                        if (message.CastCancellationTokenSource.IsCancellationRequested)
+                        {
+                            await StopCastPlayer();
+                        }
+                        else if (message.ChromecastReceiver == null)
+                        {
+                            OnResumedMedia(new EventArgs());
+                        }
+                        else
+                        {
+                            ChromecastReceiver = message.ChromecastReceiver;
+                        }
                     }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
                 }
             });
         }

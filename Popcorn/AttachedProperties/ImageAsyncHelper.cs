@@ -244,19 +244,22 @@ namespace Popcorn.AttachedProperties
                         }
                         catch (Exception ex)
                         {
-                            Logger.Error(ex);
-                            if (imageType == ImageType.Thumbnail)
+                            DispatcherHelper.CheckBeginInvokeOnUI(() =>
                             {
-                                var errorThumbnail = resourceDictionary["ImageError"] as DrawingImage;
-                                errorThumbnail.Freeze();
-                                image.RenderTransformOrigin = new Point(0.5d, 0.5d);
-                                image.Stretch = Stretch.None;
-                                image.Source = errorThumbnail;
-                            }
-                            else
-                            {
-                                image.Source = new BitmapImage();
-                            }
+                                Logger.Error(ex);
+                                if (imageType == ImageType.Thumbnail)
+                                {
+                                    var errorThumbnail = resourceDictionary["ImageError"] as DrawingImage;
+                                    errorThumbnail.Freeze();
+                                    image.RenderTransformOrigin = new Point(0.5d, 0.5d);
+                                    image.Stretch = Stretch.None;
+                                    image.Source = errorThumbnail;
+                                }
+                                else
+                                {
+                                    image.Source = new BitmapImage();
+                                }
+                            });
                         }
                     }
                 }

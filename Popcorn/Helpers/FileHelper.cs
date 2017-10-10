@@ -24,8 +24,16 @@ namespace Popcorn.Helpers
         /// <returns></returns>
         public static long GetDirectorySize(string folderPath)
         {
-            var di = new DirectoryInfo(folderPath);
-            return di.EnumerateFiles("*", SearchOption.AllDirectories).Sum(fi => fi.Length);
+            try
+            {
+                var di = new DirectoryInfo(folderPath);
+                return di.EnumerateFiles("*", SearchOption.AllDirectories).Sum(fi => fi.Length);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                return 0L;
+            }
         }
 
         static FileHelper()

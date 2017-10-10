@@ -447,29 +447,37 @@ namespace Popcorn.Services.User
         /// <returns>Current language</returns>
         public Language GetCurrentLanguage()
         {
-            Language currentLanguage;
-            var language = User.Language;
-            if (language != null)
+            try
             {
-                switch (language.Culture)
+                Language currentLanguage;
+                var language = User.Language;
+                if (language != null)
                 {
-                    case "fr":
-                        currentLanguage = new FrenchLanguage();
-                        break;
-                    case "es":
-                        currentLanguage = new SpanishLanguage();
-                        break;
-                    default:
-                        currentLanguage = new EnglishLanguage();
-                        break;
+                    switch (language.Culture)
+                    {
+                        case "fr":
+                            currentLanguage = new FrenchLanguage();
+                            break;
+                        case "es":
+                            currentLanguage = new SpanishLanguage();
+                            break;
+                        default:
+                            currentLanguage = new EnglishLanguage();
+                            break;
+                    }
                 }
-            }
-            else
-            {
-                currentLanguage = new EnglishLanguage();
-            }
+                else
+                {
+                    currentLanguage = new EnglishLanguage();
+                }
 
-            return currentLanguage;
+                return currentLanguage;
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                return new EnglishLanguage();
+            }
         }
 
         /// <summary>

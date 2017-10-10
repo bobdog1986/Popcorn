@@ -22,7 +22,7 @@ namespace Popcorn.ViewModels.Dialogs
 
         public SubtitleDialogViewModel(IEnumerable<Subtitle> subtitles, OSDB.Subtitle currentSubtitle)
         {
-            AvailableSubtitles = new ObservableCollection<Subtitle>(subtitles);
+            AvailableSubtitles = new ObservableCollection<Subtitle>(subtitles ?? new List<Subtitle>());
             if (currentSubtitle != null)
             {
                 SelectedSubtitle =

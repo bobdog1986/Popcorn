@@ -19,13 +19,20 @@ namespace Popcorn.Services.Hub
 
         public PopcornHubService()
         {
-            _connection = new HubConnectionBuilder()
-                .WithUrl($"{Utils.Constants.PopcornApi.Replace("/api", "/popcorn")}")
-                .Build();
-            _connection.On<int>("OnUserConnected", message =>
+            try
             {
+                _connection = new HubConnectionBuilder()
+                    .WithUrl($"{Utils.Constants.PopcornApi.Replace("/api", "/popcorn")}")
+                    .Build();
+                _connection.On<int>("OnUserConnected", message =>
+                {
 
-            });
+                });
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
         }
 
         public async Task Start()
