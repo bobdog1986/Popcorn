@@ -13,5 +13,7 @@ namespace Popcorn.Models.Movie
         bool IsFavorite { get; set; }
 
         bool HasBeenSeen { get; set; }
+
+        string TranslationLanguage { get; set; }
     }
 }

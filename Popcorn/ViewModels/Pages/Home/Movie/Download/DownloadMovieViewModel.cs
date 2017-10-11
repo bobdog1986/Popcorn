@@ -23,7 +23,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Download
     /// <summary>
     /// Manage the download of a movie
     /// </summary>
-    public class DownloadMovieViewModel : ViewModelBase, IDisposable
+    public class DownloadMovieViewModel : ViewModelBase
     {
         /// <summary>
         /// Logger of the class
@@ -69,11 +69,6 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Download
         /// Number of peers
         /// </summary>
         private int _nbPeers;
-
-        /// <summary>
-        /// Disposed
-        /// </summary>
-        private bool _disposed;
 
         /// <summary>
         /// Token to cancel the download
@@ -295,32 +290,6 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Download
         private void ReportMovieDownloadProgress(double value)
         {
             MovieDownloadProgress = value;
-        }
-
-        /// <summary>
-        /// Dispose
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Dispose
-        /// </summary>
-        /// <param name="disposing"></param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
-            if (disposing)
-            {
-                CancellationDownloadingMovie?.Dispose();
-            }
-
-            _disposed = true;
         }
     }
 }

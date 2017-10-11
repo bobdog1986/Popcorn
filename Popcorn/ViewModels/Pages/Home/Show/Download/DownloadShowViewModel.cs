@@ -19,7 +19,7 @@ using Popcorn.Services.Download;
 
 namespace Popcorn.ViewModels.Pages.Home.Show.Download
 {
-    public class DownloadShowViewModel : ViewModelBase, IDisposable
+    public class DownloadShowViewModel : ViewModelBase
     {
         /// <summary>
         /// Logger of the class
@@ -65,11 +65,6 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Download
         /// Number of peers
         /// </summary>
         private int _nbPeers;
-
-        /// <summary>
-        /// Disposed
-        /// </summary>
-        private bool _disposed;
 
         /// <summary>
         /// Token to cancel the download
@@ -283,32 +278,6 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Download
         private void ReportEpisodeDownloadProgress(double value)
         {
             EpisodeDownloadProgress = value;
-        }
-
-        /// <summary>
-        /// Dispose
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Dispose
-        /// </summary>
-        /// <param name="disposing"></param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
-            if (disposing)
-            {
-                CancellationDownloadingEpisode?.Dispose();
-            }
-
-            _disposed = true;
         }
     }
 }

@@ -390,5 +390,7 @@ namespace Popcorn.Models.Movie
             get => _imdbId;
             set { Set(() => ImdbId, ref _imdbId, value); }
         }
+
+        public string TranslationLanguage { get; set; }
     }
 }

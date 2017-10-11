@@ -71,12 +71,14 @@ namespace Popcorn.Services.Movies.Movie
                                             MovieMethods.Credits).ConfigureAwait(false);
                                         if (movieToTranslate is MovieJson refMovie)
                                         {
+                                            refMovie.TranslationLanguage = TmdbClient.DefaultLanguage;
                                             refMovie.Title = movie?.Title;
                                             refMovie.Genres = movie?.Genres?.Select(a => a.Name).ToList();
                                             refMovie.DescriptionFull = movie?.Overview;
                                         }
                                         else if (movieToTranslate is MovieLightJson refMovieLight)
                                         {
+                                            refMovieLight.TranslationLanguage = TmdbClient.DefaultLanguage;
                                             refMovieLight.Title = movie?.Title;
                                             refMovieLight.Genres = movie?.Genres != null
                                                 ? string.Join(", ", movie.Genres?.Select(a => a.Name))
@@ -153,6 +155,7 @@ namespace Popcorn.Services.Movies.Movie
                             throw response.ErrorException;
 
                         movie = JsonSerializer.Deserialize<MovieJson>(response.RawBytes);
+                        movie.TranslationLanguage = TmdbClient.DefaultLanguage;
                     }
                     catch (Exception exception) when (exception is TaskCanceledException)
                     {
@@ -213,6 +216,7 @@ namespace Popcorn.Services.Movies.Movie
                             throw response.ErrorException;
 
                         movie = JsonSerializer.Deserialize<MovieLightJson>(response.RawBytes);
+                        movie.TranslationLanguage = TmdbClient.DefaultLanguage;
                     }
                     catch (Exception exception) when (exception is TaskCanceledException)
                     {
@@ -340,6 +344,10 @@ namespace Popcorn.Services.Movies.Movie
                             throw response.ErrorException;
 
                         wrapper = JsonSerializer.Deserialize<MovieLightResponse>(response.RawBytes);
+                        foreach (var movie in wrapper.Movies)
+                        {
+                            movie.TranslationLanguage = TmdbClient.DefaultLanguage;
+                        }
                     }
                     catch (Exception exception) when (exception is TaskCanceledException)
                     {
@@ -428,6 +436,10 @@ namespace Popcorn.Services.Movies.Movie
                             throw response.ErrorException;
 
                         wrapper = JsonSerializer.Deserialize<MovieLightResponse>(response.RawBytes);
+                        foreach (var movie in wrapper.Movies)
+                        {
+                            movie.TranslationLanguage = TmdbClient.DefaultLanguage;
+                        }
                     }
                     catch (Exception exception) when (exception is TaskCanceledException)
                     {
@@ -508,6 +520,10 @@ namespace Popcorn.Services.Movies.Movie
                             throw response.ErrorException;
 
                         wrapper = JsonSerializer.Deserialize<MovieLightResponse>(response.RawBytes);
+                        foreach (var movie in wrapper.Movies)
+                        {
+                            movie.TranslationLanguage = TmdbClient.DefaultLanguage;
+                        }
                     }
                     catch (Exception exception) when (exception is TaskCanceledException)
                     {
@@ -548,6 +564,7 @@ namespace Popcorn.Services.Movies.Movie
         /// <returns>Task</returns>
         public void TranslateMovie(IMovie movieToTranslate)
         {
+            if (TmdbClient.DefaultLanguage == "en" && movieToTranslate.TranslationLanguage == TmdbClient.DefaultLanguage) return;
             _moviesToTranslateObservable.OnNext(movieToTranslate);
         }
 

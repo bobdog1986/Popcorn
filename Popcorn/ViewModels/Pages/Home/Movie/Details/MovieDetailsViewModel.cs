@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
@@ -31,7 +30,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
     /// <summary>
     /// Manage the movie
     /// </summary>
-    public class MovieDetailsViewModel : ViewModelBase, IDisposable
+    public class MovieDetailsViewModel : ViewModelBase
     {
         /// <summary>
         /// Logger of the class
@@ -107,11 +106,6 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
         /// Torrent health, from 0 to 10
         /// </summary>
         private double _torrentHealth;
-
-        /// <summary>
-        /// Disposed
-        /// </summary>
-        private bool _disposed;
 
         /// <summary>
         /// The selected torrent
@@ -415,7 +409,13 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
                 message =>
                 {
                     if (!string.IsNullOrEmpty(Movie?.ImdbCode))
+                    {
                         _movieService.TranslateMovie(Movie);
+                        foreach (var similar in SimilarMovies)
+                        {
+                            _movieService.TranslateMovie(similar);
+                        }
+                    }
                 });
 
             Messenger.Default.Register<PropertyChangedMessage<bool>>(this, e =>
@@ -630,33 +630,6 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
                 IsDownloadingMovie = false;
                 DownloadMovie.StopDownloadingMovie();
             }
-        }
-
-        /// <summary>
-        /// Dispose
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Dispose
-        /// </summary>
-        /// <param name="disposing"></param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
-            if (disposing)
-            {
-                CancellationLoadingToken?.Dispose();
-                CancellationLoadingTrailerToken?.Dispose();
-            }
-
-            _disposed = true;
         }
     }
 }

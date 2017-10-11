@@ -15,7 +15,7 @@ namespace Popcorn.Models.Movie
         private double _rating;
         private string _title;
         private int _year;
-
+        
         [DataMember(Name = "imdb_code")]
         public string ImdbCode
         {
@@ -75,5 +75,7 @@ namespace Popcorn.Models.Movie
             get => _hasBeenSeen;
             set { Set(() => HasBeenSeen, ref _hasBeenSeen, value); }
         }
+
+        public string TranslationLanguage { get; set; }
     }
 }

@@ -39,7 +39,6 @@ using Popcorn.ViewModels.Pages.Home;
 using Popcorn.ViewModels.Pages.Home.Movie;
 using Popcorn.ViewModels.Pages.Home.Show;
 using Popcorn.ViewModels.Pages.Player;
-using Squirrel;
 using Popcorn.ViewModels.Windows.Settings;
 using Popcorn.Services.Subtitles;
 using Popcorn.Services.Trakt;
@@ -50,17 +49,12 @@ namespace Popcorn.ViewModels.Windows
     /// <summary>
     /// Window applcation's viewmodel
     /// </summary>
-    public class WindowViewModel : ViewModelBase, IDisposable
+    public class WindowViewModel : ViewModelBase
     {
         /// <summary>
         /// Logger of the class
         /// </summary>
         private static Logger Logger { get; } = LogManager.GetCurrentClassLogger();
-
-        /// <summary>
-        /// Disposed
-        /// </summary>
-        private bool _disposed;
 
         /// <summary>
         /// Holds the async message relative to <see cref="CustomSubtitleMessage"/>
@@ -998,51 +992,9 @@ namespace Popcorn.ViewModels.Windows
                 }
                 else
                 {
-                    _manager.CreateMessage()
-                        .Accent("#E82C0C")
-                        .Background("#333")
-                        .HasBadge("Error")
-                        .HasMessage(LocalizationProviderHelper.GetLocalizedValue<string>("EmbarrassingError"))
-                        .HasMessage(exception.Message)
-                        .WithButton(LocalizationProviderHelper.GetLocalizedValue<string>("Restart"), button =>
-                        {
-                            Process.Start(Application.ResourceAssembly.Location);
-                            Application.Current.Shutdown();
-                        })
-                        .Dismiss().WithButton(LocalizationProviderHelper.GetLocalizedValue<string>("Ignore"),
-                            button => { })
-                        .Queue();
+                    Logger.Fatal(exception);
                 }
             });
-        }
-
-        /// <summary>
-        /// Dispose
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Dispose
-        /// </summary>
-        /// <param name="disposing"></param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
-            if (disposing)
-            {
-                _customSubtitleMessage?.Dispose();
-                _castMediaMessage?.Dispose();
-                _showSubtitleDialogMessage?.Dispose();
-                _showTraktDialogMessage?.Dispose();
-            }
-
-            _disposed = true;
         }
     }
 }

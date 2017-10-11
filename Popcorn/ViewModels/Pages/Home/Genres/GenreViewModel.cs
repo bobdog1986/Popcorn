@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,7 +14,7 @@ using Popcorn.Services.User;
 
 namespace Popcorn.ViewModels.Pages.Home.Genres
 {
-    public class GenreViewModel : ViewModelBase, IDisposable
+    public class GenreViewModel : ViewModelBase
     {
         /// <summary>
         /// Logger of the class
@@ -41,11 +40,6 @@ namespace Popcorn.ViewModels.Pages.Home.Genres
         /// Selected genre
         /// </summary>
         private GenreJson _selectedGenre = new GenreJson();
-
-        /// <summary>
-        /// Disposed
-        /// </summary>
-        private bool _disposed;
         
         /// <summary>
         /// Used to cancel loading genres
@@ -140,32 +134,6 @@ namespace Popcorn.ViewModels.Pages.Home.Genres
             CancellationLoadingGenres.Cancel();
             CancellationLoadingGenres.Dispose();
             CancellationLoadingGenres = new CancellationTokenSource();
-        }
-
-        /// <summary>
-        /// Dispose
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Dispose
-        /// </summary>
-        /// <param name="disposing"></param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposed)
-                return;
-
-            if (disposing)
-            {
-                CancellationLoadingGenres?.Dispose();
-            }
-
-            _disposed = true;
         }
     }
 }
