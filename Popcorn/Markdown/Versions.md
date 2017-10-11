@@ -1,4 +1,12 @@
-﻿# 3.0.4 - 10/10/2017 #
+﻿# 3.0.5 - 11/10/2017 #
+***
+Various improvements
+
+### Details ###
+* Improved performances
+* Improved stability
+
+# 3.0.4 - 10/10/2017 #
 ***
 Fixed issues
 
