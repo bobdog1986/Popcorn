@@ -11,6 +11,7 @@
   [![Gitter](https://img.shields.io/badge/Gitter-Join%20Chat-green.svg?style=flat-square)](https://gitter.im/popcorn-app/popcorn) <a href="https://popcorn-slack.azurewebsites.net" target="_blank">
     <img alt="Slack" src="http://popcorn-slack.azurewebsites.net/badge.svg">
   </a>
+   [![Releases](https://img.shields.io/github/release/bbougot/Popcorn.svg)](https://github.com/bbougot/Popcorn/releases)
   [![Build status](https://ci.appveyor.com/api/projects/status/mjnfwck6otg9c5wj/branch/master?svg=true)](https://ci.appveyor.com/project/bbougot/popcorn/branch/master)
   [![Quality Gate](https://sonarqube.com/api/badges/gate?key=Popcorn)](https://sonarqube.com/dashboard/index/Popcorn)
   [![Coverage Status](https://coveralls.io/repos/github/bbougot/Popcorn/badge.svg?branch=master)](https://coveralls.io/github/bbougot/Popcorn?branch=master) 
