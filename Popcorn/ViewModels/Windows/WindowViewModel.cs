@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Navigation;
 using Akavache;
 using CefSharp;
@@ -90,6 +91,11 @@ namespace Popcorn.ViewModels.Windows
         /// Specify if movie flyout is open
         /// </summary>
         private bool _isMovieFlyoutOpen;
+
+        /// <summary>
+        /// Specify if cast flyout is open
+        /// </summary>
+        private bool _isCastFlyoutOpen;
 
         /// <summary>
         /// Specify if show flyout is open
@@ -225,6 +231,15 @@ namespace Popcorn.ViewModels.Windows
         }
 
         /// <summary>
+        /// Specify if cast flyout is open
+        /// </summary>
+        public bool IsCastFlyoutOpen
+        {
+            get => _isCastFlyoutOpen;
+            set { Set(() => IsCastFlyoutOpen, ref _isCastFlyoutOpen, value); }
+        }
+
+        /// <summary>
         /// Specify if show flyout is open
         /// </summary>
         public bool IsShowFlyoutOpen
@@ -254,54 +269,54 @@ namespace Popcorn.ViewModels.Windows
         /// <summary>
         /// Command used to close movie page
         /// </summary>
-        public RelayCommand CloseMoviePageCommand { get; private set; }
+        public ICommand CloseMoviePageCommand { get; private set; }
 
         /// <summary>
         /// Command used to close show page
         /// </summary>
-        public RelayCommand CloseShowPageCommand { get; private set; }
+        public ICommand CloseShowPageCommand { get; private set; }
 
         /// <summary>
         /// Command used to close the application
         /// </summary>
-        public RelayCommand MainWindowClosingCommand { get; private set; }
+        public ICommand MainWindowClosingCommand { get; private set; }
 
         /// <summary>
         /// Command used to open application settings
         /// </summary>
-        public RelayCommand OpenSettingsCommand { get; private set; }
+        public ICommand OpenSettingsCommand { get; private set; }
 
         /// <summary>
         /// Command used to open about dialog
         /// </summary>
-        public RelayCommand OpenAboutCommand { get; private set; }
+        public ICommand OpenAboutCommand { get; private set; }
 
         /// <summary>
         /// Command used to open help dialog
         /// </summary>
-        public RelayCommand OpenHelpCommand { get; private set; }
+        public ICommand OpenHelpCommand { get; private set; }
 
-        public RelayCommand OpenWelcomeCommand { get; private set; }
+        public ICommand OpenWelcomeCommand { get; private set; }
 
         /// <summary>
         /// Command used to load tabs
         /// </summary>
-        public RelayCommand InitializeAsyncCommand { get; private set; }
+        public ICommand InitializeAsyncCommand { get; private set; }
 
         /// <summary>
         /// Command used to drop files
         /// </summary>
-        public RelayCommand<DragEventArgs> DropFileCommand { get; private set; }
+        public ICommand DropFileCommand { get; private set; }
 
         /// <summary>
         /// Command used to manage drag enter
         /// </summary>
-        public RelayCommand<DragEventArgs> DragEnterFileCommand { get; private set; }
+        public ICommand DragEnterFileCommand { get; private set; }
 
         /// <summary>
         /// Command used to manage drag leave
         /// </summary>
-        public RelayCommand<DragEventArgs> DragLeaveFileCommand { get; private set; }
+        public ICommand DragLeaveFileCommand { get; private set; }
 
         /// <summary>
         /// Register messages
@@ -310,7 +325,11 @@ namespace Popcorn.ViewModels.Windows
         {
             Messenger.Default.Register<ManageExceptionMessage>(this, e => ManageException(e.UnHandledException));
 
-            Messenger.Default.Register<LoadMovieMessage>(this, e => IsMovieFlyoutOpen = true);
+            Messenger.Default.Register<LoadMovieMessage>(this, e =>
+            {
+                IsCastFlyoutOpen = false;
+                IsMovieFlyoutOpen = true;
+            });
 
             Messenger.Default.Register<LoadShowMessage>(this, e => IsShowFlyoutOpen = true);
 
@@ -535,6 +554,11 @@ namespace Popcorn.ViewModels.Windows
             Messenger.Default.Register<UpdateAvailableMessage>(this, message =>
             {
                 UpdateAvailable = true;
+            });
+
+            Messenger.Default.Register<SearchCastMessage>(this, message =>
+            {
+                IsCastFlyoutOpen = true;
             });
 
             _castMediaMessage = Messenger.Default.RegisterAsyncMessage<CastMediaMessage>(async message =>

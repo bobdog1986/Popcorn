@@ -55,7 +55,7 @@ The assets (images and torrent files) are stored on Azure Blob Storage.
 Windows 7+ is supported (Windows 7, 8, 8.1, 10).
 
 ## Installation
-Download installer [here](https://github.com/bbougot/Popcorn/releases/download/v3.0.5/PopcornInstaller.exe) 
+Download installer [here](https://github.com/bbougot/Popcorn/releases/download/v3.1.0/PopcornInstaller.exe) 
 
 ## Todos
 See the [roadmap](https://github.com/bbougot/Popcorn/projects/1) for the full list.
@@ -70,6 +70,9 @@ See the [roadmap](https://github.com/bbougot/Popcorn/projects/1) for the full li
 
 ### Show Page
 ![Show Page](https://github.com/bbougot/Popcorn/blob/master/Screenshots/Screen3.jpg)
+
+### Actor Page
+![Show Page](https://github.com/bbougot/Popcorn/blob/master/Screenshots/Screen4.jpg)
 
 ## License
 If you distribute a copy or make a fork of the project, you have to credit this project as source.

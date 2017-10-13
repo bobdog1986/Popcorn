@@ -216,7 +216,8 @@
                         HorizontalAlignment="Center"
                         VerticalAlignment="Top"
                         attachedProperties:ImageAsyncHelper.ImagePath="{Binding Show.Images.Poster}"
-                        attachedProperties:ImageAsyncHelper.Type="Poster">
+                        attachedProperties:ImageAsyncHelper.Type="Poster"
+                        UseLayoutRounding="True">
                         <Image.Effect>
                             <DropShadowEffect
                                 BlurRadius="35"

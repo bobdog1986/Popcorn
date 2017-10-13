@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 using Popcorn.Models.Genres;
 using Popcorn.Models.Movie;
 using Popcorn.Models.User;
+using TMDbLib.Client;
+using TMDbLib.Objects.General;
+using TMDbLib.Objects.People;
 
 namespace Popcorn.Services.Movies.Movie
 {
@@ -100,5 +103,26 @@ namespace Popcorn.Services.Movies.Movie
         /// <param name="ct">Cancellation</param>
         /// <returns>Movies</returns>
         Task<IEnumerable<MovieLightJson>> GetMoviesSimilarAsync(MovieJson movie, CancellationToken ct);
+
+        /// <summary>
+        /// Get cast
+        /// </summary>
+        /// <param name="imdbCode">Tmdb cast Id</param>
+        /// <returns><see cref="Person"/></returns>
+        Task<Person> GetCast(string imdbCode);
+
+        /// <summary>
+        /// Get cast
+        /// </summary>
+        /// <param name="imdbCode">Tmdb cast Id</param>
+        /// <returns><see cref="Person"/></returns>
+        Task<IEnumerable<MovieLightJson>> GetMovieFromCast(string imdbCode, CancellationToken ct);
+
+        /// <summary>
+        /// Retrieve an image url from Tmdb
+        /// </summary>
+        /// <param name="url">Image to retrieve</param>
+        /// <returns>Image url</returns>
+        string GetImagePathFromTmdb(string url);
     }
 }

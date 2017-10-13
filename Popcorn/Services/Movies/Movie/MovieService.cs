@@ -20,6 +20,9 @@ using Popcorn.YTVideoProvider;
 using Polly;
 using Polly.Timeout;
 using Popcorn.Extensions;
+using TMDbLib.Objects.Find;
+using TMDbLib.Objects.General;
+using TMDbLib.Objects.People;
 using Utf8Json;
 
 namespace Popcorn.Services.Movies.Movie
@@ -642,6 +645,98 @@ namespace Popcorn.Services.Movies.Movie
                 Logger.Error(ex);
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Get cast
+        /// </summary>
+        /// <param name="imdbCode">Tmdb cast Id</param>
+        /// <returns><see cref="Person"/></returns>
+        public async Task<Person> GetCast(string imdbCode)
+        {
+            try
+            {
+                var search = await TmdbClient.FindAsync(FindExternalSource.Imdb, $"nm{imdbCode}");
+                return await TmdbClient.GetPersonAsync(search.PersonResults.FirstOrDefault().Id, PersonMethods.Images | PersonMethods.TaggedImages);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Get movies for a cast by its ImdbCode
+        /// </summary>
+        /// <param name="imdbCode"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<MovieLightJson>> GetMovieFromCast(string imdbCode, CancellationToken ct)
+        {
+            var timeoutPolicy =
+                Policy.TimeoutAsync(Utils.Constants.DefaultRequestTimeoutInSecond, TimeoutStrategy.Pessimistic);
+            try
+            {
+                return await timeoutPolicy.ExecuteAsync(async cancellation =>
+                {
+                    var watch = Stopwatch.StartNew();
+                    var wrapper = new MovieLightResponse();
+                    var restClient = new RestClient(Utils.Constants.PopcornApi);
+                    var request = new RestRequest("/movies/cast/{segment}", Method.GET);
+                    request.AddUrlSegment("segment", imdbCode);
+                    try
+                    {
+                        var response = await restClient.ExecuteTaskAsync(request, cancellation)
+                            .ConfigureAwait(false);
+                        if (response.ErrorException != null)
+                            throw response.ErrorException;
+
+                        wrapper = JsonSerializer.Deserialize<MovieLightResponse>(response.RawBytes);
+                        foreach (var movie in wrapper.Movies)
+                        {
+                            movie.TranslationLanguage = TmdbClient.DefaultLanguage;
+                        }
+                    }
+                    catch (Exception exception) when (exception is TaskCanceledException)
+                    {
+                        Logger.Debug(
+                            "GetMovieFromCast cancelled.");
+                    }
+                    catch (Exception exception)
+                    {
+                        Logger.Error(
+                            $"GetMovieFromCast: {exception.Message}");
+                        throw;
+                    }
+                    finally
+                    {
+                        watch.Stop();
+                        var elapsedMs = watch.ElapsedMilliseconds;
+                        Logger.Debug(
+                            $"GetMovieFromCast ({imdbCode}) in {elapsedMs} milliseconds.");
+                    }
+
+                    var result = wrapper?.Movies ?? new List<MovieLightJson>();
+                    ProcessTranslations(result);
+                    return result;
+                }, ct).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                return new List<MovieLightJson>();
+            }
+        }
+
+        /// <summary>
+        /// Retrieve an image url from Tmdb
+        /// </summary>
+        /// <param name="url">Image to retrieve</param>
+        /// <returns>Image url</returns>
+        public string GetImagePathFromTmdb(string url)
+        {
+            return TmdbClient.GetImageUrl("original", url, true).AbsoluteUri;
         }
     }
 }

@@ -283,6 +283,7 @@
     <Reference Include="System.Diagnostics.DiagnosticSource, Version=4.0.2.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Diagnostics.DiagnosticSource.4.4.1\lib\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
     </Reference>
+    <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.IO.Pipelines, Version=0.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\System.IO.Pipelines.0.1.0-alpha-001\lib\netstandard1.1\System.IO.Pipelines.dll</HintPath>
@@ -290,6 +291,7 @@
     <Reference Include="System.IO.Pipelines.Extensions, Version=0.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\System.IO.Pipelines.Extensions.0.1.0-alpha-001\lib\netstandard1.3\System.IO.Pipelines.Extensions.dll</HintPath>
     </Reference>
+    <Reference Include="System.Management" />
     <Reference Include="System.Memory, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Memory.4.4.0-preview2-25405-01\lib\netstandard2.0\System.Memory.dll</HintPath>
     </Reference>
@@ -370,8 +372,8 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="WPFLocalizeExtension, Version=2.3.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\WpfLocalizeExtension.2.3.2\lib\net35\WPFLocalizeExtension.dll</HintPath>
+    <Reference Include="WPFLocalizeExtension, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WPFLocalizeExtension.3.0.0\lib\net35\WPFLocalizeExtension.dll</HintPath>
     </Reference>
     <Reference Include="XAMLMarkupExtensions, Version=1.2.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\XAMLMarkupExtensions.1.2.2\lib\net40\XAMLMarkupExtensions.dll</HintPath>
@@ -477,6 +479,7 @@
     <Compile Include="Messaging\PlayEpisodeShowMessage.cs" />
     <Compile Include="Messaging\PlayMediaMessage.cs" />
     <Compile Include="Messaging\PlayTrailerMessage.cs" />
+    <Compile Include="Messaging\SearchCastMessage.cs" />
     <Compile Include="Messaging\SearchShowMessage.cs" />
     <Compile Include="Messaging\ShowSubtitleDialogMessage.cs" />
     <Compile Include="Messaging\ShowTraktDialogMessage.cs" />
@@ -600,6 +603,9 @@
     <Compile Include="Services\Shows\Show\ShowService.cs" />
     <Compile Include="Services\Subtitles\ISubtitlesService.cs" />
     <Compile Include="Services\Subtitles\SubtitlesService.cs" />
+    <Compile Include="UserControls\Home\Movie\Cast\CastUserControl.xaml.cs">
+      <DependentUpon>CastUserControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\Home\Movie\Download\DownloadMovieUserControl.xaml.cs">
       <DependentUpon>DownloadMovieUserControl.xaml</DependentUpon>
     </Compile>
@@ -643,6 +649,7 @@
     <Compile Include="ViewModels\Dialogs\SubtitleDialogViewModel.cs" />
     <Compile Include="ViewModels\Dialogs\TraktDialogViewModel.cs" />
     <Compile Include="ViewModels\Dialogs\WelcomeDialogViewModel.cs" />
+    <Compile Include="ViewModels\Pages\Home\Cast\CastViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\IPageViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\Movie\Download\DownloadMovieViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\Genres\GenreViewModel.cs" />
@@ -782,6 +789,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Resources\SplitView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\Home\Movie\Cast\CastUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

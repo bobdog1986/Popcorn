@@ -123,15 +123,11 @@ namespace Popcorn.AttachedProperties
                                 return;
                             }
 
-                            string localFile;
                             var hash = Convert.ToBase64String(Encoding.UTF8.GetBytes(path));
                             var mustDownload = false;
                             var cacheService = SimpleIoc.Default.GetInstance<ICacheService>();
-                            if (File.Exists(cacheService.Assets + hash))
-                            {
-                                localFile = cacheService.Assets + hash;
-                            }
-                            else
+                            var localFile = cacheService.Assets + hash;
+                            if(!File.Exists(localFile))
                             {
                                 mustDownload = true;
                                 if (imageType == ImageType.Thumbnail)
@@ -165,8 +161,6 @@ namespace Popcorn.AttachedProperties
                                     image.RenderTransformOrigin = new Point(0.5, 0.5);
                                     image.RenderTransform = loadingAnimationTransform;
                                 }
-
-                                localFile = cacheService.Assets + hash;
                             }
 
                             await Task.Run(async () =>
@@ -185,7 +179,7 @@ namespace Popcorn.AttachedProperties
                                                     if (!File.Exists(cacheService.Assets + hash))
                                                     {
                                                         using (var fs =
-                                                            new FileStream(cacheService.Assets + hash, FileMode.Create,
+                                                            new FileStream(localFile, FileMode.Create,
                                                                 FileAccess.ReadWrite, FileShare.ReadWrite, 4096, true))
                                                         {
                                                             var writeAsync = stream.ToArray();
@@ -205,13 +199,13 @@ namespace Popcorn.AttachedProperties
                                         bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
                                         if (imageType == ImageType.Thumbnail)
                                         {
-                                            bitmapImage.DecodePixelWidth = 400;
-                                            bitmapImage.DecodePixelHeight = 600;
+                                            bitmapImage.DecodePixelWidth = 200;
+                                            bitmapImage.DecodePixelHeight = 300;
                                         }
                                         else if (imageType == ImageType.Poster)
                                         {
-                                            bitmapImage.DecodePixelWidth = 800;
-                                            bitmapImage.DecodePixelHeight = 1200;
+                                            bitmapImage.DecodePixelWidth = 500;
+                                            bitmapImage.DecodePixelHeight = 750;
                                         }
                                         else
                                         {

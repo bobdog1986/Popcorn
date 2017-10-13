@@ -20,6 +20,7 @@ using Popcorn.ViewModels.Windows;
 using Popcorn.ViewModels.Windows.Settings;
 using Popcorn.Services.Shows.Trailer;
 using Popcorn.Services.Trakt;
+using Popcorn.ViewModels.Pages.Home.Cast;
 
 namespace Popcorn.ViewModels
 {
@@ -62,6 +63,8 @@ namespace Popcorn.ViewModels
             SimpleIoc.Default.Register<ShowPageViewModel>();
             SimpleIoc.Default.Register<ShowDetailsViewModel>();
 
+            SimpleIoc.Default.Register<CastViewModel>();
+
             SimpleIoc.Default.Register<ApplicationSettingsViewModel>();
 
             #endregion
@@ -98,6 +101,14 @@ namespace Popcorn.ViewModels
             "CA1822:MarkMembersAsStatic",
             Justification = "This non-static member is needed for data binding purposes.")]
         public ShowDetailsViewModel ShowDetails => ServiceLocator.Current.GetInstance<ShowDetailsViewModel>();
+
+        /// <summary>
+        /// Gets the Cast property.
+        /// </summary>
+        [SuppressMessage("Microsoft.Performance",
+            "CA1822:MarkMembersAsStatic",
+            Justification = "This non-static member is needed for data binding purposes.")]
+        public CastViewModel Cast => ServiceLocator.Current.GetInstance<CastViewModel>();
 
         /// <summary>
         /// Gets the ApplicationSettings property.

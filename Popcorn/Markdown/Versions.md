@@ -1,4 +1,12 @@
-﻿# 3.0.5 - 11/10/2017 #
+﻿# 3.1.0 - 13/10/2017 #
+***
+Add Actor page
+
+### Details ###
+* Added Actor page
+* Various performance improvements
+
+# 3.0.5 - 11/10/2017 #
 ***
 Various improvements
 

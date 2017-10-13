@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Ioc;
@@ -14,6 +15,7 @@ using NLog;
 using NuGet;
 using Popcorn.Helpers;
 using Popcorn.Messaging;
+using Popcorn.Models.Cast;
 using Popcorn.Models.Movie;
 using Popcorn.Services.Movies.Movie;
 using Popcorn.Services.Movies.Trailer;
@@ -255,27 +257,32 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
         /// <summary>
         /// Command used to load the movie
         /// </summary>
-        public RelayCommand<IMovie> LoadMovieCommand { get; private set; }
+        public ICommand LoadMovieCommand { get; private set; }
 
         /// <summary>
         /// Command used to stop loading the trailer
         /// </summary>
-        public RelayCommand StopLoadingTrailerCommand { get; private set; }
+        public ICommand StopLoadingTrailerCommand { get; private set; }
 
         /// <summary>
         /// Command used to play the movie
         /// </summary>
-        public RelayCommand PlayMovieCommand { get; private set; }
+        public ICommand PlayMovieCommand { get; private set; }
 
         /// <summary>
         /// Command used to browse Imdb
         /// </summary>
-        public RelayCommand<string> GoToImdbCommand { get; private set; }
+        public ICommand GoToImdbCommand { get; private set; }
 
         /// <summary>
         /// Command used to play the trailer
         /// </summary>
-        public RelayCommand PlayTrailerCommand { get; private set; }
+        public ICommand PlayTrailerCommand { get; private set; }
+
+        /// <summary>
+        /// Command used to search cast
+        /// </summary>
+        public ICommand SearchCastCommand { get; private set; }
 
         /// <summary>
         /// Cleanup resources
@@ -454,6 +461,10 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
             });
 
             StopLoadingTrailerCommand = new RelayCommand(StopLoadingTrailer);
+            SearchCastCommand = new RelayCommand<CastJson>(cast =>
+            {
+                Messenger.Default.Send(new SearchCastMessage(cast));
+            });
         }
 
         /// <summary>
