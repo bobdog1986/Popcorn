@@ -35,7 +35,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                 this,
                 message =>
                 {
-                    Task.Run(async () =>
+                    DispatcherHelper.CheckBeginInvokeOnUI(async () =>
                     {
                         var movies = UserService.GetSeenMovies(Page);
                         MaxNumberOfMovies = movies.nbMovies;

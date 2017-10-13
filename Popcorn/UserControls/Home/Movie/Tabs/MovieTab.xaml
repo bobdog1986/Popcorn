@@ -8,6 +8,7 @@
     xmlns:customControls="clr-namespace:Popcorn.Controls"
     xmlns:custompanels="clr-namespace:Popcorn.Panels"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:lex="http://wpflocalizeextension.codeplex.com"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:tabs="clr-namespace:Popcorn.UserControls.Home.Movie.Tabs"
@@ -25,7 +26,6 @@
                 <Setter Property="TitleFontSize" Value="14" />
             </Style>
 
-            <converters:BoolToInverseVisibilityConverter x:Key="BoolToInverseVisibilityConverter" />
             <converters:MultiBooleanToVisibilityConverter x:Key="MultiBooleanToVisibilityConverter" />
             <converters:BoolToInverseBoolConverter x:Key="BoolToInverseBoolConverter" />
         </ResourceDictionary>
@@ -143,6 +143,9 @@
                                                 <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Like" Storyboard.TargetProperty="Visibility">
                                                     <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}" />
                                                 </ObjectAnimationUsingKeyFrames>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Seen" Storyboard.TargetProperty="Visibility">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}" />
+                                                </ObjectAnimationUsingKeyFrames>
                                             </Storyboard>
                                         </BeginStoryboard>
                                     </EventTrigger.Actions>
@@ -200,6 +203,9 @@
                                                 <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Like" Storyboard.TargetProperty="Visibility">
                                                     <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Collapsed}" />
                                                 </ObjectAnimationUsingKeyFrames>
+                                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Seen" Storyboard.TargetProperty="Visibility">
+                                                    <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Collapsed}" />
+                                                </ObjectAnimationUsingKeyFrames>
                                             </Storyboard>
                                         </BeginStoryboard>
                                     </EventTrigger.Actions>
@@ -252,21 +258,67 @@
                                         StrokeLineJoin="Round"
                                         StrokeThickness="4" />
                                 </Grid>
-                                <Rectangle
-                                    x:Name="Seen"
-                                    Grid.Row="0"
+                                <StackPanel
+                                    Grid.Row="2"
                                     Grid.Column="1"
-                                    Width="21"
-                                    Height="13"
                                     HorizontalAlignment="Right"
-                                    VerticalAlignment="Center"
-                                    Fill="White"
-                                    Opacity="0.0"
-                                    Visibility="{Binding HasBeenSeen, Converter={StaticResource BoolToInverseVisibilityConverter}}">
-                                    <Rectangle.OpacityMask>
-                                        <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_eye}" />
-                                    </Rectangle.OpacityMask>
-                                </Rectangle>
+                                    Orientation="Horizontal">
+                                    <ToggleButton
+                                        x:Name="Seen"
+                                        Width="50"
+                                        Height="50"
+                                        VerticalAlignment="Center"
+                                        Command="{Binding DataContext.SetWatchedMovieCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type tabs:MovieTab}}, Mode=OneTime}"
+                                        CommandParameter="{Binding Mode=OneTime}"
+                                        IsChecked="{Binding HasBeenSeen}"
+                                        Opacity="0.0"
+                                        Style="{StaticResource MetroCircleToggleButtonStyle}"
+                                        Visibility="Collapsed">
+                                        <iconPacks:PackIconFontAwesome
+                                            Width="30"
+                                            Height="30"
+                                            VerticalAlignment="Center"
+                                            Foreground="White"
+                                            Kind="Eye" />
+                                    </ToggleButton>
+                                    <ToggleButton
+                                        x:Name="Like"
+                                        Width="50"
+                                        Height="50"
+                                        VerticalAlignment="Center"
+                                        Command="{Binding DataContext.SetFavoriteMovieCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type tabs:MovieTab}}, Mode=OneTime}"
+                                        CommandParameter="{Binding Mode=OneTime}"
+                                        IsChecked="{Binding IsFavorite}"
+                                        Opacity="0.0"
+                                        Style="{StaticResource MetroCircleToggleButtonStyle}"
+                                        Visibility="Collapsed">
+                                        <Rectangle
+                                            Width="20"
+                                            Height="20"
+                                            Fill="White">
+                                            <Rectangle.OpacityMask>
+                                                <VisualBrush Stretch="Fill">
+                                                    <VisualBrush.Visual>
+                                                        <Canvas
+                                                            x:Name="appbar_heart"
+                                                            Width="76"
+                                                            Height="76"
+                                                            Clip="F1 M 0,0L 76,0L 76,76L 0,76L 0,0">
+                                                            <Path
+                                                                Canvas.Left="21.2717"
+                                                                Canvas.Top="25.733"
+                                                                Width="33.4542"
+                                                                Height="28.4779"
+                                                                Data="F1 M 52.2716,27.8072C 48.9356,24.164 42.0671,25.7204 38.0992,31.3618C 33.0737,25.3024 27.0713,24.164 23.7257,27.8072C 14.4142,37.9485 34.3451,52.5246 37.9599,54.1634L 38.0438,54.2109L 38.0438,54.1634C 41.6554,52.5246 61.5832,37.9485 52.2716,27.8072 Z "
+                                                                Fill="Red"
+                                                                Stretch="Fill" />
+                                                        </Canvas>
+                                                    </VisualBrush.Visual>
+                                                </VisualBrush>
+                                            </Rectangle.OpacityMask>
+                                        </Rectangle>
+                                    </ToggleButton>
+                                </StackPanel>
                                 <customControls:RatingStar
                                     x:Name="Rating"
                                     Grid.Row="2"
@@ -277,46 +329,6 @@
                                     Opacity="0.0"
                                     RatingValue="{Binding Rating, Mode=OneTime}"
                                     Visibility="Collapsed" />
-                                <ToggleButton
-                                    x:Name="Like"
-                                    Grid.Row="2"
-                                    Grid.Column="1"
-                                    Width="50"
-                                    Height="50"
-                                    HorizontalAlignment="Right"
-                                    VerticalAlignment="Center"
-                                    Command="{Binding DataContext.SetFavoriteMovieCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type tabs:MovieTab}}, Mode=OneTime}"
-                                    CommandParameter="{Binding Mode=OneTime}"
-                                    IsChecked="{Binding IsFavorite}"
-                                    Opacity="0.0"
-                                    Style="{StaticResource MetroCircleToggleButtonStyle}"
-                                    Visibility="Collapsed">
-                                    <Rectangle
-                                        Width="20"
-                                        Height="20"
-                                        Fill="White">
-                                        <Rectangle.OpacityMask>
-                                            <VisualBrush Stretch="Fill">
-                                                <VisualBrush.Visual>
-                                                    <Canvas
-                                                        x:Name="appbar_heart"
-                                                        Width="76"
-                                                        Height="76"
-                                                        Clip="F1 M 0,0L 76,0L 76,76L 0,76L 0,0">
-                                                        <Path
-                                                            Canvas.Left="21.2717"
-                                                            Canvas.Top="25.733"
-                                                            Width="33.4542"
-                                                            Height="28.4779"
-                                                            Data="F1 M 52.2716,27.8072C 48.9356,24.164 42.0671,25.7204 38.0992,31.3618C 33.0737,25.3024 27.0713,24.164 23.7257,27.8072C 14.4142,37.9485 34.3451,52.5246 37.9599,54.1634L 38.0438,54.2109L 38.0438,54.1634C 41.6554,52.5246 61.5832,37.9485 52.2716,27.8072 Z "
-                                                            Fill="Red"
-                                                            Stretch="Fill" />
-                                                    </Canvas>
-                                                </VisualBrush.Visual>
-                                            </VisualBrush>
-                                        </Rectangle.OpacityMask>
-                                    </Rectangle>
-                                </ToggleButton>
                             </Grid>
                         </controls:Tile>
                         <TextBlock

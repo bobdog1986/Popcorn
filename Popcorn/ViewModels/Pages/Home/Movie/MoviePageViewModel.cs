@@ -1,10 +1,12 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Messaging;
 using Popcorn.Messaging;
+using Popcorn.Models.Movie;
 using Popcorn.Services.Application;
 using Popcorn.Services.Genres;
 using Popcorn.Services.Movies.Movie;
@@ -236,37 +238,38 @@ namespace Popcorn.ViewModels.Pages.Home.Movie
         /// <summary>
         /// Command used to select the greatest movies tab
         /// </summary>
-        public RelayCommand SelectGreatestTab { get; private set; }
+        public ICommand SelectGreatestTab { get; private set; }
 
         /// <summary>
         /// Command used to select the popular movies tab
         /// </summary>
-        public RelayCommand SelectPopularTab { get; private set; }
+        public ICommand SelectPopularTab { get; private set; }
 
         /// <summary>
         /// Command used to select the recent movies tab
         /// </summary>
-        public RelayCommand SelectRecentTab { get; private set; }
+        public ICommand SelectRecentTab { get; private set; }
 
         /// <summary>
         /// Command used to select the search movies tab
         /// </summary>
-        public RelayCommand SelectSearchTab { get; private set; }
+        public ICommand SelectSearchTab { get; private set; }
 
         /// <summary>
         /// Command used to select the seen movies tab
         /// </summary>
-        public RelayCommand SelectSeenTab { get; private set; }
+        public ICommand SelectSeenTab { get; private set; }
 
         /// <summary>
         /// Command used to select the favorites movies tab
         /// </summary>
-        public RelayCommand SelectFavoritesTab { get; private set; }
+        public ICommand SelectFavoritesTab { get; private set; }
 
         /// <summary>
         /// Command used to select the recommendations movies tab
         /// </summary>
-        public RelayCommand SelectRecommendationsTab { get; private set; }
+        public ICommand SelectRecommendationsTab { get; private set; }
+
 
         /// <summary>
         /// Selected index for movies menu

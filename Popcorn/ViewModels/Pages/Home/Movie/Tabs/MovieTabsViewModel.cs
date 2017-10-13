@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Messaging;
@@ -201,17 +202,22 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
         /// <summary>
         /// Command used to reload movies
         /// </summary>
-        public RelayCommand ReloadMovies { get; set; }
+        public ICommand ReloadMovies { get; set; }
 
         /// <summary>
         /// Command used to set a movie as favorite
         /// </summary>
-        public RelayCommand<MovieLightJson> SetFavoriteMovieCommand { get; private set; }
+        public ICommand SetFavoriteMovieCommand { get; private set; }
+
+        /// <summary>
+        /// Command used to set a movie as watched
+        /// </summary>
+        public ICommand SetWatchedMovieCommand { get; private set; }
 
         /// <summary>
         /// Command used to change movie's genres
         /// </summary>
-        public RelayCommand<GenreJson> ChangeMovieGenreCommand { get; set; }
+        public ICommand ChangeMovieGenreCommand { get; set; }
 
         /// <summary>
         /// Specify if a movie loading has failed
@@ -423,6 +429,17 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                     else if(this is RecommendationsMovieTabViewModel && SelectedTab is RecommendationsMovieTabViewModel)
                         await LoadMoviesAsync(true).ConfigureAwait(false);
                 });
+
+            Messenger.Default.Register<ChangeSeenMovieMessage>(
+                this,
+                async message =>
+                {
+                    UserService.SyncMovieHistory(Movies);
+                    if (this is SeenMovieTabViewModel && !(SelectedTab is SeenMovieTabViewModel))
+                        NeedSync = true;
+                    else if (this is SeenMovieTabViewModel && SelectedTab is SeenMovieTabViewModel)
+                        await LoadMoviesAsync(true).ConfigureAwait(false);
+                });
         }
 
         /// <summary>
@@ -443,6 +460,12 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                     UserService.SetMovie(movie);
                     Messenger.Default.Send(new ChangeFavoriteMovieMessage());
                 });
+
+            SetWatchedMovieCommand = new RelayCommand<MovieLightJson>(movie =>
+            {
+                UserService.SetMovie(movie);
+                Messenger.Default.Send(new ChangeSeenMovieMessage());
+            });
 
             ChangeMovieGenreCommand =
                 new RelayCommand<GenreJson>(genre =>

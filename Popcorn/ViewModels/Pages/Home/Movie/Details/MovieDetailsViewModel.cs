@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
@@ -24,6 +25,8 @@ using Popcorn.ViewModels.Pages.Home.Movie.Download;
 using Popcorn.Models.Torrent.Movie;
 using Popcorn.Services.Cache;
 using Popcorn.Services.Download;
+using Popcorn.Services.User;
+using Popcorn.ViewModels.Pages.Home.Movie.Tabs;
 using Popcorn.ViewModels.Windows.Settings;
 using Subtitle = Popcorn.Models.Subtitles.Subtitle;
 
@@ -80,6 +83,16 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
         private bool _anySimilar;
 
         /// <summary>
+        /// Command used to set a movie as favorite
+        /// </summary>
+        public ICommand SetFavoriteMovieCommand { get; private set; }
+
+        /// <summary>
+        /// Command used to set a movie as watched
+        /// </summary>
+        public ICommand SetWatchedMovieCommand { get; private set; }
+
+        /// <summary>
         /// The movie to manage
         /// </summary>
         private MovieJson _movie = new MovieJson();
@@ -93,6 +106,11 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
         /// The movie trailer service
         /// </summary>
         private readonly IMovieTrailerService _movieTrailerService;
+
+        /// <summary>
+        /// The user service
+        /// </summary>
+        private readonly IUserService _userService;
 
         /// <summary>
         /// The service used to interact with subtitles
@@ -131,10 +149,12 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
         /// <param name="movieTrailerService">The movie trailer service</param>
         /// <param name="subtitlesService">The subtitles service</param>
         /// <param name="cacheService">The cache service</param>
+        /// <param name="userService">The user service</param>
         public MovieDetailsViewModel(IMovieService movieService, IMovieTrailerService movieTrailerService,
-            ISubtitlesService subtitlesService, ICacheService cacheService)
+            ISubtitlesService subtitlesService, ICacheService cacheService, IUserService userService)
         {
             _movieTrailerService = movieTrailerService;
+            _userService = userService;
             _movieService = movieService;
             Movie = new MovieJson();
             SimilarMovies = new ObservableCollection<MovieLightJson>();
@@ -437,7 +457,8 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
         /// </summary>
         private void RegisterCommands()
         {
-            LoadMovieCommand = new RelayCommand<IMovie>(async movie => await LoadMovie(movie, CancellationLoadingToken.Token).ConfigureAwait(false));
+            LoadMovieCommand = new RelayCommand<IMovie>(async movie =>
+                await LoadMovie(movie, CancellationLoadingToken.Token).ConfigureAwait(false));
             GoToImdbCommand = new RelayCommand<string>(e =>
             {
                 Process.Start($"http://www.imdb.com/title/{e}");
@@ -455,7 +476,8 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
                 {
                     IsPlayingTrailer = true;
                     IsTrailerLoading = true;
-                    await _movieTrailerService.LoadTrailerAsync(Movie, CancellationLoadingTrailerToken.Token).ConfigureAwait(false);
+                    await _movieTrailerService.LoadTrailerAsync(Movie, CancellationLoadingTrailerToken.Token)
+                        .ConfigureAwait(false);
                     IsTrailerLoading = false;
                 }).ConfigureAwait(false);
             });
@@ -464,6 +486,19 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
             SearchCastCommand = new RelayCommand<CastJson>(cast =>
             {
                 Messenger.Default.Send(new SearchCastMessage(cast));
+            });
+
+            SetFavoriteMovieCommand =
+                new RelayCommand<MovieJson>(movie =>
+                {
+                    _userService.SetMovie(movie);
+                    Messenger.Default.Send(new ChangeFavoriteMovieMessage());
+                });
+
+            SetWatchedMovieCommand = new RelayCommand<MovieJson>(movie =>
+            {
+                _userService.SetMovie(movie);
+                Messenger.Default.Send(new ChangeSeenMovieMessage());
             });
         }
 
@@ -485,6 +520,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
                 {
                     Movie = await _movieService.GetMovieAsync(movie.ImdbCode, ct).ConfigureAwait(false);
                     _movieService.TranslateMovie(Movie);
+                    _userService.SyncMovieHistory(new List<IMovie> { Movie });
                     IsMovieLoading = false;
                     Movie.FullHdAvailable = Movie.Torrents.Any(torrent => torrent.Quality == "1080p");
                     var applicationSettings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
