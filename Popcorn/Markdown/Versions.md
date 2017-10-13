@@ -1,4 +1,11 @@
-﻿# 3.1.0 - 13/10/2017 #
+﻿# 3.1.1 - 13/10/2017 #
+***
+Minor improvement
+
+### Details ###
+* Improved image quality
+
+# 3.1.0 - 13/10/2017 #
 ***
 Add Actor page
 

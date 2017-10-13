@@ -2,14 +2,14 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>Popcorn</id>
-        <version>3.1.0</version>
+        <version>3.1.1</version>
         <title>Popcorn</title>
         <authors>Benjamin Bougot</authors>
         <projectUrl>https://github.com/bbougot/Popcorn</projectUrl>
         <iconUrl>https://raw.githubusercontent.com/bbougot/Popcorn/master/Popcorn/icon.ico</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>A Powerful and Fast Popcorn Time Client</description>
-        <releaseNotes>Add Actor page</releaseNotes>
+        <releaseNotes>Improve image quality</releaseNotes>
     </metadata>
     <files>
         <file src="en\Popcorn.resources.dll" target="lib\net45\en\Popcorn.resources.dll" />
