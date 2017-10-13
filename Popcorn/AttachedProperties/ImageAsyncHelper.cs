@@ -199,8 +199,8 @@ namespace Popcorn.AttachedProperties
                                         bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
                                         if (imageType == ImageType.Thumbnail)
                                         {
-                                            bitmapImage.DecodePixelWidth = 200;
-                                            bitmapImage.DecodePixelHeight = 300;
+                                            bitmapImage.DecodePixelWidth = 400;
+                                            bitmapImage.DecodePixelHeight = 600;
                                         }
                                         else if (imageType == ImageType.Poster)
                                         {
