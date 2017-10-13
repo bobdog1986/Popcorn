@@ -518,13 +518,13 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
                 SimilarMovies.Clear();
                 await Task.Run(async () =>
                 {
+                    var applicationSettings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
                     Movie = await _movieService.GetMovieAsync(movie.ImdbCode, ct).ConfigureAwait(false);
                     _movieService.TranslateMovie(Movie);
                     _userService.SyncMovieHistory(new List<IMovie> { Movie });
                     IsMovieLoading = false;
                     Movie.FullHdAvailable = Movie.Torrents.Any(torrent => torrent.Quality == "1080p");
-                    var applicationSettings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
-                    Movie.WatchInFullHdQuality = Movie.FullHdAvailable && applicationSettings.DefaultHdQuality;
+                    Movie.WatchInFullHdQuality = (Movie.FullHdAvailable && Movie.Torrents.Count == 1) || (Movie.FullHdAvailable && applicationSettings.DefaultHdQuality);
                     ComputeTorrentHealth();
                     var tasks = new Func<Task>[]
                     {
