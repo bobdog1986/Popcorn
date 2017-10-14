@@ -419,19 +419,22 @@
                         </DockPanel>
                         <DockPanel DockPanel.Dock="Bottom">
                             <Grid HorizontalAlignment="Stretch">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <StackPanel
-                                    Grid.Column="0"
-                                    HorizontalAlignment="Left"
-                                    Orientation="Horizontal">
+                                <WrapPanel HorizontalAlignment="Left" Orientation="Horizontal">
                                     <Button
                                         Width="100"
                                         Height="30"
-                                        Margin="0,10,0,0"
+                                        Margin="0,0,10,0"
+                                        VerticalAlignment="Center"
+                                        controls:ControlsHelper.ContentCharacterCasing="Normal"
+                                        Command="{Binding GoToImdbCommand}"
+                                        CommandParameter="{Binding Movie.ImdbCode}"
+                                        Content="IMDb"
+                                        Style="{DynamicResource SquareButtonStyle}" />
+
+                                    <Button
+                                        Width="100"
+                                        Height="30"
+                                        Margin="0,0,10,0"
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Center"
                                         controls:ControlsHelper.ContentCharacterCasing="Normal"
@@ -442,7 +445,7 @@
                                     <Button
                                         Width="100"
                                         Height="30"
-                                        Margin="10,10,0,0"
+                                        Margin="0,0,10,0"
                                         HorizontalAlignment="Right"
                                         VerticalAlignment="Center"
                                         controls:ControlsHelper.ContentCharacterCasing="Normal"
@@ -450,39 +453,12 @@
                                         Content="{lex:LocText WatchButton}"
                                         IsTabStop="False"
                                         Style="{DynamicResource SquareButtonStyle}" />
-                                    <Button
-                                        Width="100"
-                                        Height="30"
-                                        Margin="10,10,0,0"
-                                        controls:ControlsHelper.ContentCharacterCasing="Normal"
-                                        Command="{Binding GoToImdbCommand}"
-                                        CommandParameter="{Binding Movie.ImdbCode}"
-                                        Style="{DynamicResource SquareButtonStyle}">
-                                        <iconPacks:PackIconFontAwesome
-                                            Width="30"
-                                            Height="30"
-                                            VerticalAlignment="Center"
-                                            Background="White"
-                                            Foreground="{DynamicResource WhiteBrush}"
-                                            Kind="Imdb" />
-                                    </Button>
-                                </StackPanel>
-                                <StackPanel Grid.Column="2" Orientation="Horizontal">
-                                    <controls:ToggleSwitch
-                                        HorizontalAlignment="Right"
-                                        VerticalAlignment="Top"
-                                        Header="{lex:LocText MovieQualityLabel}"
-                                        IsChecked="{Binding Movie.WatchInFullHdQuality}"
-                                        IsEnabled="{Binding Movie.FullHdAvailable}"
-                                        OffLabel="720"
-                                        OnLabel="1080"
-                                        Style="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}" />
                                     <controls:SplitButton
                                         Width="130"
                                         Height="35"
-                                        Margin="20,10,0,0"
+                                        Margin="0,0,10,0"
                                         HorizontalAlignment="Right"
-                                        VerticalAlignment="Top"
+                                        VerticalAlignment="Center"
                                         HorizontalContentAlignment="Left"
                                         DisplayMemberPath="Sub.LanguageName"
                                         ItemsSource="{Binding Movie.AvailableSubtitles}"
@@ -494,11 +470,20 @@
                                     <controls:ProgressRing
                                         Width="20"
                                         Height="20"
-                                        Margin="10,10,0,0"
+                                        Margin="0,0,10,0"
                                         VerticalAlignment="Center"
                                         IsActive="True"
                                         Visibility="{Binding LoadingSubtitles, Converter={StaticResource BoolToInverseVisibilityConverter}}" />
-                                </StackPanel>
+                                    <controls:ToggleSwitch
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        Header="{lex:LocText MovieQualityLabel}"
+                                        IsChecked="{Binding Movie.WatchInFullHdQuality}"
+                                        IsEnabled="{Binding Movie.FullHdAvailable}"
+                                        OffLabel="720"
+                                        OnLabel="1080"
+                                        Style="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}" />
+                                </WrapPanel>
                             </Grid>
                         </DockPanel>
                     </DockPanel>

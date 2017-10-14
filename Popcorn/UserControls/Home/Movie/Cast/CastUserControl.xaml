@@ -129,31 +129,33 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="15" />
-                        <RowDefinition Height="{Binding ElementName=ProfileImage, Path=ActualHeight, Converter={converters:RatioConverter}, ConverterParameter='0.9'}" />
+                        <RowDefinition Height="{Binding ElementName=ProfileImage, Path=ActualHeight, Converter={converters:RatioConverter}, ConverterParameter='0.8'}" />
                     </Grid.RowDefinitions>
-                    <StackPanel Grid.Row="0" Orientation="Horizontal">
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
                         <TextBlock
+                            Grid.Column="0"
                             FontSize="20"
                             FontWeight="Bold"
-                            Text="{Binding Person.Name}" />
-                        <Canvas
-                            Margin="10,1,10,0"
-                            VerticalAlignment="Center"
-                            Background="LightGray">
-                            <Ellipse
-                                Width="5"
-                                Height="5"
-                                Fill="#FFFFFF"
-                                Stroke="#FFFFFF"
-                                StrokeThickness="5" />
-                        </Canvas>
+                            Text="{Binding Person.Name}"
+                            TextTrimming="CharacterEllipsis"
+                            TextWrapping="NoWrap" />
                         <TextBlock
+                            Grid.Column="3"
                             Margin="0,2.5,0,0"
                             VerticalAlignment="Center"
                             FontSize="16"
                             FontStyle="Italic"
                             Text="{Binding Person.PlaceOfBirth}" />
                         <Canvas
+                            Grid.Column="4"
                             Margin="10,1,10,0"
                             VerticalAlignment="Center"
                             Background="LightGray">
@@ -165,12 +167,13 @@
                                 StrokeThickness="5" />
                         </Canvas>
                         <TextBlock
+                            Grid.Column="5"
                             Margin="0,2.5,0,0"
                             VerticalAlignment="Center"
                             FontSize="16"
                             FontStyle="Italic"
-                            Text="{Binding Person.Birthday, StringFormat=dd-MM-yyyy}" />
-                    </StackPanel>
+                            Text="{Binding Person.Birthday, StringFormat=yyyy}" />
+                    </Grid>
                     <controls1:AnimatedScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
                         <StackPanel Orientation="Vertical">
                             <TextBlock

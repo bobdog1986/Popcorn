@@ -388,6 +388,7 @@
     <Compile Include="AttachedProperties\MouseCommandBehavior.cs" />
     <Compile Include="AttachedProperties\RippleAssist.cs" />
     <Compile Include="AttachedProperties\TextParenthesis.cs" />
+    <Compile Include="Behaviors\ShowTickValueBehavior.cs" />
     <Compile Include="Comparers\ShowLightComparer.cs" />
     <Compile Include="Comparers\MovieLightComparer.cs" />
     <Compile Include="Controls\GenresLabel.xaml.cs">

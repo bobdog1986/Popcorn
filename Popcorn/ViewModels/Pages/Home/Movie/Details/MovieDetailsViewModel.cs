@@ -523,7 +523,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
                     _movieService.TranslateMovie(Movie);
                     _userService.SyncMovieHistory(new List<IMovie> { Movie });
                     IsMovieLoading = false;
-                    Movie.FullHdAvailable = Movie.Torrents.Any(torrent => torrent.Quality == "1080p");
+                    Movie.FullHdAvailable = Movie.Torrents.Count != 1;
                     Movie.WatchInFullHdQuality = (Movie.FullHdAvailable && Movie.Torrents.Count == 1) || (Movie.FullHdAvailable && applicationSettings.DefaultHdQuality);
                     ComputeTorrentHealth();
                     var tasks = new Func<Task>[]
