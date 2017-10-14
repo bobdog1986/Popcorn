@@ -19,7 +19,7 @@
                             x:Name="Corner"
                             Grid.Row="1"
                             Grid.Column="1"
-                            Fill="{StaticResource {x:Static SystemColors.ControlBrushKey}}" />
+                            Fill="Transparent" />
                         <ScrollContentPresenter
                             x:Name="PART_ScrollContentPresenter"
                             Grid.Row="0"

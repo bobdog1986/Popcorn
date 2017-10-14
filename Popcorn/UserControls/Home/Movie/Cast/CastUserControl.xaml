@@ -93,13 +93,15 @@
                 Grid.Row="0"
                 Grid.RowSpan="3"
                 attachedProperties:ImageAsyncHelper.ImagePath="{Binding MainImageUrl}"
-                Opacity="0.3" />
+                attachedProperties:ImageAsyncHelper.Type="None"
+                Opacity="0.3"
+                Stretch="UniformToFill" />
             <Grid Grid.Row="0" Grid.RowSpan="3">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*" />
                     <RowDefinition Height="6*" />
                     <RowDefinition Height="10" />
-                    <RowDefinition Height="5*" MaxHeight="275" />
+                    <RowDefinition Height="5*" MaxHeight="300" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*" />
@@ -190,7 +192,7 @@
                     Grid.Column="0"
                     Grid.ColumnSpan="5">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="60" />
+                        <RowDefinition Height="50" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <Rectangle
@@ -208,6 +210,7 @@
                         Typography.Capitals="SmallCaps" />
                     <controls1:AnimatedScrollViewer
                         Grid.Row="1"
+                        Padding="0,2.5"
                         VerticalAlignment="Center"
                         HorizontalScrollBarVisibility="Hidden"
                         PreviewMouseWheel="OnPreviewMouseWheel"

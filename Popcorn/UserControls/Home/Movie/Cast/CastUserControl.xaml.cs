@@ -30,12 +30,16 @@ namespace Popcorn.UserControls.Home.Movie.Cast
         {
             var scv = (AnimatedScrollViewer)sender;
             if (scv.ComputedVerticalScrollBarVisibility == Visibility.Visible)
-                return;
-
-            if (scv.TargetHorizontalOffset + e.Delta > -Math.Abs(e.Delta) &&
-                scv.TargetHorizontalOffset + e.Delta < scv.ScrollableWidth + Math.Abs(e.Delta))
             {
-                scv.TargetHorizontalOffset += e.Delta;
+                scv.HorizontalScrollBarVisibility = ScrollBarVisibility.Visible;
+                return;
+            }
+
+            scv.HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden;
+            if (scv.TargetHorizontalOffset - e.Delta >= -Math.Abs(e.Delta) &&
+                scv.TargetHorizontalOffset - e.Delta < scv.ScrollableWidth + Math.Abs(e.Delta))
+            {
+                scv.TargetHorizontalOffset -= e.Delta;
             }
         }
     }

@@ -15,7 +15,6 @@ namespace Popcorn.Models.Movie
         private double _rating;
         private string _title;
         private int _year;
-        private string _coverImage;
         
         [DataMember(Name = "imdb_code")]
         public string ImdbCode
@@ -57,13 +56,6 @@ namespace Popcorn.Models.Movie
         {
             get => _posterImage;
             set { Set(() => PosterImage, ref _posterImage, value); }
-        }
-
-        [DataMember(Name = "cover_image")]
-        public string CoverImage
-        {
-            get => _coverImage;
-            set { Set(() => CoverImage, ref _coverImage, value); }
         }
 
         /// <summary>

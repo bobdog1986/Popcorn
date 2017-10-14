@@ -177,8 +177,8 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*" />
                     <RowDefinition Height="6*" />
-                    <RowDefinition Height="10" />
-                    <RowDefinition Height="5*" MaxHeight="275" />
+                    <RowDefinition Height="15" />
+                    <RowDefinition Height="5*" MaxHeight="300" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*" />
@@ -489,6 +489,7 @@
                     </DockPanel>
                     <customControls:AnimatedScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                         <StackPanel Orientation="Vertical">
+
                             <TextBlock
                                 Padding="0,20,0,0"
                                 VerticalAlignment="Top"
@@ -514,6 +515,43 @@
                                         <DataTemplate>
                                             <StackPanel Margin="0,0,20,0" Orientation="Horizontal">
                                                 <StackPanel Cursor="Hand" Orientation="Vertical">
+                                                    <StackPanel.Style>
+                                                        <Style TargetType="{x:Type StackPanel}">
+                                                            <Setter Property="Opacity" Value="1.0" />
+                                                            <Style.Triggers>
+                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                    <Trigger.EnterActions>
+                                                                        <BeginStoryboard>
+                                                                            <Storyboard>
+                                                                                <DoubleAnimation
+                                                                                    Storyboard.TargetProperty="Opacity"
+                                                                                    To="0.6"
+                                                                                    Duration="0:0:0.6">
+                                                                                    <DoubleAnimation.EasingFunction>
+                                                                                        <PowerEase Power="2" />
+                                                                                    </DoubleAnimation.EasingFunction>
+                                                                                </DoubleAnimation>
+                                                                            </Storyboard>
+                                                                        </BeginStoryboard>
+                                                                    </Trigger.EnterActions>
+                                                                    <Trigger.ExitActions>
+                                                                        <BeginStoryboard>
+                                                                            <Storyboard>
+                                                                                <DoubleAnimation
+                                                                                    Storyboard.TargetProperty="Opacity"
+                                                                                    To="1.0"
+                                                                                    Duration="0:0:0.6">
+                                                                                    <DoubleAnimation.EasingFunction>
+                                                                                        <PowerEase Power="2" />
+                                                                                    </DoubleAnimation.EasingFunction>
+                                                                                </DoubleAnimation>
+                                                                            </Storyboard>
+                                                                        </BeginStoryboard>
+                                                                    </Trigger.ExitActions>
+                                                                </Trigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </StackPanel.Style>
                                                     <i:Interaction.Triggers>
                                                         <i:EventTrigger EventName="PreviewMouseDown">
                                                             <command:EventToCommand
@@ -561,7 +599,7 @@
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="60" />
+                        <RowDefinition Height="50" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <Rectangle
@@ -579,6 +617,7 @@
                         Typography.Capitals="SmallCaps" />
                     <customControls:AnimatedScrollViewer
                         Grid.Row="1"
+                        Padding="0,2.5"
                         VerticalAlignment="Center"
                         HorizontalScrollBarVisibility="Hidden"
                         PreviewMouseWheel="OnPreviewMouseWheel"
@@ -697,7 +736,7 @@
                                                     Grid.ColumnSpan="3"
                                                     HorizontalAlignment="Center"
                                                     VerticalAlignment="Center"
-                                                    attachedProperties:ImageAsyncHelper.ImagePath="{Binding CoverImage}"
+                                                    attachedProperties:ImageAsyncHelper.ImagePath="{Binding PosterImage}"
                                                     attachedProperties:ImageAsyncHelper.Type="Thumbnail" />
                                                 <Grid
                                                     x:Name="PlayCanvas"

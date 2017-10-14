@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Net;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
@@ -215,6 +216,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Details
                     Show = await _showService.GetShowAsync(show.ImdbId, CancellationToken.None).ConfigureAwait(false);
                     foreach (var episode in Show.Episodes)
                     {
+                        episode.Title = WebUtility.HtmlDecode(episode.Title);
                         episode.ImdbId = Show.ImdbId;
                     }
                 }).ConfigureAwait(false);

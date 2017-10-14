@@ -22,7 +22,8 @@ namespace Popcorn.AttachedProperties
     {
         Thumbnail,
         Poster,
-        Backdrop
+        Backdrop,
+        None
     }
 
     /// <summary>
@@ -207,7 +208,7 @@ namespace Popcorn.AttachedProperties
                                             bitmapImage.DecodePixelWidth = 500;
                                             bitmapImage.DecodePixelHeight = 750;
                                         }
-                                        else
+                                        else if (imageType != ImageType.None)
                                         {
                                             bitmapImage.DecodePixelWidth = 1920;
                                             bitmapImage.DecodePixelHeight = 1080;

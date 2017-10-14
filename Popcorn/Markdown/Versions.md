@@ -1,4 +1,11 @@
-﻿# 3.1.1 - 13/10/2017 #
+﻿# 3.1.2 - 14/10/2017 #
+***
+Minor improvement
+
+### Details ###
+* Improved UI
+
+# 3.1.1 - 13/10/2017 #
 ***
 Minor improvement
 
