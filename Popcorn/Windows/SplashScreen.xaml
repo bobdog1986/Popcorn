@@ -8,8 +8,10 @@
     Title="Popcorn"
     AllowsTransparency="True"
     Background="Transparent"
+    ShowInTaskbar="False"
     WindowStartupLocation="CenterScreen"
     WindowStyle="None"
+    Loaded="OnLoaded"
     mc:Ignorable="d">
     <Window.Resources>
         <ResourceDictionary>
