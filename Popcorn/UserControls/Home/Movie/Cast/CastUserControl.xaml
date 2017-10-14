@@ -329,7 +329,7 @@
                                                     Grid.ColumnSpan="3"
                                                     HorizontalAlignment="Center"
                                                     VerticalAlignment="Center"
-                                                    attachedProperties:ImageAsyncHelper.ImagePath="{Binding CoverImage}"
+                                                    attachedProperties:ImageAsyncHelper.ImagePath="{Binding PosterImage}"
                                                     attachedProperties:ImageAsyncHelper.Type="Thumbnail" />
                                                 <Grid
                                                     x:Name="PlayCanvas"
