@@ -130,5 +130,16 @@ namespace Popcorn.Windows
                 searchBox.Focus();
             }
         }
+
+        private void OnActivated(object sender, EventArgs e)
+        {
+            var window = sender as Window;
+            if (window != null)
+            {
+                window.Activated -= OnActivated;
+                window.Topmost = false;
+                window.Focus();
+            }
+        }
     }
 }

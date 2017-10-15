@@ -185,6 +185,7 @@ namespace Popcorn
                     if (!WatchStart.IsRunning)
                         return;
                     _splashScreenDispatcher.InvokeShutdown();
+                    mainWindow.Topmost = true;
                     mainWindow.Activate();
                     var vm = mainWindow.DataContext as WindowViewModel;
                     if (vm != null)

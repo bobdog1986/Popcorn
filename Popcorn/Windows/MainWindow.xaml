@@ -27,6 +27,7 @@
     lex:LocalizeDictionary.DesignCulture="en"
     lex:ResxLocalizationProvider.DefaultAssembly="Popcorn"
     lex:ResxLocalizationProvider.DefaultDictionary="Resources"
+    Activated="OnActivated"
     AllowDrop="True"
     DataContext="{Binding Window, Source={StaticResource Locator}}"
     Icon="../Resources/Images/icon.ico"
