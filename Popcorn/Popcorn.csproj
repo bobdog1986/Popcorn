@@ -474,6 +474,7 @@
     <Compile Include="Messaging\ChangeFavoriteShowMessage.cs" />
     <Compile Include="Messaging\ChangeSeenMovieMessage.cs" />
     <Compile Include="Messaging\CustomSubtitleMessage.cs" />
+    <Compile Include="Messaging\DownloadMagnetLinkMessage.cs" />
     <Compile Include="Messaging\DropFileMessage.cs" />
     <Compile Include="Messaging\LoadShowMessage.cs" />
     <Compile Include="Messaging\DownloadShowEpisodeMessage.cs" />

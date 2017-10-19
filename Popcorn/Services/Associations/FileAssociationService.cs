@@ -78,7 +78,7 @@ namespace Popcorn.Services.Associations
         {
             try
             {
-                Registry.CurrentUser.DeleteSubKeyTree("SOFTWARE\\Classes\\magnet");
+                Registry.CurrentUser.DeleteSubKeyTree("SOFTWARE\\Classes\\magnet", false);
                 SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_FLUSH, IntPtr.Zero, IntPtr.Zero);
             }
             catch (Exception ex)
@@ -93,7 +93,7 @@ namespace Popcorn.Services.Associations
             {
                 try
                 {
-                    Registry.CurrentUser.DeleteSubKeyTree(@"Software\Classes\" + _association.ProgId);
+                    Registry.CurrentUser.DeleteSubKeyTree(@"Software\Classes\" + _association.ProgId, false);
                 }
                 catch (Exception ex)
                 {

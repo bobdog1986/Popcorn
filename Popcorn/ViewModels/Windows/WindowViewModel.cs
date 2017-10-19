@@ -561,6 +561,11 @@ namespace Popcorn.ViewModels.Windows
                 IsCastFlyoutOpen = true;
             });
 
+            Messenger.Default.Register<DownloadMagnetLinkMessage>(this, async message =>
+            {
+                await HandleTorrentDownload(message.MagnetLink);
+            });
+
             _castMediaMessage = Messenger.Default.RegisterAsyncMessage<CastMediaMessage>(async message =>
             {
                 var vm = new ChromecastDialogViewModel(message);
@@ -821,47 +826,7 @@ namespace Popcorn.ViewModels.Windows
                     else if (cmd.Length == 2 && (cmd[1].StartsWith("magnet") || cmd[1].EndsWith("torrent")))
                     {
                         var path = cmd[1];
-                        var filePath = string.Empty;
-                        if (path.StartsWith("magnet"))
-                        {
-                            filePath = $"{_cacheService.DropFilesDownloads}{Guid.NewGuid()}.torrent";
-                            using (var file = File.Create(filePath))
-                            using (var stream = new StreamWriter(file))
-                            {
-                                await stream.WriteLineAsync(path);
-                            }
-                        }
-                        else if (path.EndsWith("torrent"))
-                        {
-                            filePath = path;
-                        }
-
-                        var vm = new DropTorrentDialogViewModel(_cacheService, filePath);
-                        var dropTorrentDialog = new DropTorrentDialog
-                        {
-                            DataContext = vm
-                        };
-
-                        try
-                        {
-                            Task.Run(async () =>
-                            {
-                                await _dialogCoordinator.ShowMetroDialogAsync(this, dropTorrentDialog);
-                                var settings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
-                                await vm.Download(settings.UploadLimit, settings.DownloadLimit,
-                                    async () =>
-                                    {
-                                        await _dialogCoordinator.HideMetroDialogAsync(this, dropTorrentDialog);
-                                    }, async () =>
-                                    {
-                                        await _dialogCoordinator.HideMetroDialogAsync(this, dropTorrentDialog);
-                                    });
-                            });
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.Error(ex);
-                        }
+                        await HandleTorrentDownload(path);
                     }
                 }
 
@@ -922,6 +887,46 @@ namespace Popcorn.ViewModels.Windows
                     Logger.Error(ex);
                 }
             });
+        }
+
+        private async Task HandleTorrentDownload(string path)
+        {
+            var filePath = string.Empty;
+            if (path.StartsWith("magnet"))
+            {
+                filePath = $"{_cacheService.DropFilesDownloads}{Guid.NewGuid()}.torrent";
+                using (var file = File.Create(filePath))
+                using (var stream = new StreamWriter(file))
+                {
+                    await stream.WriteLineAsync(path);
+                }
+            }
+            else if (path.EndsWith("torrent"))
+            {
+                filePath = path;
+            }
+
+            var vm = new DropTorrentDialogViewModel(_cacheService, filePath);
+            var dropTorrentDialog = new DropTorrentDialog
+            {
+                DataContext = vm
+            };
+
+            try
+            {
+                Task.Run(async () =>
+                {
+                    await _dialogCoordinator.ShowMetroDialogAsync(this, dropTorrentDialog);
+                    var settings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
+                    await vm.Download(settings.UploadLimit, settings.DownloadLimit,
+                        async () => { await _dialogCoordinator.HideMetroDialogAsync(this, dropTorrentDialog); },
+                        async () => { await _dialogCoordinator.HideMetroDialogAsync(this, dropTorrentDialog); });
+                });
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
         }
 
         private bool FirewallRuleExists(string ruleName)

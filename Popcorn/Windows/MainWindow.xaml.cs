@@ -101,6 +101,16 @@ namespace Popcorn.Windows
                 if (showScrollviewer != null && showScrollviewer.IsVisible)
                     showScrollviewer.Focus();
             }
+
+            if (e.KeyPressed == Key.V && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control &&
+                Clipboard.ContainsText())
+            {
+                var clipboard = Clipboard.GetText();
+                if (clipboard.StartsWith("magnet"))
+                {
+                    Messenger.Default.Send(new DownloadMagnetLinkMessage(clipboard));
+                }
+            }
         }
 
         private void OnStateChanged(object sender, EventArgs e)
