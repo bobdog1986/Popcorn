@@ -26,5 +26,9 @@ namespace Popcorn.Models.User
         public List<ShowHistory> ShowHistory { get; set; }
 
         public string CacheLocation { get; set; }
+
+        public bool EnableTorrentFileAssociation { get; set; }
+
+        public bool EnableMagnetLinkAssociation { get; set; }
     }
 }

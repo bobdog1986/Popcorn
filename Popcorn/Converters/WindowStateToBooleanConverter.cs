@@ -39,8 +39,8 @@ namespace Popcorn.Converters
         public object ConvertBack(object value, Type targetType, object parameter,
             CultureInfo culture)
         {
-            var windowState = (WindowState) value;
-            return windowState != WindowState.Minimized && windowState != WindowState.Normal;
+            if ((WindowState) value == WindowState.Minimized) return null;
+            return (WindowState)value == WindowState.Maximized;
         }
 
         public override object ProvideValue(IServiceProvider serviceProvider)

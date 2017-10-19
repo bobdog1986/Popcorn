@@ -477,4 +477,10 @@
   <data name="DroppedFileIssue" xml:space="preserve">
     <value>An issue has occurred while processing the dropped file.</value>
   </data>
+  <data name="MagnetHandleLabel" xml:space="preserve">
+    <value>Associate with magnet links</value>
+  </data>
+  <data name="TorrentHandleLabel" xml:space="preserve">
+    <value>Associate with torrent files</value>
+  </data>
 </root>

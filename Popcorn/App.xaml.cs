@@ -177,6 +177,7 @@ namespace Popcorn
             splashScreenThread.Start();
 
             var mainWindow = new MainWindow();
+            mainWindow.Topmost = true;
             MainWindow = mainWindow;
             mainWindow.Loaded += async (sender2, e2) =>
                 await mainWindow.Dispatcher.InvokeAsync(async () =>
@@ -185,7 +186,6 @@ namespace Popcorn
                     if (!WatchStart.IsRunning)
                         return;
                     _splashScreenDispatcher.InvokeShutdown();
-                    mainWindow.Topmost = true;
                     mainWindow.Activate();
                     var vm = mainWindow.DataContext as WindowViewModel;
                     if (vm != null)

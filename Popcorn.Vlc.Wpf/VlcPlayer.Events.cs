@@ -318,14 +318,14 @@ namespace Popcorn.Vlc.Wpf
 
             _context.Display();
 
-            try
-            {
-                TakeSnapshot();
-            }
-            catch
-            {
-                // ignored
-            }
+            //try
+            //{
+            //    TakeSnapshot();
+            //}
+            //catch
+            //{
+            //    // ignored
+            //}
         }
 
         private uint VideoFormatCallback(ref IntPtr opaque, ref uint chroma, ref uint width, ref uint height,

@@ -204,7 +204,7 @@ namespace Popcorn.ViewModels.Pages.Player
             string mediaPath,
             string mediaName, MediaType type, Action mediaStoppedAction,
             Action mediaEndedAction, Progress<double> bufferProgress = null,
-            Progress<BandwidthRate> bandwidthRate = null, string subtitleFilePath = null,
+            Progress<BandwidthRate> bandwidthRate = null, Subtitle currentSubtitle = null,
             IEnumerable<Subtitle> subtitles = null)
         {
             Logger.Info(
@@ -212,19 +212,26 @@ namespace Popcorn.ViewModels.Pages.Player
             RegisterCommands();
             _chromecastService = new ChromecastService();
             _subtitlesService = subtitlesService;
+            _cacheService = cacheService;
             MediaPath = mediaPath;
             MediaName = mediaName;
             MediaType = type;
             CanSeek = true;
             _mediaStoppedAction = mediaStoppedAction;
             _mediaEndedAction = mediaEndedAction;
-            SubtitleFilePath = subtitleFilePath;
+            SubtitleFilePath = currentSubtitle?.FilePath;
             BufferProgress = bufferProgress;
             BandwidthRate = bandwidthRate;
             ShowSubtitleButton = MediaType != MediaType.Trailer;
             _subtitles = subtitles;
             _castPlayerTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
             _castPlayerTimer.Tick += OnCastPlayerTimerChanged;
+
+            if (currentSubtitle != null && currentSubtitle.Sub.SubtitleId != "none")
+            {
+                IsSubtitleChosen = true;
+                CurrentSubtitle = currentSubtitle.Sub;
+            }
         }
 
         /// <summary>
@@ -347,13 +354,20 @@ namespace Popcorn.ViewModels.Pages.Player
                         message.SelectedSubtitle.SubtitleId != "custom")
                     {
                         OnResumedMedia(new EventArgs());
-                        var path = Path.Combine(_cacheService.Subtitles + message.SelectedSubtitle.ImdbId);
-                        Directory.CreateDirectory(path);
-                        var subtitlePath = await
-                            _subtitlesService.DownloadSubtitleToPath(path,
-                                message.SelectedSubtitle);
-                        OnSubtitleChosen(new SubtitleChangedEventArgs(subtitlePath, message.SelectedSubtitle));
-                        IsSubtitleChosen = true;
+                        if (CurrentSubtitle != null && CurrentSubtitle.ImdbId == message.SelectedSubtitle.ImdbId)
+                        {
+                            IsSubtitleChosen = true;
+                        }
+                        else
+                        {
+                            var path = Path.Combine(_cacheService.Subtitles + message.SelectedSubtitle.ImdbId);
+                            Directory.CreateDirectory(path);
+                            var subtitlePath = await
+                                _subtitlesService.DownloadSubtitleToPath(path,
+                                    message.SelectedSubtitle);
+                            OnSubtitleChosen(new SubtitleChangedEventArgs(subtitlePath, message.SelectedSubtitle));
+                            IsSubtitleChosen = true;
+                        }
                     }
                     else if (message.SelectedSubtitle != null &&
                              message.SelectedSubtitle.LanguageName !=

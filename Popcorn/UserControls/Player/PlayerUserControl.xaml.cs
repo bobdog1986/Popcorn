@@ -116,9 +116,10 @@ namespace Popcorn.UserControls.Player
             _subtitleSize = applicationSettings.SelectedSubtitleSize.Size;
             VlcOptions = new[]
             {
-                "-I", "--dummy-quiet", "--no-video-title", "--no-sub-autodetect-file", "--sub-filter=freetype",
+                "-I", "--dummy-quiet", "--no-video-title", "--no-sub-autodetect-file",
                 $"--freetype-color={HexConverter(applicationSettings.SubtitlesColor)}",
-                $"--freetype-rel-fontsize={applicationSettings.SelectedSubtitleSize.Size}"
+                $"--freetype-rel-fontsize={applicationSettings.SelectedSubtitleSize.Size}",
+                "--file-caching=5000", "--network-caching=5000"
             };
             InitializeComponent();
             EventManager.RegisterClassHandler(
@@ -231,7 +232,6 @@ namespace Popcorn.UserControls.Player
                 if (_subtitleSize == 12)
                 {
                     Player.VlcOption[5] = $"--freetype-rel-fontsize={_subtitleSize}";
-
                 }
                 else
                 {

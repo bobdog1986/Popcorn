@@ -610,6 +610,15 @@ namespace Popcorn.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Associate with magnet links.
+        /// </summary>
+        public static string MagnetHandleLabel {
+            get {
+                return ResourceManager.GetString("MagnetHandleLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Quality.
         /// </summary>
         public static string MovieQualityLabel {
@@ -1011,6 +1020,15 @@ namespace Popcorn.Properties {
         public static string SyncTraktLabel {
             get {
                 return ResourceManager.GetString("SyncTraktLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Associate with torrent files.
+        /// </summary>
+        public static string TorrentHandleLabel {
+            get {
+                return ResourceManager.GetString("TorrentHandleLabel", resourceCulture);
             }
         }
         

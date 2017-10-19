@@ -421,6 +421,42 @@ namespace Popcorn.Services.User
         }
 
         /// <summary>
+        /// True if torrent file association is enabled
+        /// </summary>
+        /// <returns></returns>
+        public bool GetTorrentFileAssociation()
+        {
+            return User.EnableTorrentFileAssociation;
+        }
+
+        /// <summary>
+        /// Set if torrent file association is enabled
+        /// </summary>
+        /// <param name="enableTorrentFileAssociation"></param>
+        public void SetTorrentFileAssociation(bool enableTorrentHandle)
+        {
+            User.EnableTorrentFileAssociation = enableTorrentHandle;
+        }
+
+        /// <summary>
+        /// Get if magnet link association is enabled
+        /// </summary>
+        /// <returns></returns>
+        public bool GetMagnetLinkAssociation()
+        {
+            return User.EnableMagnetLinkAssociation;
+        }
+
+        /// <summary>
+        /// Set if magnet link association is enabled
+        /// </summary>
+        /// <param name="enableMagnetLinkAssociation"></param>
+        public void SetMagnetLinkAssociation(bool enableMagnetLinkAssociation)
+        {
+            User.EnableMagnetLinkAssociation = enableMagnetLinkAssociation;
+        }
+
+        /// <summary>
         /// Get all available languages from the database
         /// </summary>
         /// <returns>All available languages</returns>

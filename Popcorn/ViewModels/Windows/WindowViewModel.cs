@@ -350,7 +350,7 @@ namespace Popcorn.ViewModels.Windows
                         },
                         message.BufferProgress,
                         message.BandwidthRate,
-                        message.Episode.SelectedSubtitle?.FilePath,
+                        message.Episode.SelectedSubtitle,
                         message.Episode.AvailableSubtitles);
 
                     ApplicationService.IsMediaPlaying = true;
@@ -422,7 +422,7 @@ namespace Popcorn.ViewModels.Windows
                         },
                         message.BufferProgress,
                         message.BandwidthRate,
-                        message.Movie.SelectedSubtitle?.FilePath,
+                        message.Movie.SelectedSubtitle,
                         message.Movie.AvailableSubtitles);
 
                     ApplicationService.IsMediaPlaying = true;
@@ -916,7 +916,6 @@ namespace Popcorn.ViewModels.Windows
                     }
 
                     await _popcornHubService.Start();
-                    Utils.Associations.FileAssociations.EnsureAssociationsSet();
                 }
                 catch (Exception ex)
                 {

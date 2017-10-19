@@ -21,6 +21,7 @@ using Popcorn.Helpers;
 using Popcorn.Messaging;
 using Popcorn.Models.Localization;
 using Popcorn.Models.Subtitles;
+using Popcorn.Services.Associations;
 using Popcorn.Services.Cache;
 using Popcorn.Services.Subtitles;
 using Popcorn.Services.Trakt;
@@ -54,6 +55,11 @@ namespace Popcorn.ViewModels.Windows.Settings
         /// Trakt service
         /// </summary>
         private readonly ITraktService _traktService;
+
+        /// <summary>
+        /// File association service
+        /// </summary>
+        private readonly IFileAssociationService _fileAssociationService;
 
         /// <summary>
         /// The download limit
@@ -141,6 +147,16 @@ namespace Popcorn.ViewModels.Windows.Settings
         private bool _updateDownloading;
 
         /// <summary>
+        /// If torrent file association is enabled
+        /// </summary>
+        private bool _torrentFileAssociationEnabled;
+
+        /// <summary>
+        /// If magnet link association is enabled
+        /// </summary>
+        private bool _magnetLinkAssociationEnabled;
+
+        /// <summary>
         /// If an update is applying
         /// </summary>
         private bool _updateApplying;
@@ -187,8 +203,11 @@ namespace Popcorn.ViewModels.Windows.Settings
         /// <param name="subtitlesService">Subtitles service</param>
         /// <param name="traktService">Trakt service</param>
         /// <param name="cacheService">Cache service</param>
-        public ApplicationSettingsViewModel(IUserService userService, ISubtitlesService subtitlesService, ITraktService traktService, ICacheService cacheService, NotificationMessageManager manager)
+        /// <param name="fileAssociationService">File association service</param>
+        /// <param name="manager">Notification manager</param>
+        public ApplicationSettingsViewModel(IUserService userService, ISubtitlesService subtitlesService, ITraktService traktService, ICacheService cacheService, IFileAssociationService fileAssociationService, NotificationMessageManager manager)
         {
+            _fileAssociationService = fileAssociationService;
             _cacheService = cacheService;
             _traktService = traktService;
             _manager = manager;
@@ -326,6 +345,48 @@ namespace Popcorn.ViewModels.Windows.Settings
             set
             {
                 Set(() => UpdateDownloading, ref _updateDownloading, value);
+            }
+        }
+
+        /// <summary>
+        /// True if torrent file association is enabled
+        /// </summary>
+        public bool TorrentFileAssociationEnabled
+        {
+            get => _torrentFileAssociationEnabled;
+            set
+            {
+                Set(() => TorrentFileAssociationEnabled, ref _torrentFileAssociationEnabled, value);
+                _userService.SetTorrentFileAssociation(value);
+                if (!value)
+                {
+                    _fileAssociationService.UnregisterTorrentFileAssociation();
+                }
+                else
+                {
+                    _fileAssociationService.RegisterTorrentFileAssociation();
+                }
+            }
+        }
+
+        /// <summary>
+        /// True if magnet link association is enabled
+        /// </summary>
+        public bool MagnetLinkAssociationEnabled
+        {
+            get => _magnetLinkAssociationEnabled;
+            set
+            {
+                Set(() => MagnetLinkAssociationEnabled, ref _magnetLinkAssociationEnabled, value);
+                _userService.SetMagnetLinkAssociation(value);
+                if (!value)
+                {
+                    _fileAssociationService.UnregisterMagnetLinkAssociation();
+                }
+                else
+                {
+                    _fileAssociationService.RegisterMagnetLinkAssociation();
+                }
             }
         }
 
@@ -499,6 +560,26 @@ namespace Popcorn.ViewModels.Windows.Settings
                 var defaultSubtitleLanguage = user.DefaultSubtitleLanguage;
                 var subtitleSize = user.DefaultSubtitleSize;
                 DefaultHdQuality = user.DefaultHdQuality;
+                TorrentFileAssociationEnabled = user.EnableTorrentFileAssociation;
+                MagnetLinkAssociationEnabled = user.EnableMagnetLinkAssociation;
+                if (TorrentFileAssociationEnabled)
+                {
+                    _fileAssociationService.RegisterTorrentFileAssociation();
+                }
+                else if (!TorrentFileAssociationEnabled && _fileAssociationService.TorrentFileAssociationIsEnabled())
+                {
+                    _fileAssociationService.UnregisterTorrentFileAssociation();
+                }
+
+                if (MagnetLinkAssociationEnabled)
+                {
+                    _fileAssociationService.RegisterMagnetLinkAssociation();
+                }
+                else if (!MagnetLinkAssociationEnabled && _fileAssociationService.MagneLinkAssociationIsEnabled())
+                {
+                    _fileAssociationService.UnregisterMagnetLinkAssociation();
+                }
+
                 SelectedSubtitleSize = SubtitleSizes.FirstOrDefault(a => a.Size == subtitleSize.Size);
                 SubtitlesColor =
                     (Color)ColorConverter.ConvertFromString(user.DefaultSubtitleColor);
