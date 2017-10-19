@@ -477,10 +477,10 @@
   <data name="DroppedFileIssue" xml:space="preserve">
     <value>Une erreur est survenue lors du traitement du fichier glissé.</value>
   </data>
-  <data name="MagnetHandleLabel" xml:space="preserve">
+  <data name="MagnetLinkAssociationLabel" xml:space="preserve">
     <value>Associer avec les liens magnet</value>
   </data>
-  <data name="TorrentHandleLabel" xml:space="preserve">
+  <data name="TorrentFileAssociationLabel" xml:space="preserve">
     <value>Associer avec les fichiers torrent</value>
   </data>
 </root>

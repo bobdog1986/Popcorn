@@ -477,10 +477,10 @@
   <data name="DroppedFileIssue" xml:space="preserve">
     <value>Se ha producido un problema al procesar el archivo eliminado.</value>
   </data>
-  <data name="MagnetHandleLabel" xml:space="preserve">
+  <data name="MagnetLinkAssociationLabel" xml:space="preserve">
     <value>Asociar con enlaces magnéticos</value>
   </data>
-  <data name="TorrentHandleLabel" xml:space="preserve">
+  <data name="TorrentFileAssociationLabel" xml:space="preserve">
     <value>Asociado con archivos torrent</value>
   </data>
 </root>

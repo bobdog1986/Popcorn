@@ -322,12 +322,14 @@
             <TextBlock
                 Grid.Column="0"
                 VerticalAlignment="Center"
-                Text="{lex:LocText TorrentHandleLabel}" />
+                Text="{lex:LocText TorrentFileAssociationLabel}" />
             <controls:ToggleSwitch
                 Grid.Column="2"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Center"
                 IsChecked="{Binding TorrentFileAssociationEnabled}"
+                OffLabel=""
+                OnLabel=""
                 Style="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}" />
         </Grid>
         <Grid
@@ -343,12 +345,14 @@
             <TextBlock
                 Grid.Column="0"
                 VerticalAlignment="Center"
-                Text="{lex:LocText MagnetHandleLabel}" />
+                Text="{lex:LocText MagnetLinkAssociationLabel}" />
             <controls:ToggleSwitch
                 Grid.Column="2"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Center"
                 IsChecked="{Binding MagnetLinkAssociationEnabled}"
+                OffLabel=""
+                OnLabel=""
                 Style="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}" />
         </Grid>
         <Grid Grid.Row="11" Grid.Column="1">
