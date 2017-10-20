@@ -91,15 +91,7 @@ namespace Popcorn.Services.Associations
         {
             try
             {
-                try
-                {
-                    Registry.CurrentUser.DeleteSubKeyTree(@"Software\Classes\" + _association.ProgId, false);
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error(ex);
-                }
-
+                Registry.CurrentUser.DeleteSubKeyTree(@"Software\Classes\" + _association.ProgId, false);
                 SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_FLUSH, IntPtr.Zero, IntPtr.Zero);
             }
             catch (Exception ex)

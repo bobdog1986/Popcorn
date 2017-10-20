@@ -1,4 +1,11 @@
-﻿# 3.2.0 - 19/10/2017 #
+﻿# 3.2.1 - 20/10/2017 #
+***
+Fixed critical issue
+
+### Details ###
+* Fixed issue an issue which could let Popcorn crash if space key is pressed after playing a media.
+
+# 3.2.0 - 19/10/2017 #
 ***
 Fixed issues
 

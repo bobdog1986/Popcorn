@@ -185,7 +185,7 @@ namespace Popcorn
                     await _windowLoadedSemaphore.WaitAsync();
                     if (!WatchStart.IsRunning)
                         return;
-                    _splashScreenDispatcher.InvokeShutdown();
+                    _splashScreenDispatcher.BeginInvokeShutdown(DispatcherPriority.Background);
                     mainWindow.Activate();
                     var vm = mainWindow.DataContext as WindowViewModel;
                     if (vm != null)

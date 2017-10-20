@@ -122,10 +122,7 @@ namespace Popcorn.UserControls.Player
                 "--file-caching=5000", "--network-caching=5000"
             };
             InitializeComponent();
-            EventManager.RegisterClassHandler(
-                typeof(UIElement),
-                Keyboard.PreviewKeyDownEvent,
-                new KeyEventHandler(OnPreviewKeyDownEvent));
+            AddHandler(Keyboard.PreviewKeyDownEvent, new KeyEventHandler(OnPreviewKeyDownEvent));
 
             Loaded += OnLoaded;
         }
@@ -896,8 +893,7 @@ namespace Popcorn.UserControls.Player
 
                 Player.Dispose();
                 _applicationService.SwitchConstantDisplayAndPower(false);
-                RemoveHandler(Keyboard.PreviewKeyDownEvent,
-                    new KeyEventHandler(OnPreviewKeyDownEvent));
+                RemoveHandler(Keyboard.PreviewKeyDownEvent, new KeyEventHandler(OnPreviewKeyDownEvent));
             }
             catch (Exception ex)
             {
