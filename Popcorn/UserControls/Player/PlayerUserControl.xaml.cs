@@ -394,16 +394,7 @@ namespace Popcorn.UserControls.Player
         {
             DispatcherHelper.CheckBeginInvokeOnUI(async () => await PauseMedia());
         }
-
-        private async void OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
-        {
-            e.Handled = true;
-            if (MediaPlayerIsPlaying)
-                await PauseMedia();
-            else
-                await PlayMedia();
-        }
-
+        
         /// <summary>
         /// On key down
         /// </summary>
@@ -946,6 +937,23 @@ namespace Popcorn.UserControls.Player
             catch (Exception ex)
             {
                 Logger.Error(ex);
+            }
+        }
+
+        private void OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = true;
+        }
+
+        private async void OnPreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = true;
+            if(e.ChangedButton == MouseButton.Left)
+            {
+                if (MediaPlayerIsPlaying)
+                    await PauseMedia();
+                else
+                    await PlayMedia();
             }
         }
     }

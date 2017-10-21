@@ -45,7 +45,8 @@
             attachedProperties:MaximizeDoubleClickHelper.MaximizeDoubleClick="True"
             EndBehavior="Nothing"
             LibVlcPath="libvlc"
-            PreviewMouseLeftButtonUp="OnPreviewMouseDown"
+            PreviewMouseDown="OnPreviewMouseDown"
+            PreviewMouseUp="OnPreviewMouseUp"
             VlcOption="{Binding VlcOptions, ElementName=PlayerUc}" />
         <Grid
             HorizontalAlignment="Stretch"
