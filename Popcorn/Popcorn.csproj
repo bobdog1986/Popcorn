@@ -1005,7 +1005,7 @@ if not exist "$(TargetDir)edge\node_modules" xcopy /s /i "$(SolutionDir)Popcorn\
 if not exist "$(TargetDir)None.srt" xcopy /s /i "$(SolutionDir)Popcorn\Resources\Subtitles\*.*" "$(TargetDir)"
 if not exist "$(TargetDir)WPFToolkit.dll" xcopy /s /i "$(SolutionDir)packages\WPFToolkit.3.5.50211.1\lib\*.*" "$(TargetDir)"
 </PreBuildEvent>
-    <PostBuildEvent>if not exist "$(TargetDir)libvlc" xcopy /s /i "$(SolutionDir)packages\VlcLibs.2.2.5.1\lib\net45\libvlc\*.*" "$(TargetDir)libvlc"
+    <PostBuildEvent>if not exist "$(TargetDir)libvlc" xcopy /s /i "$(SolutionDir)packages\VlcLibs.2.2.6.1\tools\net45\libvlc\*.*" "$(TargetDir)libvlc"
 xcopy /s /y "$(SolutionDir)packages\libtorrent-net.3.1.0\tools\*.*" "$(TargetDir)"
 xcopy /s /y "$(SolutionDir)packages\Microsoft.VC120.CRT.JetBrains.12.0.21005.2\DotFiles\*.*" "$(TargetDir)"
   </PostBuildEvent>

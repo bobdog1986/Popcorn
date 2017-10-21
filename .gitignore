@@ -45,6 +45,8 @@ Temporary Items
 # Nuget Packages
 packages/**/*
 
+.vs/**/*
+
 # Bin and obj
 Popcorn/Bin
 Popcorn/Obj
