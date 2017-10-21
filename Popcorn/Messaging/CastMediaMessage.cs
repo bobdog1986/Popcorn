@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight.Messaging;
-using Popcorn.Chromecast.Models;
+using GoogleCast;
 
 namespace Popcorn.Messaging
 {
@@ -12,8 +12,8 @@ namespace Popcorn.Messaging
 
         public CancellationTokenSource CastCancellationTokenSource { get; set; }
 
-        public Func<ChromecastReceiver, Task> StartCast { get; set; }
+        public Func<IReceiver, Task> StartCast { get; set; }
 
-        public ChromecastReceiver ChromecastReceiver { get; set; }
+        public IReceiver ChromecastReceiver { get; set; }
     }
 }

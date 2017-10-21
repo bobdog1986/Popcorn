@@ -386,14 +386,6 @@
         <file src="Popcorn.YTVideoProvider.dll" target="lib\net45\Popcorn.YTVideoProvider.dll" />
         <file src="Microsoft.ApplicationInsights.dll" target="lib\net45\Microsoft.ApplicationInsights.dll" />
         <file src="Microsoft.ApplicationInsights.NLogTarget.dll" target="lib\net45\Microsoft.ApplicationInsights.NLogTarget.dll" />
-        <file src="edge\edge.js" target="lib\net45\edge\edge.js" />
-        <file src="edge\double_edge.js" target="lib\net45\edge\double_edge.js" />
-        <file src="edge\x86\node.dll" target="lib\net45\edge\x86\node.dll" />
-        <file src="edge\x86\edge_nativeclr.node" target="lib\net45\edge\x86\edge_nativeclr.node" />
-        <file src="edge\x64\edge_nativeclr.node" target="lib\net45\edge\x64\edge_nativeclr.node" />
-        <file src="edge\x64\node.dll" target="lib\net45\edge\x64\node.dll" />
-        <file src="edge\node_modules\**" target="lib\net45\edge\node_modules" />
-        <file src="EdgeJs.dll" target="lib\net45\EdgeJs.dll" />
         <file src="Microsoft.Threading.Tasks.dll" target="lib\net45\Microsoft.Threading.Tasks.dll" />
         <file src="Microsoft.Threading.Tasks.Extensions.Desktop.dll" target="lib\net45\Microsoft.Threading.Tasks.Extensions.Desktop.dll" />
         <file src="Microsoft.Threading.Tasks.Extensions.dll" target="lib\net45\Microsoft.Threading.Tasks.Extensions.dll" />
@@ -407,6 +399,7 @@
         <file src="Popcorn.ColorPicker.dll" target="lib\net45\Popcorn.ColorPicker.dll" />
         <file src="Popcorn.ColorPickerControls.dll" target="lib\net45\Popcorn.ColorPickerControls.dll" />
         <file src="WPFToolkit.dll" target="lib\net45\WPFToolkit.dll" />
+        <file src="GoogleCast.dll" target="lib\net45\GoogleCast.dll" />
         <file src="Polly.dll" target="lib\net45\Polly.dll" />
         <file src="System.Windows.Controls.Input.Toolkit.dll" target="lib\net45\System.Windows.Controls.Input.Toolkit.dll" />
         <file src="System.Windows.Controls.Layout.Toolkit.dll" target="lib\net45\System.Windows.Controls.Layout.Toolkit.dll" />
@@ -723,6 +716,7 @@
         <file src="Microsoft.AspNetCore.Sockets.Common.Http.dll" target="lib\net45\Microsoft.AspNetCore.Sockets.Common.Http.dll" />
         <file src="Microsoft.Extensions.Configuration.Abstractions.dll" target="lib\net45\Microsoft.Extensions.Configuration.Abstractions.dll" />
         <file src="Microsoft.Extensions.DependencyInjection.Abstractions.dll" target="lib\net45\Microsoft.Extensions.DependencyInjection.Abstractions.dll" />
+        <file src="Microsoft.Extensions.DependencyInjection.dll" target="lib\net45\Microsoft.Extensions.DependencyInjection.dll" />
         <file src="Microsoft.Extensions.Logging.Abstractions.dll" target="lib\net45\Microsoft.Extensions.Logging.Abstractions.dll" />
         <file src="Microsoft.Extensions.Logging.Console.dll" target="lib\net45\Microsoft.Extensions.Logging.Console.dll" />
         <file src="Microsoft.Extensions.Logging.dll" target="lib\net45\Microsoft.Extensions.Logging.dll" />
@@ -739,6 +733,8 @@
         <file src="System.Runtime.CompilerServices.Unsafe.dll" target="lib\net45\System.Runtime.CompilerServices.Unsafe.dll" />
         <file src="System.Threading.Tasks.Channels.dll" target="lib\net45\System.Threading.Tasks.Channels.dll" />
         <file src="MsgPack.dll" target="lib\net45\MsgPack.dll" />
+        <file src="protobuf-net.dll" target="lib\net45\protobuf-net.dll" />
+        <file src="Zeroconf.dll" target="lib\net45\Zeroconf.dll" />
         <file src="Microsoft.ApplicationInsights.SnapshotCollector.dll" target="lib\net45\Microsoft.ApplicationInsights.SnapshotCollector.dll" />
         <file src="SnapshotCollectorFiles\MinidumpUploader.exe" target="lib\net45\SnapshotCollectorFiles\MinidumpUploader.exe" />
         <file src="SnapshotCollectorFiles\MinidumpUploader.exe.config" target="lib\net45\SnapshotCollectorFiles\MinidumpUploader.exe.config" />

@@ -30,6 +30,7 @@ using Popcorn.Helpers;
 using Popcorn.Messaging;
 using Popcorn.Services.Application;
 using Popcorn.Services.Cache;
+using Popcorn.Services.Chromecast;
 using Popcorn.Services.Hub;
 using Popcorn.Services.Server;
 using Popcorn.Services.User;
@@ -128,6 +129,11 @@ namespace Popcorn.ViewModels.Windows
         private readonly IUserService _userService;
 
         /// <summary>
+        /// The chromecast service
+        /// </summary>
+        private readonly IChromecastService _chromecastService;
+
+        /// <summary>
         /// The Trakt service
         /// </summary>
         private readonly ITraktService _traktService;
@@ -175,12 +181,14 @@ namespace Popcorn.ViewModels.Windows
         /// <param name="subtitlesService">Instance of subtitles service</param>
         /// <param name="traktService">Instance of Trakt service</param>
         /// <param name="popcornHubService">Instance of Popcorn Hub service</param>
+        /// <param name="chromecastService">Instance of Chromecast service</param>
         /// <param name="cacheService">Instance of cache service</param>
         /// <param name="manager">The notification manager</param>
         public WindowViewModel(IApplicationService applicationService, IUserService userService,
-            ISubtitlesService subtitlesService, ITraktService traktService, IPopcornHubService popcornHubService,
+            ISubtitlesService subtitlesService, ITraktService traktService, IPopcornHubService popcornHubService, IChromecastService chromecastService,
             ICacheService cacheService, NotificationMessageManager manager)
         {
+            _chromecastService = chromecastService;
             _cacheService = cacheService;
             _popcornHubService = popcornHubService;
             _traktService = traktService;
@@ -336,7 +344,7 @@ namespace Popcorn.ViewModels.Windows
             Messenger.Default.Register<PlayShowEpisodeMessage>(this, message => DispatcherHelper.CheckBeginInvokeOnUI(
                 async () =>
                 {
-                    MediaPlayer = new MediaPlayerViewModel(_subtitlesService, _cacheService,
+                    MediaPlayer = new MediaPlayerViewModel(_chromecastService, _subtitlesService, _cacheService,
                         message.Episode.FilePath,
                         message.Episode.Title,
                         MediaType.Show,
@@ -372,7 +380,7 @@ namespace Popcorn.ViewModels.Windows
             Messenger.Default.Register<PlayMediaMessage>(this, message => DispatcherHelper.CheckBeginInvokeOnUI(
                 async () =>
                 {
-                    MediaPlayer = new MediaPlayerViewModel(_subtitlesService, _cacheService,
+                    MediaPlayer = new MediaPlayerViewModel(_chromecastService, _subtitlesService, _cacheService,
                         message.MediaPath,
                         message.MediaPath,
                         MediaType.Unkown,
@@ -407,7 +415,7 @@ namespace Popcorn.ViewModels.Windows
             Messenger.Default.Register<PlayMovieMessage>(this, message => DispatcherHelper.CheckBeginInvokeOnUI(
                 async () =>
                 {
-                    MediaPlayer = new MediaPlayerViewModel(_subtitlesService, _cacheService,
+                    MediaPlayer = new MediaPlayerViewModel(_chromecastService, _subtitlesService, _cacheService,
                         message.Movie.FilePath, message.Movie.Title,
                         MediaType.Movie,
                         () =>
@@ -444,7 +452,7 @@ namespace Popcorn.ViewModels.Windows
             Messenger.Default.Register<PlayTrailerMessage>(this, message => DispatcherHelper.CheckBeginInvokeOnUI(
                 async () =>
                 {
-                    MediaPlayer = new MediaPlayerViewModel(_subtitlesService, _cacheService,
+                    MediaPlayer = new MediaPlayerViewModel(_chromecastService, _subtitlesService, _cacheService,
                         message.TrailerUrl,
                         message.MovieTitle,
                         MediaType.Trailer,
@@ -568,7 +576,7 @@ namespace Popcorn.ViewModels.Windows
 
             _castMediaMessage = Messenger.Default.RegisterAsyncMessage<CastMediaMessage>(async message =>
             {
-                var vm = new ChromecastDialogViewModel(message);
+                var vm = new ChromecastDialogViewModel(message, _chromecastService);
                 var castDialog = new CastDialog
                 {
                     DataContext = vm

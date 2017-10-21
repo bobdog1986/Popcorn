@@ -1,10 +1,12 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Enterwell.Clients.Wpf.Notifications;
 using GalaSoft.MvvmLight.Ioc;
+using GoogleCast;
 using Microsoft.Practices.ServiceLocation;
 using Popcorn.Services.Application;
 using Popcorn.Services.Associations;
 using Popcorn.Services.Cache;
+using Popcorn.Services.Chromecast;
 using Popcorn.Services.Genres;
 using Popcorn.Services.Hub;
 using Popcorn.Services.Movies.Movie;
@@ -50,6 +52,9 @@ namespace Popcorn.ViewModels
             SimpleIoc.Default.Register<IPopcornHubService, PopcornHubService>();
             SimpleIoc.Default.Register<ICacheService, CacheService>();
             SimpleIoc.Default.Register<IFileAssociationService, FileAssociationService>();
+            SimpleIoc.Default.Register<IDeviceLocator, DeviceLocator>();
+            SimpleIoc.Default.Register<ISender>(() => new Sender());
+            SimpleIoc.Default.Register<IChromecastService, ChromecastService>();
             SimpleIoc.Default.Register<NotificationMessageManager>();
 
             #endregion
