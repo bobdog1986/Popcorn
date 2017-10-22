@@ -584,32 +584,37 @@ namespace Popcorn.ViewModels.Windows.Settings
                 SubtitlesColor =
                     (Color)ColorConverter.ConvertFromString(user.DefaultSubtitleColor);
 
-#pragma warning disable CS4014
-                Task.Run(async () =>
+                var tasks = new Func<Task>[]
                 {
-                    IsTraktLoggedIn = await _traktService.IsLoggedIn();
-                    LoadingSubtitles = true;
-                    AvailableSubtitlesLanguages = new ObservableRangeCollection<string>();
-                    var languages = (await _subtitlesService.GetSubLanguages().ConfigureAwait(false)).Select(a => a.LanguageName)
-                        .OrderBy(a => a)
-                        .ToList();
-                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                    async () =>
                     {
-                        languages.Insert(0,
-                            LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"));
-                        AvailableSubtitlesLanguages.AddRange(
-                            new ObservableRangeCollection<string>(languages));
-                        DefaultSubtitleLanguage = AvailableSubtitlesLanguages.Any(a => a == defaultSubtitleLanguage)
-                            ? defaultSubtitleLanguage
-                            : LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel");
-                        LoadingSubtitles = false;
-                    });
-
+                        IsTraktLoggedIn = await _traktService.IsLoggedIn();
+                        LoadingSubtitles = true;
+                        AvailableSubtitlesLanguages = new ObservableRangeCollection<string>();
+                        var languages = (await _subtitlesService.GetSubLanguages().ConfigureAwait(false)).Select(a => a.LanguageName)
+                            .OrderBy(a => a)
+                            .ToList();
+                        DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                        {
+                            languages.Insert(0,
+                                LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"));
+                            AvailableSubtitlesLanguages.AddRange(
+                                new ObservableRangeCollection<string>(languages));
+                            DefaultSubtitleLanguage = AvailableSubtitlesLanguages.Any(a => a == defaultSubtitleLanguage)
+                                ? defaultSubtitleLanguage
+                                : LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel");
+                            LoadingSubtitles = false;
+                        });
+                    },
+                    async () =>
+                    {
 #if !DEBUG
-                await StartUpdateProcessAsync().ConfigureAwait(false);
+                        await StartUpdateProcessAsync().ConfigureAwait(false);
 #endif
-                });
-#pragma warning restore CS4014
+                    }
+                };
+
+                Task.WhenAll(tasks.Select(task => task()).ToArray()).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
