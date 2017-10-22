@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.ApplicationInsights.SnapshotCollector;
 using Microsoft.Win32;
 using NLog;
 
@@ -93,7 +94,7 @@ namespace Popcorn.Services.Associations
                 Registry.CurrentUser.DeleteSubKeyTree(@"Software\Classes\" + _association.ProgId);
                 SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_FLUSH, IntPtr.Zero, IntPtr.Zero);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
             }
         }

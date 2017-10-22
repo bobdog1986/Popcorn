@@ -56,10 +56,29 @@ namespace Popcorn
         private readonly SemaphoreSlim _windowLoadedSemaphore = new SemaphoreSlim(1, 1);
 
         /// <summary>
+        /// Miniuploader for SnapshotCollector
+        /// </summary>
+        private static readonly string[] SnapshotCollectorFiles = new string[6]
+        {
+            "MinidumpUploader.exe",
+            "MinidumpUploader.exe.config",
+            "ProductionBreakpoints_x86.dll",
+            "ProductionBreakpoints_x64.dll",
+            "SnapshotHolder_x86.exe",
+            "SnapshotHolder_x64.exe"
+        };
+
+        /// <summary>
         /// Initializes a new instance of the App class.
         /// </summary>
         static App()
         {
+            // Dirty fix for https://github.com/Microsoft/ApplicationInsights-dotnet/issues/638
+            foreach (var file in SnapshotCollectorFiles)
+            {
+                File.SetLastWriteTime($@"{Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName}\SnapshotCollectorFiles\{file}", DateTime.MaxValue);
+            }
+
             WatchStart = Stopwatch.StartNew();
             Logger.Info(
                 "Popcorn starting...");

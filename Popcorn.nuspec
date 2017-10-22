@@ -735,12 +735,12 @@
         <file src="protobuf-net.dll" target="lib\net45\protobuf-net.dll" />
         <file src="Zeroconf.dll" target="lib\net45\Zeroconf.dll" />
         <file src="Microsoft.ApplicationInsights.SnapshotCollector.dll" target="lib\net45\Microsoft.ApplicationInsights.SnapshotCollector.dll" />
-        <file src="MinidumpUploader.exe" target="lib\net45\MinidumpUploader.exe" />
-        <file src="MinidumpUploader.exe.config" target="lib\net45\MinidumpUploader.exe.config" />
-        <file src="ProductionBreakpoints_x64.dll" target="lib\net45\ProductionBreakpoints_x64.dll" />
-        <file src="ProductionBreakpoints_x86.dll" target="lib\net45\ProductionBreakpoints_x86.dll" />
-        <file src="SnapshotHolder_x64.exe" target="lib\net45\SnapshotHolder_x64.exe" />
-        <file src="SnapshotHolder_x86.exe" target="lib\net45\SnapshotHolder_x86.exe" />
+        <file src="SnapshotCollectorFiles\MinidumpUploader.exe" target="lib\net45\SnapshotCollectorFiles\MinidumpUploader.exe" />
+        <file src="SnapshotCollectorFiles\MinidumpUploader.exe.config" target="lib\net45\SnapshotCollectorFiles\MinidumpUploader.exe.config" />
+        <file src="SnapshotCollectorFiles\ProductionBreakpoints_x64.dll" target="lib\net45\SnapshotCollectorFiles\ProductionBreakpoints_x64.dll" />
+        <file src="SnapshotCollectorFiles\ProductionBreakpoints_x86.dll" target="lib\net45\SnapshotCollectorFiles\ProductionBreakpoints_x86.dll" />
+        <file src="SnapshotCollectorFiles\SnapshotHolder_x64.exe" target="lib\net45\SnapshotCollectorFiles\SnapshotHolder_x64.exe" />
+        <file src="SnapshotCollectorFiles\SnapshotHolder_x86.exe" target="lib\net45\SnapshotCollectorFiles\SnapshotHolder_x86.exe" />
         <file src="Microsoft.WindowsAPICodePack.dll" target="lib\net45\Microsoft.WindowsAPICodePack.dll" />
         <file src="Microsoft.WindowsAPICodePack.Shell.dll" target="lib\net45\Microsoft.WindowsAPICodePack.Shell.dll" />
         <file src="Microsoft.WindowsAPICodePack.ShellExtensions.dll" target="lib\net45\Microsoft.WindowsAPICodePack.ShellExtensions.dll" />
