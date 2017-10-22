@@ -350,12 +350,7 @@ namespace Popcorn.Models.Movie
                     {
                         var message = new CustomSubtitleMessage();
                         await Messenger.Default.SendAsync(message);
-                        if (message.Error || string.IsNullOrEmpty(message.FileName))
-                        {
-                            _selectedSubtitle = AvailableSubtitles.FirstOrDefault(a => a.Sub.SubtitleId == "none");
-                            RaisePropertyChanged();
-                        }
-                        else
+                        if (!message.Error && !string.IsNullOrEmpty(message.FileName))
                         {
                             SelectedSubtitle.FilePath = message.FileName;
                         }
