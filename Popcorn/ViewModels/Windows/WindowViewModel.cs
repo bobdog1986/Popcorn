@@ -185,7 +185,8 @@ namespace Popcorn.ViewModels.Windows
         /// <param name="cacheService">Instance of cache service</param>
         /// <param name="manager">The notification manager</param>
         public WindowViewModel(IApplicationService applicationService, IUserService userService,
-            ISubtitlesService subtitlesService, ITraktService traktService, IPopcornHubService popcornHubService, IChromecastService chromecastService,
+            ISubtitlesService subtitlesService, ITraktService traktService, IPopcornHubService popcornHubService,
+            IChromecastService chromecastService,
             ICacheService cacheService, NotificationMessageManager manager)
         {
             _chromecastService = chromecastService;
@@ -764,7 +765,8 @@ namespace Popcorn.ViewModels.Windows
                         Messenger.Default.Send(new DropFileMessage(DropFileMessage.DropFileEvent.Leave));
                         Messenger.Default.Send(
                             new UnhandledExceptionMessage(
-                                new NoDataInDroppedFileException(LocalizationProviderHelper.GetLocalizedValue<string>("NoMediaInDroppedTorrent"))));
+                                new NoDataInDroppedFileException(
+                                    LocalizationProviderHelper.GetLocalizedValue<string>("NoMediaInDroppedTorrent"))));
                     }
                 }
                 catch (Exception)
@@ -772,7 +774,8 @@ namespace Popcorn.ViewModels.Windows
                     Messenger.Default.Send(new DropFileMessage(DropFileMessage.DropFileEvent.Leave));
                     Messenger.Default.Send(
                         new UnhandledExceptionMessage(
-                            new PopcornException(LocalizationProviderHelper.GetLocalizedValue<string>("DroppedFileIssue"))));
+                            new PopcornException(
+                                LocalizationProviderHelper.GetLocalizedValue<string>("DroppedFileIssue"))));
                 }
             });
 
@@ -854,17 +857,12 @@ namespace Popcorn.ViewModels.Windows
                         var handlerPath = $@"{
                                 Directory.GetParent(new Uri(Assembly.GetExecutingAssembly().CodeBase)
                                     .AbsolutePath)
-                            }\Popcorn.Handler";
-                        if (File.Exists(handlerPath))
-                        {
-                            File.Move(handlerPath, handlerPath + ".exe");
-                        }
-
+                            }\Popcorn.Handler.exe";
                         var process = new Process();
                         var startInfo =
                             new ProcessStartInfo
                             {
-                                FileName = handlerPath + ".exe",
+                                FileName = handlerPath,
                                 Arguments = $"{arguments}",
                                 Verb = "runas"
                             };
@@ -997,7 +995,6 @@ namespace Popcorn.ViewModels.Windows
                         .Accent("#E82C0C")
                         .Background("#333")
                         .HasBadge("Error")
-                        .HasMessage(LocalizationProviderHelper.GetLocalizedValue<string>("EmbarrassingError"))
                         .HasMessage(
                             LocalizationProviderHelper.GetLocalizedValue<string>("ConnectionErrorDescriptionPopup"))
                         .Dismiss().WithButton(LocalizationProviderHelper.GetLocalizedValue<string>("Ignore"),
@@ -1023,6 +1020,17 @@ namespace Popcorn.ViewModels.Windows
                         .HasBadge("Warning")
                         .HasMessage(exception.Message)
                         .Dismiss().WithButton(LocalizationProviderHelper.GetLocalizedValue<string>("Dismiss"),
+                            button => { })
+                        .Queue();
+                }
+                else if (exception is PopcornException)
+                {
+                    _manager.CreateMessage()
+                        .Accent("#E82C0C")
+                        .Background("#333")
+                        .HasBadge("Error")
+                        .HasMessage(exception.Message)
+                        .Dismiss().WithButton(LocalizationProviderHelper.GetLocalizedValue<string>("Ignore"),
                             button => { })
                         .Queue();
                 }

@@ -896,7 +896,9 @@
     <EmbeddedResource Include="Markdown\About.md" />
     <EmbeddedResource Include="Markdown\Help.md" />
     <EmbeddedResource Include="Markdown\Welcome.md" />
-    <None Include="ApplicationInsights.config" />
+    <None Include="ApplicationInsights.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -1008,20 +1010,25 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>if not exist "$(TargetDir)edge" xcopy /s /i "$(SolutionDir)packages\Edge.js.8.2.1\content\edge\*.*" "$(TargetDir)edge"
+    <PreBuildEvent>
 if not exist "$(TargetDir)None.srt" xcopy /s /i "$(SolutionDir)Popcorn\Resources\Subtitles\*.*" "$(TargetDir)"
 if not exist "$(TargetDir)WPFToolkit.dll" xcopy /s /i "$(SolutionDir)packages\WPFToolkit.3.5.50211.1\lib\*.*" "$(TargetDir)"
 </PreBuildEvent>
-    <PostBuildEvent>if not exist "$(TargetDir)libvlc" xcopy /s /i "$(SolutionDir)packages\VlcLibs.2.2.6.1\tools\net45\libvlc\*.*" "$(TargetDir)libvlc"
+    <PostBuildEvent>
+    if not exist "$(TargetDir)libvlc" xcopy /s /i "$(SolutionDir)packages\VlcLibs.2.2.6.1\tools\net45\libvlc\*.*" "$(TargetDir)libvlc"
+if not exist "$(TargetDir)MinidumpUploader.exe" xcopy /s /i "$(TargetDir)SnapshotCollectorFiles\MinidumpUploader.exe" "$(TargetDir)"
+if not exist "$(TargetDir)MinidumpUploader.exe.config" xcopy /s /i "$(TargetDir)SnapshotCollectorFiles\MinidumpUploader.exe.config" "$(TargetDir)"
+if not exist "$(TargetDir)ProductionBreakpoints_x64.dll" xcopy /s /i "$(TargetDir)SnapshotCollectorFiles\ProductionBreakpoints_x64.dll" "$(TargetDir)"
+if not exist "$(TargetDir)ProductionBreakpoints_x86.dll" xcopy /s /i "$(TargetDir)SnapshotCollectorFiles\ProductionBreakpoints_x86.dll" "$(TargetDir)"
+if not exist "$(TargetDir)SnapshotHolder_x64.exe" xcopy /s /i "$(TargetDir)SnapshotCollectorFiles\SnapshotHolder_x64.exe" "$(TargetDir)"
+if not exist "$(TargetDir)SnapshotHolder_x86.exe" xcopy /s /i "$(TargetDir)SnapshotCollectorFiles\SnapshotHolder_x86.exe" "$(TargetDir)"
+if not exist "$(TargetDir)ltnet.pdb" "$(SolutionDir)packages\libtorrent-net.3.1.0\lib\net45\ltnet.pdb" "$(TargetDir)"
 xcopy /s /y "$(SolutionDir)packages\libtorrent-net.3.1.0\tools\*.*" "$(TargetDir)"
 xcopy /s /y "$(SolutionDir)packages\Microsoft.VC120.CRT.JetBrains.12.0.21005.2\DotFiles\*.*" "$(TargetDir)"
   </PostBuildEvent>
   </PropertyGroup>
   <Target Name="CefSharp" AfterTargets="CefSharpCopyLibs86">
     <Move SourceFiles="$(TargetDir)CefSharp.BrowserSubprocess.exe" DestinationFiles="$(TargetDir)CefSharp.BrowserSubprocess" />
-  </Target>
-  <Target Name="PopcornHandler" BeforeTargets="AfterBuild">
-    <Move SourceFiles="$(TargetDir)Popcorn.Handler.exe" DestinationFiles="$(TargetDir)Popcorn.Handler" />
   </Target>
   <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release'">
     <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">

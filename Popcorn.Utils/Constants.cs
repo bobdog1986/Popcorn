@@ -24,12 +24,7 @@ namespace Popcorn.Utils
         /// Url used to start a local OWIN server
         /// </summary>
         public const string ServerUrl = "http://*:9900/";
-
-        /// <summary>
-        /// Application Insights key
-        /// </summary>
-        public const string AiKey = "647b7610-bfc7-4b78-962d-822f7e59eda3";
-
+        
         /// <summary>
         /// Open Subtitles User Agent
         /// </summary>

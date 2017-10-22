@@ -61,12 +61,6 @@ namespace Popcorn
         static App()
         {
             WatchStart = Stopwatch.StartNew();
-            var config = new LoggingConfiguration();
-            var target =
-                new ApplicationInsightsTarget {InstrumentationKey = Constants.AiKey};
-            var rule = new LoggingRule("*", LogLevel.Trace, target);
-            config.LoggingRules.Add(rule);
-            LogManager.Configuration = config;
             Logger.Info(
                 "Popcorn starting...");
             DispatcherHelper.Initialize();
@@ -76,18 +70,69 @@ namespace Popcorn
             try
             {
                 SquirrelAwareApp.HandleEvents(
-                    onFirstRun: () =>
-                    {
-                        // TODO: Must complete welcome.md page before activate this feature
-                        //_firstRun = true;
-                    });
+                    onInitialInstall: OnInitialInstall,
+                    onAppUpdate: OnAppUpdate,
+                    onAppUninstall: OnAppUninstall,
+                    onFirstRun: OnFirstRun);
             }
             catch (Exception ex)
             {
                 Logger.Error(ex);
             }
         }
-     
+
+        private static void OnFirstRun()
+        {
+            Logger.Info("Triggered OnFirstRun...");
+            // TODO: Must complete welcome.md page before activate this feature
+            //_firstRun = true;
+        }
+
+        private static void OnAppUninstall(Version version)
+        {
+            Logger.Info("Triggered OnAppUninstall...");
+
+            using (var manager = new UpdateManager(Constants.GithubRepository))
+            {
+                manager.RemoveShortcutsForExecutable("Popcorn.exe", ShortcutLocation.Desktop);
+                manager.RemoveShortcutsForExecutable("Popcorn.exe", ShortcutLocation.StartMenu);
+                manager.RemoveShortcutsForExecutable("Popcorn.exe", ShortcutLocation.AppRoot);
+
+                manager.RemoveUninstallerRegistryEntry();
+            }
+        }
+
+        private static void OnAppUpdate(Version version)
+        {
+            Logger.Info("Triggered OnAppUpdate...");
+
+            using (var manager = new UpdateManager(Constants.GithubRepository))
+            {
+                manager.CreateShortcutsForExecutable("Popcorn.exe", ShortcutLocation.Desktop, true);
+                manager.CreateShortcutsForExecutable("Popcorn.exe", ShortcutLocation.StartMenu, true);
+                manager.CreateShortcutsForExecutable("Popcorn.exe", ShortcutLocation.AppRoot, true);
+
+                manager.RemoveUninstallerRegistryEntry();
+                manager.CreateUninstallerRegistryEntry();
+            }
+        }
+
+        private static void OnInitialInstall(Version version)
+        {
+            Logger.Info("Triggered OnInitialInstall...");
+
+            using (var manager = new UpdateManager(Constants.GithubRepository))
+            {
+                manager.CreateShortcutForThisExe();
+
+                manager.CreateShortcutsForExecutable("Popcorn.exe", ShortcutLocation.Desktop, false);
+                manager.CreateShortcutsForExecutable("Popcorn.exe", ShortcutLocation.StartMenu, false);
+                manager.CreateShortcutsForExecutable("Popcorn.exe", ShortcutLocation.AppRoot, false);
+
+                manager.CreateUninstallerRegistryEntry();
+            }
+        }
+
         /// <summary>
         /// Initializes a new instance of the App class.
         /// </summary>

@@ -22,6 +22,7 @@ using Popcorn.ViewModels.Windows.Settings;
 using System.Runtime.CompilerServices;
 using System.ComponentModel;
 using GalaSoft.MvvmLight.CommandWpf;
+using Popcorn.Vlc.Wpf;
 
 namespace Popcorn.UserControls.Player
 {
@@ -583,7 +584,7 @@ namespace Popcorn.UserControls.Player
         private void MediaPlayerEndReached(object sender, EventArgs e)
             => DispatcherHelper.CheckBeginInvokeOnUI(() =>
             {
-                if (Player.Position < 0.99) return;
+                if (Player.Position < 0.95) return;
 
                 var vm = DataContext as MediaPlayerViewModel;
                 if (vm == null)
