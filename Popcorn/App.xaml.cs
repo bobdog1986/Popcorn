@@ -73,11 +73,18 @@ namespace Popcorn
         /// </summary>
         static App()
         {
-            // Dirty fix for https://github.com/Microsoft/ApplicationInsights-dotnet/issues/638
-            foreach (var file in SnapshotCollectorFiles)
+            try
             {
-                File.SetLastWriteTime($@"{Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName}\SnapshotCollectorFiles\{file}", DateTime.MaxValue);
+                // Dirty fix for https://github.com/Microsoft/ApplicationInsights-dotnet/issues/638
+                foreach (var file in SnapshotCollectorFiles)
+                {
+                    File.SetLastWriteTimeUtc(
+                        $@"{
+                                Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName
+                            }\SnapshotCollectorFiles\{file}", DateTime.MaxValue);
+                }
             }
+            catch (Exception) { }
 
             WatchStart = Stopwatch.StartNew();
             Logger.Info(
@@ -170,11 +177,7 @@ namespace Popcorn
         {
             base.OnStartup(e);
             AsyncSynchronizationContext.Register();
-            var settings = new CefSettings
-            {
-                BrowserSubprocessPath = $@"{Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName}\CefSharp.BrowserSubprocess"
-            };
-            Cef.Initialize(settings);
+            Cef.Initialize();
         }
 
         /// <summary>

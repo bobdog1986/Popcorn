@@ -1022,9 +1022,6 @@ xcopy /s /y "$(SolutionDir)packages\libtorrent-net.3.1.0\tools\*.*" "$(TargetDir
 xcopy /s /y "$(SolutionDir)packages\Microsoft.VC120.CRT.JetBrains.12.0.21005.2\DotFiles\*.*" "$(TargetDir)"
   </PostBuildEvent>
   </PropertyGroup>
-  <Target Name="CefSharp" AfterTargets="CefSharpCopyLibs86">
-    <Move SourceFiles="$(TargetDir)CefSharp.BrowserSubprocess.exe" DestinationFiles="$(TargetDir)CefSharp.BrowserSubprocess" />
-  </Target>
   <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release'">
     <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
       <Output TaskParameter="Assemblies" ItemName="Popcorn" />
