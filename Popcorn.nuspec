@@ -753,5 +753,6 @@
         <file src="Popcorn.Markdown.pdb" target="lib\net45\Popcorn.Markdown.pdb" />
         <file src="Popcorn.YTVideoProvider.pdb" target="lib\net45\Popcorn.YTVideoProvider.pdb" />
         <file src="Popcorn.OSDB.pdb" target="lib\net45\Popcorn.OSDB.pdb" />
+        <file src="ApplicationInsights.config" target="lib\net45\ApplicationInsights.config" />
     </files>
 </package>
