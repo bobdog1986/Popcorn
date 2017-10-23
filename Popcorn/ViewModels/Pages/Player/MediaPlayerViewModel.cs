@@ -12,6 +12,9 @@ using Popcorn.Models.Subtitles;
 using System.Windows.Input;
 using Popcorn.Helpers;
 using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -487,6 +490,19 @@ namespace Popcorn.ViewModels.Pages.Player
             }
         }
 
+        private string GetLocalIpAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip.ToString();
+                }
+            }
+            throw new Exception("Local IP Address Not Found!");
+        }
+
         private async Task LoadCastAsync(Action closeCastDialog)
         {
             Uri uriResult;
@@ -494,15 +510,21 @@ namespace Popcorn.ViewModels.Pages.Player
                            && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
 
             CanSeek = isRemote;
+            var videoPath = MediaPath.Split(new[] { "Popcorn\\" }, StringSplitOptions.RemoveEmptyEntries).Last()?
+                .Replace("\\", "/");
+            var mediaPath = $"http://{GetLocalIpAddress()}:9900/{videoPath}";
+            var subtitle = SubtitleFilePath.Split(new[] { "Popcorn\\" }, StringSplitOptions.RemoveEmptyEntries).Last()?
+                .Replace("\\", "/");
+            var subtitlePath = $"http://{GetLocalIpAddress()}:9900/{subtitle}";
+
             var media = new Media
             {
-                StreamType = isRemote ? StreamType.Live : StreamType.Buffered,
-                ContentId = MediaPath,
+                ContentId = isRemote ? MediaPath : mediaPath,
+                ContentType = "video/mp4",
                 Metadata = new MovieMetadata
                 {
                     Title = MediaName,
-                    MetadataType = MetadataType.Movie,
-                    SubTitle = SubtitleFilePath
+                    SubTitle = subtitlePath
                 }
             };
 
