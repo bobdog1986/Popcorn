@@ -747,5 +747,8 @@
         <file src="Popcorn.YTVideoProvider.pdb" target="lib\net45\Popcorn.YTVideoProvider.pdb" />
         <file src="Popcorn.OSDB.pdb" target="lib\net45\Popcorn.OSDB.pdb" />
         <file src="ApplicationInsights.config" target="lib\net45\ApplicationInsights.config" />
+        <file src="Microsoft.Owin.Cors.dll" target="lib\net45\Microsoft.Owin.Cors.dll" />
+        <file src="System.Web.Http.Cors.dll" target="lib\net45\System.Web.Http.Cors.dll" />
+        <file src="System.Web.Cors.dll" target="lib\net45\System.Web.Cors.dll" />
     </files>
 </package>

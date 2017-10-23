@@ -37,6 +37,11 @@ namespace Popcorn.Services.Chromecast
             await InvokeAsync<TChannel>(condition ? action : otherwise);
         }
 
+        public async Task<IEnumerable<MediaStatus>> GetStatus()
+        {
+            return await Sender.GetChannel<IMediaChannel>().GetStatusAsync();
+        }
+
         public bool IsStopped
         {
             get

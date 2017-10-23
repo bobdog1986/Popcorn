@@ -16,6 +16,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
@@ -111,8 +113,6 @@ namespace Popcorn.ViewModels.Pages.Player
         private readonly DispatcherTimer _castPlayerTimer;
 
         public event EventHandler<TimeChangedEventArgs> CastPlayerTimeChanged;
-
-        private CancellationTokenSource _castPlayerCancellationTokenSource;
 
         private double _playerTime;
 
@@ -266,12 +266,14 @@ namespace Popcorn.ViewModels.Pages.Player
             handler?.Invoke(this, e);
         }
 
-        private double _castTimeInSeconds;
-
-        private void OnCastPlayerTimerChanged(object sender, EventArgs e)
+        private async void OnCastPlayerTimerChanged(object sender, EventArgs e)
         {
-            _castTimeInSeconds += 1d;
-            OnCastPlayerTimeChanged(new TimeChangedEventArgs(_castTimeInSeconds));
+            var statuses = await _chromecastService.GetStatus();
+            if (statuses.Any())
+            {
+                var status = statuses.FirstOrDefault();
+                OnCastPlayerTimeChanged(new TimeChangedEventArgs(status.CurrentTime));
+            }
         }
 
         /// <summary>
@@ -426,7 +428,7 @@ namespace Popcorn.ViewModels.Pages.Player
             {
                 try
                 {
-                    if (_chromecastService.PlayerState != null && _chromecastService.PlayerState != "IDLE")
+                    if (!_chromecastService.IsStopped)
                     {
                         await StopCastPlayer();
                     }
@@ -436,7 +438,6 @@ namespace Popcorn.ViewModels.Pages.Player
                         OnPausedMedia(new EventArgs());
                         var message =
                             new CastMediaMessage {CastCancellationTokenSource = new CancellationTokenSource()};
-                        _castPlayerCancellationTokenSource = message.CastCancellationTokenSource;
                         message.StartCast = async chromecastReseiver =>
                         {
                             await LoadCastAsync(message.CloseCastDialog);
@@ -513,9 +514,15 @@ namespace Popcorn.ViewModels.Pages.Player
             var videoPath = MediaPath.Split(new[] { "Popcorn\\" }, StringSplitOptions.RemoveEmptyEntries).Last()?
                 .Replace("\\", "/");
             var mediaPath = $"http://{GetLocalIpAddress()}:9900/{videoPath}";
-            var subtitle = SubtitleFilePath.Split(new[] { "Popcorn\\" }, StringSplitOptions.RemoveEmptyEntries).Last()?
-                .Replace("\\", "/");
-            var subtitlePath = $"http://{GetLocalIpAddress()}:9900/{subtitle}";
+
+            var subtitle = string.Empty;
+            if (!string.IsNullOrEmpty(SubtitleFilePath))
+            {
+                subtitle = SubtitleFilePath.Split(new[] {"Popcorn\\"}, StringSplitOptions.RemoveEmptyEntries).Last()?
+                    .Replace("\\", "/");
+                subtitle = $"http://{GetLocalIpAddress()}:9900/{subtitle}";
+                Convert(subtitle);
+            }
 
             var media = new Media
             {
@@ -524,13 +531,14 @@ namespace Popcorn.ViewModels.Pages.Player
                 Metadata = new MovieMetadata
                 {
                     Title = MediaName,
-                    SubTitle = subtitlePath
+                    SubTitle = !string.IsNullOrEmpty(subtitle) ? subtitle : null
                 }
             };
 
             try
             {
                 await _chromecastService.LoadAsync(media);
+                OnCastStarted(new EventArgs());
             }
             catch (Exception ex)
             {
@@ -542,6 +550,46 @@ namespace Popcorn.ViewModels.Pages.Player
                             LocalizationProviderHelper.GetLocalizedValue<string>("CastFailed"))));
                 OnCastStopped(new EventArgs());
                 await StopCastPlayer();
+            }
+        }
+
+        private void Convert(string sFilePath)
+        {
+            try
+            {
+                var path = Path.ChangeExtension(sFilePath, "vtt");
+                using (var strReader = new StreamReader(sFilePath, Encoding.GetEncoding("iso-8859-1")))
+                using (var strWriter = new StreamWriter(File.Create(path), Encoding.GetEncoding("iso-8859-1")))
+                {
+                    var rgxDialogNumber = new Regex(@"^\d+$");
+                    var rgxTimeFrame = new Regex(@"(\d\d:\d\d:\d\d,\d\d\d) --> (\d\d:\d\d:\d\d,\d\d\d)");
+
+                    // Write starting line for the WebVTT file
+                    strWriter.WriteLine("WEBVTT");
+                    strWriter.WriteLine("");
+
+                    // Handle each line of the SRT file
+                    string sLine;
+                    while ((sLine = strReader.ReadLine()) != null)
+                    {
+                        // We only care about lines that aren't just an integer (aka ignore dialog id number lines)
+                        if (rgxDialogNumber.IsMatch(sLine))
+                            continue;
+
+                        // If the line is a time frame line, reformat and output the time frame
+                        Match match = rgxTimeFrame.Match(sLine);
+                        if (match.Success)
+                        {
+                            sLine = sLine.Replace(',', '.'); // Simply replace the comma in the time with a period
+                        }
+
+                        strWriter.WriteLine(sLine); // Write out the line
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
             }
         }
 

@@ -22,5 +22,6 @@ namespace Popcorn.Services.Chromecast
         Task SetVolumeAsync(float volume);
         Task SetIsMutedAsync();
         string PlayerState { get; }
+        Task<IEnumerable<MediaStatus>> GetStatus();
     }
 }

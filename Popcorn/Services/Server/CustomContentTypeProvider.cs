@@ -11,6 +11,7 @@ namespace Popcorn.Services.Server
     {
         public CustomContentTypeProvider()
         {
+            Mappings.Add(".vtt", "text/vtt");
             Mappings.Add(".srt", "text/plain");
             Mappings.Add(".torrent", "application/x-bittorrent");
         }

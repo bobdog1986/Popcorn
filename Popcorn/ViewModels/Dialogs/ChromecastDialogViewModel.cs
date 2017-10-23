@@ -90,12 +90,17 @@ namespace Popcorn.ViewModels.Dialogs
                     }
                     else
                     {
-                        throw new PopcornException($"Could not cast to device {device.FriendlyName}");
+                        LoadingChromecasts = false;
+                        ConnectedToChromecast = false;
+                        Messenger.Default.Send(
+                            new UnhandledExceptionMessage(
+                                new PopcornException($"Could not cast to device {device.FriendlyName}")));
                     }
                 });
             }
             catch (Exception ex)
             {
+                ConnectedToChromecast = false;
                 LoadingChromecasts = false;
                 AnyChromecast = false;
                 Logger.Error(ex);

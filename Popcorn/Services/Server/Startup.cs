@@ -5,6 +5,7 @@ using System.Net.Http.Formatting;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.Cors;
 using GalaSoft.MvvmLight.Ioc;
 using Microsoft.Owin.FileSystems;
 using Microsoft.Owin.Hosting;
@@ -21,6 +22,7 @@ namespace Popcorn.Services.Server
     {
         public void Configuration(IAppBuilder appBuilder)
         {
+            appBuilder.UseCors(Microsoft.Owin.Cors.CorsOptions.AllowAll);
             var config = new HttpConfiguration();
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
