@@ -8,7 +8,6 @@ using Popcorn.Services.Associations;
 using Popcorn.Services.Cache;
 using Popcorn.Services.Chromecast;
 using Popcorn.Services.Genres;
-using Popcorn.Services.Hub;
 using Popcorn.Services.Movies.Movie;
 using Popcorn.Services.Movies.Trailer;
 using Popcorn.Services.Shows.Show;
@@ -49,7 +48,6 @@ namespace Popcorn.ViewModels
             SimpleIoc.Default.Register<ISubtitlesService, SubtitlesService>();
             SimpleIoc.Default.Register<IGenreService, GenreService>();
             SimpleIoc.Default.Register<ITraktService, TraktService>();
-            SimpleIoc.Default.Register<IPopcornHubService, PopcornHubService>();
             SimpleIoc.Default.Register<ICacheService, CacheService>();
             SimpleIoc.Default.Register<IFileAssociationService, FileAssociationService>();
             SimpleIoc.Default.Register<IDeviceLocator, DeviceLocator>();

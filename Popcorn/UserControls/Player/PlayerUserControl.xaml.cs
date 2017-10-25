@@ -22,7 +22,9 @@ using Popcorn.ViewModels.Windows.Settings;
 using System.Runtime.CompilerServices;
 using System.ComponentModel;
 using GalaSoft.MvvmLight.CommandWpf;
+using Popcorn.Vlc.Interop.MediaPlayer;
 using Popcorn.Vlc.Wpf;
+using MouseButton = System.Windows.Input.MouseButton;
 
 namespace Popcorn.UserControls.Player
 {
@@ -172,6 +174,7 @@ namespace Popcorn.UserControls.Player
                 var vm = DataContext as MediaPlayerViewModel;
                 if (vm != null)
                 {
+                    vm.MediaLength = Player.Length.TotalMilliseconds / 1000d;
                     vm.PlayerTime = Player.Time.TotalMilliseconds / 1000d;
                     if (vm.IsCasting)
                     {
@@ -582,9 +585,10 @@ namespace Popcorn.UserControls.Player
         /// <param name="sender">Sender object</param>
         /// <param name="e">EventArgs</param>
         private void MediaPlayerEndReached(object sender, EventArgs e)
-            => DispatcherHelper.CheckBeginInvokeOnUI(() =>
+            => DispatcherHelper.CheckBeginInvokeOnUI(async () =>
             {
-                if (Player.Position < 0.95) return;
+                if (Player.Position < 0.95)
+                    return;
 
                 var vm = DataContext as MediaPlayerViewModel;
                 if (vm == null)
@@ -606,7 +610,6 @@ namespace Popcorn.UserControls.Player
                 }
 
                 await _playingSemaphore.WaitAsync();
-                if (Player.VlcMediaPlayer.IsPlaying) return;
 
                 var vm = DataContext as MediaPlayerViewModel;
                 if (vm != null && vm.IsCasting && vm.IsCastPaused)
@@ -643,7 +646,6 @@ namespace Popcorn.UserControls.Player
                 }
 
                 await _pausingSemaphore.WaitAsync();
-                if (!Player.VlcMediaPlayer.IsPlaying) return;
 
                 var vm = DataContext as MediaPlayerViewModel;
                 if (vm != null && vm.IsCasting && vm.IsCastPlaying)

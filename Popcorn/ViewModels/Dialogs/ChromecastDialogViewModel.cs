@@ -85,7 +85,6 @@ namespace Popcorn.ViewModels.Dialogs
                     {
                         ConnectingToChromecast = false;
                         ConnectedToChromecast = true;
-                        CloseCommand.Execute(null);
                         await _message.StartCast.Invoke(device);
                     }
                     else

@@ -188,6 +188,11 @@ namespace Popcorn.ViewModels.Pages.Player
         private readonly IEnumerable<Subtitle> _subtitles;
 
         /// <summary>
+        /// The playing progress
+        /// </summary>
+        private readonly IProgress<double> _playingProgress;
+
+        /// <summary>
         /// Initializes a new instance of the MediaPlayerViewModel class.
         /// </summary>
         /// <param name="chromecastService">The Chromecast service</param>
@@ -198,6 +203,7 @@ namespace Popcorn.ViewModels.Pages.Player
         /// <param name="type">Media type</param>
         /// <param name="mediaStoppedAction">Media action to execute when media has been stopped</param>
         /// <param name="mediaEndedAction">Media action to execute when media has ended</param>
+        /// <param name="playingProgress">Media playing progress</param>
         /// <param name="bufferProgress">The buffer progress</param>
         /// <param name="bandwidthRate">THe bandwidth rate</param>
         /// <param name="currentSubtitle">Subtitle</param>
@@ -205,7 +211,7 @@ namespace Popcorn.ViewModels.Pages.Player
         public MediaPlayerViewModel(IChromecastService chromecastService, ISubtitlesService subtitlesService, ICacheService cacheService,
             string mediaPath,
             string mediaName, MediaType type, Action mediaStoppedAction,
-            Action mediaEndedAction, Progress<double> bufferProgress = null,
+            Action mediaEndedAction, IProgress<double> playingProgress = null, Progress<double> bufferProgress = null,
             Progress<BandwidthRate> bandwidthRate = null, Subtitle currentSubtitle = null,
             IEnumerable<Subtitle> subtitles = null)
         {
@@ -228,6 +234,7 @@ namespace Popcorn.ViewModels.Pages.Player
             _subtitles = subtitles;
             _castPlayerTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
             _castPlayerTimer.Tick += OnCastPlayerTimerChanged;
+            _playingProgress = playingProgress;
 
             if (currentSubtitle != null && currentSubtitle.Sub.SubtitleId != "none")
             {
@@ -515,13 +522,13 @@ namespace Popcorn.ViewModels.Pages.Player
                 .Replace("\\", "/");
             var mediaPath = $"http://{GetLocalIpAddress()}:9900/{videoPath}";
 
-            var subtitle = string.Empty;
-            if (!string.IsNullOrEmpty(SubtitleFilePath))
+            var subtitle = SubtitleFilePath;
+            if (!string.IsNullOrEmpty(subtitle))
             {
-                subtitle = SubtitleFilePath.Split(new[] {"Popcorn\\"}, StringSplitOptions.RemoveEmptyEntries).Last()?
+                subtitle = _subtitlesService.ConvertSrtToVtt(subtitle);
+                subtitle = subtitle.Split(new[] {"Popcorn\\"}, StringSplitOptions.RemoveEmptyEntries).Last()?
                     .Replace("\\", "/");
                 subtitle = $"http://{GetLocalIpAddress()}:9900/{subtitle}";
-                Convert(subtitle);
             }
 
             var media = new Media
@@ -538,6 +545,7 @@ namespace Popcorn.ViewModels.Pages.Player
             try
             {
                 await _chromecastService.LoadAsync(media);
+                closeCastDialog.Invoke();
                 OnCastStarted(new EventArgs());
             }
             catch (Exception ex)
@@ -552,47 +560,7 @@ namespace Popcorn.ViewModels.Pages.Player
                 await StopCastPlayer();
             }
         }
-
-        private void Convert(string sFilePath)
-        {
-            try
-            {
-                var path = Path.ChangeExtension(sFilePath, "vtt");
-                using (var strReader = new StreamReader(sFilePath, Encoding.GetEncoding("iso-8859-1")))
-                using (var strWriter = new StreamWriter(File.Create(path), Encoding.GetEncoding("iso-8859-1")))
-                {
-                    var rgxDialogNumber = new Regex(@"^\d+$");
-                    var rgxTimeFrame = new Regex(@"(\d\d:\d\d:\d\d,\d\d\d) --> (\d\d:\d\d:\d\d,\d\d\d)");
-
-                    // Write starting line for the WebVTT file
-                    strWriter.WriteLine("WEBVTT");
-                    strWriter.WriteLine("");
-
-                    // Handle each line of the SRT file
-                    string sLine;
-                    while ((sLine = strReader.ReadLine()) != null)
-                    {
-                        // We only care about lines that aren't just an integer (aka ignore dialog id number lines)
-                        if (rgxDialogNumber.IsMatch(sLine))
-                            continue;
-
-                        // If the line is a time frame line, reformat and output the time frame
-                        Match match = rgxTimeFrame.Match(sLine);
-                        if (match.Success)
-                        {
-                            sLine = sLine.Replace(',', '.'); // Simply replace the comma in the time with a period
-                        }
-
-                        strWriter.WriteLine(sLine); // Write out the line
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
-        }
-
+        
         public ICommand PlayCastCommand
         {
             get { return _playCastCommand; }
@@ -635,10 +603,16 @@ namespace Popcorn.ViewModels.Pages.Player
             set { Set(ref _canSeek, value); }
         }
 
+        public double MediaLength { get; set; }
+
         public double PlayerTime
         {
             get { return _playerTime; }
-            set { Set(ref _playerTime, value); }
+            set
+            {
+                Set(ref _playerTime, value);
+                _playingProgress?.Report(value / MediaLength);
+            }
         }
 
         public IReceiver ChromecastReceiver

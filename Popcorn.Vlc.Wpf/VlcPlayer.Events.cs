@@ -7,6 +7,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using Popcorn.Vlc.Interop.Media;
+using Popcorn.Vlc.Interop.MediaPlayer;
+using MouseButton = System.Windows.Input.MouseButton;
 
 namespace Popcorn.Vlc.Wpf
 {
@@ -372,6 +374,11 @@ namespace Popcorn.Vlc.Wpf
         }
 
         #endregion Video callbacks
+
+        private void LogCallback(IntPtr data, int level, IntPtr ctx, IntPtr fmt, RuntimeArgumentHandle arg)
+        {
+            string formatStr = InteropHelper.PtrToString(fmt, 4);
+        }
 
         #region Audio callbacks
 

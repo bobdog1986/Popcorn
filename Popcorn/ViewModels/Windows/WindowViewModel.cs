@@ -31,7 +31,6 @@ using Popcorn.Messaging;
 using Popcorn.Services.Application;
 using Popcorn.Services.Cache;
 using Popcorn.Services.Chromecast;
-using Popcorn.Services.Hub;
 using Popcorn.Services.Server;
 using Popcorn.Services.User;
 using Popcorn.Utils;
@@ -137,12 +136,7 @@ namespace Popcorn.ViewModels.Windows
         /// The Trakt service
         /// </summary>
         private readonly ITraktService _traktService;
-
-        /// <summary>
-        /// The popcorn hub service
-        /// </summary>
-        private readonly IPopcornHubService _popcornHubService;
-
+        
         /// <summary>
         /// <see cref="MediaPlayer"/>
         /// </summary>
@@ -180,18 +174,15 @@ namespace Popcorn.ViewModels.Windows
         /// <param name="userService">Instance of movie history service</param>
         /// <param name="subtitlesService">Instance of subtitles service</param>
         /// <param name="traktService">Instance of Trakt service</param>
-        /// <param name="popcornHubService">Instance of Popcorn Hub service</param>
         /// <param name="chromecastService">Instance of Chromecast service</param>
         /// <param name="cacheService">Instance of cache service</param>
         /// <param name="manager">The notification manager</param>
         public WindowViewModel(IApplicationService applicationService, IUserService userService,
-            ISubtitlesService subtitlesService, ITraktService traktService, IPopcornHubService popcornHubService,
-            IChromecastService chromecastService,
+            ISubtitlesService subtitlesService, ITraktService traktService, IChromecastService chromecastService,
             ICacheService cacheService, NotificationMessageManager manager)
         {
             _chromecastService = chromecastService;
             _cacheService = cacheService;
-            _popcornHubService = popcornHubService;
             _traktService = traktService;
             _manager = manager;
             _subtitlesService = subtitlesService;
@@ -357,6 +348,7 @@ namespace Popcorn.ViewModels.Windows
                         {
                             Messenger.Default.Send(new StopPlayingEpisodeMessage());
                         },
+                        message.PlayingProgress,
                         message.BufferProgress,
                         message.BandwidthRate,
                         message.Episode.SelectedSubtitle,
@@ -393,6 +385,7 @@ namespace Popcorn.ViewModels.Windows
                         {
                             Messenger.Default.Send(new StopPlayMediaMessage());
                         },
+                        message.PlayingProgress,
                         message.BufferProgress,
                         message.BandwidthRate);
 
@@ -429,6 +422,7 @@ namespace Popcorn.ViewModels.Windows
                             Messenger.Default.Send(new ChangeSeenMovieMessage());
                             Messenger.Default.Send(new StopPlayingMovieMessage());
                         },
+                        message.PlayingProgress,
                         message.BufferProgress,
                         message.BandwidthRate,
                         message.Movie.SelectedSubtitle,
@@ -885,8 +879,6 @@ namespace Popcorn.ViewModels.Windows
                     {
                         _localServer = WebApp.Start<Startup>(Constants.ServerUrl);
                     }
-
-                    await _popcornHubService.Start();
                 }
                 catch (Exception ex)
                 {

@@ -707,9 +707,6 @@
         <file src="zh-Hans\Microsoft.Data.OData.resources.dll" target="lib\net45\zh-Hans\Microsoft.Data.OData.resources.dll" />
         <file src="zh-Hans\System.Spatial.resources.dll" target="lib\net45\zh-Hans\System.Spatial.resources.dll" />
         <file src="Microsoft.AspNetCore.Http.Features.dll" target="lib\net45\Microsoft.AspNetCore.Http.Features.dll" />
-        <file src="Microsoft.AspNetCore.SignalR.Client.Core.dll" target="lib\net45\Microsoft.AspNetCore.SignalR.Client.Core.dll" />
-        <file src="Microsoft.AspNetCore.SignalR.Client.dll" target="lib\net45\Microsoft.AspNetCore.SignalR.Client.dll" />
-        <file src="Microsoft.AspNetCore.SignalR.Common.dll" target="lib\net45\Microsoft.AspNetCore.SignalR.Common.dll" />
         <file src="Microsoft.AspNetCore.Sockets.Abstractions.dll" target="lib\net45\Microsoft.AspNetCore.Sockets.Abstractions.dll" />
         <file src="Microsoft.AspNetCore.Sockets.Client.Http.dll" target="lib\net45\Microsoft.AspNetCore.Sockets.Client.Http.dll" />
         <file src="Microsoft.AspNetCore.Sockets.Common.Http.dll" target="lib\net45\Microsoft.AspNetCore.Sockets.Common.Http.dll" />

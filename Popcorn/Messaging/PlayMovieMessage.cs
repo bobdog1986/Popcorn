@@ -26,16 +26,23 @@ namespace Popcorn.Messaging
         public readonly Progress<BandwidthRate> BandwidthRate;
 
         /// <summary>
+        /// The playing progress
+        /// </summary>
+        public readonly IProgress<double> PlayingProgress;
+
+        /// <summary>
         /// Initialize a new instance of PlayMovieMessage class
         /// </summary>
         /// <param name="movie">The movie</param>
         /// <param name="bufferProgress">The buffer progress</param>
         /// <param name="bandwidthRate">The bandwidth rate</param>
-        public PlayMovieMessage(MovieJson movie, Progress<double> bufferProgress, Progress<BandwidthRate> bandwidthRate)
+        /// <param name="playingProgress">The playing progress</param>
+        public PlayMovieMessage(MovieJson movie, Progress<double> bufferProgress, Progress<BandwidthRate> bandwidthRate, IProgress<double> playingProgress)
         {
             Movie = movie;
             BufferProgress = bufferProgress;
             BandwidthRate = bandwidthRate;
+            PlayingProgress = playingProgress;
         }
     }
 }
