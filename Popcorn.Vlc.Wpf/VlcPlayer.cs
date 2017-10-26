@@ -30,7 +30,6 @@ namespace Popcorn.Vlc.Wpf
         private VideoFormatCallback _formatCallback;
         private VideoCleanupCallback _cleanupCallback;
 
-        private LogCallback _logCallback;
         //private AudioPlayCallback _audioPlayCallback;
         //private AudioPauseCallback _audioPauseCallback;
         //private AudioResumeCallback _audioResumeCallback;
@@ -46,7 +45,6 @@ namespace Popcorn.Vlc.Wpf
         private GCHandle _formatCallbackHandle;
         private GCHandle _cleanupCallbackHandle;
 
-        private GCHandle _logCallbackHandle;
         //private GCHandle _audioPlayCallbackHandle;
         //private GCHandle _audioPauseCallbackHandle;
         //private GCHandle _audioResumeCallbackHandle;
@@ -267,7 +265,6 @@ namespace Popcorn.Vlc.Wpf
             _displayCallback = VideoDisplayCallback;
             _formatCallback = VideoFormatCallback;
             _cleanupCallback = VideoCleanupCallback;
-            _logCallback = LogCallback;
             //_audioSetupCallback = AudioFormatSetupCallback;
             //_audioCleanupCallback = AudioFormatCleanupCallback;
             //_audioPlayCallback = AudioPlayCallback;
@@ -282,7 +279,6 @@ namespace Popcorn.Vlc.Wpf
             _displayCallbackHandle = GCHandle.Alloc(_displayCallback);
             _formatCallbackHandle = GCHandle.Alloc(_formatCallback);
             _cleanupCallbackHandle = GCHandle.Alloc(_cleanupCallback);
-            _logCallbackHandle = GCHandle.Alloc(_logCallback);
             //_audioSetupCallbackHandle = GCHandle.Alloc(_audioSetupCallback);
             //_audioCleanupCallbackHandle = GCHandle.Alloc(_audioCleanupCallback);
             //_audioPlayCallbackHandle = GCHandle.Alloc(_audioPlayCallback);
@@ -362,7 +358,6 @@ namespace Popcorn.Vlc.Wpf
 
                 VlcMediaPlayer.SetVideoDecodeCallback(_lockCallback, _unlockCallback, _displayCallback, IntPtr.Zero);
                 VlcMediaPlayer.SetVideoFormatCallback(_formatCallback, _cleanupCallback);
-                VlcMediaPlayer.SetLogCallback(_logCallback);
                 //VlcMediaPlayer.SetAudioCallback(_audioPlayCallback, _audioPauseCallback, _audioResumeCallback, _audioFlushCallback, _audioDrainCallback);
                 //VlcMediaPlayer.SetAudioFormatCallback(_audioSetupCallback, _audioCleanupCallback);
                 //VlcMediaPlayer.SetAudioVolumeCallback(_audioSetVolumeCallback);
@@ -402,7 +397,6 @@ namespace Popcorn.Vlc.Wpf
             _displayCallbackHandle.Free();
             _formatCallbackHandle.Free();
             _cleanupCallbackHandle.Free();
-            _logCallbackHandle.Free();
             //_audioSetupCallbackHandle.Free();
             //_audioCleanupCallbackHandle.Free();
             //_audioPlayCallbackHandle.Free();

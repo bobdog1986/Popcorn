@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using Popcorn.Vlc.Interop;
@@ -108,8 +109,6 @@ namespace Popcorn.Vlc
         private static LibVlcFunction<GetVideoAdjustFloat> _getVideoAdjustFloatFunction;
         private static LibVlcFunction<SetVideoAdjustInt> _setVideoAdjustIntFunction;
         private static LibVlcFunction<SetVideoAdjustFloat> _setVideoAdjustFloatFunction;
-
-        private static LibVlcFunction<SetLog> _setLogFunction;
 
         private readonly LibVlcEventCallBack _onBackward;
         private readonly LibVlcEventCallBack _onBuffering;
@@ -341,7 +340,6 @@ namespace Popcorn.Vlc
                 _setVideoAdjustIntFunction = new LibVlcFunction<SetVideoAdjustInt>();
                 _getVideoAdjustFloatFunction = new LibVlcFunction<GetVideoAdjustFloat>();
                 _setVideoAdjustFloatFunction = new LibVlcFunction<SetVideoAdjustFloat>();
-                _setLogFunction = new LibVlcFunction<SetLog>();
 
                 IsLibLoaded = true;
             }
@@ -906,11 +904,6 @@ namespace Popcorn.Vlc
         public void SetAudioVolumeCallback(AudioSetVolumeCallback volumeCallback)
         {
             _setAudioVolumeCallbackFunction.Delegate(InstancePointer, volumeCallback);
-        }
-
-        public void SetLogCallback(LogCallback logCallback)
-        {
-            _setLogFunction.Delegate(InstancePointer, logCallback, IntPtr.Zero);
         }
 
         public bool SetSubtitleFile(String path)

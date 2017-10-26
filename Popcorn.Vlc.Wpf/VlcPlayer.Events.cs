@@ -213,8 +213,6 @@ namespace Popcorn.Vlc.Wpf
         {
             if (_disposing || _isStopping) return;
 
-            Debug.WriteLine(String.Format("StateChanged : {0}", e.Value.NewState));
-
             Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() =>
             {
                 if (StateChanged != null)
@@ -244,9 +242,6 @@ namespace Popcorn.Vlc.Wpf
                     if (Math.Abs(scale.Width - 1.0) + Math.Abs(scale.Height - 1.0) > 0.0000001)
                     {
                         _context.IsAspectRatioChecked = true;
-                        Debug.WriteLine(String.Format("Scale:{0}x{1}", scale.Width, scale.Height));
-                        Debug.WriteLine(String.Format("Resize Image to {0}x{1}", _context.DisplayWidth,
-                            _context.DisplayHeight));
                     }
                     else
                     {
@@ -333,8 +328,6 @@ namespace Popcorn.Vlc.Wpf
         private uint VideoFormatCallback(ref IntPtr opaque, ref uint chroma, ref uint width, ref uint height,
             ref uint pitches, ref uint lines)
         {
-            Debug.WriteLine(String.Format("Initialize Video Content : {0}x{1}", width, height));
-
             var videoFormatChangingArgs = new VideoFormatChangingEventArgs(width, height, ChromaType.RV32);
 
             if (VideoFormatChanging != null)
@@ -374,11 +367,6 @@ namespace Popcorn.Vlc.Wpf
         }
 
         #endregion Video callbacks
-
-        private void LogCallback(IntPtr data, int level, IntPtr ctx, IntPtr fmt, RuntimeArgumentHandle arg)
-        {
-            string formatStr = InteropHelper.PtrToString(fmt, 4);
-        }
 
         #region Audio callbacks
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Security;
 
 namespace Popcorn.Vlc.Interop.MediaPlayer
 {
@@ -58,14 +59,6 @@ namespace Popcorn.Vlc.Interop.MediaPlayer
         BottomRight
     }
 
-    public enum LogLevel
-    {
-        Debug,
-        Notice,
-        Warning,
-        Error
-    }
-
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate IntPtr VideoLockCallback(IntPtr opaque, ref IntPtr planes);
     
@@ -105,9 +98,6 @@ namespace Popcorn.Vlc.Interop.MediaPlayer
     
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void AudioSetVolumeCallback(IntPtr opaque, float volume, bool mute);
-
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate void LogCallback(IntPtr data, int level, IntPtr ctx, IntPtr format, RuntimeArgumentHandle args);
 
     [LibVlcFunction("libvlc_media_player_new")]
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -326,8 +316,4 @@ namespace Popcorn.Vlc.Interop.MediaPlayer
     [LibVlcFunction("libvlc_video_set_spu_delay", "2.0.0")]
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate int SetSubtitleDelay(IntPtr mediaPlayer, long delay);
-
-    [LibVlcFunction("libvlc_log_set")]
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate void SetLog(IntPtr mediaPlayer, LogCallback cb, IntPtr data);
 }

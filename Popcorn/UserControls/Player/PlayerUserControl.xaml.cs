@@ -129,7 +129,8 @@ namespace Popcorn.UserControls.Player
             _subtitleSize = applicationSettings.SelectedSubtitleSize.Size;
             VlcOptions = new[]
             {
-                "-I", "--dummy-quiet", "--no-video-title", "--no-sub-autodetect-file",
+                "--dummy-quiet", "--no-video-title",
+                "--no-sub-autodetect-file",
                 $"--freetype-color={HexConverter(applicationSettings.SubtitlesColor)}",
                 $"--freetype-rel-fontsize={applicationSettings.SelectedSubtitleSize.Size}",
                 "--file-caching=5000", "--network-caching=5000"
