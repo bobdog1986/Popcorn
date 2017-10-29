@@ -40,8 +40,9 @@ namespace Popcorn.Services.Download
         /// <param name="media"><see cref="IMediaFile"/></param>
         /// <param name="reportDownloadProgress">Download progress</param>
         /// <param name="reportDownloadRate">The download rate</param>
+        /// <param name="playingProgress">The playing progress</param>
         protected virtual void BroadcastMediaBuffered(T media, Progress<double> reportDownloadProgress,
-            Progress<BandwidthRate> reportDownloadRate)
+            Progress<BandwidthRate> reportDownloadRate, IProgress<double> playingProgress)
         {
             throw new NotImplementedException();
         }
@@ -147,11 +148,35 @@ namespace Popcorn.Services.Download
             var alreadyBuffered = false;
             var bandwidth = new Progress<BandwidthRate>();
             var prog = new Progress<double>();
+            var playingProgress = new Progress<double>();
+            var playingProgression = 0d;
+            playingProgress.ProgressChanged += (sender, d) =>
+            {
+                playingProgression = d;
+            };
             while (!cts.IsCancellationRequested)
             {
                 using (var status = handle.status())
                 {
+                    var numPieces = handle.torrent_file().num_pieces();
                     var progress = status.progress * 100d;
+                    var cursor = Math.Floor(numPieces * playingProgression);
+                    var pieces = handle.piece_priorities().Select((piece, index) => new {Piece = piece, Index = index})
+                        .Where(a => a.Index >= cursor - 1 * numPieces / 100d).ToList();
+
+                    foreach (var piece in pieces)
+                    {
+                        if (!handle.have_piece(piece.Index))
+                        {
+                            handle.set_piece_deadline(piece.Index, 2000);
+                            break;
+                        }
+                        else
+                        {
+                            handle.reset_piece_deadline(piece.Index);
+                        }
+                    }
+
                     var downRate = Math.Round(status.download_rate / 1024d, 0);
                     var upRate = Math.Round(status.upload_rate / 1024d, 0);
 
@@ -200,7 +225,7 @@ namespace Popcorn.Services.Download
                         {
                             alreadyBuffered = true;
                             media.FilePath = filePath;
-                            BroadcastMediaBuffered(media, prog, bandwidth);
+                            BroadcastMediaBuffered(media, prog, bandwidth, playingProgress);
                         }
 
                         if (!alreadyBuffered)

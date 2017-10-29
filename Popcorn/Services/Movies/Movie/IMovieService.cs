@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Popcorn.Models.Genres;
 using Popcorn.Models.Movie;
 using Popcorn.Models.User;
+using Popcorn.YTVideoProvider;
 using TMDbLib.Client;
 using TMDbLib.Objects.General;
 using TMDbLib.Objects.People;
@@ -124,5 +125,12 @@ namespace Popcorn.Services.Movies.Movie
         /// <param name="url">Image to retrieve</param>
         /// <returns>Image url</returns>
         string GetImagePathFromTmdb(string url);
+
+        /// <summary>
+        /// Get <see cref="YouTubeVideo"/> from YTVideo Id
+        /// </summary>
+        /// <param name="ytVideoId"></param>
+        /// <returns></returns>
+        Task<YouTubeVideo> GetVideoFromYtVideoId(string ytVideoId);
     }
 }

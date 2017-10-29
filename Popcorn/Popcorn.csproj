@@ -104,6 +104,9 @@
     <Reference Include="GoogleCast, Version=1.3.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\GoogleCast.1.3.3\lib\netstandard2.0\GoogleCast.dll</HintPath>
     </Reference>
+    <Reference Include="Hardcodet.Wpf.TaskbarNotification, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Hardcodet.NotifyIcon.Wpf.1.0.8\lib\net451\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
+    </Reference>
     <Reference Include="Humanizer, Version=2.2.0.0, Culture=neutral, PublicKeyToken=979442b78dfc278e, processorArchitecture=MSIL">
       <HintPath>..\packages\Humanizer.Core.2.2.0\lib\netstandard1.0\Humanizer.dll</HintPath>
     </Reference>
@@ -125,20 +128,8 @@
     <Reference Include="Microsoft.ApplicationInsights.NLogTarget, Version=2.4.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.ApplicationInsights.NLogTarget.2.4.1\lib\net45\Microsoft.ApplicationInsights.NLogTarget.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.ApplicationInsights.SnapshotCollector, Version=1.0.10.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.ApplicationInsights.SnapshotCollector.1.0.10\lib\net45\Microsoft.ApplicationInsights.SnapshotCollector.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.AspNetCore.Http.Features, Version=2.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNetCore.Http.Features.2.0.0\lib\netstandard2.0\Microsoft.AspNetCore.Http.Features.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AspNetCore.SignalR.Client, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNetCore.SignalR.Client.1.0.0-alpha1-final\lib\netstandard2.0\Microsoft.AspNetCore.SignalR.Client.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AspNetCore.SignalR.Client.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNetCore.SignalR.Client.Core.1.0.0-alpha1-final\lib\netstandard2.0\Microsoft.AspNetCore.SignalR.Client.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AspNetCore.SignalR.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNetCore.SignalR.Common.1.0.0-alpha1-final\lib\netstandard2.0\Microsoft.AspNetCore.SignalR.Common.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AspNetCore.Sockets.Abstractions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNetCore.Sockets.Abstractions.1.0.0-alpha1-final\lib\netstandard2.0\Microsoft.AspNetCore.Sockets.Abstractions.dll</HintPath>
@@ -182,6 +173,9 @@
     </Reference>
     <Reference Include="Microsoft.Owin, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Owin.4.0.0-alpha1\lib\net451\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Cors, Version=3.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Cors.3.1.0\lib\net45\Microsoft.Owin.Cors.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Owin.FileSystems, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Owin.FileSystems.4.0.0-alpha1\lib\net451\Microsoft.Owin.FileSystems.dll</HintPath>
@@ -273,6 +267,9 @@
     <Reference Include="Squirrel, Version=1.7.8.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\squirrel.windows.1.7.8\lib\Net45\Squirrel.dll</HintPath>
     </Reference>
+    <Reference Include="SubtitlesParser, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SubtitlesParser.1.4.7\lib\net40-client\SubtitlesParser.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Binary, Version=0.1.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Binary.0.1.0-alpha-001\lib\netstandard1.1\System.Binary.dll</HintPath>
@@ -353,8 +350,14 @@
     <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
     </Reference>
+    <Reference Include="System.Web.Cors, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Cors.5.2.3\lib\net45\System.Web.Cors.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.Cors, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Cors.5.2.3\lib\net45\System.Web.Http.Cors.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Http.Owin, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Owin.5.2.3\lib\net45\System.Web.Http.Owin.dll</HintPath>
@@ -375,8 +378,8 @@
     <Reference Include="TraktApiSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\TraktApiSharp.1.0.0-alpha2\lib\netstandard1.1\TraktApiSharp.dll</HintPath>
     </Reference>
-    <Reference Include="Utf8Json, Version=1.3.0.0, Culture=neutral, PublicKeyToken=8a73d3ba7e392e27, processorArchitecture=MSIL">
-      <HintPath>..\packages\Utf8Json.1.3.0\lib\net45\Utf8Json.dll</HintPath>
+    <Reference Include="Utf8Json, Version=1.3.1.0, Culture=neutral, PublicKeyToken=8a73d3ba7e392e27, processorArchitecture=MSIL">
+      <HintPath>..\packages\Utf8Json.1.3.1\lib\net45\Utf8Json.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
@@ -419,6 +422,9 @@
     <Compile Include="Controls\Show\ShowNumberSummary.xaml.cs">
       <DependentUpon>ShowNumberSummary.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\PercentageFormatter.cs" />
+    <Compile Include="Converters\TimeSpanFormatter.cs" />
+    <Compile Include="Converters\TimeSpanToSecondsConverter.cs" />
     <Compile Include="Converters\UpdateLabelConverter.cs" />
     <Compile Include="Converters\BoolToInverseBoolConverter.cs" />
     <Compile Include="Converters\BoolToInverseVisibilityConverter.cs" />
@@ -501,6 +507,7 @@
     <Compile Include="Messaging\StopPlayMediaMessage.cs" />
     <Compile Include="Messaging\UnhandledExceptionMessage.cs" />
     <Compile Include="Messaging\UpdateAvailableMessage.cs" />
+    <Compile Include="Models\Chromecast\MediaStatusEventArgs.cs" />
     <Compile Include="Models\Localization\SpanishLanguage.cs" />
     <Compile Include="Models\Movie\IMovie.cs" />
     <Compile Include="Models\Movie\MovieLightJson.cs" />
@@ -577,8 +584,6 @@
     <Compile Include="Services\Download\IDownloadService.cs" />
     <Compile Include="Services\Genres\GenreService.cs" />
     <Compile Include="Services\Genres\IGenreService.cs" />
-    <Compile Include="Services\Hub\IPopcornHubService.cs" />
-    <Compile Include="Services\Hub\PopcornHubService.cs" />
     <Compile Include="Services\Cache\ICacheService.cs" />
     <Compile Include="Services\Server\CustomContentTypeProvider.cs" />
     <Compile Include="Services\Server\Startup.cs" />
@@ -649,6 +654,15 @@
     </Compile>
     <Compile Include="UserControls\Home\Search\SearchUserControl.xaml.cs">
       <DependentUpon>SearchUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\Tray\TrayNotification.xaml.cs">
+      <DependentUpon>TrayNotification.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\Tray\TrayPopup.xaml.cs">
+      <DependentUpon>TrayPopup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\Tray\TrayTooltip.xaml.cs">
+      <DependentUpon>TrayTooltip.xaml</DependentUpon>
     </Compile>
     <Compile Include="UserControls\Window\Settings\WindowSettingsUserControl.xaml.cs">
       <DependentUpon>WindowSettingsUserControl.xaml</DependentUpon>
@@ -797,6 +811,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Resources\Player.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Resources\Ripple.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -830,6 +848,18 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\Home\Show\Tabs\ShowTab.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\Tray\TrayNotification.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\Tray\TrayPopup.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\Tray\TrayTooltip.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -907,7 +937,6 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="Resources\Subtitles\None.srt" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.es.resx">
@@ -965,6 +994,10 @@
       <Project>{059dc6c7-59c6-4adf-8960-976a02e7498e}</Project>
       <Name>Popcorn.ColorPicker</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Popcorn.FFME\Popcorn.FFME.csproj">
+      <Project>{a6eb99a6-aae2-4e6e-ab9e-93992ce5b84d}</Project>
+      <Name>Popcorn.FFME</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Popcorn.Handler\Popcorn.Handler.csproj">
       <Project>{626ff666-02ac-414c-a2fc-8a60b6692006}</Project>
       <Name>Popcorn.Handler</Name>
@@ -985,14 +1018,6 @@
       <Project>{34186c3b-c308-4cae-b462-db7b5f5e378c}</Project>
       <Name>Popcorn.Markdown</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Popcorn.Vlc.Wpf\Popcorn.Vlc.Wpf.csproj">
-      <Project>{c53e6715-c8bf-4be4-943d-c003f0f01876}</Project>
-      <Name>Popcorn.Vlc.Wpf</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Popcorn.Vlc\Popcorn.Vlc.csproj">
-      <Project>{174900eb-956f-4435-87f2-677f014dd5db}</Project>
-      <Name>Popcorn.Vlc</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Popcorn.YTVideoProvider\Popcorn.YTVideoProvider.csproj">
       <Project>{5617bef3-671d-4705-ad37-eb2c290c6e04}</Project>
       <Name>Popcorn.YTVideoProvider</Name>
@@ -1012,14 +1037,12 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>
-if not exist "$(TargetDir)None.srt" xcopy /s /i "$(SolutionDir)Popcorn\Resources\Subtitles\*.*" "$(TargetDir)"
-if not exist "$(TargetDir)WPFToolkit.dll" xcopy /s /i "$(SolutionDir)packages\WPFToolkit.3.5.50211.1\lib\*.*" "$(TargetDir)"
+      if not exist "$(TargetDir)WPFToolkit.dll" xcopy /s /i "$(SolutionDir)packages\WPFToolkit.3.5.50211.1\lib\*.*" "$(TargetDir)"
 </PreBuildEvent>
     <PostBuildEvent>
-    if not exist "$(TargetDir)libvlc" xcopy /s /i "$(SolutionDir)packages\VlcLibs.2.2.6.1\tools\net45\libvlc\*.*" "$(TargetDir)libvlc"
-if not exist "$(TargetDir)ltnet.pdb" "$(SolutionDir)packages\libtorrent-net.3.1.0\lib\net45\ltnet.pdb" "$(TargetDir)"
-xcopy /s /y "$(SolutionDir)packages\libtorrent-net.3.1.0\tools\*.*" "$(TargetDir)"
-xcopy /s /y "$(SolutionDir)packages\Microsoft.VC120.CRT.JetBrains.12.0.21005.2\DotFiles\*.*" "$(TargetDir)"
+      if not exist "$(TargetDir)FFmpeg" xcopy /s /i "$(SolutionDir)packages\FFmpegZeranoe.3.4.0\tools\net45\*.*" "$(TargetDir)FFmpeg"
+      xcopy /s /y "$(SolutionDir)packages\libtorrent-net.3.1.0\tools\*.*" "$(TargetDir)"
+      xcopy /s /y "$(SolutionDir)packages\Microsoft.VC120.CRT.JetBrains.12.0.21005.2\DotFiles\*.*" "$(TargetDir)"
   </PostBuildEvent>
   </PropertyGroup>
   <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release'">
@@ -1055,7 +1078,6 @@ xcopy /s /y "$(SolutionDir)packages\Microsoft.VC120.CRT.JetBrains.12.0.21005.2\D
     <Error Condition="!Exists('..\packages\SQLitePCLRaw.lib.e_sqlite3.linux.1.1.8\build\net35\SQLitePCLRaw.lib.e_sqlite3.linux.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SQLitePCLRaw.lib.e_sqlite3.linux.1.1.8\build\net35\SQLitePCLRaw.lib.e_sqlite3.linux.targets'))" />
     <Error Condition="!Exists('..\packages\SQLitePCLRaw.lib.e_sqlite3.v110_xp.1.1.8\build\net35\SQLitePCLRaw.lib.e_sqlite3.v110_xp.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SQLitePCLRaw.lib.e_sqlite3.v110_xp.1.1.8\build\net35\SQLitePCLRaw.lib.e_sqlite3.v110_xp.targets'))" />
     <Error Condition="!Exists('..\packages\SQLitePCLRaw.lib.e_sqlite3.osx.1.1.8\build\net35\SQLitePCLRaw.lib.e_sqlite3.osx.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\SQLitePCLRaw.lib.e_sqlite3.osx.1.1.8\build\net35\SQLitePCLRaw.lib.e_sqlite3.osx.targets'))" />
-    <Error Condition="!Exists('..\packages\Microsoft.ApplicationInsights.SnapshotCollector.1.0.10\build\Microsoft.ApplicationInsights.SnapshotCollector.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.ApplicationInsights.SnapshotCollector.1.0.10\build\Microsoft.ApplicationInsights.SnapshotCollector.targets'))" />
     <Error Condition="!Exists('..\packages\NETStandard.Library.2.0.1\build\netstandard2.0\NETStandard.Library.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NETStandard.Library.2.0.1\build\netstandard2.0\NETStandard.Library.targets'))" />
   </Target>
   <Import Project="..\packages\cef.redist.x64.3.2987.1601\build\cef.redist.x64.targets" Condition="Exists('..\packages\cef.redist.x64.3.2987.1601\build\cef.redist.x64.targets')" />
@@ -1065,7 +1087,6 @@ xcopy /s /y "$(SolutionDir)packages\Microsoft.VC120.CRT.JetBrains.12.0.21005.2\D
   <Import Project="..\packages\SQLitePCLRaw.lib.e_sqlite3.linux.1.1.8\build\net35\SQLitePCLRaw.lib.e_sqlite3.linux.targets" Condition="Exists('..\packages\SQLitePCLRaw.lib.e_sqlite3.linux.1.1.8\build\net35\SQLitePCLRaw.lib.e_sqlite3.linux.targets')" />
   <Import Project="..\packages\SQLitePCLRaw.lib.e_sqlite3.v110_xp.1.1.8\build\net35\SQLitePCLRaw.lib.e_sqlite3.v110_xp.targets" Condition="Exists('..\packages\SQLitePCLRaw.lib.e_sqlite3.v110_xp.1.1.8\build\net35\SQLitePCLRaw.lib.e_sqlite3.v110_xp.targets')" />
   <Import Project="..\packages\SQLitePCLRaw.lib.e_sqlite3.osx.1.1.8\build\net35\SQLitePCLRaw.lib.e_sqlite3.osx.targets" Condition="Exists('..\packages\SQLitePCLRaw.lib.e_sqlite3.osx.1.1.8\build\net35\SQLitePCLRaw.lib.e_sqlite3.osx.targets')" />
-  <Import Project="..\packages\Microsoft.ApplicationInsights.SnapshotCollector.1.0.10\build\Microsoft.ApplicationInsights.SnapshotCollector.targets" Condition="Exists('..\packages\Microsoft.ApplicationInsights.SnapshotCollector.1.0.10\build\Microsoft.ApplicationInsights.SnapshotCollector.targets')" />
   <Import Project="..\packages\NETStandard.Library.2.0.1\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.1\build\netstandard2.0\NETStandard.Library.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

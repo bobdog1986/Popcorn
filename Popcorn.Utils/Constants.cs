@@ -2,6 +2,7 @@
 using System.Collections.Specialized;
 using System.Configuration;
 using System.IO;
+using System.Reflection;
 
 namespace Popcorn.Utils
 {
@@ -13,7 +14,7 @@ namespace Popcorn.Utils
         /// <summary>
         /// App version
         /// </summary>
-        public const string AppVersion = "3.2.2";
+        public const string AppVersion = "3.3.0";
 
         /// <summary>
         /// Endpoint to API
@@ -44,6 +45,12 @@ namespace Popcorn.Utils
         /// Client ID for TMDb
         /// </summary>
         public const string TmDbClientId = "a21fe922d3bac6654e93450e9a18af1c";
+
+        /// <summary>
+        /// Path to the FFmpeg shared libs
+        /// </summary>
+        public static string FFmpegPath => $@"{Directory.GetParent(new Uri(Assembly.GetExecutingAssembly().CodeBase)
+            .AbsolutePath)}\FFmpeg";
 
         /// <summary>
         /// In percentage, the minimum of buffering before we can actually start playing the movie

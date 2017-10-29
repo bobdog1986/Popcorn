@@ -160,7 +160,7 @@
                     <DataTemplate>
                         <StackPanel Height="140">
                             <controls:Tile
-                                Title="{Binding Name}"
+                                Title="{Binding FriendlyName}"
                                 Width="300"
                                 Height="125"
                                 controls:ControlsHelper.MouseOverBorderBrush="{DynamicResource BlackBrush}"

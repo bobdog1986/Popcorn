@@ -567,7 +567,8 @@ namespace Popcorn.Services.Movies.Movie
         /// <returns>Task</returns>
         public void TranslateMovie(IMovie movieToTranslate)
         {
-            if (TmdbClient.DefaultLanguage == "en" && movieToTranslate.TranslationLanguage == TmdbClient.DefaultLanguage) return;
+            if (TmdbClient.DefaultLanguage == "en" &&
+                movieToTranslate.TranslationLanguage == TmdbClient.DefaultLanguage) return;
             _moviesToTranslateObservable.OnNext(movieToTranslate);
         }
 
@@ -594,24 +595,11 @@ namespace Popcorn.Services.Movies.Movie
                         var trailers = tmdbMovie?.Videos;
                         if (trailers != null && trailers.Results.Any())
                         {
-                            using (var service = Client.For(YouTube.Default))
-                            {
-                                var videos =
-                                    (await service.GetAllVideosAsync("https://youtube.com/watch?v=" + trailers.Results
-                                                                         .FirstOrDefault()
-                                                                         .Key).ConfigureAwait(false))
-                                    .ToList();
-                                if (videos.Any())
-                                {
-                                    var settings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
-                                    var maxRes = settings.DefaultHdQuality ? 1080 : 720;
-                                    uri =
-                                        await videos.Where(a => !a.Is3D && a.Resolution <= maxRes &&
-                                                                a.Format == VideoFormat.Mp4 && a.AudioBitrate > 0)
-                                            .Aggregate((i1, i2) => i1.Resolution > i2.Resolution ? i1 : i2)
-                                            .GetUriAsync();
-                                }
-                            }
+                            var trailer = trailers.Results
+                                .FirstOrDefault()
+                                .Key;
+                            var video = await GetVideoFromYtVideoId(trailer);
+                            uri = await video.GetUriAsync();
                         }
                         else
                         {
@@ -647,6 +635,27 @@ namespace Popcorn.Services.Movies.Movie
             }
         }
 
+        public async Task<YouTubeVideo> GetVideoFromYtVideoId(string ytVideoId)
+        {
+            using (var service = Client.For(YouTube.Default))
+            {
+                var videos =
+                    (await service.GetAllVideosAsync($"https://youtube.com/watch?v={ytVideoId}").ConfigureAwait(false))
+                    .ToList();
+                if (videos.Any())
+                {
+                    var settings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
+                    var maxRes = settings.DefaultHdQuality ? 1080 : 720;
+                    return
+                        videos.Where(a => !a.Is3D && a.Resolution <= maxRes &&
+                                          a.Format == VideoFormat.Mp4 && a.AudioBitrate > 0)
+                            .Aggregate((i1, i2) => i1.Resolution > i2.Resolution ? i1 : i2);
+                }
+
+                return null;
+            }
+        }
+
         /// <summary>
         /// Get cast
         /// </summary>
@@ -657,7 +666,8 @@ namespace Popcorn.Services.Movies.Movie
             try
             {
                 var search = await TmdbClient.FindAsync(FindExternalSource.Imdb, $"nm{imdbCode}");
-                return await TmdbClient.GetPersonAsync(search.PersonResults.FirstOrDefault().Id, PersonMethods.Images | PersonMethods.TaggedImages);
+                return await TmdbClient.GetPersonAsync(search.PersonResults.FirstOrDefault().Id,
+                    PersonMethods.Images | PersonMethods.TaggedImages);
             }
             catch (Exception ex)
             {

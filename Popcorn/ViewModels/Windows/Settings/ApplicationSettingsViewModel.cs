@@ -205,7 +205,9 @@ namespace Popcorn.ViewModels.Windows.Settings
         /// <param name="cacheService">Cache service</param>
         /// <param name="fileAssociationService">File association service</param>
         /// <param name="manager">Notification manager</param>
-        public ApplicationSettingsViewModel(IUserService userService, ISubtitlesService subtitlesService, ITraktService traktService, ICacheService cacheService, IFileAssociationService fileAssociationService, NotificationMessageManager manager)
+        public ApplicationSettingsViewModel(IUserService userService, ISubtitlesService subtitlesService,
+            ITraktService traktService, ICacheService cacheService, IFileAssociationService fileAssociationService,
+            NotificationMessageManager manager)
         {
             _fileAssociationService = fileAssociationService;
             _cacheService = cacheService;
@@ -229,7 +231,7 @@ namespace Popcorn.ViewModels.Windows.Settings
                 _userService.SetDownloadLimit(value);
             }
         }
-        
+
         /// <summary>
         /// Default subtitle language
         /// </summary>
@@ -342,10 +344,7 @@ namespace Popcorn.ViewModels.Windows.Settings
         public bool UpdateDownloading
         {
             get => _updateDownloading;
-            set
-            {
-                Set(() => UpdateDownloading, ref _updateDownloading, value);
-            }
+            set { Set(() => UpdateDownloading, ref _updateDownloading, value); }
         }
 
         /// <summary>
@@ -396,10 +395,7 @@ namespace Popcorn.ViewModels.Windows.Settings
         public bool UpdateAvailable
         {
             get => _updateAvailable;
-            set
-            {
-                Set(() => UpdateAvailable, ref _updateAvailable, value);
-            }
+            set { Set(() => UpdateAvailable, ref _updateAvailable, value); }
         }
 
         /// <summary>
@@ -408,10 +404,7 @@ namespace Popcorn.ViewModels.Windows.Settings
         public bool UpdateApplying
         {
             get => _updateApplying;
-            set
-            {
-                Set(() => UpdateApplying, ref _updateApplying, value);
-            }
+            set { Set(() => UpdateApplying, ref _updateApplying, value); }
         }
 
         /// <summary>
@@ -420,10 +413,7 @@ namespace Popcorn.ViewModels.Windows.Settings
         public bool UpdateApplied
         {
             get => _updateApplied;
-            set
-            {
-                Set(() => UpdateApplied, ref _updateApplied, value);
-            }
+            set { Set(() => UpdateApplied, ref _updateApplied, value); }
         }
 
         /// <summary>
@@ -432,10 +422,7 @@ namespace Popcorn.ViewModels.Windows.Settings
         public int UpdateDownloadProgress
         {
             get => _updateDownloadProgress;
-            set
-            {
-                Set(() => UpdateDownloadProgress, ref _updateDownloadProgress, value);
-            }
+            set { Set(() => UpdateDownloadProgress, ref _updateDownloadProgress, value); }
         }
 
         /// <summary>
@@ -444,10 +431,7 @@ namespace Popcorn.ViewModels.Windows.Settings
         public int UpdateApplyProgress
         {
             get => _updateApplyProgress;
-            set
-            {
-                Set(() => UpdateApplyProgress, ref _updateApplyProgress, value);
-            }
+            set { Set(() => UpdateApplyProgress, ref _updateApplyProgress, value); }
         }
 
         /// <summary>
@@ -482,7 +466,7 @@ namespace Popcorn.ViewModels.Windows.Settings
         /// Update size cache
         /// </summary>
         public RelayCommand UpdateCacheSizeCommand { get; private set; }
-        
+
         /// <summary>
         /// Change subtitle
         /// </summary>
@@ -531,17 +515,17 @@ namespace Popcorn.ViewModels.Windows.Settings
                     new SubtitleSize
                     {
                         Label = LocalizationProviderHelper.GetLocalizedValue<string>("Bigger"),
-                        Size = 6
+                        Size = 28
                     },
                     new SubtitleSize
                     {
                         Label = LocalizationProviderHelper.GetLocalizedValue<string>("Big"),
-                        Size = 12
+                        Size = 26
                     },
                     new SubtitleSize
                     {
                         Label = LocalizationProviderHelper.GetLocalizedValue<string>("Normal"),
-                        Size = 16
+                        Size = 22
                     },
                     new SubtitleSize
                     {
@@ -551,7 +535,7 @@ namespace Popcorn.ViewModels.Windows.Settings
                     new SubtitleSize
                     {
                         Label = LocalizationProviderHelper.GetLocalizedValue<string>("Smaller"),
-                        Size = 20
+                        Size = 14
                     }
                 };
 
@@ -582,7 +566,7 @@ namespace Popcorn.ViewModels.Windows.Settings
 
                 SelectedSubtitleSize = SubtitleSizes.FirstOrDefault(a => a.Size == subtitleSize.Size);
                 SubtitlesColor =
-                    (Color)ColorConverter.ConvertFromString(user.DefaultSubtitleColor);
+                    (Color) ColorConverter.ConvertFromString(user.DefaultSubtitleColor);
 
                 var tasks = new Func<Task>[]
                 {
@@ -591,7 +575,8 @@ namespace Popcorn.ViewModels.Windows.Settings
                         IsTraktLoggedIn = await _traktService.IsLoggedIn();
                         LoadingSubtitles = true;
                         AvailableSubtitlesLanguages = new ObservableRangeCollection<string>();
-                        var languages = (await _subtitlesService.GetSubLanguages().ConfigureAwait(false)).Select(a => a.LanguageName)
+                        var languages = (await _subtitlesService.GetSubLanguages().ConfigureAwait(false))
+                            .Select(a => a.LanguageName)
                             .OrderBy(a => a)
                             .ToList();
                         DispatcherHelper.CheckBeginInvokeOnUI(() =>
@@ -691,7 +676,8 @@ namespace Popcorn.ViewModels.Windows.Settings
                                         Process.Start($@"{_updateFilePath}\Popcorn.exe", "restart");
                                         Application.Current.MainWindow.Close();
                                     })
-                                .Dismiss().WithButton(LocalizationProviderHelper.GetLocalizedValue<string>("LaterLabel"),
+                                .Dismiss().WithButton(
+                                    LocalizationProviderHelper.GetLocalizedValue<string>("LaterLabel"),
                                     button => { })
                                 .Queue();
                         });
@@ -724,7 +710,7 @@ namespace Popcorn.ViewModels.Windows.Settings
             UpdateCacheSizeCommand = new RelayCommand(RefreshCacheSize);
             ClearCacheCommand = new RelayCommand(() =>
             {
-                FileHelper.DeleteFolder(_cacheService.Assets);
+                FileHelper.ClearFolders(true);
                 RefreshCacheSize();
             });
 
@@ -785,7 +771,13 @@ namespace Popcorn.ViewModels.Windows.Settings
         /// </summary>
         private void RefreshCacheSize()
         {
-            var cache = FileHelper.GetDirectorySize(_cacheService.Assets);
+            var cache = FileHelper.GetDirectorySize(_cacheService.Assets) +
+                        FileHelper.GetDirectorySize(_cacheService.DropFilesDownloads) +
+                        FileHelper.GetDirectorySize(_cacheService.MovieDownloads) +
+                        FileHelper.GetDirectorySize(_cacheService.MovieTorrentDownloads) +
+                        FileHelper.GetDirectorySize(_cacheService.PopcornTemp) +
+                        FileHelper.GetDirectorySize(_cacheService.ShowDownloads) +
+                        FileHelper.GetDirectorySize(_cacheService.Subtitles);
             CacheSize =
                 (cache / 1024 / 1024)
                 .ToString(CultureInfo.InvariantCulture);

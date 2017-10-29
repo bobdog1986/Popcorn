@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using GoogleCast;
 using GoogleCast.Channels;
 using GoogleCast.Models.Media;
+using Popcorn.Models.Chromecast;
 
 namespace Popcorn.Services.Chromecast
 {
@@ -20,21 +21,36 @@ namespace Popcorn.Services.Chromecast
             DeviceLocator = deviceLocator;
             Sender = sender;
             sender.GetChannel<IMediaChannel>().StatusChanged += MediaChannelStatusChanged;
-            sender.GetChannel<IReceiverChannel>().StatusChanged += ReceiverChannelStatusChanged;
         }
 
         private async Task InvokeAsync<TChannel>(Func<TChannel, Task> action) where TChannel : IChannel
         {
-            if (action != null)
+            try
             {
-                await action.Invoke(Sender.GetChannel<TChannel>());
+                if (action != null)
+                {
+                    await action.Invoke(Sender.GetChannel<TChannel>());
+                }
             }
+            catch (Exception) { }
         }
 
         private async Task SendChannelCommandAsync<TChannel>(bool condition, Func<TChannel, Task> action,
             Func<TChannel, Task> otherwise) where TChannel : IChannel
         {
             await InvokeAsync<TChannel>(condition ? action : otherwise);
+        }
+
+        public async Task<IEnumerable<MediaStatus>> GetStatus()
+        {
+            try
+            {
+                return await Sender.GetChannel<IMediaChannel>().GetStatusAsync();
+            }
+            catch (Exception)
+            {
+                return new List<MediaStatus>();
+            }
         }
 
         public bool IsStopped
@@ -49,13 +65,20 @@ namespace Popcorn.Services.Chromecast
 
         public async Task<bool> ConnectAsync(IReceiver receiver)
         {
-            Receiver = receiver;
-            if (Receiver != null)
+            try
             {
-                await Sender.ConnectAsync(Receiver);
-                return true;
+                Receiver = receiver;
+                if (Receiver != null)
+                {
+                    await Sender.ConnectAsync(Receiver);
+                    return true;
+                }
+                return false;
             }
-            return false;
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public async Task LoadAsync(Media media)
@@ -109,7 +132,14 @@ namespace Popcorn.Services.Chromecast
 
         public async Task<IEnumerable<IReceiver>> FindReceiversAsync()
         {
-            return await DeviceLocator.FindReceiversAsync();
+            try
+            {
+                return await DeviceLocator.FindReceiversAsync();
+            }
+            catch (Exception)
+            {
+                return new List<IReceiver>();
+            }
         }
 
         private bool _isMuted;
@@ -129,17 +159,6 @@ namespace Popcorn.Services.Chromecast
             }
         }
 
-        private string _playerState;
-
-        /// <summary>
-        /// Gets the player state
-        /// </summary>
-        public string PlayerState
-        {
-            get => _playerState;
-            private set => _playerState = value;
-        }
-
         public async Task SetVolumeAsync(float volume)
         {
             await SendChannelCommandAsync<IReceiverChannel>(IsStopped, null, async c => await c.SetVolumeAsync(volume));
@@ -154,31 +173,9 @@ namespace Popcorn.Services.Chromecast
         private void MediaChannelStatusChanged(object sender, EventArgs e)
         {
             var status = ((IMediaChannel) sender).Status?.FirstOrDefault();
-            var playerState = status?.PlayerState;
-            if (playerState == "IDLE" && !String.IsNullOrEmpty(status.IdleReason))
-            {
-                playerState = status.IdleReason;
-            }
-            PlayerState = playerState;
+            StatusChanged?.Invoke(sender, new MediaStatusEventArgs(status));
         }
 
-        private void ReceiverChannelStatusChanged(object sender, EventArgs e)
-        {
-            if (!IsInitialized)
-            {
-                var status = ((IReceiverChannel) sender).Status;
-                if (status != null)
-                {
-                    if (status.Volume.Level != null)
-                    {
-                        //Volume = (float) status.Volume.Level;
-                    }
-                    if (status.Volume.IsMuted != null)
-                    {
-                        IsMuted = (bool) status.Volume.IsMuted;
-                    }
-                }
-            }
-        }
+        public event EventHandler<MediaStatusEventArgs> StatusChanged;
     }
 }

@@ -21,8 +21,13 @@ using Popcorn.Utils.Exceptions;
 using Popcorn.ViewModels.Windows.Settings;
 using System.Runtime.CompilerServices;
 using System.ComponentModel;
+using System.Linq;
+using System.Windows.Controls;
 using GalaSoft.MvvmLight.CommandWpf;
-using Popcorn.Vlc.Wpf;
+using Popcorn.FFME;
+using Popcorn.Models.Chromecast;
+using MediaElement = Popcorn.FFME.MediaElement;
+using MouseButton = System.Windows.Input.MouseButton;
 
 namespace Popcorn.UserControls.Player
 {
@@ -35,11 +40,6 @@ namespace Popcorn.UserControls.Player
         /// Logger of the class
         /// </summary>
         private static Logger Logger { get; } = LogManager.GetCurrentClassLogger();
-
-        /// <summary>
-        /// Indicates if a media is playing
-        /// </summary>
-        private bool MediaPlayerIsPlaying { get; set; }
 
         /// <summary>
         /// Used to update the activity mouse and mouse position.
@@ -56,11 +56,6 @@ namespace Popcorn.UserControls.Player
         /// </summary>
         private int SubtitleDelay { get; set; }
 
-        /// <summary>
-        /// Cast player time in seconds
-        /// </summary>
-        private double CastPlayerTimeInSeconds { get; set; }
-
         private ICommand _setLowerSubtitleSizeCommand;
 
         private ICommand _setHigherSubtitleSizeCommand;
@@ -71,84 +66,44 @@ namespace Popcorn.UserControls.Player
         private readonly IApplicationService _applicationService;
 
         /// <summary>
-        /// Playing semaphore
-        /// </summary>
-        private readonly SemaphoreSlim _playingSemaphore = new SemaphoreSlim(1, 1);
-
-        /// <summary>
-        /// Pausing semaphore
-        /// </summary>
-        private readonly SemaphoreSlim _pausingSemaphore = new SemaphoreSlim(1, 1);
-
-        /// <summary>
         /// Subtitle size
         /// </summary>
         private int _subtitleSize;
-
-        /// <summary>
-        /// Report when dragging is used on media player
-        /// </summary>
-        /// <param name="sender">Sender object</param>
-        /// <param name="e">DragStartedEventArgs</param>
-        private void MediaSliderProgressDragStarted(object sender, DragStartedEventArgs e)
-        {
-            MediaPlayerIsPlaying = false;
-            var vm = DataContext as MediaPlayerViewModel;
-            if (vm != null && vm.IsCasting)
-            {
-                vm.PauseCastCommand.Execute(null);
-            }
-            else
-            {
-                Player.Pause();
-            }
-        }
-
-        /// <summary>
-        /// Identifies the <see cref="Volume" /> dependency property.
-        /// </summary>
-        internal static readonly DependencyProperty VolumeProperty = DependencyProperty.Register("Volume",
-            typeof(int),
-            typeof(PlayerUserControl), new PropertyMetadata(100, OnVolumeChanged));
 
         /// <summary>
         /// Initializes a new instance of the MoviePlayer class.
         /// </summary>
         public PlayerUserControl()
         {
-            int HexConverter(Color c)
-            {
-                var hex = c.R.ToString("X2") + c.G.ToString("X2") + c.B.ToString("X2");
-                return Convert.ToInt32(hex, 16);
-            }
-
-            var applicationSettings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
+            MediaElement.FFmpegDirectory = Constants.FFmpegPath;
             _applicationService = SimpleIoc.Default.GetInstance<IApplicationService>();
-            _subtitleSize = applicationSettings.SelectedSubtitleSize.Size;
-            VlcOptions = new[]
-            {
-                "-I", "--dummy-quiet", "--no-video-title", "--no-sub-autodetect-file",
-                $"--freetype-color={HexConverter(applicationSettings.SubtitlesColor)}",
-                $"--freetype-rel-fontsize={applicationSettings.SelectedSubtitleSize.Size}",
-                "--file-caching=5000", "--network-caching=5000"
-            };
             InitializeComponent();
             AddHandler(Keyboard.PreviewKeyDownEvent, new KeyEventHandler(OnPreviewKeyDownEvent));
-
+            PositionSlider.AddHandler
+            (
+                Slider.PreviewMouseLeftButtonDownEvent,
+                new MouseButtonEventHandler(OnSliderMouseLeftButtonDown),
+                true
+            );
             Loaded += OnLoaded;
         }
 
-        private async void OnPreviewKeyDownEvent(object sender,
+        /// <summary>
+        /// Toggle playing media when space key is pressed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnPreviewKeyDownEvent(object sender,
             RoutedEventArgs e)
         {
             KeyEventArgs ke = e as KeyEventArgs;
             if (ke.Key == Key.Space)
             {
                 ke.Handled = true;
-                if (MediaPlayerIsPlaying)
-                    await PauseMedia();
+                if (Media.IsPlaying)
+                    PauseMedia();
                 else
-                    await PlayMedia();
+                    PlayMedia();
             }
         }
 
@@ -163,56 +118,11 @@ namespace Popcorn.UserControls.Player
         private static readonly SemaphoreSlim SubtitleDelaySemaphore = new SemaphoreSlim(1, 1);
 
         /// <summary>
-        /// Represents the player current time in milliseconds
-        /// </summary>
-        public double TimeInMilliseconds
-        {
-            get
-            {
-                var vm = DataContext as MediaPlayerViewModel;
-                if (vm != null)
-                {
-                    vm.PlayerTime = Player.Time.TotalMilliseconds / 1000d;
-                    if (vm.IsCasting)
-                    {
-                        return CastPlayerTimeInSeconds * 1000d;
-                    }
-
-                    return Player.Time.TotalMilliseconds;
-                }
-
-                return Player.Time.TotalMilliseconds;
-            }
-            set
-            {
-                var vm = DataContext as MediaPlayerViewModel;
-                if (vm != null && vm.IsCasting)
-                {
-                    CastPlayerTimeInSeconds = value / 1000d;
-                }
-
-                Player.Time = TimeSpan.FromMilliseconds(value);
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Get or set the media volume
-        /// </summary>
-        public int Volume
-        {
-            get => (int) GetValue(VolumeProperty);
-            set => SetValue(VolumeProperty, value);
-        }
-
-        public string[] VlcOptions { get; set; }
-
-        /// <summary>
         /// Subscribe to events and play the movie when control has been loaded
         /// </summary>
         /// <param name="sender">Sender object</param>
         /// <param name="e">EventArgs</param>
-        private async void OnLoaded(object sender, EventArgs e)
+        private void OnLoaded(object sender, EventArgs e)
         {
             var window = System.Windows.Window.GetWindow(this);
             if (window != null)
@@ -225,11 +135,11 @@ namespace Popcorn.UserControls.Player
             if (vm?.MediaPath == null)
                 return;
 
-            vm.SubtitleChosen += OnSubtitleChosen;
-            Player.TimeChanged += OnTimeChanged;
-
+            var applicationSettings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
+            Subtitles.FontSize = applicationSettings.SelectedSubtitleSize?.Size ?? 22;
+            Subtitles.Foreground = new SolidColorBrush(applicationSettings.SubtitlesColor);
             // start the activity timer used to manage visibility of the PlayerStatusBar
-            ActivityTimer = new DispatcherTimer {Interval = TimeSpan.FromSeconds(2)};
+            ActivityTimer = new DispatcherTimer(DispatcherPriority.Background) {Interval = TimeSpan.FromSeconds(2)};
             ActivityTimer.Tick += OnInactivity;
             ActivityTimer.Start();
 
@@ -237,28 +147,12 @@ namespace Popcorn.UserControls.Player
 
             SetLowerSubtitleSizeCommand = new RelayCommand(() =>
             {
-                if (_subtitleSize == 12)
-                {
-                    Player.VlcOption[5] = $"--freetype-rel-fontsize={_subtitleSize}";
-                }
-                else
-                {
-                    Player.VlcOption[5] = $"--freetype-rel-fontsize={_subtitleSize - 2}";
-                    _subtitleSize -= 2;
-                }
+                Subtitles.FontSize--;
             });
 
             SetHigherSubtitleSizeCommand = new RelayCommand(() =>
             {
-                if (_subtitleSize == 20)
-                {
-                    Player.VlcOption[5] = $"--freetype-rel-fontsize={_subtitleSize}";
-                }
-                else
-                {
-                    Player.VlcOption[5] = $"--freetype-rel-fontsize={_subtitleSize + 2}";
-                    _subtitleSize += 2;
-                }
+                Subtitles.FontSize++;
             });
 
             vm.StoppedMedia += OnStoppedMedia;
@@ -266,83 +160,76 @@ namespace Popcorn.UserControls.Player
             vm.ResumedMedia += OnResumedMedia;
             vm.CastStarted += OnCastStarted;
             vm.CastStopped += OnCastStopped;
-            if (vm.BufferProgress != null)
-            {
-                vm.BufferProgress.ProgressChanged += OnBufferProgressChanged;
-            }
-
+            vm.CastStatusChanged += OnCastStatusChanged;
             if (vm.BandwidthRate != null)
             {
                 vm.BandwidthRate.ProgressChanged += OnBandwidthChanged;
             }
 
-            Player.VlcMediaPlayer.EndReached += MediaPlayerEndReached;
-            Player.LoadMedia(vm.MediaPath);
+            Media.RenderingVideo += OnRenderingVideo;
+            Media.MediaEnded += MediaPlayerEndReached;
+            Media.Source = new Uri(vm.MediaPath);
             if (vm.MediaType == MediaType.Trailer)
             {
                 DownloadProgress.Visibility = Visibility.Collapsed;
             }
 
-            Player.VlcMediaPlayer.EncounteredError += EncounteredError;
-            Player.VlcMediaPlayer.Playing += OnPlaying;
-            Player.VlcMediaPlayer.Stoped += OnStopped;
-            vm.CastPlayerTimeChanged += CastPlayerTimeChanged;
+            Media.MediaFailed += EncounteredError;
+            Media.VolumeChanged += OnVolumeChanged;
             Title.Text = vm.MediaName;
-            await PlayMedia();
-            if (!string.IsNullOrEmpty(vm.SubtitleFilePath))
+            PlayMedia();
+        }
+
+        private void OnRenderingVideo(object sender, RenderingVideoEventArgs e)
+        {
+            if (!(DataContext is MediaPlayerViewModel vm) || !vm.SubtitleItems.Any())
+                return;
+
+            if (vm.SubtitleItems.Any())
             {
-                Player.VlcMediaPlayer.SetSubtitleFile(vm.SubtitleFilePath);
+                var subtitle = vm.SubtitleItems.FirstOrDefault(a =>
+                    a.StartTime <= Media.Position.TotalMilliseconds + SubtitleDelay &&
+                    a.EndTime > Media.Position.TotalMilliseconds + SubtitleDelay);
+                Subtitles.Text = subtitle != null ? string.Join(Environment.NewLine, subtitle.Lines) : string.Empty;
             }
         }
 
+        /// <summary>
+        /// When cast is being played
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnCastStatusChanged(object sender, MediaStatusEventArgs e)
+        {
+            DispatcherHelper.CheckBeginInvokeOnUI(() =>
+            {
+                if (e.Status?.PlayerState == "PLAYING")
+                {
+                    Media.Position = TimeSpan.FromSeconds(e.Status.CurrentTime);
+                    if (!Media.IsPlaying)
+                        PlayMedia();
+                }
+            });
+        }
+
+        /// <summary>
+        /// Unmute media when cast has stopped
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnCastStopped(object sender, EventArgs e)
         {
-            if (Player.VlcMediaPlayer.IsMute)
-                Player.VlcMediaPlayer.ToggleMute();
+            Media.IsMuted = false;
         }
 
+        /// <summary>
+        /// Mute media when cast has started
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnCastStarted(object sender, EventArgs e)
         {
-            if (!Player.VlcMediaPlayer.IsMute)
-                Player.VlcMediaPlayer.ToggleMute();
-        }
-
-        /// <summary>
-        /// On cast time player changed
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void CastPlayerTimeChanged(object sender, Events.TimeChangedEventArgs e)
-        {
-            if (MediaPlayerIsPlaying)
-            {
-                CastPlayerTimeInSeconds = e.Seconds;
-                MediaPlayerSliderProgress.Minimum = 0;
-                MediaPlayerSliderProgress.Maximum = Player.Length.TotalMilliseconds;
-                OnPropertyChanged(nameof(TimeInMilliseconds));
-            }
-        }
-
-        /// <summary>
-        /// Report the playing progress on the timeline
-        /// </summary>
-        /// <param name="sender">Sender object</param>
-        /// <param name="e">EventArgs</param>
-        private void OnTimeChanged(object sender, EventArgs e)
-        {
-            MediaPlayerSliderProgress.Minimum = 0;
-            MediaPlayerSliderProgress.Maximum = Player.Length.TotalMilliseconds;
-            OnPropertyChanged(nameof(TimeInMilliseconds));
-        }
-
-        /// <summary>
-        /// On Subtitle Chosen
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnSubtitleChosen(object sender, Events.SubtitleChangedEventArgs e)
-        {
-            Player.VlcMediaPlayer.SetSubtitleFile(e.SubtitlePath);
+            Media.IsMuted = true;
         }
 
         /// <summary>
@@ -352,38 +239,7 @@ namespace Popcorn.UserControls.Player
         /// <param name="e"></param>
         private void OnResumedMedia(object sender, EventArgs e)
         {
-            DispatcherHelper.CheckBeginInvokeOnUI(async () => await PlayMedia());
-        }
-
-        /// <summary>
-        /// On player stopped, hide Cast button
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnStopped(object sender, Popcorn.Vlc.ObjectEventArgs<Popcorn.Vlc.Interop.Media.MediaState> e)
-        {
-            DispatcherHelper.CheckBeginInvokeOnUI(() =>
-            {
-                CastButton.Visibility = Visibility.Collapsed;
-            });
-        }
-
-        /// <summary>
-        /// On player started, show Cast button
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnPlaying(object sender, Popcorn.Vlc.ObjectEventArgs<Popcorn.Vlc.Interop.Media.MediaState> e)
-        {
-            DispatcherHelper.CheckBeginInvokeOnUI(() =>
-            {
-                CastButton.Visibility = Visibility.Visible;
-                var vm = DataContext as MediaPlayerViewModel;
-                if (vm != null)
-                {
-                    vm.MediaDuration = Player.Length.TotalSeconds;
-                }
-            });
+            DispatcherHelper.CheckBeginInvokeOnUI(PlayMedia);
         }
 
         /// <summary>
@@ -393,9 +249,9 @@ namespace Popcorn.UserControls.Player
         /// <param name="e"></param>
         private void OnPausedMedia(object sender, EventArgs e)
         {
-            DispatcherHelper.CheckBeginInvokeOnUI(async () => await PauseMedia());
+            DispatcherHelper.CheckBeginInvokeOnUI(PauseMedia);
         }
-        
+
         /// <summary>
         /// On key down
         /// </summary>
@@ -405,49 +261,48 @@ namespace Popcorn.UserControls.Player
         {
             if (e.Key == Key.F)
             {
-                var applicationService = SimpleIoc.Default.GetInstance<IApplicationService>();
-                applicationService.IsFullScreen = !applicationService.IsFullScreen;
+                _applicationService.IsFullScreen = !_applicationService.IsFullScreen;
             }
 
             if (e.Key == Key.Space)
             {
-                if (MediaPlayerIsPlaying)
-                    await PauseMedia();
+                if (Media.IsPlaying)
+                    PauseMedia();
                 else
-                    await PlayMedia();
+                    PlayMedia();
             }
 
-            if (Player.VlcMediaPlayer.SubtitleCount == 0) return;
+            if (!(DataContext is MediaPlayerViewModel vm) || !vm.SubtitleItems.Any())
+                return;
             switch (e.Key)
             {
                 case Key.H:
                     if ((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
                     {
-                        SubtitleDelay += 1000000;
+                        SubtitleDelay += 1000;
                     }
                     else
                     {
-                        SubtitleDelay += 100000;
+                        SubtitleDelay += 1000;
                     }
                     break;
                 case Key.G:
                     if ((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
                     {
-                        SubtitleDelay -= 1000000;
+                        SubtitleDelay -= 1000;
                     }
                     else
                     {
-                        SubtitleDelay -= 100000;
+                        SubtitleDelay -= 1000;
                     }
                     break;
                 default:
                     return;
             }
 
-            Delay.Text = $"Subtitle delay: {SubtitleDelay / 1000} ms";
+            Delay.Text = $"Subtitle delay: {SubtitleDelay} ms";
             if (SubtitleDelaySemaphore.CurrentCount == 0) return;
             await SubtitleDelaySemaphore.WaitAsync();
-            Player.VlcMediaPlayer.SubtitleDelay = SubtitleDelay;
             var increasedPanelOpacityAnimation = new DoubleAnimationUsingKeyFrames
             {
                 Duration = new Duration(TimeSpan.FromSeconds(0.1)),
@@ -506,19 +361,6 @@ namespace Popcorn.UserControls.Player
         }
 
         /// <summary>
-        /// When buffer progress has changed, update buffer bar
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnBufferProgressChanged(object sender, double e)
-        {
-            DispatcherHelper.CheckBeginInvokeOnUI(() =>
-            {
-                BufferProgress.Value = Math.Round(e);
-            });
-        }
-
-        /// <summary>
         /// Vlc encounters an error. Warn the user of this
         /// </summary>
         /// <param name="sender"></param>
@@ -541,29 +383,17 @@ namespace Popcorn.UserControls.Player
         /// <summary>
         /// When media's volume changed, update volume
         /// </summary>
-        /// <param name="e">e</param>
-        /// <param name="obj">obj</param>
-        private static async void OnVolumeChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
+        /// <param name="sender">Sender</param>
+        /// <param name="args">Args</param>
+        private async void OnVolumeChanged(object sender, VolumeEventArgs args)
         {
-            var moviePlayer = obj as PlayerUserControl;
-            if (moviePlayer == null)
-                return;
-
-            var newVolume = (int) e.NewValue;
-            var vm = moviePlayer.DataContext as MediaPlayerViewModel;
+            var newVolume = args.Volume;
+            var vm = DataContext as MediaPlayerViewModel;
             if (vm != null && vm.IsCasting)
             {
-                await vm.SetVolume(newVolume / 200f);
+                await vm.SetVolume(Convert.ToSingle(newVolume));
             }
-
-            moviePlayer.ChangeMediaVolume(newVolume);
         }
-
-        /// <summary>
-        /// Change the media's volume
-        /// </summary>
-        /// <param name="newValue">New volume value</param>
-        private void ChangeMediaVolume(int newValue) => Player.Volume = newValue;
 
         /// <summary>
         /// When user uses the mousewheel, update the volume
@@ -572,8 +402,7 @@ namespace Popcorn.UserControls.Player
         /// <param name="e">MouseWheelEventArgs</param>
         private void MouseWheelMediaPlayer(object sender, MouseWheelEventArgs e)
         {
-            if ((Volume <= 190 && e.Delta > 0) || (Volume >= 10 && e.Delta < 0))
-                Volume += (e.Delta > 0) ? 10 : -10;
+            Media.Volume += e.Delta > 0 ? 0.05 : -0.05;
         }
 
         /// <summary>
@@ -584,8 +413,6 @@ namespace Popcorn.UserControls.Player
         private void MediaPlayerEndReached(object sender, EventArgs e)
             => DispatcherHelper.CheckBeginInvokeOnUI(() =>
             {
-                if (Player.Position < 0.95) return;
-
                 var vm = DataContext as MediaPlayerViewModel;
                 if (vm == null)
                     return;
@@ -596,74 +423,50 @@ namespace Popcorn.UserControls.Player
         /// <summary>
         /// Play the movie
         /// </summary>
-        private async Task PlayMedia()
+        private void PlayMedia()
         {
             try
             {
-                if (_playingSemaphore.CurrentCount == 0)
-                {
-                    return;
-                }
-
-                await _playingSemaphore.WaitAsync();
-                if (Player.VlcMediaPlayer.IsPlaying) return;
-
-                var vm = DataContext as MediaPlayerViewModel;
-                if (vm != null && vm.IsCasting && vm.IsCastPaused)
-                {
-                    vm.PlayCastCommand.Execute(null);
-                }
-
                 _applicationService.SwitchConstantDisplayAndPower(true);
-                Player.Play();
-                MediaPlayerIsPlaying = true;
+                Media.Play();
                 MediaPlayerStatusBarItemPlay.Visibility = Visibility.Collapsed;
                 MediaPlayerStatusBarItemPause.Visibility = Visibility.Visible;
+                CastButton.Visibility = Visibility.Visible;
+                var vm = DataContext as MediaPlayerViewModel;
+                if (vm != null)
+                {
+                    vm.MediaDuration = Media.NaturalDuration.TimeSpan.TotalSeconds;
+                    if (vm.IsCasting)
+                        vm.PlayCastCommand.Execute(null);
+                }
             }
             catch (Exception ex)
             {
                 Logger.Error(ex);
-            }
-            finally
-            {
-                _playingSemaphore.Release();
             }
         }
 
         /// <summary>
         /// Pause the movie
         /// </summary>
-        private async Task PauseMedia()
+        private void PauseMedia()
         {
             try
             {
-                if (_pausingSemaphore.CurrentCount == 0)
-                {
-                    return;
-                }
-
-                await _pausingSemaphore.WaitAsync();
-                if (!Player.VlcMediaPlayer.IsPlaying) return;
-
                 var vm = DataContext as MediaPlayerViewModel;
-                if (vm != null && vm.IsCasting && vm.IsCastPlaying)
+                if (vm != null && vm.IsCasting)
                 {
                     vm.PauseCastCommand.Execute(null);
                 }
 
                 _applicationService.SwitchConstantDisplayAndPower(false);
-                Player.Pause();
-                MediaPlayerIsPlaying = false;
+                Media.Pause();
                 MediaPlayerStatusBarItemPlay.Visibility = Visibility.Visible;
                 MediaPlayerStatusBarItemPause.Visibility = Visibility.Collapsed;
             }
             catch (Exception ex)
             {
                 Logger.Error(ex);
-            }
-            finally
-            {
-                _pausingSemaphore.Release();
             }
         }
 
@@ -681,9 +484,8 @@ namespace Popcorn.UserControls.Player
         /// <param name="e">CanExecuteRoutedEventArgs</param>
         private void MediaPlayerPlayCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            if (MediaPlayerStatusBarItemPlay == null || MediaPlayerStatusBarItemPause == null) return;
-            e.CanExecute = Player != null;
-            if (MediaPlayerIsPlaying)
+            e.CanExecute = !Media.IsPlaying;
+            if (Media.IsPlaying)
             {
                 MediaPlayerStatusBarItemPlay.Visibility = Visibility.Collapsed;
                 MediaPlayerStatusBarItemPause.Visibility = Visibility.Visible;
@@ -702,9 +504,8 @@ namespace Popcorn.UserControls.Player
         /// <param name="e">CanExecuteRoutedEventArgs</param>
         private void MediaPlayerPauseCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            if (MediaPlayerStatusBarItemPlay == null || MediaPlayerStatusBarItemPause == null) return;
-            e.CanExecute = MediaPlayerIsPlaying;
-            if (MediaPlayerIsPlaying)
+            e.CanExecute = Media.CanPause;
+            if (Media.IsPlaying)
             {
                 MediaPlayerStatusBarItemPlay.Visibility = Visibility.Collapsed;
                 MediaPlayerStatusBarItemPause.Visibility = Visibility.Visible;
@@ -717,50 +518,18 @@ namespace Popcorn.UserControls.Player
         }
 
         /// <summary>
-        /// Report when user has finished dragging the media player progress
-        /// </summary>
-        /// <param name="sender">Sender object</param>
-        /// <param name="e">DragCompletedEventArgs</param>
-        private void MediaSliderProgressDragCompleted(object sender, DragCompletedEventArgs e)
-        {
-            var vm = DataContext as MediaPlayerViewModel;
-            if (vm != null && vm.IsCasting)
-            {
-                vm.SeekCastCommand.Execute(CastPlayerTimeInSeconds);
-                vm.PlayCastCommand.Execute(null);
-            }
-
-            Player.Resume();
-            MediaPlayerIsPlaying = true;
-        }
-
-        /// <summary>
-        /// Report runtime when trailer player progress changed
-        /// </summary>
-        /// <param name="sender">Sender object</param>
-        /// <param name="e">RoutedPropertyChangedEventArgs</param>
-        private void MediaSliderProgressValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            MoviePlayerTextProgressStatus.Text =
-                TimeSpan.FromMilliseconds(MediaPlayerSliderProgress.Value)
-                    .ToString(@"hh\:mm\:ss", CultureInfo.CurrentCulture) + " / " +
-                TimeSpan.FromMilliseconds(Player.Length.TotalMilliseconds)
-                    .ToString(@"hh\:mm\:ss", CultureInfo.CurrentCulture);
-        }
-
-        /// <summary>
         /// Play media
         /// </summary>
         /// <param name="sender">Sender object</param>
         /// <param name="e">ExecutedRoutedEventArgs</param>
-        private async void MediaPlayerPlayExecuted(object sender, ExecutedRoutedEventArgs e) => await PlayMedia();
+        private void MediaPlayerPlayExecuted(object sender, ExecutedRoutedEventArgs e) => PlayMedia();
 
         /// <summary>
         /// Pause media
         /// </summary>
         /// <param name="sender">Sender object</param>
         /// <param name="e">CanExecuteRoutedEventArgs</param>
-        private async void MediaPlayerPauseExecuted(object sender, ExecutedRoutedEventArgs e) => await PauseMedia();
+        private void MediaPlayerPauseExecuted(object sender, ExecutedRoutedEventArgs e) => PauseMedia();
 
         /// <summary>
         /// Hide the PlayerStatusBar on mouse inactivity
@@ -900,10 +669,8 @@ namespace Popcorn.UserControls.Player
 
                 InputManager.Current.PreProcessInput -= OnActivity;
 
-                Player.TimeChanged -= OnTimeChanged;
-                Player.VlcMediaPlayer.EncounteredError -= EncounteredError;
-                Player.VlcMediaPlayer.EndReached -= MediaPlayerEndReached;
-                MediaPlayerIsPlaying = false;
+                Media.MediaFailed -= EncounteredError;
+                Media.MediaEnded -= MediaPlayerEndReached;
                 var window = System.Windows.Window.GetWindow(this);
                 if (window != null)
                 {
@@ -914,16 +681,9 @@ namespace Popcorn.UserControls.Player
                 var vm = DataContext as MediaPlayerViewModel;
                 if (vm != null)
                 {
-                    vm.CastPlayerTimeChanged -= CastPlayerTimeChanged;
-                    vm.SubtitleChosen -= OnSubtitleChosen;
                     vm.StoppedMedia -= OnStoppedMedia;
                     vm.ResumedMedia -= OnResumedMedia;
                     vm.PausedMedia -= OnPausedMedia;
-                }
-
-                if (vm?.BufferProgress != null)
-                {
-                    vm.BufferProgress.ProgressChanged -= OnBufferProgressChanged;
                 }
 
                 if (vm?.BandwidthRate != null)
@@ -931,9 +691,10 @@ namespace Popcorn.UserControls.Player
                     vm.BandwidthRate.ProgressChanged -= OnBandwidthChanged;
                 }
 
-                Player.Dispose();
+                Media.Dispose();
                 _applicationService.SwitchConstantDisplayAndPower(false);
                 RemoveHandler(Keyboard.PreviewKeyDownEvent, new KeyEventHandler(OnPreviewKeyDownEvent));
+                PositionSlider.RemoveHandler(Slider.PreviewMouseLeftButtonDownEvent, new MouseButtonEventHandler(OnSliderMouseLeftButtonDown));
             }
             catch (Exception ex)
             {
@@ -941,21 +702,30 @@ namespace Popcorn.UserControls.Player
             }
         }
 
-        private void OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
+        private void OnMediaSliderDragCompleted(object sender, DragCompletedEventArgs e)
         {
-            e.Handled = true;
+            SeekMedia();
         }
 
-        private async void OnPreviewMouseUp(object sender, MouseButtonEventArgs e)
+        private void SeekMedia()
         {
-            e.Handled = true;
-            if(e.ChangedButton == MouseButton.Left)
+            var vm = DataContext as MediaPlayerViewModel;
+            if (vm != null && vm.IsCasting)
             {
-                if (MediaPlayerIsPlaying)
-                    await PauseMedia();
-                else
-                    await PlayMedia();
+                vm.SeekCastCommand.Execute(Media.Position.TotalSeconds);
             }
+
+            PlayMedia();
+        }
+
+        private void OnMediaSliderDragStarted(object sender, DragStartedEventArgs e)
+        {
+            PauseMedia();
+        }
+
+        private void OnSliderMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            SeekMedia();
         }
     }
 }

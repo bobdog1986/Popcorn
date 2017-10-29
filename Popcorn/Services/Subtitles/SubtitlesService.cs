@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CookComputing.XmlRpc;
+using NLog;
 using Polly;
 using Popcorn.OSDB;
 using Popcorn.Utils;
+using SubtitlesParser.Classes;
 
 namespace Popcorn.Services.Subtitles
 {
@@ -13,6 +18,11 @@ namespace Popcorn.Services.Subtitles
     /// </summary>
     public class SubtitlesService : ISubtitlesService
     {
+        /// <summary>
+        /// Logger of the class
+        /// </summary>
+        private static Logger Logger { get; } = LogManager.GetCurrentClassLogger();
+
         /// <summary>
         /// Get subtitles languages
         /// </summary>
@@ -87,6 +97,68 @@ namespace Popcorn.Services.Subtitles
                     return await osdb.DownloadSubtitleToPath(path, subtitle);
                 }
             });
+        }
+
+        /// <summary>
+        /// Get captions from local path
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        public IEnumerable<SubtitleItem> LoadCaptions(string filePath)
+        {
+            var parser = new SubtitlesParser.Classes.Parsers.SubParser();
+            using (var fileStream = File.OpenRead(filePath))
+            {
+                return parser.ParseStream(fileStream, Encoding.GetEncoding("iso-8859-1"));
+            }
+        }
+
+        /// <summary>
+        /// Convert a .srt file to a .vtt file
+        /// </summary>
+        /// <param name="path">Path to the file</param>
+        /// <returns>Path to the converted vtt file</returns>
+        public string ConvertSrtToVtt(string sFilePath)
+        {
+            try
+            {
+                var path = Path.ChangeExtension(sFilePath, "vtt");
+                using (var strReader = new StreamReader(sFilePath, Encoding.GetEncoding("iso-8859-1")))
+                using (var strWriter = new StreamWriter(File.Create(path), Encoding.GetEncoding("iso-8859-1")))
+                {
+                    var rgxDialogNumber = new Regex(@"^\d+$");
+                    var rgxTimeFrame = new Regex(@"(\d\d:\d\d:\d\d,\d\d\d) --> (\d\d:\d\d:\d\d,\d\d\d)");
+
+                    // Write starting line for the WebVTT file
+                    strWriter.WriteLine("WEBVTT");
+                    strWriter.WriteLine("");
+
+                    // Handle each line of the SRT file
+                    string sLine;
+                    while ((sLine = strReader.ReadLine()) != null)
+                    {
+                        // We only care about lines that aren't just an integer (aka ignore dialog id number lines)
+                        if (rgxDialogNumber.IsMatch(sLine))
+                            continue;
+
+                        // If the line is a time frame line, reformat and output the time frame
+                        Match match = rgxTimeFrame.Match(sLine);
+                        if (match.Success)
+                        {
+                            sLine = sLine.Replace(',', '.'); // Simply replace the comma in the time with a period
+                        }
+
+                        strWriter.WriteLine(sLine); // Write out the line
+                    }
+
+                    return path;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                return null;
+            }
         }
     }
 }

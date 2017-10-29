@@ -81,21 +81,26 @@ namespace Popcorn.ViewModels.Dialogs
                 {
                     ConnectingToChromecast = true;
                     _message.ChromecastReceiver = device;
+                    _message.CloseCastDialog = OnCloseAction;
                     if (await _chromecastService.ConnectAsync(device))
                     {
+                        await _message.StartCast.Invoke(device);
                         ConnectingToChromecast = false;
                         ConnectedToChromecast = true;
-                        CloseCommand.Execute(null);
-                        await _message.StartCast.Invoke(device);
                     }
                     else
                     {
-                        throw new PopcornException($"Could not cast to device {device.FriendlyName}");
+                        LoadingChromecasts = false;
+                        ConnectedToChromecast = false;
+                        Messenger.Default.Send(
+                            new UnhandledExceptionMessage(
+                                new PopcornException($"Could not cast to device {device.FriendlyName}")));
                     }
                 });
             }
             catch (Exception ex)
             {
+                ConnectedToChromecast = false;
                 LoadingChromecasts = false;
                 AnyChromecast = false;
                 Logger.Error(ex);

@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -11,9 +8,7 @@ using Akavache;
 using CefSharp;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
-using Microsoft.ApplicationInsights.NLogTarget;
 using NLog;
-using NLog.Config;
 using Popcorn.Helpers;
 using Popcorn.Messaging;
 using Popcorn.Utils;
@@ -43,7 +38,7 @@ namespace Popcorn
         /// <summary>
         /// Watcher
         /// </summary>
-        private static Stopwatch WatchStart { get; }
+        private Stopwatch WatchStart { get; set; }
     
         /// <summary>
         /// If first run
@@ -54,58 +49,6 @@ namespace Popcorn
         /// Loading semaphore
         /// </summary>
         private readonly SemaphoreSlim _windowLoadedSemaphore = new SemaphoreSlim(1, 1);
-
-        /// <summary>
-        /// Miniuploader for SnapshotCollector
-        /// </summary>
-        private static readonly string[] SnapshotCollectorFiles = new string[6]
-        {
-            "MinidumpUploader.exe",
-            "MinidumpUploader.exe.config",
-            "ProductionBreakpoints_x86.dll",
-            "ProductionBreakpoints_x64.dll",
-            "SnapshotHolder_x86.exe",
-            "SnapshotHolder_x64.exe"
-        };
-
-        /// <summary>
-        /// Initializes a new instance of the App class.
-        /// </summary>
-        static App()
-        {
-            try
-            {
-                // Dirty fix for https://github.com/Microsoft/ApplicationInsights-dotnet/issues/638
-                foreach (var file in SnapshotCollectorFiles)
-                {
-                    File.SetLastWriteTimeUtc(
-                        $@"{
-                                Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName
-                            }\SnapshotCollectorFiles\{file}", DateTime.MaxValue);
-                }
-            }
-            catch (Exception) { }
-
-            WatchStart = Stopwatch.StartNew();
-            Logger.Info(
-                "Popcorn starting...");
-            DispatcherHelper.Initialize();
-            LocalizeDictionary.Instance.SetCurrentThreadCulture = true;
-            BlobCache.ApplicationName = "Popcorn";
-
-            try
-            {
-                SquirrelAwareApp.HandleEvents(
-                    onInitialInstall: OnInitialInstall,
-                    onAppUpdate: OnAppUpdate,
-                    onAppUninstall: OnAppUninstall,
-                    onFirstRun: OnFirstRun);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
-        }
 
         private static void OnFirstRun()
         {
@@ -159,11 +102,20 @@ namespace Popcorn
             }
         }
 
+        static App()
+        {
+            DispatcherHelper.Initialize();
+            LocalizeDictionary.Instance.SetCurrentThreadCulture = true;
+            BlobCache.ApplicationName = "Popcorn";
+            Cef.Initialize();
+        }
+
         /// <summary>
         /// Initializes a new instance of the App class.
         /// </summary>
         public App()
         {
+            ShutdownMode = ShutdownMode.OnExplicitShutdown;
             DispatcherUnhandledException += AppDispatcherUnhandledException;
             Dispatcher.UnhandledException += Dispatcher_UnhandledException;
             TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
@@ -176,8 +128,22 @@ namespace Popcorn
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+            WatchStart = Stopwatch.StartNew();
+            Logger.Info(
+                "Popcorn starting...");
             AsyncSynchronizationContext.Register();
-            Cef.Initialize();
+            try
+            {
+                SquirrelAwareApp.HandleEvents(
+                    onInitialInstall: OnInitialInstall,
+                    onAppUpdate: OnAppUpdate,
+                    onAppUninstall: OnAppUninstall,
+                    onFirstRun: OnFirstRun);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
         }
 
         /// <summary>

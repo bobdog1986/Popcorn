@@ -22,16 +22,23 @@ namespace Popcorn.Messaging
         public readonly string MediaPath;
 
         /// <summary>
+        /// The playing progress
+        /// </summary>
+        public readonly IProgress<double> PlayingProgress;
+
+        /// <summary>
         /// Initialize a new instance of PlayMediaMessage class
         /// </summary>
         /// <param name="mediaPath">The media path</param>
         /// <param name="bufferProgress">The buffer progress</param>
         /// <param name="bandwidthRate">The bandwidth rate</param>
-        public PlayMediaMessage(string mediaPath, Progress<double> bufferProgress, Progress<BandwidthRate> bandwidthRate)
+        /// <param name="playingProgress">The playing progress</param>
+        public PlayMediaMessage(string mediaPath, Progress<double> bufferProgress, Progress<BandwidthRate> bandwidthRate, IProgress<double> playingProgress)
         {
             MediaPath = mediaPath;
             BufferProgress = bufferProgress;
             BandwidthRate = bandwidthRate;
+            PlayingProgress = playingProgress;
         }
     }
 }
