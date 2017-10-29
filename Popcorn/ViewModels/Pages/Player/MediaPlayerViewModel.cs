@@ -25,9 +25,11 @@ using GoogleCast;
 using GoogleCast.Models.Media;
 using Popcorn.Services.Subtitles;
 using Popcorn.Events;
+using Popcorn.Models.Chromecast;
 using Popcorn.Services.Cache;
 using Popcorn.Services.Chromecast;
 using Popcorn.Utils.Exceptions;
+using SubtitlesParser.Classes;
 
 namespace Popcorn.ViewModels.Pages.Player
 {
@@ -110,10 +112,6 @@ namespace Popcorn.ViewModels.Pages.Player
 
         private readonly IChromecastService _chromecastService;
 
-        private readonly DispatcherTimer _castPlayerTimer;
-
-        public event EventHandler<TimeChangedEventArgs> CastPlayerTimeChanged;
-
         private double _playerTime;
 
         private bool _isCastPlaying;
@@ -123,6 +121,8 @@ namespace Popcorn.ViewModels.Pages.Player
         private bool _isSubtitleChosen;
 
         private OSDB.Subtitle _currentSubtitle;
+
+        public IEnumerable<SubtitleItem> SubtitleItems = new List<SubtitleItem>();
 
         /// <summary>
         /// Media action to execute when media has ended
@@ -162,6 +162,8 @@ namespace Popcorn.ViewModels.Pages.Player
         public event EventHandler<EventArgs> CastStarted;
 
         public event EventHandler<EventArgs> CastStopped;
+
+        public event EventHandler<MediaStatusEventArgs> CastStatusChanged; 
 
         /// <summary>
         /// The cache service
@@ -219,6 +221,7 @@ namespace Popcorn.ViewModels.Pages.Player
                 $"Loading media : {mediaPath}.");
             RegisterCommands();
             _chromecastService = chromecastService;
+            _chromecastService.StatusChanged += OnCastMediaStatusChanged;
             _subtitlesService = subtitlesService;
             _cacheService = cacheService;
             MediaPath = mediaPath;
@@ -232,25 +235,24 @@ namespace Popcorn.ViewModels.Pages.Player
             BandwidthRate = bandwidthRate;
             ShowSubtitleButton = MediaType != MediaType.Trailer;
             _subtitles = subtitles;
-            _castPlayerTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
-            _castPlayerTimer.Tick += OnCastPlayerTimerChanged;
             _playingProgress = playingProgress;
 
             if (currentSubtitle != null && currentSubtitle.Sub.SubtitleId != "none")
             {
                 IsSubtitleChosen = true;
                 CurrentSubtitle = currentSubtitle.Sub;
+                SubtitleItems = _subtitlesService.LoadCaptions(currentSubtitle.FilePath);
             }
         }
 
         /// <summary>
-        /// Fire CastPlayerTimeChanged event
+        /// Occurs when cast media status has changed
         /// </summary>
-        /// <param name="e">Event args</param>
-        private void OnCastPlayerTimeChanged(TimeChangedEventArgs e)
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnCastMediaStatusChanged(object sender, Models.Chromecast.MediaStatusEventArgs e)
         {
-            var handler = CastPlayerTimeChanged;
-            handler?.Invoke(this, e);
+            CastStatusChanged?.Invoke(this, e);
         }
 
         /// <summary>
@@ -271,16 +273,6 @@ namespace Popcorn.ViewModels.Pages.Player
         {
             var handler = CastStarted;
             handler?.Invoke(this, e);
-        }
-
-        private async void OnCastPlayerTimerChanged(object sender, EventArgs e)
-        {
-            var statuses = await _chromecastService.GetStatus();
-            if (statuses.Any())
-            {
-                var status = statuses.FirstOrDefault();
-                OnCastPlayerTimeChanged(new TimeChangedEventArgs(status.CurrentTime));
-            }
         }
 
         /// <summary>
@@ -419,10 +411,10 @@ namespace Popcorn.ViewModels.Pages.Player
                     try
                     {
                         if (IsCasting)
-                            await StopCastPlayer();
-
-                        _castPlayerTimer.Tick -= OnCastPlayerTimerChanged;
+                            await StopCastPlayer(false);
+                        
                         _mediaStoppedAction?.Invoke();
+                        _chromecastService.StatusChanged -= OnCastMediaStatusChanged;
                         OnStoppedMedia(new EventArgs());
                     }
                     catch (Exception ex)
@@ -461,6 +453,7 @@ namespace Popcorn.ViewModels.Pages.Player
                         else
                         {
                             ChromecastReceiver = message.ChromecastReceiver;
+                            IsCasting = true;
                         }
                     }
                 }
@@ -471,13 +464,14 @@ namespace Popcorn.ViewModels.Pages.Player
             });
         }
 
-        private async Task StopCastPlayer()
+        private async Task StopCastPlayer(bool resume = true)
         {
             try
             {
                 IsCasting = false;
                 OnCastStopped(new EventArgs());
-                OnResumedMedia(new EventArgs());
+                if(resume)
+                    OnResumedMedia(new EventArgs());
                 await _chromecastService.StopAsync();
             }
             catch (Exception ex)
@@ -500,15 +494,14 @@ namespace Popcorn.ViewModels.Pages.Player
 
         private string GetLocalIpAddress()
         {
-            var host = Dns.GetHostEntry(Dns.GetHostName());
-            foreach (var ip in host.AddressList)
+            string localIP;
+            using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0))
             {
-                if (ip.AddressFamily == AddressFamily.InterNetwork)
-                {
-                    return ip.ToString();
-                }
+                socket.Connect("8.8.8.8", 65530);
+                IPEndPoint endPoint = socket.LocalEndPoint as IPEndPoint;
+                localIP = endPoint.Address.ToString();
             }
-            throw new Exception("Local IP Address Not Found!");
+            return localIP;
         }
 
         private async Task LoadCastAsync(Action closeCastDialog)
@@ -521,7 +514,6 @@ namespace Popcorn.ViewModels.Pages.Player
             var videoPath = MediaPath.Split(new[] { "Popcorn\\" }, StringSplitOptions.RemoveEmptyEntries).Last()?
                 .Replace("\\", "/");
             var mediaPath = $"http://{GetLocalIpAddress()}:9900/{videoPath}";
-
             var subtitle = SubtitleFilePath;
             if (!string.IsNullOrEmpty(subtitle))
             {
@@ -556,7 +548,8 @@ namespace Popcorn.ViewModels.Pages.Player
                     new UnhandledExceptionMessage(
                         new PopcornException(
                             LocalizationProviderHelper.GetLocalizedValue<string>("CastFailed"))));
-                OnCastStopped(new EventArgs());
+                OnResumedMedia(new EventArgs());
+                IsCasting = false;
                 await StopCastPlayer();
             }
         }
@@ -621,18 +614,6 @@ namespace Popcorn.ViewModels.Pages.Player
             set { Set(ref _chromecastReceiver, value); }
         }
 
-        public bool IsCastPlaying
-        {
-            get { return _isCastPlaying; }
-            set { Set(ref _isCastPlaying, value); }
-        }
-
-        public bool IsCastPaused
-        {
-            get { return _isCastPaused; }
-            set { Set(ref _isCastPaused, value); }
-        }
-
         /// <summary>
         /// Fire ResumedMedia event
         /// </summary>
@@ -656,6 +637,7 @@ namespace Popcorn.ViewModels.Pages.Player
                 "Subtitle chosen");
 
             CurrentSubtitle = e.Subtitle;
+            SubtitleItems = _subtitlesService.LoadCaptions(e.SubtitlePath);
             var handler = SubtitleChosen;
             handler?.Invoke(this, e);
         }

@@ -81,11 +81,12 @@ namespace Popcorn.ViewModels.Dialogs
                 {
                     ConnectingToChromecast = true;
                     _message.ChromecastReceiver = device;
+                    _message.CloseCastDialog = OnCloseAction;
                     if (await _chromecastService.ConnectAsync(device))
                     {
+                        await _message.StartCast.Invoke(device);
                         ConnectingToChromecast = false;
                         ConnectedToChromecast = true;
-                        await _message.StartCast.Invoke(device);
                     }
                     else
                     {

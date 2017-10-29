@@ -15,5 +15,6 @@
         <ResourceDictionary Source="../Resources/SplitView.xaml" />
         <ResourceDictionary Source="../Resources/FlyoutHeader.xaml" />
         <ResourceDictionary Source="../Resources/Markdown.xaml" />
+        <ResourceDictionary Source="../Resources/Player.xaml" />
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

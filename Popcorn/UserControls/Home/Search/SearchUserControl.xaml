@@ -33,7 +33,7 @@
                 BorderThickness="0"
                 CaretBrush="White"
                 Foreground="White"
-                MaxLength="20"
+                MaxLength="45"
                 Text="{Binding Path=SearchFilter, UpdateSourceTrigger=PropertyChanged}">
                 <TextBox.Style>
                     <Style BasedOn="{StaticResource SearchMetroTextBox}" TargetType="{x:Type TextBox}">

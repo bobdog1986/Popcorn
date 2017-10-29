@@ -515,17 +515,17 @@ namespace Popcorn.ViewModels.Windows.Settings
                     new SubtitleSize
                     {
                         Label = LocalizationProviderHelper.GetLocalizedValue<string>("Bigger"),
-                        Size = 6
+                        Size = 28
                     },
                     new SubtitleSize
                     {
                         Label = LocalizationProviderHelper.GetLocalizedValue<string>("Big"),
-                        Size = 12
+                        Size = 26
                     },
                     new SubtitleSize
                     {
                         Label = LocalizationProviderHelper.GetLocalizedValue<string>("Normal"),
-                        Size = 16
+                        Size = 22
                     },
                     new SubtitleSize
                     {
@@ -535,7 +535,7 @@ namespace Popcorn.ViewModels.Windows.Settings
                     new SubtitleSize
                     {
                         Label = LocalizationProviderHelper.GetLocalizedValue<string>("Smaller"),
-                        Size = 20
+                        Size = 14
                     }
                 };
 

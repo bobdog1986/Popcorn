@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using GoogleCast;
 using GoogleCast.Models.Media;
+using Popcorn.Models.Chromecast;
 
 namespace Popcorn.Services.Chromecast
 {
@@ -21,7 +22,7 @@ namespace Popcorn.Services.Chromecast
         Task SeekAsync(double seconds);
         Task SetVolumeAsync(float volume);
         Task SetIsMutedAsync();
-        string PlayerState { get; }
         Task<IEnumerable<MediaStatus>> GetStatus();
+        event EventHandler<MediaStatusEventArgs> StatusChanged;
     }
 }

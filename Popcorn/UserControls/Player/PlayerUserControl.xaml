@@ -7,15 +7,18 @@
     xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:converters="clr-namespace:Popcorn.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:ffme="clr-namespace:Popcorn.FFME;assembly=Popcorn.FFME"
     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:lex="http://wpflocalizeextension.codeplex.com"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:wpf="clr-namespace:Popcorn.Vlc.Wpf;assembly=Popcorn.Vlc.Wpf"
     x:Name="PlayerUc"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
+            <converters:TimeSpanToSecondsConverter x:Key="TimeSpanToSecondsConverter" />
+            <converters:TimeSpanFormatter x:Key="TimeSpanFormatter" />
+            <converters:PercentageFormatter x:Key="PercentageFormatter" />
             <converters:BoolToInverseVisibilityConverter x:Key="BoolToInverseVisibilityConverter" />
             <LinearGradientBrush x:Key="HeaderBackgroundOpacityMask" StartPoint="0.5,0" EndPoint="0.5,1">
                 <GradientStop Offset="0" Color="#FFFFFFFF" />
@@ -39,15 +42,27 @@
         x:Name="Container"
         Background="Black"
         MouseWheel="MouseWheelMediaPlayer">
-        <wpf:VlcPlayer
-            x:Name="Player"
+        <Grid.Resources>
+            <Storyboard x:Key="ShowControlOpacity" Storyboard.TargetProperty="(Grid.Opacity)">
+                <DoubleAnimation
+                    FillBehavior="HoldEnd"
+                    To="1"
+                    Duration="0:0:0.100" />
+            </Storyboard>
+            <Storyboard x:Key="HideControlOpacity" Storyboard.TargetProperty="(Grid.Opacity)">
+                <DoubleAnimation
+                    FillBehavior="HoldEnd"
+                    To="0"
+                    Duration="0:0:0.300" />
+            </Storyboard>
+        </Grid.Resources>
+        <ffme:MediaElement
+            Name="Media"
+            Grid.Row="0"
+            Grid.Column="0"
             attachedProperties:EnableDragHelper.EnableDrag="True"
             attachedProperties:MaximizeDoubleClickHelper.MaximizeDoubleClick="True"
-            EndBehavior="Nothing"
-            LibVlcPath="libvlc"
-            PreviewMouseDown="OnPreviewMouseDown"
-            PreviewMouseUp="OnPreviewMouseUp"
-            VlcOption="{Binding VlcOptions, ElementName=PlayerUc}" />
+            Background="Black" />
         <Grid
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
@@ -71,26 +86,35 @@
                     FontSize="36"
                     FontWeight="Light"
                     Foreground="White"
-                    Text="{Binding ChromecastReceiver.Name}" />
+                    Text="{Binding ChromecastReceiver.FriendlyName}" />
             </StackPanel>
         </Grid>
-        <Grid
+        <StackPanel
             Margin="0,0,0,100"
             HorizontalAlignment="Center"
             VerticalAlignment="Bottom">
-            <Rectangle
-                x:Name="SubtitleDelayPanel"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"
-                Fill="#2D2D2D"
-                Opacity="0" />
+            <Grid Margin="0,10,0,0">
+                <Rectangle
+                    x:Name="SubtitleDelayPanel"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    Fill="#2D2D2D"
+                    Opacity="0" />
+                <TextBlock
+                    x:Name="Delay"
+                    Margin="20"
+                    FontSize="20"
+                    Foreground="White"
+                    Opacity="0" />
+            </Grid>
             <TextBlock
-                x:Name="Delay"
-                Margin="20"
-                FontSize="20"
+                x:Name="Subtitles"
+                HorizontalAlignment="Center"
+                FontSize="22"
                 Foreground="White"
-                Opacity="0" />
-        </Grid>
+                Text="{Binding Caption}"
+                TextWrapping="Wrap" />
+        </StackPanel>
         <Grid
             x:Name="UpperPanel"
             HorizontalAlignment="Stretch"
@@ -159,6 +183,7 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                     </Grid>
                 </ItemsPanelTemplate>
@@ -168,10 +193,7 @@
                 Grid.Column="0"
                 Background="#FF2F2F2F"
                 Visibility="Visible">
-                <Button
-                    Margin="5,0,5,0"
-                    attachedProperties:MouseCommandBehavior.MouseUpCommand="MediaCommands.Pause"
-                    Style="{StaticResource ChromelessButtonStyle}">
+                <Button attachedProperties:MouseCommandBehavior.MouseUpCommand="MediaCommands.Pause" Style="{DynamicResource ModernButtonStyle}">
                     <Canvas Width="15" Height="15">
                         <Path
                             Width="15"
@@ -187,10 +209,7 @@
                 Grid.Column="0"
                 Background="#FF2F2F2F"
                 Visibility="Collapsed">
-                <Button
-                    Margin="5,0,5,0"
-                    attachedProperties:MouseCommandBehavior.MouseUpCommand="MediaCommands.Play"
-                    Style="{StaticResource ChromelessButtonStyle}">
+                <Button attachedProperties:MouseCommandBehavior.MouseUpCommand="MediaCommands.Play" Style="{DynamicResource ModernButtonStyle}">
                     <Canvas Width="15" Height="15">
                         <Path
                             Width="15"
@@ -202,53 +221,47 @@
                 </Button>
             </StatusBarItem>
             <StatusBarItem Grid.Column="1" Background="#FF2F2F2F">
-                <TextBlock Name="MoviePlayerTextProgressStatus">00:00:00</TextBlock>
+                <TextBlock
+                    VerticalAlignment="Center"
+                    Foreground="{StaticResource CustomSliderHighlightBrush}"
+                    Text="{Binding ElementName=Media, Path=Position, Converter={StaticResource TimeSpanFormatter}, Mode=OneWay}" />
             </StatusBarItem>
             <StatusBarItem
                 Grid.Column="2"
                 HorizontalContentAlignment="Stretch"
-                Background="#FF2F2F2F"
-                IsEnabled="{Binding CanSeek}">
-                <Grid>
-                    <controls:MetroProgressBar
-                        x:Name="BufferProgress"
-                        Width="Auto"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch"
-                        Foreground="DarkRed"
-                        IsIndeterminate="False"
-                        Maximum="100"
-                        Value="0" />
-                    <Slider
-                        x:Name="MediaPlayerSliderProgress"
-                        Width="Auto"
-                        HorizontalAlignment="Stretch"
-                        IsMoveToPointEnabled="True"
-                        Opacity="0.7"
-                        Style="{StaticResource FlatSlider}"
-                        Thumb.DragCompleted="MediaSliderProgressDragCompleted"
-                        Thumb.DragStarted="MediaSliderProgressDragStarted"
-                        ValueChanged="MediaSliderProgressValueChanged"
-                        Value="{Binding TimeInMilliseconds, Mode=TwoWay, ElementName=PlayerUc}">
-                        <i:Interaction.Behaviors>
-                            <behaviors:ShowTickValueBehavior />
-                        </i:Interaction.Behaviors>
-                    </Slider>
-                </Grid>
+                Background="#FF2F2F2F">
+                <Slider
+                    Name="PositionSlider"
+                    IsEnabled="{Binding ElementName=Media, Path=IsOpen}"
+                    LargeChange="{Binding ElementName=Media, Path=FrameStepDuration, Converter={StaticResource TimeSpanToSecondsConverter}}"
+                    Maximum="{Binding ElementName=Media, Path=NaturalDuration, Converter={StaticResource TimeSpanToSecondsConverter}}"
+                    SmallChange="{Binding ElementName=Media, Path=FrameStepDuration, Converter={StaticResource TimeSpanToSecondsConverter}}"
+                    Style="{DynamicResource PositionSliderStyle}"
+                    Thumb.DragCompleted="OnMediaSliderDragCompleted"
+                    Thumb.DragStarted="OnMediaSliderDragStarted"
+                    Value="{Binding ElementName=Media, Path=Position, Converter={StaticResource TimeSpanToSecondsConverter}}" />
             </StatusBarItem>
             <StatusBarItem Grid.Column="3" Background="#FF2F2F2F">
+                <TextBlock
+                    VerticalAlignment="Center"
+                    Foreground="{StaticResource CustomSliderHighlightBrush}"
+                    Text="{Binding ElementName=Media, Path=Position, Converter={StaticResource TimeSpanFormatter}, ConverterParameter={x:Reference Media}, Mode=OneWay}"
+                    TextAlignment="Right" />
+            </StatusBarItem>
+            <StatusBarItem Grid.Column="4" Background="#FF2F2F2F">
                 <Slider
                     Width="100"
                     Height="10"
-                    LargeChange="10"
-                    Maximum="200"
+                    IsMoveToPointEnabled="True"
+                    LargeChange="0.1"
+                    Maximum="1"
                     Minimum="0"
-                    SmallChange="1"
+                    SmallChange="0.05"
                     Style="{StaticResource FlatSlider}"
-                    Value="{Binding Path=Volume, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" />
+                    Value="{Binding Path=Volume, ElementName=Media}" />
             </StatusBarItem>
             <StatusBarItem
-                Grid.Column="4"
+                Grid.Column="5"
                 Background="#FF2F2F2F"
                 Visibility="{Binding ShowSubtitleButton, Converter={StaticResource BoolToInverseVisibilityConverter}}">
                 <StackPanel Orientation="Horizontal">
@@ -256,8 +269,7 @@
                         Width="39"
                         Height="39"
                         Command="{Binding SetLowerSubtitleSizeCommand, ElementName=PlayerUc}"
-                        Style="{StaticResource MetroCircleButtonStyle}"
-                        Visibility="Collapsed">
+                        Style="{StaticResource MetroCircleButtonStyle}">
                         <iconPacks:PackIconFontAwesome
                             Width="12"
                             Foreground="White"
@@ -268,8 +280,7 @@
                         Height="39"
                         Margin="5,0,0,0"
                         Command="{Binding SetHigherSubtitleSizeCommand, ElementName=PlayerUc}"
-                        Style="{StaticResource MetroCircleButtonStyle}"
-                        Visibility="Collapsed">
+                        Style="{StaticResource MetroCircleButtonStyle}">
                         <iconPacks:PackIconFontAwesome
                             Width="18"
                             Foreground="White"
@@ -291,7 +302,7 @@
                     </ToggleButton>
                 </StackPanel>
             </StatusBarItem>
-            <StatusBarItem Grid.Column="5" Background="#FF2F2F2F">
+            <StatusBarItem Grid.Column="6" Background="#FF2F2F2F">
                 <ToggleButton
                     x:Name="MaximizeButton"
                     Width="39"
@@ -325,7 +336,7 @@
                     </Canvas>
                 </ToggleButton>
             </StatusBarItem>
-            <StatusBarItem Grid.Column="6" Background="#FF2F2F2F">
+            <StatusBarItem Grid.Column="7" Background="#FF2F2F2F">
                 <ToggleButton
                     Width="39"
                     Height="39"
@@ -341,7 +352,7 @@
                     </Canvas>
                 </ToggleButton>
             </StatusBarItem>
-            <StatusBarItem Grid.Column="7" Background="#FF2F2F2F">
+            <StatusBarItem Grid.Column="8" Background="#FF2F2F2F">
                 <ToggleButton
                     x:Name="CastButton"
                     Width="48"

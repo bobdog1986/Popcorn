@@ -43,7 +43,6 @@ using Popcorn.ViewModels.Pages.Player;
 using Popcorn.ViewModels.Windows.Settings;
 using Popcorn.Services.Subtitles;
 using Popcorn.Services.Trakt;
-using Popcorn.Vlc.Wpf;
 
 namespace Popcorn.ViewModels.Windows
 {
@@ -711,7 +710,7 @@ namespace Popcorn.ViewModels.Windows
                     await SaveCacheOnExit();
                     Cef.Shutdown();
                     FileHelper.ClearFolders();
-                    ApiManager.ReleaseAll();
+                    Application.Current.Shutdown();
                 }
                 catch (Exception ex)
                 {

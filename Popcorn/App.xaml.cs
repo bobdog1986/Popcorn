@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.Reflection;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -12,9 +8,7 @@ using Akavache;
 using CefSharp;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
-using Microsoft.ApplicationInsights.NLogTarget;
 using NLog;
-using NLog.Config;
 using Popcorn.Helpers;
 using Popcorn.Messaging;
 using Popcorn.Utils;
@@ -44,7 +38,7 @@ namespace Popcorn
         /// <summary>
         /// Watcher
         /// </summary>
-        private static Stopwatch WatchStart { get; }
+        private Stopwatch WatchStart { get; set; }
     
         /// <summary>
         /// If first run
@@ -55,32 +49,6 @@ namespace Popcorn
         /// Loading semaphore
         /// </summary>
         private readonly SemaphoreSlim _windowLoadedSemaphore = new SemaphoreSlim(1, 1);
-
-        /// <summary>
-        /// Initializes a new instance of the App class.
-        /// </summary>
-        static App()
-        {
-            WatchStart = Stopwatch.StartNew();
-            Logger.Info(
-                "Popcorn starting...");
-            DispatcherHelper.Initialize();
-            LocalizeDictionary.Instance.SetCurrentThreadCulture = true;
-            BlobCache.ApplicationName = "Popcorn";
-
-            try
-            {
-                SquirrelAwareApp.HandleEvents(
-                    onInitialInstall: OnInitialInstall,
-                    onAppUpdate: OnAppUpdate,
-                    onAppUninstall: OnAppUninstall,
-                    onFirstRun: OnFirstRun);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
-        }
 
         private static void OnFirstRun()
         {
@@ -134,11 +102,20 @@ namespace Popcorn
             }
         }
 
+        static App()
+        {
+            DispatcherHelper.Initialize();
+            LocalizeDictionary.Instance.SetCurrentThreadCulture = true;
+            BlobCache.ApplicationName = "Popcorn";
+            Cef.Initialize();
+        }
+
         /// <summary>
         /// Initializes a new instance of the App class.
         /// </summary>
         public App()
         {
+            ShutdownMode = ShutdownMode.OnExplicitShutdown;
             DispatcherUnhandledException += AppDispatcherUnhandledException;
             Dispatcher.UnhandledException += Dispatcher_UnhandledException;
             TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
@@ -151,8 +128,22 @@ namespace Popcorn
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+            WatchStart = Stopwatch.StartNew();
+            Logger.Info(
+                "Popcorn starting...");
             AsyncSynchronizationContext.Register();
-            Cef.Initialize();
+            try
+            {
+                SquirrelAwareApp.HandleEvents(
+                    onInitialInstall: OnInitialInstall,
+                    onAppUpdate: OnAppUpdate,
+                    onAppUninstall: OnAppUninstall,
+                    onFirstRun: OnFirstRun);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
         }
 
         /// <summary>

@@ -9,6 +9,7 @@ using NLog;
 using Polly;
 using Popcorn.OSDB;
 using Popcorn.Utils;
+using SubtitlesParser.Classes;
 
 namespace Popcorn.Services.Subtitles
 {
@@ -96,6 +97,20 @@ namespace Popcorn.Services.Subtitles
                     return await osdb.DownloadSubtitleToPath(path, subtitle);
                 }
             });
+        }
+
+        /// <summary>
+        /// Get captions from local path
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        public IEnumerable<SubtitleItem> LoadCaptions(string filePath)
+        {
+            var parser = new SubtitlesParser.Classes.Parsers.SubParser();
+            using (var fileStream = File.OpenRead(filePath))
+            {
+                return parser.ParseStream(fileStream, Encoding.GetEncoding("iso-8859-1"));
+            }
         }
 
         /// <summary>
