@@ -443,6 +443,14 @@ namespace Popcorn.UserControls.Player
             catch (Exception ex)
             {
                 Logger.Error(ex);
+                Messenger.Default.Send(
+                    new UnhandledExceptionMessage(
+                        new PopcornException("An error has occured while trying to play the media.")));
+                var vm = DataContext as MediaPlayerViewModel;
+                if (vm == null)
+                    return;
+
+                vm.MediaEnded();
             }
         }
 
