@@ -73,6 +73,10 @@
         <i:EventTrigger EventName="DragLeave">
             <command:EventToCommand Command="{Binding Mode=OneWay, Path=DragLeaveFileCommand}" PassEventArgsToCommand="True" />
         </i:EventTrigger>
+
+        <i:EventTrigger EventName="Closing">
+            <command:EventToCommand Command="{Binding Mode=OneWay, Path=MainWindowClosingCommand}" PassEventArgsToCommand="False" />
+        </i:EventTrigger>
     </i:Interaction.Triggers>
 
     <controls:MetroWindow.WindowButtonCommands>
@@ -155,7 +159,7 @@
         </controls:FlyoutsControl>
     </controls:MetroWindow.Flyouts>
     <Grid>
-        <tb:TaskbarIcon
+        <!--<tb:TaskbarIcon
             x:Name="Tray"
             IconSource="../Resources/Images/icon.ico"
             MenuActivation="LeftOrRightClick"
@@ -172,7 +176,7 @@
                         Header="Exit" />
                 </ContextMenu>
             </tb:TaskbarIcon.ContextMenu>
-        </tb:TaskbarIcon>
+        </tb:TaskbarIcon>-->
         <Frame
             x:Name="MainFrame"
             NavigationUIVisibility="Hidden"

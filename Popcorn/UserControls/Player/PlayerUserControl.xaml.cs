@@ -735,5 +735,13 @@ namespace Popcorn.UserControls.Player
         {
             SeekMedia();
         }
+
+        private void OnPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (Media.IsPlaying)
+                PauseMedia();
+            else
+                PlayMedia();
+        }
     }
 }

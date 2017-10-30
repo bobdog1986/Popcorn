@@ -673,8 +673,8 @@ namespace Popcorn.ViewModels.Windows.Settings
                                         Logger.Info(
                                             "Restarting...");
 
-                                        Process.Start($@"{_updateFilePath}\Popcorn.exe", "restart");
                                         Application.Current.MainWindow.Close();
+                                        Process.Start($@"{_updateFilePath}\Popcorn.exe", "restart");
                                     })
                                 .Dismiss().WithButton(
                                     LocalizationProviderHelper.GetLocalizedValue<string>("LaterLabel"),

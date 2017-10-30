@@ -62,7 +62,8 @@
             Grid.Column="0"
             attachedProperties:EnableDragHelper.EnableDrag="True"
             attachedProperties:MaximizeDoubleClickHelper.MaximizeDoubleClick="True"
-            Background="Black" />
+            Background="Black"
+            PreviewMouseLeftButtonDown="OnPreviewMouseLeftButtonDown" />
         <Grid
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
@@ -232,6 +233,7 @@
                 Background="#FF2F2F2F">
                 <Slider
                     Name="PositionSlider"
+                    Focusable="False"
                     IsEnabled="{Binding ElementName=Media, Path=IsOpen}"
                     LargeChange="{Binding ElementName=Media, Path=FrameStepDuration, Converter={StaticResource TimeSpanToSecondsConverter}}"
                     Maximum="{Binding ElementName=Media, Path=NaturalDuration, Converter={StaticResource TimeSpanToSecondsConverter}}"
