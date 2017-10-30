@@ -105,6 +105,16 @@ namespace Popcorn.UserControls.Player
                 else
                     PlayMedia();
             }
+
+            if (ke.Key == Key.Up)
+            {
+                Media.Volume += 0.05;
+            }
+
+            if (ke.Key == Key.Down)
+            {
+                Media.Volume -= 0.05;
+            }
         }
 
         /// <summary>
