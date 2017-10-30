@@ -158,22 +158,26 @@ namespace Popcorn.Services.Download
             {
                 using (var status = handle.status())
                 {
-                    var numPieces = handle.torrent_file().num_pieces();
                     var progress = status.progress * 100d;
-                    var cursor = Math.Floor(numPieces * playingProgression);
-                    var pieces = handle.piece_priorities().Select((piece, index) => new {Piece = piece, Index = index})
-                        .Where(a => a.Index >= cursor - 1 * numPieces / 100d).ToList();
-
-                    foreach (var piece in pieces)
+                    if (status.has_metadata)
                     {
-                        if (!handle.have_piece(piece.Index))
+                        var numPieces = handle.torrent_file().num_pieces();
+                        var cursor = Math.Floor(numPieces * playingProgression);
+                        var pieces = handle.piece_priorities()
+                            .Select((piece, index) => new {Piece = piece, Index = index})
+                            .Where(a => a.Index >= cursor - 1 * numPieces / 100d).ToList();
+
+                        foreach (var piece in pieces)
                         {
-                            handle.set_piece_deadline(piece.Index, 2000);
-                            break;
-                        }
-                        else
-                        {
-                            handle.reset_piece_deadline(piece.Index);
+                            if (!handle.have_piece(piece.Index))
+                            {
+                                handle.set_piece_deadline(piece.Index, 2000);
+                                break;
+                            }
+                            else
+                            {
+                                handle.reset_piece_deadline(piece.Index);
+                            }
                         }
                     }
 
