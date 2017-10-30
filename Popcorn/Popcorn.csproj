@@ -508,6 +508,7 @@
     <Compile Include="Messaging\UnhandledExceptionMessage.cs" />
     <Compile Include="Messaging\UpdateAvailableMessage.cs" />
     <Compile Include="Models\Chromecast\MediaStatusEventArgs.cs" />
+    <Compile Include="Models\Download\PieceAvailability.cs" />
     <Compile Include="Models\Localization\SpanishLanguage.cs" />
     <Compile Include="Models\Movie\IMovie.cs" />
     <Compile Include="Models\Movie\MovieLightJson.cs" />

@@ -65,6 +65,33 @@
             Background="Black"
             PreviewMouseLeftButtonDown="OnPreviewMouseLeftButtonDown" />
         <Grid
+            x:Name="Buffering"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            Visibility="Collapsed">
+            <Grid
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Background="Black"
+                Opacity="0.8" />
+            <StackPanel
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Orientation="Vertical">
+                <controls:ProgressRing
+                    Width="48"
+                    Height="48"
+                    VerticalAlignment="Center"
+                    IsActive="True" />
+                <TextBlock
+                    Margin="0,10,0,0"
+                    FontSize="36"
+                    FontWeight="Light"
+                    Foreground="White"
+                    Text="Buffering" />
+            </StackPanel>
+        </Grid>
+        <Grid
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             Visibility="{Binding IsCasting, Converter={StaticResource BoolToInverseVisibilityConverter}}">
@@ -241,7 +268,7 @@
                     Style="{DynamicResource PositionSliderStyle}"
                     Thumb.DragCompleted="OnMediaSliderDragCompleted"
                     Thumb.DragStarted="OnMediaSliderDragStarted"
-                    Value="{Binding ElementName=Media, Path=Position, Converter={StaticResource TimeSpanToSecondsConverter}}" />
+                    ValueChanged="OnSliderValueChanged" />
             </StatusBarItem>
             <StatusBarItem Grid.Column="3" Background="#FF2F2F2F">
                 <TextBlock
@@ -271,7 +298,8 @@
                         Width="39"
                         Height="39"
                         Command="{Binding SetLowerSubtitleSizeCommand, ElementName=PlayerUc}"
-                        Style="{StaticResource MetroCircleButtonStyle}">
+                        Style="{StaticResource MetroCircleButtonStyle}"
+                        Visibility="{Binding IsSubtitleChosen, Converter={StaticResource BoolToInverseVisibilityConverter}}">
                         <iconPacks:PackIconFontAwesome
                             Width="12"
                             Foreground="White"
@@ -282,7 +310,8 @@
                         Height="39"
                         Margin="5,0,0,0"
                         Command="{Binding SetHigherSubtitleSizeCommand, ElementName=PlayerUc}"
-                        Style="{StaticResource MetroCircleButtonStyle}">
+                        Style="{StaticResource MetroCircleButtonStyle}"
+                        Visibility="{Binding IsSubtitleChosen, Converter={StaticResource BoolToInverseVisibilityConverter}}">
                         <iconPacks:PackIconFontAwesome
                             Width="18"
                             Foreground="White"

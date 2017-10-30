@@ -233,7 +233,7 @@
                                         Height="50"
                                         VerticalAlignment="Center"
                                         Command="{Binding SetWatchedMovieCommand}"
-                                        CommandParameter="{Binding Movie}"
+                                        CommandParameter="{Binding Movie.HasBeenSeen}"
                                         IsChecked="{Binding Movie.HasBeenSeen}"
                                         Style="{StaticResource MetroCircleToggleButtonStyle}">
                                         <iconPacks:PackIconFontAwesome
@@ -250,7 +250,7 @@
                                         Margin="5,0,0,0"
                                         VerticalAlignment="Center"
                                         Command="{Binding SetFavoriteMovieCommand}"
-                                        CommandParameter="{Binding Movie}"
+                                        CommandParameter="{Binding Movie.IsFavorite}"
                                         IsChecked="{Binding Movie.IsFavorite}"
                                         Style="{StaticResource MetroCircleToggleButtonStyle}">
                                         <Rectangle

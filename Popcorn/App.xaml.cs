@@ -71,21 +71,6 @@ namespace Popcorn
             }
         }
 
-        private static void OnAppUpdate(Version version)
-        {
-            Logger.Info("Triggered OnAppUpdate...");
-
-            using (var manager = new UpdateManager(Constants.GithubRepository))
-            {
-                manager.CreateShortcutsForExecutable("Popcorn.exe", ShortcutLocation.Desktop, true);
-                manager.CreateShortcutsForExecutable("Popcorn.exe", ShortcutLocation.StartMenu, true);
-                manager.CreateShortcutsForExecutable("Popcorn.exe", ShortcutLocation.AppRoot, true);
-
-                manager.RemoveUninstallerRegistryEntry();
-                manager.CreateUninstallerRegistryEntry();
-            }
-        }
-
         private static void OnInitialInstall(Version version)
         {
             Logger.Info("Triggered OnInitialInstall...");
@@ -136,7 +121,6 @@ namespace Popcorn
             {
                 SquirrelAwareApp.HandleEvents(
                     onInitialInstall: OnInitialInstall,
-                    onAppUpdate: OnAppUpdate,
                     onAppUninstall: OnAppUninstall,
                     onFirstRun: OnFirstRun);
             }

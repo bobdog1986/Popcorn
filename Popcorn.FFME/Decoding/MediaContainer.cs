@@ -819,11 +819,6 @@
                     IsAtEndOfStream = true;
                     return MediaType.None;
                 }
-                else
-                {
-                    if (InputContext->pb != null && InputContext->pb->error != 0)
-                        throw new MediaContainerException($"Input has produced an error. Error Code {readResult}, {FFmpegEx.GetErrorMessage(readResult)}");
-                }
             }
             else
             {

@@ -349,6 +349,7 @@ namespace Popcorn.ViewModels.Windows
                         },
                         message.PlayingProgress,
                         message.BufferProgress,
+                        message.PieceAvailability,
                         message.BandwidthRate,
                         message.Episode.SelectedSubtitle,
                         message.Episode.AvailableSubtitles);
@@ -386,6 +387,7 @@ namespace Popcorn.ViewModels.Windows
                         },
                         message.PlayingProgress,
                         message.BufferProgress,
+                        message.PieceAvailability,
                         message.BandwidthRate);
 
                     ApplicationService.IsMediaPlaying = true;
@@ -423,6 +425,7 @@ namespace Popcorn.ViewModels.Windows
                         },
                         message.PlayingProgress,
                         message.BufferProgress,
+                        message.PieceAvailability,
                         message.BandwidthRate,
                         message.Movie.SelectedSubtitle,
                         message.Movie.AvailableSubtitles);
@@ -823,7 +826,7 @@ namespace Popcorn.ViewModels.Windows
                 var cmd = Environment.GetCommandLineArgs();
                 if (cmd.Any())
                 {
-                    if (cmd.Contains("restart"))
+                    if (cmd.Contains("updated"))
                     {
                         OpenAboutCommand.Execute(null);
                     }

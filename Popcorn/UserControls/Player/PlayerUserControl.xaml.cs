@@ -26,6 +26,7 @@ using System.Windows.Controls;
 using GalaSoft.MvvmLight.CommandWpf;
 using Popcorn.FFME;
 using Popcorn.Models.Chromecast;
+using Popcorn.Models.Download;
 using MediaElement = Popcorn.FFME.MediaElement;
 using MouseButton = System.Windows.Input.MouseButton;
 
@@ -127,6 +128,10 @@ namespace Popcorn.UserControls.Player
         /// </summary>
         private static readonly SemaphoreSlim SubtitleDelaySemaphore = new SemaphoreSlim(1, 1);
 
+        private PieceAvailability _pieceAvailability;
+
+        private bool _isPausedForBuffering;
+
         /// <summary>
         /// Subscribe to events and play the movie when control has been loaded
         /// </summary>
@@ -171,6 +176,11 @@ namespace Popcorn.UserControls.Player
             vm.CastStarted += OnCastStarted;
             vm.CastStopped += OnCastStopped;
             vm.CastStatusChanged += OnCastStatusChanged;
+            if (vm.PieceAvailability != null)
+            {
+                vm.PieceAvailability.ProgressChanged += PieceAvailabilityOnProgressChanged;
+            }
+
             if (vm.BandwidthRate != null)
             {
                 vm.BandwidthRate.ProgressChanged += OnBandwidthChanged;
@@ -190,9 +200,42 @@ namespace Popcorn.UserControls.Player
             PlayMedia();
         }
 
+        private void PieceAvailabilityOnProgressChanged(object sender, PieceAvailability pieceAvailability)
+        {
+            DispatcherHelper.CheckBeginInvokeOnUI(() =>
+            {
+                if (!Media.NaturalDuration.HasTimeSpan)
+                    return;
+
+                if (!(DataContext is MediaPlayerViewModel vm))
+                    return;
+
+                vm.MediaLength = Media.NaturalDuration.TimeSpan.TotalSeconds;
+                vm.PlayerTime = PositionSlider.Value;
+                _pieceAvailability = pieceAvailability;
+                double startPieceAvailabilityPercentage =
+                    (double)_pieceAvailability.StartAvailablePiece / (double)_pieceAvailability.TotalPieces;
+                double endPieceAvailabilityPercentage = (double)_pieceAvailability.EndAvailablePiece / (double)_pieceAvailability.TotalPieces;
+                var playPercentage = PositionSlider.Value / Media.NaturalDuration.TimeSpan.TotalSeconds;
+
+                if (_isPausedForBuffering && playPercentage > startPieceAvailabilityPercentage &&
+                    playPercentage < endPieceAvailabilityPercentage)
+                {
+                    _isPausedForBuffering = false;
+                    Buffering.Visibility = Visibility.Collapsed;
+                    Media.Position = TimeSpan.FromSeconds(PositionSlider.Value);
+                    PlayMedia();
+                }
+                else if(!_isPausedForBuffering)
+                {
+                    PositionSlider.Value = Media.Position.TotalSeconds;
+                }
+            });
+        }
+
         private void OnRenderingVideo(object sender, RenderingVideoEventArgs e)
         {
-            if (!(DataContext is MediaPlayerViewModel vm) || !vm.SubtitleItems.Any())
+            if (!(DataContext is MediaPlayerViewModel vm))
                 return;
 
             if (vm.SubtitleItems.Any())
@@ -443,7 +486,7 @@ namespace Popcorn.UserControls.Player
                 MediaPlayerStatusBarItemPause.Visibility = Visibility.Visible;
                 CastButton.Visibility = Visibility.Visible;
                 var vm = DataContext as MediaPlayerViewModel;
-                if (vm != null)
+                if (vm != null && Media.NaturalDuration.HasTimeSpan)
                 {
                     vm.MediaDuration = Media.NaturalDuration.TimeSpan.TotalSeconds;
                     if (vm.IsCasting)
@@ -502,7 +545,7 @@ namespace Popcorn.UserControls.Player
         /// <param name="e">CanExecuteRoutedEventArgs</param>
         private void MediaPlayerPlayCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = !Media.IsPlaying;
+            e.CanExecute = !Media.IsPlaying && !_isPausedForBuffering;
             if (Media.IsPlaying)
             {
                 MediaPlayerStatusBarItemPlay.Visibility = Visibility.Collapsed;
@@ -712,7 +755,8 @@ namespace Popcorn.UserControls.Player
                 Media.Dispose();
                 _applicationService.SwitchConstantDisplayAndPower(false);
                 RemoveHandler(Keyboard.PreviewKeyDownEvent, new KeyEventHandler(OnPreviewKeyDownEvent));
-                PositionSlider.RemoveHandler(Slider.PreviewMouseLeftButtonDownEvent, new MouseButtonEventHandler(OnSliderMouseLeftButtonDown));
+                PositionSlider.RemoveHandler(Slider.PreviewMouseLeftButtonDownEvent,
+                    new MouseButtonEventHandler(OnSliderMouseLeftButtonDown));
             }
             catch (Exception ex)
             {
@@ -727,6 +771,8 @@ namespace Popcorn.UserControls.Player
 
         private void SeekMedia()
         {
+            if (_isPausedForBuffering) return;
+            Media.Position = TimeSpan.FromSeconds(PositionSlider.Value);
             var vm = DataContext as MediaPlayerViewModel;
             if (vm != null && vm.IsCasting)
             {
@@ -752,6 +798,23 @@ namespace Popcorn.UserControls.Player
                 PauseMedia();
             else
                 PlayMedia();
+        }
+
+        private void OnSliderValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (_pieceAvailability == null || !Media.NaturalDuration.HasTimeSpan)
+                return;
+
+            double startPieceAvailabilityPercentage =
+                (double)_pieceAvailability.StartAvailablePiece / (double)_pieceAvailability.TotalPieces;
+            double endPieceAvailabilityPercentage = (double)_pieceAvailability.EndAvailablePiece / (double)_pieceAvailability.TotalPieces;
+            var playPercentage = e.NewValue / Media.NaturalDuration.TimeSpan.TotalSeconds;
+            if (playPercentage < startPieceAvailabilityPercentage || playPercentage > endPieceAvailabilityPercentage)
+            {
+                Buffering.Visibility = Visibility.Visible;
+                _isPausedForBuffering = true;
+                PauseMedia();
+            }
         }
     }
 }

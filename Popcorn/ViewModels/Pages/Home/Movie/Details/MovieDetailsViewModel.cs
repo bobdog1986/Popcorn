@@ -489,15 +489,17 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
             });
 
             SetFavoriteMovieCommand =
-                new RelayCommand<MovieJson>(movie =>
+                new RelayCommand<bool>(isFavorite =>
                 {
-                    _userService.SetMovie(movie);
+                    Movie.IsFavorite = isFavorite;
+                    _userService.SetMovie(Movie);
                     Messenger.Default.Send(new ChangeFavoriteMovieMessage());
                 });
 
-            SetWatchedMovieCommand = new RelayCommand<MovieJson>(movie =>
+            SetWatchedMovieCommand = new RelayCommand<bool>(hasBeenSeen =>
             {
-                _userService.SetMovie(movie);
+                Movie.HasBeenSeen = hasBeenSeen;
+                _userService.SetMovie(Movie);
                 Messenger.Default.Send(new ChangeSeenMovieMessage());
             });
         }

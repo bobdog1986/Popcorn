@@ -21,14 +21,17 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
+using GalaSoft.MvvmLight.Ioc;
 using GoogleCast;
 using GoogleCast.Models.Media;
 using Popcorn.Services.Subtitles;
 using Popcorn.Events;
 using Popcorn.Models.Chromecast;
+using Popcorn.Models.Download;
 using Popcorn.Services.Cache;
 using Popcorn.Services.Chromecast;
 using Popcorn.Utils.Exceptions;
+using Popcorn.ViewModels.Pages.Home.Movie.Details;
 using SubtitlesParser.Classes;
 
 namespace Popcorn.ViewModels.Pages.Player
@@ -163,7 +166,7 @@ namespace Popcorn.ViewModels.Pages.Player
 
         public event EventHandler<EventArgs> CastStopped;
 
-        public event EventHandler<MediaStatusEventArgs> CastStatusChanged; 
+        public event EventHandler<MediaStatusEventArgs> CastStatusChanged;
 
         /// <summary>
         /// The cache service
@@ -195,6 +198,11 @@ namespace Popcorn.ViewModels.Pages.Player
         private readonly IProgress<double> _playingProgress;
 
         /// <summary>
+        /// The piece availability progress
+        /// </summary>
+        public readonly Progress<PieceAvailability> PieceAvailability;
+
+        /// <summary>
         /// Initializes a new instance of the MediaPlayerViewModel class.
         /// </summary>
         /// <param name="chromecastService">The Chromecast service</param>
@@ -207,13 +215,14 @@ namespace Popcorn.ViewModels.Pages.Player
         /// <param name="mediaEndedAction">Media action to execute when media has ended</param>
         /// <param name="playingProgress">Media playing progress</param>
         /// <param name="bufferProgress">The buffer progress</param>
+        /// <param name="pieceAvailability">The piece availability</param>
         /// <param name="bandwidthRate">THe bandwidth rate</param>
         /// <param name="currentSubtitle">Subtitle</param>
         /// <param name="subtitles">Subtitles</param>
         public MediaPlayerViewModel(IChromecastService chromecastService, ISubtitlesService subtitlesService, ICacheService cacheService,
             string mediaPath,
             string mediaName, MediaType type, Action mediaStoppedAction,
-            Action mediaEndedAction, IProgress<double> playingProgress = null, Progress<double> bufferProgress = null,
+            Action mediaEndedAction, IProgress<double> playingProgress = null, Progress<double> bufferProgress = null, Progress<PieceAvailability> pieceAvailability = null,
             Progress<BandwidthRate> bandwidthRate = null, Subtitle currentSubtitle = null,
             IEnumerable<Subtitle> subtitles = null)
         {
@@ -228,6 +237,7 @@ namespace Popcorn.ViewModels.Pages.Player
             MediaName = mediaName;
             MediaType = type;
             CanSeek = true;
+            PieceAvailability = pieceAvailability;
             _mediaStoppedAction = mediaStoppedAction;
             _mediaEndedAction = mediaEndedAction;
             SubtitleFilePath = currentSubtitle?.FilePath;
@@ -237,7 +247,7 @@ namespace Popcorn.ViewModels.Pages.Player
             _subtitles = subtitles;
             _playingProgress = playingProgress;
 
-            if (currentSubtitle != null && currentSubtitle.Sub.SubtitleId != "none")
+            if (currentSubtitle != null && currentSubtitle.Sub.SubtitleId != "none" && !string.IsNullOrEmpty(currentSubtitle.FilePath))
             {
                 IsSubtitleChosen = true;
                 CurrentSubtitle = currentSubtitle.Sub;
@@ -280,6 +290,19 @@ namespace Popcorn.ViewModels.Pages.Player
         /// </summary>
         public void MediaEnded()
         {
+            if (MediaType == MediaType.Movie)
+            {
+                try
+                {
+                    var movieDetails = SimpleIoc.Default.GetInstance<MovieDetailsViewModel>();
+                    movieDetails.SetWatchedMovieCommand.Execute(true);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                }
+            }
+
             StopPlayingMediaCommand.Execute(null);
         }
 

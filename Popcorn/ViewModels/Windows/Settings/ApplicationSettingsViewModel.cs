@@ -3,10 +3,12 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 using Enterwell.Clients.Wpf.Notifications;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
@@ -668,13 +670,21 @@ namespace Popcorn.ViewModels.Windows.Settings
                                 .HasBadge("Info")
                                 .HasMessage(LocalizationProviderHelper.GetLocalizedValue<string>("UpdateApplied"))
                                 .Dismiss().WithButton(LocalizationProviderHelper.GetLocalizedValue<string>("Restart"),
-                                    button =>
+                                    async button =>
                                     {
                                         Logger.Info(
                                             "Restarting...");
 
-                                        Application.Current.MainWindow.Close();
-                                        Process.Start($@"{_updateFilePath}\Popcorn.exe", "restart");
+                                        var process = await UpdateManager.RestartAppWhenExited($@"{_updateFilePath}\Popcorn.exe", "updated");
+                                        ThreadStart ts = delegate
+                                        {
+                                            Application.Current.Dispatcher.BeginInvoke((Action)delegate
+                                            {
+                                                Application.Current.Shutdown();
+                                            });
+                                        };
+                                        Thread t = new Thread(ts);
+                                        t.Start();
                                     })
                                 .Dismiss().WithButton(
                                     LocalizationProviderHelper.GetLocalizedValue<string>("LaterLabel"),
