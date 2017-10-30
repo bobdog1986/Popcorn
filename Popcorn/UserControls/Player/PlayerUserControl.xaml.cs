@@ -97,9 +97,9 @@ namespace Popcorn.UserControls.Player
             RoutedEventArgs e)
         {
             KeyEventArgs ke = e as KeyEventArgs;
+            ke.Handled = true;
             if (ke.Key == Key.Space)
             {
-                ke.Handled = true;
                 if (Media.IsPlaying)
                     PauseMedia();
                 else
