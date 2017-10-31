@@ -1,4 +1,11 @@
-﻿# 3.3.2- 30/10/2017 #
+﻿# 3.3.3- 31/10/2017 #
+***
+Seekable movie stream
+
+### Details ###
+* Fixed issue [#15](https://github.com/bbougot/Popcorn/issues/15).
+
+# 3.3.2- 30/10/2017 #
 ***
 Fixed issues
 
