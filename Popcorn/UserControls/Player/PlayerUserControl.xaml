@@ -22,7 +22,7 @@
             <converters:BoolToInverseVisibilityConverter x:Key="BoolToInverseVisibilityConverter" />
             <LinearGradientBrush x:Key="HeaderBackgroundOpacityMask" StartPoint="0.5,0" EndPoint="0.5,1">
                 <GradientStop Offset="0" Color="#FFFFFFFF" />
-                <GradientStop Offset="0.4" Color="#FFFFFFFF" />
+                <GradientStop Offset="0.6" Color="#FFFFFFFF" />
                 <GradientStop Offset="1" Color="#00FFFFFF" />
             </LinearGradientBrush>
         </ResourceDictionary>
@@ -194,6 +194,17 @@
                             Margin="2.5,0,0,0"
                             Foreground="White"
                             Text="{lex:LocText Speed}" />
+                    </StackPanel>
+                    <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
+                        <TextBlock Foreground="White" Text="{lex:LocText RemainingLabel}" />
+                        <TextBlock
+                            Margin="2.5,0,0,0"
+                            Foreground="White"
+                            Text=":" />
+                        <TextBlock
+                            x:Name="Remaining"
+                            Margin="5,0,0,0"
+                            Foreground="White" />
                     </StackPanel>
                 </StackPanel>
             </StackPanel>

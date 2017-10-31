@@ -189,9 +189,6 @@ namespace Popcorn
             if (e.ExceptionObject is Exception ex)
             {
                 Logger.Fatal(ex);
-                Messenger.Default.Send(
-                    new UnhandledExceptionMessage(
-                        new PopcornException(LocalizationProviderHelper.GetLocalizedValue<string>("FatalError"))));
             }
         }
 

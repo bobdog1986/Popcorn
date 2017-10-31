@@ -1,5 +1,6 @@
 ﻿using Popcorn.Utils;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using lt;
 using NLog;
 using System.IO;
 using GalaSoft.MvvmLight.Messaging;
+using Popcorn.Extensions;
 using Popcorn.Helpers;
 using Popcorn.Messaging;
 using Popcorn.Models.Bandwidth;
@@ -157,6 +159,9 @@ namespace Popcorn.Services.Download
             };
 
             IProgress<PieceAvailability> pieceAvailability = new Progress<PieceAvailability>();
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
             while (!cts.IsCancellationRequested)
             {
                 using (var status = handle.status())
@@ -199,17 +204,35 @@ namespace Popcorn.Services.Download
                     nbSeeds.Report(status.num_seeds);
                     nbPeers.Report(status.num_peers);
                     downloadProgress.Report(progress);
+                    var numFiles = handle.torrent_file().num_files();
+                    var fileIndex = -1;
+                    var filePath = string.Empty;
+                    for (var i = 0; i < numFiles; i++)
+                    {
+                        var path = handle.torrent_file().file_at(i);
+                        if (path.EndsWith(".mp4") || path.EndsWith(".mkv") ||
+                            path.EndsWith(".mov") || path.EndsWith(".avi"))
+                        {
+                            fileIndex = i;
+                            filePath = $@"{Directory.GetParent(status.save_path)}\{path}";
+                        }
+                    }
+
+                    var fileProgress = handle.file_progress(1)[fileIndex];
+                    var eta = sw.GetEta(fileProgress, handle.torrent_file().total_size());
                     bandwidthRate.Report(new BandwidthRate
                     {
                         DownloadRate = downRate,
-                        UploadRate = upRate
+                        UploadRate = upRate,
+                        ETA = eta
                     });
 
                     ((IProgress<double>) prog).Report(progress);
                     ((IProgress<BandwidthRate>) bandwidth).Report(new BandwidthRate
                     {
                         DownloadRate = downRate,
-                        UploadRate = upRate
+                        UploadRate = upRate,
+                        ETA = eta
                     });
 
                     handle.flush_cache();
@@ -230,13 +253,6 @@ namespace Popcorn.Services.Download
                     if (progress >= minimumBuffering && !alreadyBuffered)
                     {
                         buffered.Invoke();
-                        var filePath =
-                            Directory
-                                .GetFiles(status.save_path, "*.*",
-                                    SearchOption.AllDirectories)
-                                .FirstOrDefault(s => s.Contains(handle.torrent_file().name()) &&
-                                                     (s.EndsWith(".mp4") || s.EndsWith(".mkv") ||
-                                                      s.EndsWith(".mov") || s.EndsWith(".avi")));
                         if (!string.IsNullOrEmpty(filePath))
                         {
                             alreadyBuffered = true;
@@ -274,7 +290,7 @@ namespace Popcorn.Services.Download
                     catch (TaskCanceledException)
                     {
                         cancelled.Invoke();
-
+                        sw.Stop();
                         try
                         {
                             session.remove_torrent(handle, 1);

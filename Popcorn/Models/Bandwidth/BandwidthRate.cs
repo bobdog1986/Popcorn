@@ -10,5 +10,6 @@ namespace Popcorn.Models.Bandwidth
     {
         public double DownloadRate { get; set; }
         public double UploadRate { get; set; }
+        public TimeSpan ETA { get; set; }
     }
 }

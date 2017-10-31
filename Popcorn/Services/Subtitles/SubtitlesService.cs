@@ -116,7 +116,7 @@ namespace Popcorn.Services.Subtitles
         /// <summary>
         /// Convert a .srt file to a .vtt file
         /// </summary>
-        /// <param name="path">Path to the file</param>
+        /// <param name="sFilePath">Path to the file</param>
         /// <returns>Path to the converted vtt file</returns>
         public string ConvertSrtToVtt(string sFilePath)
         {

@@ -862,6 +862,15 @@ namespace Popcorn.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Remaining Time.
+        /// </summary>
+        public static string RemainingLabel {
+            get {
+                return ResourceManager.GetString("RemainingLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Restart.
         /// </summary>
         public static string Restart {

@@ -1,11 +1,18 @@
-﻿# 3.3.3- 31/10/2017 #
+﻿# 3.3.4 - 31/10/2017 #
+***
+Add remaining time
+
+### Details ###
+* Fixed issue [#133](https://github.com/bbougot/Popcorn/issues/133).
+
+# 3.3.3 - 31/10/2017 #
 ***
 Seekable movie stream
 
 ### Details ###
 * Fixed issue [#15](https://github.com/bbougot/Popcorn/issues/15).
 
-# 3.3.2- 30/10/2017 #
+# 3.3.2 - 30/10/2017 #
 ***
 Fixed issues
 
@@ -15,7 +22,7 @@ Fixed issues
 * Fixed issue [#130](https://github.com/bbougot/Popcorn/issues/130).
 * Fixed issue [#129](https://github.com/bbougot/Popcorn/issues/129).
 
-# 3.3.1- 30/10/2017 #
+# 3.3.1 - 30/10/2017 #
 ***
 Fixed issue
 

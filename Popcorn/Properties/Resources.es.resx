@@ -483,4 +483,7 @@
   <data name="TorrentFileAssociationLabel" xml:space="preserve">
     <value>Asociado con archivos torrent</value>
   </data>
+  <data name="RemainingLabel" xml:space="preserve">
+    <value>Tiempo Restante</value>
+  </data>
 </root>

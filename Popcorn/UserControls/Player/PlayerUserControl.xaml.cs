@@ -24,6 +24,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows.Controls;
 using GalaSoft.MvvmLight.CommandWpf;
+using Popcorn.Converters;
 using Popcorn.FFME;
 using Popcorn.Models.Chromecast;
 using Popcorn.Models.Download;
@@ -415,6 +416,7 @@ namespace Popcorn.UserControls.Player
             {
                 Download.Text = e.DownloadRate.ToString(CultureInfo.InvariantCulture);
                 Upload.Text = e.UploadRate.ToString(CultureInfo.InvariantCulture);
+                Remaining.Text = new TimeSpanFormatter().Convert(e.ETA, null, null, null).ToString();
             });
         }
 

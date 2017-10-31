@@ -61,9 +61,8 @@ namespace Popcorn.Services.Movies.Movie
                     _moviesToTranslateObservable.Drain(s => Observable.Return(s).Delay(TimeSpan.FromMilliseconds(250)))
                         .Subscribe(async movieToTranslate =>
                         {
-                            var timeBeforeTimeOut = 3;
                             var timeoutPolicy =
-                                Policy.TimeoutAsync(timeBeforeTimeOut, TimeoutStrategy.Pessimistic);
+                                Policy.TimeoutAsync(Utils.Constants.DefaultRequestTimeoutInSecond, TimeoutStrategy.Pessimistic);
                             try
                             {
                                 await timeoutPolicy.ExecuteAsync(async () =>
@@ -103,7 +102,7 @@ namespace Popcorn.Services.Movies.Movie
                             catch (Exception ex)
                             {
                                 Logger.Warn(
-                                    $"Movie {movieToTranslate.ImdbCode} has not been translated in {timeBeforeTimeOut} seconds. Error {ex.Message}");
+                                    $"Movie {movieToTranslate.ImdbCode} has not been translated in {Utils.Constants.DefaultRequestTimeoutInSecond} seconds. Error {ex.Message}");
                             }
                         });
                 }

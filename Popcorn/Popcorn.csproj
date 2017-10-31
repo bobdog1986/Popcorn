@@ -476,6 +476,7 @@
     <Compile Include="Events\SubtitleChangedEventArgs.cs" />
     <Compile Include="Events\TimeChangedEventArgs.cs" />
     <Compile Include="Extensions\ObservableDrainExtensions.cs" />
+    <Compile Include="Extensions\StopWatchUtils.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\MessengerExtensions.cs" />
     <Compile Include="Extensions\SortExtensions.cs" />

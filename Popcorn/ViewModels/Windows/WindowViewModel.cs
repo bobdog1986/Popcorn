@@ -969,8 +969,6 @@ namespace Popcorn.ViewModels.Windows
             if (e.ExceptionObject is Exception ex)
             {
                 Logger.Fatal(ex);
-                ManageException(
-                    new PopcornException(LocalizationProviderHelper.GetLocalizedValue<string>("FatalError")));
             }
         }
 
