@@ -238,6 +238,11 @@ namespace Popcorn.UserControls.Player
             if (!(DataContext is MediaPlayerViewModel vm))
                 return;
 
+            if (vm.MediaType == MediaType.Trailer)
+            {
+                PositionSlider.Value = Media.Position.TotalSeconds;
+            }
+
             if (vm.SubtitleItems.Any())
             {
                 var subtitle = vm.SubtitleItems.FirstOrDefault(a =>
