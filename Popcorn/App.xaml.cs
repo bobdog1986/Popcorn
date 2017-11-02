@@ -115,6 +115,19 @@ namespace Popcorn
         /// </summary>
         public App()
         {
+            try
+            {
+                SquirrelAwareApp.HandleEvents(
+                    onInitialInstall: OnInitialInstall,
+                    onAppUpdate: OnAppUpdate,
+                    onAppUninstall: OnAppUninstall,
+                    onFirstRun: OnFirstRun);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
             DispatcherUnhandledException += AppDispatcherUnhandledException;
             Dispatcher.UnhandledException += Dispatcher_UnhandledException;
@@ -132,18 +145,6 @@ namespace Popcorn
             Logger.Info(
                 "Popcorn starting...");
             AsyncSynchronizationContext.Register();
-            try
-            {
-                SquirrelAwareApp.HandleEvents(
-                    onInitialInstall: OnInitialInstall,
-                    onAppUpdate: OnAppUpdate,
-                    onAppUninstall: OnAppUninstall,
-                    onFirstRun: OnFirstRun);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
         }
 
         /// <summary>

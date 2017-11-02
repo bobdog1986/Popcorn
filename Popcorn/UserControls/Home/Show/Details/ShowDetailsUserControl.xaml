@@ -318,6 +318,16 @@
                         <Button
                             Width="100"
                             Height="30"
+                            Margin="0,0,10,0"
+                            VerticalAlignment="Center"
+                            controls1:ControlsHelper.ContentCharacterCasing="Normal"
+                            Command="{Binding GoToImdbCommand}"
+                            CommandParameter="{Binding Show.ImdbId}"
+                            Content="IMDb"
+                            Style="{DynamicResource SquareButtonStyle}" />
+                        <Button
+                            Width="100"
+                            Height="30"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
                             controls1:ControlsHelper.ContentCharacterCasing="Normal"
@@ -325,22 +335,6 @@
                             Content="{lex:LocText TrailerButton}"
                             IsTabStop="False"
                             Style="{DynamicResource SquareButtonStyle}" />
-                        <Button
-                            Width="100"
-                            Height="30"
-                            Margin="10,0,0,0"
-                            controls1:ControlsHelper.ContentCharacterCasing="Normal"
-                            Command="{Binding GoToImdbCommand}"
-                            CommandParameter="{Binding Show.ImdbId}"
-                            Style="{DynamicResource SquareButtonStyle}">
-                            <iconPacks:PackIconFontAwesome
-                                Width="30"
-                                Height="30"
-                                VerticalAlignment="Center"
-                                Background="White"
-                                Foreground="{DynamicResource WhiteBrush}"
-                                Kind="Imdb" />
-                        </Button>
                     </StackPanel>
                     <controls:AnimatedScrollViewer
                         Grid.Row="3"
