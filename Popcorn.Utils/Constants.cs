@@ -14,7 +14,7 @@ namespace Popcorn.Utils
         /// <summary>
         /// App version
         /// </summary>
-        public const string AppVersion = "3.3.4";
+        public const string AppVersion = "3.3.5";
 
         /// <summary>
         /// Endpoint to API
@@ -83,7 +83,7 @@ namespace Popcorn.Utils
                 }
                 catch (Exception)
                 {
-                    return 10d;
+                    return 15d;
                 }
             }
         }

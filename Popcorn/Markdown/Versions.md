@@ -1,4 +1,12 @@
-﻿# 3.3.4 - 31/10/2017 #
+﻿# 3.3.5 - 02/11/2017 #
+***
+Fixed issues
+
+### Details ###
+* Fixed issue [#136](https://github.com/bbougot/Popcorn/issues/136).
+* Fixed issue [#134](https://github.com/bbougot/Popcorn/issues/134).
+
+# 3.3.4 - 31/10/2017 #
 ***
 Add remaining time
 

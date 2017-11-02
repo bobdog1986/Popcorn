@@ -166,9 +166,46 @@ namespace Popcorn.Services.Download
             {
                 using (var status = handle.status())
                 {
+                    var filePath = string.Empty;
                     var progress = status.progress * 100d;
                     if (status.has_metadata)
                     {
+                        var downRate = Math.Round(status.download_rate / 1024d, 0);
+                        var upRate = Math.Round(status.upload_rate / 1024d, 0);
+
+                        nbSeeds.Report(status.num_seeds);
+                        nbPeers.Report(status.num_peers);
+                        downloadProgress.Report(progress);
+                        var numFiles = handle.torrent_file().num_files();
+                        var fileIndex = -1;
+                        for (var i = 0; i < numFiles; i++)
+                        {
+                            var path = handle.torrent_file().file_at(i);
+                            if (path.EndsWith(".mp4") || path.EndsWith(".mkv") ||
+                                path.EndsWith(".mov") || path.EndsWith(".avi"))
+                            {
+                                fileIndex = i;
+                                filePath = $@"{Directory.GetParent(status.save_path)}\{path}";
+                            }
+                        }
+
+                        var fileProgress = handle.file_progress(1)[fileIndex];
+                        var eta = sw.GetEta(fileProgress, handle.torrent_file().total_size());
+                        bandwidthRate.Report(new BandwidthRate
+                        {
+                            DownloadRate = downRate,
+                            UploadRate = upRate,
+                            ETA = eta
+                        });
+
+                        ((IProgress<double>)prog).Report(progress);
+                        ((IProgress<BandwidthRate>)bandwidth).Report(new BandwidthRate
+                        {
+                            DownloadRate = downRate,
+                            UploadRate = upRate,
+                            ETA = eta
+                        });
+
                         var numPieces = handle.torrent_file().num_pieces() - 1;
                         var cursor = Math.Floor(numPieces * playingProgression);
                         var pieces = handle.piece_priorities()
@@ -197,44 +234,7 @@ namespace Popcorn.Services.Download
 
                         pieceAvailability.Report(new PieceAvailability(numPieces, pieces.FirstOrDefault().Index, lastPieceAvailableIndex));
                     }
-
-                    var downRate = Math.Round(status.download_rate / 1024d, 0);
-                    var upRate = Math.Round(status.upload_rate / 1024d, 0);
-
-                    nbSeeds.Report(status.num_seeds);
-                    nbPeers.Report(status.num_peers);
-                    downloadProgress.Report(progress);
-                    var numFiles = handle.torrent_file().num_files();
-                    var fileIndex = -1;
-                    var filePath = string.Empty;
-                    for (var i = 0; i < numFiles; i++)
-                    {
-                        var path = handle.torrent_file().file_at(i);
-                        if (path.EndsWith(".mp4") || path.EndsWith(".mkv") ||
-                            path.EndsWith(".mov") || path.EndsWith(".avi"))
-                        {
-                            fileIndex = i;
-                            filePath = $@"{Directory.GetParent(status.save_path)}\{path}";
-                        }
-                    }
-
-                    var fileProgress = handle.file_progress(1)[fileIndex];
-                    var eta = sw.GetEta(fileProgress, handle.torrent_file().total_size());
-                    bandwidthRate.Report(new BandwidthRate
-                    {
-                        DownloadRate = downRate,
-                        UploadRate = upRate,
-                        ETA = eta
-                    });
-
-                    ((IProgress<double>) prog).Report(progress);
-                    ((IProgress<BandwidthRate>) bandwidth).Report(new BandwidthRate
-                    {
-                        DownloadRate = downRate,
-                        UploadRate = upRate,
-                        ETA = eta
-                    });
-
+                    
                     handle.flush_cache();
                     if (handle.need_save_resume_data())
                         handle.save_resume_data(1);
