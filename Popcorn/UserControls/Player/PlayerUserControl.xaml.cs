@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows;
@@ -249,7 +250,22 @@ namespace Popcorn.UserControls.Player
                 var subtitle = vm.SubtitleItems.FirstOrDefault(a =>
                     a.StartTime <= Media.Position.TotalMilliseconds + SubtitleDelay &&
                     a.EndTime > Media.Position.TotalMilliseconds + SubtitleDelay);
-                Subtitles.Text = subtitle != null ? string.Join(Environment.NewLine, subtitle.Lines) : string.Empty;
+                if (subtitle == null)
+                {
+                    Subtitles.Text = string.Empty;
+                    return;
+                }
+
+                var lines = subtitle.Lines;
+                var formattedLines = new List<string>();
+                foreach (var line in lines)
+                {
+                    formattedLines.Add(line.Replace("<b>", "").Replace("</b>", "")
+                        .Replace("<i>", "").Replace("</i>", "").Replace("<u>", "")
+                        .Replace("</u>", ""));
+                }
+
+                Subtitles.Text = string.Join(Environment.NewLine, formattedLines);
             }
         }
 

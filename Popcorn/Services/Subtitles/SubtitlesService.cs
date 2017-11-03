@@ -109,7 +109,7 @@ namespace Popcorn.Services.Subtitles
             var parser = new SubtitlesParser.Classes.Parsers.SubParser();
             using (var fileStream = File.OpenRead(filePath))
             {
-                return parser.ParseStream(fileStream, Encoding.UTF8);
+                return parser.ParseStream(fileStream, Encoding.GetEncoding("iso-8859-1"));
             }
         }
 

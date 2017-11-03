@@ -140,8 +140,17 @@
                 HorizontalAlignment="Center"
                 FontSize="22"
                 Foreground="White"
-                Text="{Binding Caption}"
-                TextWrapping="Wrap" />
+                TextAlignment="Center"
+                TextWrapping="Wrap">
+                <TextBlock.Effect>
+                    <DropShadowEffect
+                        BlurRadius="6"
+                        Direction="330"
+                        Opacity="0.6"
+                        ShadowDepth="6"
+                        Color="Black" />
+                </TextBlock.Effect>
+            </TextBlock>
         </StackPanel>
         <Grid
             x:Name="UpperPanel"
