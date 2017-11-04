@@ -222,7 +222,7 @@ namespace Popcorn.AttachedProperties
                                         });
                                     }
                                 }
-                                catch (Exception ex)
+                                catch (Exception)
                                 {
                                     DispatcherHelper.CheckBeginInvokeOnUI(() =>
                                     {

@@ -5,11 +5,9 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight;
-using Newtonsoft.Json;
 using Popcorn.Models.Episode;
 using Popcorn.Models.Image;
 using Popcorn.Models.Rating;
-using RestSharp.Deserializers;
 
 namespace Popcorn.Models.Shows
 {

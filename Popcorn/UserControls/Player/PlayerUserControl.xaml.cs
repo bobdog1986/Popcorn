@@ -69,11 +69,6 @@ namespace Popcorn.UserControls.Player
         private readonly IApplicationService _applicationService;
 
         /// <summary>
-        /// Subtitle size
-        /// </summary>
-        private int _subtitleSize;
-
-        /// <summary>
         /// Initializes a new instance of the MoviePlayer class.
         /// </summary>
         public PlayerUserControl()

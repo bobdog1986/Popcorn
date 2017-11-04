@@ -432,14 +432,8 @@
   <data name="Login" xml:space="preserve">
     <value>Conectar</value>
   </data>
-  <data name="SyncTraktLabel" xml:space="preserve">
-    <value>Sincronizar con trakt</value>
-  </data>
   <data name="LoggedInLabel" xml:space="preserve">
     <value>Ya se ha autentificado.</value>
-  </data>
-  <data name="TraktConnectLabel" xml:space="preserve">
-    <value>Conéctese a su cuenta trakt</value>
   </data>
   <data name="RecommendationsTitleTab" xml:space="preserve">
     <value>Recomendaciones</value>
@@ -476,12 +470,6 @@
   </data>
   <data name="DroppedFileIssue" xml:space="preserve">
     <value>Se ha producido un problema al procesar el archivo eliminado.</value>
-  </data>
-  <data name="MagnetLinkAssociationLabel" xml:space="preserve">
-    <value>Asociar con enlaces magnéticos</value>
-  </data>
-  <data name="TorrentFileAssociationLabel" xml:space="preserve">
-    <value>Asociado con archivos torrent</value>
   </data>
   <data name="RemainingLabel" xml:space="preserve">
     <value>Tiempo Restante</value>

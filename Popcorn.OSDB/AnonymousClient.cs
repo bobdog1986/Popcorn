@@ -7,7 +7,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using CookComputing.XmlRpc;
 using Popcorn.OSDB.Backend;
-using Popcorn.Utils.Extensions;
+using Popcorn.OSDB.Utils;
 
 namespace Popcorn.OSDB
 {

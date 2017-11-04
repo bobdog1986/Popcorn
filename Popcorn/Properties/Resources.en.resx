@@ -432,14 +432,8 @@
   <data name="Login" xml:space="preserve">
     <value>Connect</value>
   </data>
-  <data name="SyncTraktLabel" xml:space="preserve">
-    <value>Sync with Trakt</value>
-  </data>
   <data name="LoggedInLabel" xml:space="preserve">
     <value>You are already logged in.</value>
-  </data>
-  <data name="TraktConnectLabel" xml:space="preserve">
-    <value>Connect to you Trakt account</value>
   </data>
   <data name="RecommendationsTitleTab" xml:space="preserve">
     <value>Recommandations</value>
@@ -476,12 +470,6 @@
   </data>
   <data name="DroppedFileIssue" xml:space="preserve">
     <value>An issue has occurred while processing the dropped file.</value>
-  </data>
-  <data name="MagnetLinkAssociationLabel" xml:space="preserve">
-    <value>Associate with magnet links</value>
-  </data>
-  <data name="TorrentFileAssociationLabel" xml:space="preserve">
-    <value>Associate with torrent files</value>
   </data>
   <data name="RemainingLabel" xml:space="preserve">
     <value>Remaining Time</value>

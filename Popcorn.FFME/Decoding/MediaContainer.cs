@@ -786,7 +786,7 @@
             {
                 var attachedPacket = ffmpeg.av_packet_alloc();
                 RC.Current.Add(attachedPacket, $"710: {nameof(MediaComponent)}.{nameof(StreamRead)}()");
-                var copyPacketResult = ffmpeg.av_copy_packet(attachedPacket, &Components.Video.Stream->attached_pic);
+                var copyPacketResult = ffmpeg.av_packet_ref(attachedPacket, &Components.Video.Stream->attached_pic);
                 if (copyPacketResult >= 0 && attachedPacket != null)
                 {
                     Components.Video.SendPacket(attachedPacket);

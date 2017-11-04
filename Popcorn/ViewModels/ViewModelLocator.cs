@@ -4,7 +4,6 @@ using GalaSoft.MvvmLight.Ioc;
 using GoogleCast;
 using Microsoft.Practices.ServiceLocation;
 using Popcorn.Services.Application;
-using Popcorn.Services.Associations;
 using Popcorn.Services.Cache;
 using Popcorn.Services.Chromecast;
 using Popcorn.Services.Genres;
@@ -21,7 +20,6 @@ using Popcorn.ViewModels.Pages.Home.Show.Details;
 using Popcorn.ViewModels.Windows;
 using Popcorn.ViewModels.Windows.Settings;
 using Popcorn.Services.Shows.Trailer;
-using Popcorn.Services.Trakt;
 using Popcorn.ViewModels.Pages.Home.Cast;
 
 namespace Popcorn.ViewModels
@@ -47,9 +45,7 @@ namespace Popcorn.ViewModels
             SimpleIoc.Default.Register<IApplicationService, ApplicationService>();
             SimpleIoc.Default.Register<ISubtitlesService, SubtitlesService>();
             SimpleIoc.Default.Register<IGenreService, GenreService>();
-            SimpleIoc.Default.Register<ITraktService, TraktService>();
             SimpleIoc.Default.Register<ICacheService, CacheService>();
-            SimpleIoc.Default.Register<IFileAssociationService, FileAssociationService>();
             SimpleIoc.Default.Register<IDeviceLocator, DeviceLocator>();
             SimpleIoc.Default.Register<ISender>(() => new Sender());
             SimpleIoc.Default.Register<IChromecastService, ChromecastService>();

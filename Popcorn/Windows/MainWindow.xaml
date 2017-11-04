@@ -17,7 +17,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:settings="clr-namespace:Popcorn.UserControls.Window.Settings"
     xmlns:tb="http://www.hardcodet.net/taskbar"
-    xmlns:tray="clr-namespace:Popcorn.UserControls.Tray"
     xmlns:windows="clr-namespace:Popcorn.ViewModels.Windows"
     Title="Popcorn"
     Width="{Binding Source={x:Static SystemParameters.PrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.8'}"
@@ -48,8 +47,6 @@
     <Window.Resources>
         <ResourceDictionary>
             <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-            <tray:TrayPopup x:Key="TrayPopupUc" />
-            <tray:TrayTooltip x:Key="TrayTooltipUc" />
             <Style TargetType="{x:Type controls:WindowButtonCommands}">
                 <Setter Property="Foreground" Value="White" />
                 <Style.Triggers>
@@ -158,28 +155,8 @@
             </adorners:Overlay.Content>
         </controls:FlyoutsControl>
     </controls:MetroWindow.Flyouts>
-    <Grid>
-        <!--<tb:TaskbarIcon
-            x:Name="Tray"
-            IconSource="../Resources/Images/icon.ico"
-            MenuActivation="LeftOrRightClick"
-            PopupActivation="DoubleClick"
-            ToolTipText="Popcorn"
-            TrayPopup="{StaticResource TrayPopupUc}"
-            TrayToolTip="{StaticResource TrayTooltipUc}"
-            Visibility="Visible">
-            <tb:TaskbarIcon.ContextMenu>
-                <ContextMenu Background="White">
-                    <MenuItem
-                        Command="{Binding MainWindowClosingCommand}"
-                        FontSize="12"
-                        Header="Exit" />
-                </ContextMenu>
-            </tb:TaskbarIcon.ContextMenu>
-        </tb:TaskbarIcon>-->
-        <Frame
-            x:Name="MainFrame"
-            NavigationUIVisibility="Hidden"
-            Source="/Pages/HomePage.xaml" />
-    </Grid>
+    <Frame
+        x:Name="MainFrame"
+        NavigationUIVisibility="Hidden"
+        Source="/Pages/HomePage.xaml" />
 </controls:MetroWindow>

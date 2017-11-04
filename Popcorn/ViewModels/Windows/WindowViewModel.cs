@@ -10,18 +10,15 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Navigation;
 using Akavache;
-using CefSharp;
 using Enterwell.Clients.Wpf.Notifications;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
-using Ignite.SharpNetSH;
 using MahApps.Metro.Controls.Dialogs;
 using Microsoft.Owin.Hosting;
 using Microsoft.Win32;
-using NetFwTypeLib;
 using NLog;
 using Polly.Timeout;
 using Popcorn.Dialogs;
@@ -42,7 +39,6 @@ using Popcorn.ViewModels.Pages.Home.Show;
 using Popcorn.ViewModels.Pages.Player;
 using Popcorn.ViewModels.Windows.Settings;
 using Popcorn.Services.Subtitles;
-using Popcorn.Services.Trakt;
 
 namespace Popcorn.ViewModels.Windows
 {
@@ -65,11 +61,6 @@ namespace Popcorn.ViewModels.Windows
         /// Holds the async message relative to <see cref="ShowSubtitleDialogMessage"/>
         /// </summary>
         private IDisposable _showSubtitleDialogMessage;
-
-        /// <summary>
-        /// Holds the async message relative to <see cref="ShowTraktDialogMessage"/>
-        /// </summary>
-        private IDisposable _showTraktDialogMessage;
 
         /// <summary>
         /// The disposable local OWIN server
@@ -130,11 +121,6 @@ namespace Popcorn.ViewModels.Windows
         /// The chromecast service
         /// </summary>
         private readonly IChromecastService _chromecastService;
-
-        /// <summary>
-        /// The Trakt service
-        /// </summary>
-        private readonly ITraktService _traktService;
         
         /// <summary>
         /// <see cref="MediaPlayer"/>
@@ -157,11 +143,6 @@ namespace Popcorn.ViewModels.Windows
         private readonly NotificationMessageManager _manager;
 
         /// <summary>
-        /// If initialized
-        /// </summary>
-        private bool _initialized;
-
-        /// <summary>
         /// The cache service
         /// </summary>
         private readonly ICacheService _cacheService;
@@ -172,17 +153,15 @@ namespace Popcorn.ViewModels.Windows
         /// <param name="applicationService">Instance of Application state</param>
         /// <param name="userService">Instance of movie history service</param>
         /// <param name="subtitlesService">Instance of subtitles service</param>
-        /// <param name="traktService">Instance of Trakt service</param>
         /// <param name="chromecastService">Instance of Chromecast service</param>
         /// <param name="cacheService">Instance of cache service</param>
         /// <param name="manager">The notification manager</param>
         public WindowViewModel(IApplicationService applicationService, IUserService userService,
-            ISubtitlesService subtitlesService, ITraktService traktService, IChromecastService chromecastService,
+            ISubtitlesService subtitlesService, IChromecastService chromecastService,
             ICacheService cacheService, NotificationMessageManager manager)
         {
             _chromecastService = chromecastService;
             _cacheService = cacheService;
-            _traktService = traktService;
             _manager = manager;
             _subtitlesService = subtitlesService;
             _userService = userService;
@@ -294,8 +273,6 @@ namespace Popcorn.ViewModels.Windows
         /// Command used to open help dialog
         /// </summary>
         public ICommand OpenHelpCommand { get; private set; }
-
-        public ICommand OpenWelcomeCommand { get; private set; }
 
         /// <summary>
         /// Command used to load tabs
@@ -624,34 +601,6 @@ namespace Popcorn.ViewModels.Windows
                     await cts.Task;
                 });
 
-            _showTraktDialogMessage = Messenger.Default.RegisterAsyncMessage<ShowTraktDialogMessage>(async message =>
-            {
-                var vm = new TraktDialogViewModel(_traktService);
-                var subtitleDialog = new TraktDialog
-                {
-                    DataContext = vm
-                };
-
-                var cts = new TaskCompletionSource<object>();
-                vm.CloseAction = async () =>
-                {
-                    try
-                    {
-                        message.IsLoggedIn = vm.IsLoggedIn;
-                        await _dialogCoordinator.HideMetroDialogAsync(this, subtitleDialog);
-                        cts.TrySetResult(null);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Error(ex);
-                        cts.TrySetException(ex);
-                    }
-                };
-                IsSettingsFlyoutOpen = false;
-                await _dialogCoordinator.ShowMetroDialogAsync(this, subtitleDialog);
-                await cts.Task;
-            });
-
             _customSubtitleMessage = Messenger.Default.RegisterAsyncMessage<CustomSubtitleMessage>(
                 async message =>
                 {
@@ -711,9 +660,7 @@ namespace Popcorn.ViewModels.Windows
                     await _userService.UpdateUser();
                     _localServer?.Dispose();
                     await SaveCacheOnExit();
-                    Cef.Shutdown();
                     FileHelper.ClearFolders();
-                    Application.Current.Shutdown();
                 }
                 catch (Exception ex)
                 {
@@ -809,18 +756,6 @@ namespace Popcorn.ViewModels.Windows
                 Messenger.Default.Send(new DropFileMessage(DropFileMessage.DropFileEvent.Leave));
             });
 
-            OpenWelcomeCommand = new RelayCommand(async () =>
-            {
-                var welcomeDialog = new WelcomeDialog();
-                var vm = new WelcomeDialogViewModel(async () =>
-                {
-                    await _dialogCoordinator.HideMetroDialogAsync(this, welcomeDialog);
-                });
-
-                welcomeDialog.DataContext = vm;
-                await _dialogCoordinator.ShowMetroDialogAsync(this, welcomeDialog);
-            });
-
             InitializeAsyncCommand = new RelayCommand(async () =>
             {
                 var cmd = Environment.GetCommandLineArgs();
@@ -839,48 +774,7 @@ namespace Popcorn.ViewModels.Windows
 
                 try
                 {
-                    var netsh = new NetSH(new Utils.CommandLineHarness());
-                    var showResponse = netsh.Http.Show.UrlAcl(Constants.ServerUrl);
-                    if (showResponse.ResponseObject.Count == 0 || !FirewallRuleExists("Popcorn Server"))
-                    {
-                        var arguments = string.Empty;
-                        if (showResponse.ResponseObject.Count == 0)
-                            arguments += "acl ";
-
-                        if (!FirewallRuleExists("Popcorn Server"))
-                            arguments += "fw";
-
-                        var handlerPath = $@"{
-                                Directory.GetParent(new Uri(Assembly.GetExecutingAssembly().CodeBase)
-                                    .AbsolutePath)
-                            }\Popcorn.Handler.exe";
-                        var process = new Process();
-                        var startInfo =
-                            new ProcessStartInfo
-                            {
-                                FileName = handlerPath,
-                                Arguments = $"{arguments}",
-                                Verb = "runas"
-                            };
-                        process.StartInfo = startInfo;
-                        process.EnableRaisingEvents = true;
-                        process.Start();
-                        process.Exited += (sender, args) =>
-                        {
-                            try
-                            {
-                                _localServer = WebApp.Start<Startup>(Constants.ServerUrl);
-                            }
-                            catch (Exception ex)
-                            {
-                                Logger.Error(ex);
-                            }
-                        };
-                    }
-                    else
-                    {
-                        _localServer = WebApp.Start<Startup>(Constants.ServerUrl);
-                    }
+                    _localServer = WebApp.Start<Startup>(Constants.ServerUrl);
                 }
                 catch (Exception ex)
                 {
@@ -927,28 +821,6 @@ namespace Popcorn.ViewModels.Windows
             {
                 Logger.Error(ex);
             }
-        }
-
-        private bool FirewallRuleExists(string ruleName)
-        {
-            try
-            {
-                Type tNetFwPolicy2 = Type.GetTypeFromProgID("HNetCfg.FwPolicy2");
-                INetFwPolicy2 fwPolicy2 = (INetFwPolicy2) Activator.CreateInstance(tNetFwPolicy2);
-                foreach (INetFwRule rule in fwPolicy2.Rules)
-                {
-                    if (rule.Name.IndexOf(ruleName, StringComparison.Ordinal) != -1)
-                    {
-                        return true;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
-
-            return false;
         }
 
         /// <summary>

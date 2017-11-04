@@ -1,4 +1,11 @@
-﻿# 3.3.6 - 03/11/2017 #
+﻿# 3.4.0 - 04/11/2017 #
+***
+Cleanup unused resources
+
+### Details ###
+* Refactoring and cleaning unused packages
+
+# 3.3.6 - 03/11/2017 #
 ***
 Fixed issues
 

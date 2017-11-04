@@ -610,15 +610,6 @@ namespace Popcorn.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Associate with magnet links.
-        /// </summary>
-        public static string MagnetLinkAssociationLabel {
-            get {
-                return ResourceManager.GetString("MagnetLinkAssociationLabel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Recherche une chaîne localisée semblable à Quality.
         /// </summary>
         public static string MovieQualityLabel {
@@ -1024,24 +1015,6 @@ namespace Popcorn.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Sync with Trakt.
-        /// </summary>
-        public static string SyncTraktLabel {
-            get {
-                return ResourceManager.GetString("SyncTraktLabel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à Associate with torrent files.
-        /// </summary>
-        public static string TorrentFileAssociationLabel {
-            get {
-                return ResourceManager.GetString("TorrentFileAssociationLabel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Recherche une chaîne localisée semblable à Trailer.
         /// </summary>
         public static string TrailerButton {
@@ -1056,15 +1029,6 @@ namespace Popcorn.Properties {
         public static string TrailerNotAvailable {
             get {
                 return ResourceManager.GetString("TrailerNotAvailable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Recherche une chaîne localisée semblable à Connect to your Trakt account.
-        /// </summary>
-        public static string TraktConnectLabel {
-            get {
-                return ResourceManager.GetString("TraktConnectLabel", resourceCulture);
             }
         }
         

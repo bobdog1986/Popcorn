@@ -2,14 +2,14 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>Popcorn</id>
-        <version>3.3.6</version>
+        <version>3.4.0</version>
         <title>Popcorn</title>
         <authors>Benjamin Bougot</authors>
         <projectUrl>https://github.com/bbougot/Popcorn</projectUrl>
         <iconUrl>https://raw.githubusercontent.com/bbougot/Popcorn/master/Popcorn/icon.ico</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>A Powerful and Fast Popcorn Time Client</description>
-        <releaseNotes>Fixed issues</releaseNotes>
+        <releaseNotes>Refactoring</releaseNotes>
     </metadata>
     <files>
         <file src="en\Popcorn.resources.dll" target="lib\net45\en\Popcorn.resources.dll" />
@@ -24,7 +24,6 @@
         <file src="GalaSoft.MvvmLight.Extras.dll" target="lib\net45\GalaSoft.MvvmLight.Extras.dll" />
         <file src="GalaSoft.MvvmLight.Platform.dll" target="lib\net45\GalaSoft.MvvmLight.Platform.dll" />
         <file src="ltnet.dll" target="lib\net45\ltnet.dll" />
-        <file src="ltnet.pdb" target="lib\net45\ltnet.pdb" />
         <file src="MahApps.Metro.dll" target="lib\net45\MahApps.Metro.dll" />
         <file src="MahApps.Metro.IconPacks.dll" target="lib\net45\MahApps.Metro.IconPacks.dll" />
         <file src="Microsoft.Practices.ServiceLocation.dll" target="lib\net45\Microsoft.Practices.ServiceLocation.dll" />
@@ -38,7 +37,6 @@
         <file src="NLog.dll" target="lib\net45\NLog.dll" />
         <file src="NuGet.Squirrel.dll" target="lib\net45\NuGet.Squirrel.dll" />
         <file src="Popcorn.OSDB.dll" target="lib\net45\Popcorn.OSDB.dll" />
-        <file src="Popcorn.Handler.exe" target="lib\net45\Popcorn.Handler.exe" />
         <file src="Popcorn.exe" target="lib\net45\Popcorn.exe" />
         <file src="Popcorn.exe.config" target="lib\net45\Popcorn.exe.config" />
         <file src="RestSharp.dll" target="lib\net45\RestSharp.dll" />
@@ -63,11 +61,6 @@
         <file src="Popcorn.YTVideoProvider.dll" target="lib\net45\Popcorn.YTVideoProvider.dll" />
         <file src="Microsoft.ApplicationInsights.dll" target="lib\net45\Microsoft.ApplicationInsights.dll" />
         <file src="Microsoft.ApplicationInsights.NLogTarget.dll" target="lib\net45\Microsoft.ApplicationInsights.NLogTarget.dll" />
-        <file src="Microsoft.Threading.Tasks.dll" target="lib\net45\Microsoft.Threading.Tasks.dll" />
-        <file src="Microsoft.Threading.Tasks.Extensions.Desktop.dll" target="lib\net45\Microsoft.Threading.Tasks.Extensions.Desktop.dll" />
-        <file src="Microsoft.Threading.Tasks.Extensions.dll" target="lib\net45\Microsoft.Threading.Tasks.Extensions.dll" />
-        <file src="System.Net.Http.Extensions.dll" target="lib\net45\System.Net.Http.Extensions.dll" />
-        <file src="System.Net.Http.Primitives.dll" target="lib\net45\System.Net.Http.Primitives.dll" />
         <file src="System.IO.dll" target="lib\net45\System.IO.dll" />
         <file src="System.Reflection.dll" target="lib\net45\System.Reflection.dll" />
         <file src="System.Runtime.Extensions.dll" target="lib\net45\System.Runtime.Extensions.dll" />
@@ -79,81 +72,10 @@
         <file src="Polly.dll" target="lib\net45\Polly.dll" />
         <file src="System.Windows.Controls.Input.Toolkit.dll" target="lib\net45\System.Windows.Controls.Input.Toolkit.dll" />
         <file src="System.Windows.Controls.Layout.Toolkit.dll" target="lib\net45\System.Windows.Controls.Layout.Toolkit.dll" />
-        <file src="locales\am.pak" target="lib\net45\locales\am.pak" />
-        <file src="locales\ar.pak" target="lib\net45\locales\ar.pak" />
-        <file src="locales\bg.pak" target="lib\net45\locales\bg.pak" />
-        <file src="locales\bn.pak" target="lib\net45\locales\bn.pak" />
-        <file src="locales\ca.pak" target="lib\net45\locales\ca.pak" />
-        <file src="locales\cs.pak" target="lib\net45\locales\cs.pak" />
-        <file src="locales\da.pak" target="lib\net45\locales\da.pak" />
-        <file src="locales\de.pak" target="lib\net45\locales\de.pak" />
-        <file src="locales\el.pak" target="lib\net45\locales\el.pak" />
-        <file src="locales\en-GB.pak" target="lib\net45\locales\en-GB.pak" />
-        <file src="locales\en-US.pak" target="lib\net45\locales\en-US.pak" />
-        <file src="locales\es.pak" target="lib\net45\locales\es.pak" />
-        <file src="locales\es-419.pak" target="lib\net45\locales\es-419.pak" />
-        <file src="locales\et.pak" target="lib\net45\locales\et.pak" />
-        <file src="locales\fa.pak" target="lib\net45\locales\fa.pak" />
-        <file src="locales\fi.pak" target="lib\net45\locales\fi.pak" />
-        <file src="locales\fil.pak" target="lib\net45\locales\fil.pak" />
-        <file src="locales\fr.pak" target="lib\net45\locales\fr.pak" />
-        <file src="locales\gu.pak" target="lib\net45\locales\gu.pak" />
-        <file src="locales\he.pak" target="lib\net45\locales\he.pak" />
-        <file src="locales\hi.pak" target="lib\net45\locales\hi.pak" />
-        <file src="locales\hr.pak" target="lib\net45\locales\hr.pak" />
-        <file src="locales\hu.pak" target="lib\net45\locales\hu.pak" />
-        <file src="locales\id.pak" target="lib\net45\locales\id.pak" />
-        <file src="locales\it.pak" target="lib\net45\locales\it.pak" />
-        <file src="locales\ja.pak" target="lib\net45\locales\ja.pak" />
-        <file src="locales\kn.pak" target="lib\net45\locales\kn.pak" />
-        <file src="locales\ko.pak" target="lib\net45\locales\ko.pak" />
-        <file src="locales\lt.pak" target="lib\net45\locales\lt.pak" />
-        <file src="locales\lv.pak" target="lib\net45\locales\lv.pak" />
-        <file src="locales\ml.pak" target="lib\net45\locales\ml.pak" />
-        <file src="locales\mr.pak" target="lib\net45\locales\mr.pak" />
-        <file src="locales\ms.pak" target="lib\net45\locales\ms.pak" />
-        <file src="locales\nb.pak" target="lib\net45\locales\nb.pak" />
-        <file src="locales\nl.pak" target="lib\net45\locales\nl.pak" />
-        <file src="locales\pl.pak" target="lib\net45\locales\pl.pak" />
-        <file src="locales\pt-BR.pak" target="lib\net45\locales\pt-BR.pak" />
-        <file src="locales\pt-PT.pak" target="lib\net45\locales\pt-PT.pak" />
-        <file src="locales\ro.pak" target="lib\net45\locales\ro.pak" />
-        <file src="locales\ru.pak" target="lib\net45\locales\ru.pak" />
-        <file src="locales\sk.pak" target="lib\net45\locales\sk.pak" />
-        <file src="locales\sl.pak" target="lib\net45\locales\sl.pak" />
-        <file src="locales\sr.pak" target="lib\net45\locales\sr.pak" />
-        <file src="locales\sv.pak" target="lib\net45\locales\sv.pak" />
-        <file src="locales\sw.pak" target="lib\net45\locales\sw.pak" />
-        <file src="locales\ta.pak" target="lib\net45\locales\ta.pak" />
-        <file src="locales\te.pak" target="lib\net45\locales\te.pak" />
-        <file src="locales\th.pak" target="lib\net45\locales\th.pak" />
-        <file src="locales\tr.pak" target="lib\net45\locales\tr.pak" />
-        <file src="locales\uk.pak" target="lib\net45\locales\uk.pak" />
-        <file src="locales\vi.pak" target="lib\net45\locales\vi.pak" />
-        <file src="locales\zh-CN.pak" target="lib\net45\locales\zh-CN.pak" />
-        <file src="locales\zh-TW.pak" target="lib\net45\locales\zh-TW.pak" />
         <file src="x64\e_sqlite3.dll" target="lib\net45\x64\e_sqlite3.dll" />
         <file src="x86\e_sqlite3.dll" target="lib\net45\x86\e_sqlite3.dll" />
         <file src="Akavache.dll" target="lib\net45\Akavache.dll" />
         <file src="Akavache.Sqlite3.dll" target="lib\net45\Akavache.Sqlite3.dll" />
-        <file src="cef.pak" target="lib\net45\cef.pak" />
-        <file src="cef_100_percent.pak" target="lib\net45\cef_100_percent.pak" />
-        <file src="cef_200_percent.pak" target="lib\net45\cef_200_percent.pak" />
-        <file src="cef_extensions.pak" target="lib\net45\cef_extensions.pak" />
-        <file src="CefSharp.BrowserSubprocess.Core.dll" target="lib\net45\CefSharp.BrowserSubprocess.Core.dll" />
-        <file src="CefSharp.BrowserSubprocess.exe" target="lib\net45\CefSharp.BrowserSubprocess.exe" />
-        <file src="CefSharp.Core.dll" target="lib\net45\CefSharp.Core.dll" />
-        <file src="CefSharp.dll" target="lib\net45\CefSharp.dll" />
-        <file src="CefSharp.Wpf.dll" target="lib\net45\CefSharp.Wpf.dll" />
-        <file src="chrome_elf.dll" target="lib\net45\chrome_elf.dll" />
-        <file src="d3dcompiler_47.dll" target="lib\net45\d3dcompiler_47.dll" />
-        <file src="devtools_resources.pak" target="lib\net45\devtools_resources.pak" />
-        <file src="icudtl.dat" target="lib\net45\icudtl.dat" />
-        <file src="libcef.dll" target="lib\net45\libcef.dll" />
-        <file src="libEGL.dll" target="lib\net45\libEGL.dll" />
-        <file src="libGLESv2.dll" target="lib\net45\libGLESv2.dll" />
-        <file src="natives_blob.bin" target="lib\net45\natives_blob.bin" />
-        <file src="snapshot_blob.bin" target="lib\net45\snapshot_blob.bin" />
         <file src="SQLitePCLRaw.batteries_e_sqlite3.dll" target="lib\net45\SQLitePCLRaw.batteries_e_sqlite3.dll" />
         <file src="SQLitePCLRaw.batteries_v2.dll" target="lib\net45\SQLitePCLRaw.batteries_v2.dll" />
         <file src="SQLitePCLRaw.core.dll" target="lib\net45\SQLitePCLRaw.core.dll" />
@@ -163,8 +85,6 @@
         <file src="System.Reactive.Linq.dll" target="lib\net45\System.Reactive.Linq.dll" />
         <file src="System.Reactive.PlatformServices.dll" target="lib\net45\System.Reactive.PlatformServices.dll" />
         <file src="System.Reactive.Windows.Threading.dll" target="lib\net45\System.Reactive.Windows.Threading.dll" />
-        <file src="TraktApiSharp.dll" target="lib\net45\TraktApiSharp.dll" />
-        <file src="widevinecdmadapter.dll" target="lib\net45\widevinecdmadapter.dll" />
         <file src="api-ms-win-core-console-l1-1-0.dll" target="lib\net45\api-ms-win-core-console-l1-1-0.dll" />
         <file src="api-ms-win-core-datetime-l1-1-0.dll" target="lib\net45\api-ms-win-core-datetime-l1-1-0.dll" />
         <file src="api-ms-win-core-debug-l1-1-0.dll" target="lib\net45\api-ms-win-core-debug-l1-1-0.dll" />
@@ -219,49 +139,6 @@
         <file src="System.Net.Http.Formatting.dll" target="lib\net45\System.Net.Http.Formatting.dll" />
         <file src="System.Web.Http.dll" target="lib\net45\System.Web.Http.dll" />
         <file src="System.Web.Http.Owin.dll" target="lib\net45\System.Web.Http.Owin.dll" />
-        <file src="Ignite.SharpNetSH.dll" target="lib\net45\Ignite.SharpNetSH.dll" />
-        <file src="Humanizer.dll" target="lib\net45\Humanizer.dll" />
-        <file src="af\Humanizer.resources.dll" target="lib\net45\af\Humanizer.resources.dll" />
-        <file src="ar\Humanizer.resources.dll" target="lib\net45\ar\Humanizer.resources.dll" />
-        <file src="bg\Humanizer.resources.dll" target="lib\net45\bg\Humanizer.resources.dll" />
-        <file src="bn-BD\Humanizer.resources.dll" target="lib\net45\bn-BD\Humanizer.resources.dll" />
-        <file src="cs\Humanizer.resources.dll" target="lib\net45\cs\Humanizer.resources.dll" />
-        <file src="da\Humanizer.resources.dll" target="lib\net45\da\Humanizer.resources.dll" />
-        <file src="de\Humanizer.resources.dll" target="lib\net45\de\Humanizer.resources.dll" />
-        <file src="el\Humanizer.resources.dll" target="lib\net45\el\Humanizer.resources.dll" />
-        <file src="es\Humanizer.resources.dll" target="lib\net45\es\Humanizer.resources.dll" />
-        <file src="fa\Humanizer.resources.dll" target="lib\net45\fa\Humanizer.resources.dll" />
-        <file src="fi-FI\Humanizer.resources.dll" target="lib\net45\fi-FI\Humanizer.resources.dll" />
-        <file src="fr\Humanizer.resources.dll" target="lib\net45\fr\Humanizer.resources.dll" />
-        <file src="fr-BE\Humanizer.resources.dll" target="lib\net45\fr-BE\Humanizer.resources.dll" />
-        <file src="he\Humanizer.resources.dll" target="lib\net45\he\Humanizer.resources.dll" />
-        <file src="hu\Humanizer.resources.dll" target="lib\net45\hu\Humanizer.resources.dll" />
-        <file src="id\Humanizer.resources.dll" target="lib\net45\id\Humanizer.resources.dll" />
-        <file src="it\Humanizer.resources.dll" target="lib\net45\it\Humanizer.resources.dll" />
-        <file src="ja\Humanizer.resources.dll" target="lib\net45\ja\Humanizer.resources.dll" />
-        <file src="nb\Humanizer.resources.dll" target="lib\net45\nb\Humanizer.resources.dll" />
-        <file src="nb-NO\Humanizer.resources.dll" target="lib\net45\nb-NO\Humanizer.resources.dll" />
-        <file src="nl\Humanizer.resources.dll" target="lib\net45\nl\Humanizer.resources.dll" />
-        <file src="pl\Humanizer.resources.dll" target="lib\net45\pl\Humanizer.resources.dll" />
-        <file src="ro\Humanizer.resources.dll" target="lib\net45\ro\Humanizer.resources.dll" />
-        <file src="ru\Humanizer.resources.dll" target="lib\net45\ru\Humanizer.resources.dll" />
-        <file src="sk\Humanizer.resources.dll" target="lib\net45\sk\Humanizer.resources.dll" />
-        <file src="sr\Humanizer.resources.dll" target="lib\net45\sr\Humanizer.resources.dll" />
-        <file src="sr-Latn\Humanizer.resources.dll" target="lib\net45\sr-Latn\Humanizer.resources.dll" />
-        <file src="sv\Humanizer.resources.dll" target="lib\net45\sv\Humanizer.resources.dll" />
-        <file src="tr\Humanizer.resources.dll" target="lib\net45\tr\Humanizer.resources.dll" />
-        <file src="uz-Cyrl-UZ\Humanizer.resources.dll" target="lib\net45\uz-Cyrl-UZ\Humanizer.resources.dll" />
-        <file src="uz-Latn-UZ\Humanizer.resources.dll" target="lib\net45\uz-Latn-UZ\Humanizer.resources.dll" />
-        <file src="vi\Humanizer.resources.dll" target="lib\net45\vi\Humanizer.resources.dll" />
-        <file src="zh-CN\Humanizer.resources.dll" target="lib\net45\zh-CN\Humanizer.resources.dll" />
-        <file src="zh-Hans\Humanizer.resources.dll" target="lib\net45\zh-Hans\Humanizer.resources.dll" />
-        <file src="zh-Hant\Humanizer.resources.dll" target="lib\net45\zh-Hant\Humanizer.resources.dll" />
-        <file src="hr\Humanizer.resources.dll" target="lib\net45\hr\Humanizer.resources.dll" />
-        <file src="lv\Humanizer.resources.dll" target="lib\net45\lv\Humanizer.resources.dll" />
-        <file src="pt\Humanizer.resources.dll" target="lib\net45\pt\Humanizer.resources.dll" />
-        <file src="sl\Humanizer.resources.dll" target="lib\net45\sl\Humanizer.resources.dll" />
-        <file src="uk\Humanizer.resources.dll" target="lib\net45\uk\Humanizer.resources.dll" />
-        <file src="ControlzEx.dll" target="lib\net45\ControlzEx.dll" />
         <file src="Mono.Cecil.Pdb.dll" target="lib\net45\Mono.Cecil.Pdb.dll" />
         <file src="System.AppContext.dll" target="lib\net45\System.AppContext.dll" />
         <file src="System.Console.dll" target="lib\net45\System.Console.dll" />
@@ -352,60 +229,9 @@
         <file src="System.Xml.XPath.dll" target="lib\net45\System.Xml.XPath.dll" />
         <file src="System.Xml.XPath.XDocument.dll" target="lib\net45\System.Xml.XPath.XDocument.dll" />
         <file src="Utf8Json.dll" target="lib\net45\Utf8Json.dll" />
-        <file src="Microsoft.Data.Edm.dll" target="lib\net45\Microsoft.Data.Edm.dll" />
-        <file src="Microsoft.Data.OData.dll" target="lib\net45\Microsoft.Data.OData.dll" />
-        <file src="System.Spatial.dll" target="lib\net45\System.Spatial.dll" />
         <file src="System.Net.Primitives.dll" target="lib\net45\System.Net.Primitives.dll" />
-        <file src="de\Microsoft.Data.Edm.resources.dll" target="lib\net45\de\Microsoft.Data.Edm.resources.dll" />
-        <file src="de\Microsoft.Data.OData.resources.dll" target="lib\net45\de\Microsoft.Data.OData.resources.dll" />
-        <file src="de\System.Spatial.resources.dll" target="lib\net45\de\System.Spatial.resources.dll" />
-        <file src="es\Microsoft.Data.Edm.resources.dll" target="lib\net45\es\Microsoft.Data.Edm.resources.dll" />
-        <file src="es\Microsoft.Data.OData.resources.dll" target="lib\net45\es\Microsoft.Data.OData.resources.dll" />
-        <file src="es\System.Spatial.resources.dll" target="lib\net45\es\System.Spatial.resources.dll" />
-        <file src="fr\Microsoft.Data.Edm.resources.dll" target="lib\net45\fr\Microsoft.Data.Edm.resources.dll" />
-        <file src="fr\Microsoft.Data.OData.resources.dll" target="lib\net45\fr\Microsoft.Data.OData.resources.dll" />
-        <file src="fr\System.Spatial.resources.dll" target="lib\net45\fr\System.Spatial.resources.dll" />
-        <file src="it\Microsoft.Data.Edm.resources.dll" target="lib\net45\it\Microsoft.Data.Edm.resources.dll" />
-        <file src="it\Microsoft.Data.OData.resources.dll" target="lib\net45\it\Microsoft.Data.OData.resources.dll" />
-        <file src="it\System.Spatial.resources.dll" target="lib\net45\it\System.Spatial.resources.dll" />
-        <file src="ja\Microsoft.Data.Edm.resources.dll" target="lib\net45\ja\Microsoft.Data.Edm.resources.dll" />
-        <file src="ja\Microsoft.Data.OData.resources.dll" target="lib\net45\ja\Microsoft.Data.OData.resources.dll" />
-        <file src="ja\System.Spatial.resources.dll" target="lib\net45\ja\System.Spatial.resources.dll" />
-        <file src="ko\Microsoft.Data.Edm.resources.dll" target="lib\net45\ko\Microsoft.Data.Edm.resources.dll" />
-        <file src="ko\Microsoft.Data.OData.resources.dll" target="lib\net45\ko\Microsoft.Data.OData.resources.dll" />
-        <file src="ko\System.Spatial.resources.dll" target="lib\net45\ko\System.Spatial.resources.dll" />
-        <file src="ru\Microsoft.Data.Edm.resources.dll" target="lib\net45\ru\Microsoft.Data.Edm.resources.dll" />
-        <file src="ru\Microsoft.Data.OData.resources.dll" target="lib\net45\ru\Microsoft.Data.OData.resources.dll" />
-        <file src="ru\System.Spatial.resources.dll" target="lib\net45\ru\System.Spatial.resources.dll" />
-        <file src="zh-Hant\Microsoft.Data.Edm.resources.dll" target="lib\net45\zh-Hant\Microsoft.Data.Edm.resources.dll" />
-        <file src="zh-Hant\Microsoft.Data.OData.resources.dll" target="lib\net45\zh-Hant\Microsoft.Data.OData.resources.dll" />
-        <file src="zh-Hant\System.Spatial.resources.dll" target="lib\net45\zh-Hant\System.Spatial.resources.dll" />
-        <file src="zh-Hans\Microsoft.Data.Edm.resources.dll" target="lib\net45\zh-Hans\Microsoft.Data.Edm.resources.dll" />
-        <file src="zh-Hans\Microsoft.Data.OData.resources.dll" target="lib\net45\zh-Hans\Microsoft.Data.OData.resources.dll" />
-        <file src="zh-Hans\System.Spatial.resources.dll" target="lib\net45\zh-Hans\System.Spatial.resources.dll" />
-        <file src="Microsoft.AspNetCore.Http.Features.dll" target="lib\net45\Microsoft.AspNetCore.Http.Features.dll" />
-        <file src="Microsoft.AspNetCore.Sockets.Abstractions.dll" target="lib\net45\Microsoft.AspNetCore.Sockets.Abstractions.dll" />
-        <file src="Microsoft.AspNetCore.Sockets.Client.Http.dll" target="lib\net45\Microsoft.AspNetCore.Sockets.Client.Http.dll" />
-        <file src="Microsoft.AspNetCore.Sockets.Common.Http.dll" target="lib\net45\Microsoft.AspNetCore.Sockets.Common.Http.dll" />
-        <file src="Microsoft.Extensions.Configuration.Abstractions.dll" target="lib\net45\Microsoft.Extensions.Configuration.Abstractions.dll" />
         <file src="Microsoft.Extensions.DependencyInjection.Abstractions.dll" target="lib\net45\Microsoft.Extensions.DependencyInjection.Abstractions.dll" />
         <file src="Microsoft.Extensions.DependencyInjection.dll" target="lib\net45\Microsoft.Extensions.DependencyInjection.dll" />
-        <file src="Microsoft.Extensions.Logging.Abstractions.dll" target="lib\net45\Microsoft.Extensions.Logging.Abstractions.dll" />
-        <file src="Microsoft.Extensions.Logging.Console.dll" target="lib\net45\Microsoft.Extensions.Logging.Console.dll" />
-        <file src="Microsoft.Extensions.Logging.dll" target="lib\net45\Microsoft.Extensions.Logging.dll" />
-        <file src="Microsoft.Extensions.Options.dll" target="lib\net45\Microsoft.Extensions.Options.dll" />
-        <file src="Microsoft.Extensions.Primitives.dll" target="lib\net45\Microsoft.Extensions.Primitives.dll" />
-        <file src="System.Binary.dll" target="lib\net45\System.Binary.dll" />
-        <file src="System.Buffers.dll" target="lib\net45\System.Buffers.dll" />
-        <file src="System.Buffers.Primitives.dll" target="lib\net45\System.Buffers.Primitives.dll" />
-        <file src="System.Collections.Sequences.dll" target="lib\net45\System.Collections.Sequences.dll" />
-        <file src="System.IO.Pipelines.dll" target="lib\net45\System.IO.Pipelines.dll" />
-        <file src="System.IO.Pipelines.Extensions.dll" target="lib\net45\System.IO.Pipelines.Extensions.dll" />
-        <file src="System.Memory.dll" target="lib\net45\System.Memory.dll" />
-        <file src="System.Numerics.Vectors.dll" target="lib\net45\System.Numerics.Vectors.dll" />
-        <file src="System.Runtime.CompilerServices.Unsafe.dll" target="lib\net45\System.Runtime.CompilerServices.Unsafe.dll" />
-        <file src="System.Threading.Tasks.Channels.dll" target="lib\net45\System.Threading.Tasks.Channels.dll" />
-        <file src="MsgPack.dll" target="lib\net45\MsgPack.dll" />
         <file src="protobuf-net.dll" target="lib\net45\protobuf-net.dll" />
         <file src="Zeroconf.dll" target="lib\net45\Zeroconf.dll" />
         <file src="Microsoft.WindowsAPICodePack.dll" target="lib\net45\Microsoft.WindowsAPICodePack.dll" />
@@ -413,7 +239,6 @@
         <file src="Microsoft.WindowsAPICodePack.ShellExtensions.dll" target="lib\net45\Microsoft.WindowsAPICodePack.ShellExtensions.dll" />
         <file src="ApplicationInsights.config" target="lib\net45\ApplicationInsights.config" />
         <file src="Microsoft.Owin.Cors.dll" target="lib\net45\Microsoft.Owin.Cors.dll" />
-        <file src="System.Web.Http.Cors.dll" target="lib\net45\System.Web.Http.Cors.dll" />
         <file src="System.Web.Cors.dll" target="lib\net45\System.Web.Cors.dll" />
         <file src="FFmpeg\avcodec-57.dll" target="lib\net45\FFmpeg\avcodec-57.dll" />
         <file src="FFmpeg\avdevice-57.dll" target="lib\net45\FFmpeg\avdevice-57.dll" />
@@ -426,6 +251,5 @@
         <file src="Popcorn.FFME.dll" target="lib\net45\Popcorn.FFME.dll" />
         <file src="FFmpeg.AutoGen.dll" target="lib\net45\FFmpeg.AutoGen.dll" />
         <file src="SubtitlesParser.dll" target="lib\net45\SubtitlesParser.dll" />
-        <file src="Hardcodet.Wpf.TaskbarNotification.dll" target="lib\net45\Hardcodet.Wpf.TaskbarNotification.dll" />        
     </files>
 </package>

@@ -14,7 +14,7 @@ namespace Popcorn.Utils
         /// <summary>
         /// App version
         /// </summary>
-        public const string AppVersion = "3.3.6";
+        public const string AppVersion = "3.4.0";
 
         /// <summary>
         /// Endpoint to API
@@ -24,22 +24,12 @@ namespace Popcorn.Utils
         /// <summary>
         /// Url used to start a local OWIN server
         /// </summary>
-        public const string ServerUrl = "http://*:9900/";
+        public const string ServerUrl = "http://+:8080";
         
         /// <summary>
         /// Open Subtitles User Agent
         /// </summary>
         public const string OsdbUa = "Popcorn v1.0";
-
-        /// <summary>
-        /// Trakt Client Api key
-        /// </summary>
-        public const string TraktClientApiKey = "a946923efa1f62c49cef3052d13591ee3584ce74ee3db6cb65c7baab8b63414f";
-
-        /// <summary>
-        /// Trakt Secret Api key
-        /// </summary>
-        public const string TraktSecretKey = "3c1633962c5654ec3cb124df7993a89f4aaf279992de3fde7435a749e8970650";
 
         /// <summary>
         /// Client ID for TMDb

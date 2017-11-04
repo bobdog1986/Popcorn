@@ -142,29 +142,5 @@ namespace Popcorn.Services.User
         /// </summary>
         /// <param name="path"></param>
         void SetCacheLocationPath(string path);
-
-        /// <summary>
-        /// True if torrent file association is enabled
-        /// </summary>
-        /// <returns></returns>
-        bool GetTorrentFileAssociation();
-
-        /// <summary>
-        /// Set if torrent file association is enabled
-        /// </summary>
-        /// <param name="enableTorrentFileAssociation"></param>
-        void SetTorrentFileAssociation(bool enableTorrentFileAssociation);
-
-        /// <summary>
-        /// Get if magnet link association is enabled
-        /// </summary>
-        /// <returns></returns>
-        bool GetMagnetLinkAssociation();
-
-        /// <summary>
-        /// Set if magnet link association is enabled
-        /// </summary>
-        /// <param name="enableMagnetLinkAssociation"></param>
-        void SetMagnetLinkAssociation(bool enableMagnetLinkAssociation);
     }
 }

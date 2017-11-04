@@ -23,10 +23,8 @@ using Popcorn.Helpers;
 using Popcorn.Messaging;
 using Popcorn.Models.Localization;
 using Popcorn.Models.Subtitles;
-using Popcorn.Services.Associations;
 using Popcorn.Services.Cache;
 using Popcorn.Services.Subtitles;
-using Popcorn.Services.Trakt;
 using Popcorn.Services.User;
 using Popcorn.Utils;
 using Squirrel;
@@ -52,16 +50,6 @@ namespace Popcorn.ViewModels.Windows.Settings
         /// Subtitle service
         /// </summary>
         private readonly ISubtitlesService _subtitlesService;
-
-        /// <summary>
-        /// Trakt service
-        /// </summary>
-        private readonly ITraktService _traktService;
-
-        /// <summary>
-        /// File association service
-        /// </summary>
-        private readonly IFileAssociationService _fileAssociationService;
 
         /// <summary>
         /// The download limit
@@ -124,19 +112,9 @@ namespace Popcorn.ViewModels.Windows.Settings
         private SubtitleSize _selectedSubtitleSize;
 
         /// <summary>
-        /// Command used to show the Trakt dialog
-        /// </summary>
-        private ICommand _showTraktDialogCommand;
-
-        /// <summary>
         /// Command used to change subtitle color
         /// </summary>
         private ICommand _changeSubtitleColorCommand;
-
-        /// <summary>
-        /// Command used to logout from Trakt
-        /// </summary>
-        private ICommand _logoutTraktCommand;
 
         /// <summary>
         /// If an update is available
@@ -147,16 +125,6 @@ namespace Popcorn.ViewModels.Windows.Settings
         /// If an update is downloading
         /// </summary>
         private bool _updateDownloading;
-
-        /// <summary>
-        /// If torrent file association is enabled
-        /// </summary>
-        private bool _torrentFileAssociationEnabled;
-
-        /// <summary>
-        /// If magnet link association is enabled
-        /// </summary>
-        private bool _magnetLinkAssociationEnabled;
 
         /// <summary>
         /// If an update is applying
@@ -189,11 +157,6 @@ namespace Popcorn.ViewModels.Windows.Settings
         private readonly NotificationMessageManager _manager;
 
         /// <summary>
-        /// True if Trakt is connected
-        /// </summary>
-        private bool _isTraktLoggedIn;
-
-        /// <summary>
         /// The cache service
         /// </summary>
         private readonly ICacheService _cacheService;
@@ -203,17 +166,12 @@ namespace Popcorn.ViewModels.Windows.Settings
         /// </summary>
         /// <param name="userService">User service</param>
         /// <param name="subtitlesService">Subtitles service</param>
-        /// <param name="traktService">Trakt service</param>
         /// <param name="cacheService">Cache service</param>
-        /// <param name="fileAssociationService">File association service</param>
         /// <param name="manager">Notification manager</param>
-        public ApplicationSettingsViewModel(IUserService userService, ISubtitlesService subtitlesService,
-            ITraktService traktService, ICacheService cacheService, IFileAssociationService fileAssociationService,
+        public ApplicationSettingsViewModel(IUserService userService, ISubtitlesService subtitlesService, ICacheService cacheService,
             NotificationMessageManager manager)
         {
-            _fileAssociationService = fileAssociationService;
             _cacheService = cacheService;
-            _traktService = traktService;
             _manager = manager;
             _userService = userService;
             _subtitlesService = subtitlesService;
@@ -258,15 +216,6 @@ namespace Popcorn.ViewModels.Windows.Settings
                 Set(ref _selectedSubtitleSize, value);
                 _userService.SetDefaultSubtitleSize(value);
             }
-        }
-
-        /// <summary>
-        /// Show Trakt dialog
-        /// </summary>
-        public ICommand ShowTraktDialogCommand
-        {
-            get => _showTraktDialogCommand;
-            set => Set(ref _showTraktDialogCommand, value);
         }
 
         /// <summary>
@@ -348,49 +297,7 @@ namespace Popcorn.ViewModels.Windows.Settings
             get => _updateDownloading;
             set { Set(() => UpdateDownloading, ref _updateDownloading, value); }
         }
-
-        /// <summary>
-        /// True if torrent file association is enabled
-        /// </summary>
-        public bool TorrentFileAssociationEnabled
-        {
-            get => _torrentFileAssociationEnabled;
-            set
-            {
-                Set(() => TorrentFileAssociationEnabled, ref _torrentFileAssociationEnabled, value);
-                _userService.SetTorrentFileAssociation(value);
-                if (!value)
-                {
-                    _fileAssociationService.UnregisterTorrentFileAssociation();
-                }
-                else
-                {
-                    _fileAssociationService.RegisterTorrentFileAssociation();
-                }
-            }
-        }
-
-        /// <summary>
-        /// True if magnet link association is enabled
-        /// </summary>
-        public bool MagnetLinkAssociationEnabled
-        {
-            get => _magnetLinkAssociationEnabled;
-            set
-            {
-                Set(() => MagnetLinkAssociationEnabled, ref _magnetLinkAssociationEnabled, value);
-                _userService.SetMagnetLinkAssociation(value);
-                if (!value)
-                {
-                    _fileAssociationService.UnregisterMagnetLinkAssociation();
-                }
-                else
-                {
-                    _fileAssociationService.RegisterMagnetLinkAssociation();
-                }
-            }
-        }
-
+        
         /// <summary>
         /// True if update is available
         /// </summary>
@@ -446,15 +353,6 @@ namespace Popcorn.ViewModels.Windows.Settings
         }
 
         /// <summary>
-        /// True if Trakt is connected
-        /// </summary>
-        public bool IsTraktLoggedIn
-        {
-            get => _isTraktLoggedIn;
-            set { Set(() => IsTraktLoggedIn, ref _isTraktLoggedIn, value); }
-        }
-
-        /// <summary>
         /// Clear the cache
         /// </summary>
         public RelayCommand ClearCacheCommand { get; private set; }
@@ -476,15 +374,6 @@ namespace Popcorn.ViewModels.Windows.Settings
         {
             get => _changeSubtitleColorCommand;
             set => Set(ref _changeSubtitleColorCommand, value);
-        }
-
-        /// <summary>
-        /// Change subtitle
-        /// </summary>
-        public ICommand LogoutTraktCommand
-        {
-            get => _logoutTraktCommand;
-            set => Set(ref _logoutTraktCommand, value);
         }
 
         /// <summary>
@@ -546,26 +435,6 @@ namespace Popcorn.ViewModels.Windows.Settings
                 var defaultSubtitleLanguage = user.DefaultSubtitleLanguage;
                 var subtitleSize = user.DefaultSubtitleSize;
                 DefaultHdQuality = user.DefaultHdQuality;
-                TorrentFileAssociationEnabled = user.EnableTorrentFileAssociation;
-                MagnetLinkAssociationEnabled = user.EnableMagnetLinkAssociation;
-                if (TorrentFileAssociationEnabled)
-                {
-                    _fileAssociationService.RegisterTorrentFileAssociation();
-                }
-                else if (!TorrentFileAssociationEnabled && _fileAssociationService.TorrentFileAssociationIsEnabled())
-                {
-                    _fileAssociationService.UnregisterTorrentFileAssociation();
-                }
-
-                if (MagnetLinkAssociationEnabled)
-                {
-                    _fileAssociationService.RegisterMagnetLinkAssociation();
-                }
-                else if (!MagnetLinkAssociationEnabled && _fileAssociationService.MagneLinkAssociationIsEnabled())
-                {
-                    _fileAssociationService.UnregisterMagnetLinkAssociation();
-                }
-
                 SelectedSubtitleSize = SubtitleSizes.FirstOrDefault(a => a.Size == subtitleSize.Size);
                 SubtitlesColor =
                     (Color) ColorConverter.ConvertFromString(user.DefaultSubtitleColor);
@@ -574,7 +443,6 @@ namespace Popcorn.ViewModels.Windows.Settings
                 {
                     async () =>
                     {
-                        IsTraktLoggedIn = await _traktService.IsLoggedIn();
                         LoadingSubtitles = true;
                         AvailableSubtitlesLanguages = new ObservableRangeCollection<string>();
                         var languages = (await _subtitlesService.GetSubLanguages().ConfigureAwait(false))
@@ -724,22 +592,9 @@ namespace Popcorn.ViewModels.Windows.Settings
                 RefreshCacheSize();
             });
 
-            ShowTraktDialogCommand = new RelayCommand(async () =>
-            {
-                var message = new ShowTraktDialogMessage();
-                await Messenger.Default.SendAsync(message);
-                IsTraktLoggedIn = message.IsLoggedIn ?? false;
-            });
-
             ChangeSubtitleColorCommand = new RelayCommand<EventArgs<Color>>(args =>
             {
                 SubtitlesColor = args.Value;
-            });
-
-            LogoutTraktCommand = new RelayCommand(async () =>
-            {
-                await _traktService.Logout();
-                IsTraktLoggedIn = false;
             });
 
             ChangeCacheLocationCommand = new RelayCommand(() =>

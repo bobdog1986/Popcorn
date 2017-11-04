@@ -519,7 +519,7 @@ namespace Popcorn.ViewModels.Pages.Player
 
             var videoPath = MediaPath.Split(new[] {"Popcorn\\"}, StringSplitOptions.RemoveEmptyEntries).Last()?
                 .Replace("\\", "/");
-            var mediaPath = $"http://{GetLocalIpAddress()}:9900/{videoPath}";
+            var mediaPath = $"http://{GetLocalIpAddress()}:8080/{videoPath}";
             var subtitle = SubtitleFilePath;
             if (!string.IsNullOrEmpty(subtitle))
             {
@@ -528,7 +528,7 @@ namespace Popcorn.ViewModels.Pages.Player
                 {
                     subtitle = subtitle.Split(new[] {"Popcorn\\"}, StringSplitOptions.RemoveEmptyEntries).Last()?
                         .Replace("\\", "/");
-                    subtitle = $"http://{GetLocalIpAddress()}:9900/{subtitle}";
+                    subtitle = $"http://{GetLocalIpAddress()}:8080/{subtitle}";
                 }
             }
 

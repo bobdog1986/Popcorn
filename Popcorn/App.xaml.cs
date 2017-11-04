@@ -5,17 +5,11 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using Akavache;
-using CefSharp;
-using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using NLog;
 using Popcorn.Helpers;
-using Popcorn.Messaging;
-using Popcorn.Utils;
-using Popcorn.Utils.Exceptions;
 using Popcorn.ViewModels.Windows;
 using Popcorn.Windows;
-using Squirrel;
 using WPFLocalizeExtension.Engine;
 
 namespace Popcorn
@@ -39,75 +33,17 @@ namespace Popcorn
         /// Watcher
         /// </summary>
         private Stopwatch WatchStart { get; set; }
-    
-        /// <summary>
-        /// If first run
-        /// </summary>
-        private static bool _firstRun;
 
         /// <summary>
         /// Loading semaphore
         /// </summary>
         private readonly SemaphoreSlim _windowLoadedSemaphore = new SemaphoreSlim(1, 1);
 
-        private static void OnFirstRun()
-        {
-            Logger.Info("Triggered OnFirstRun...");
-            // TODO: Must complete welcome.md page before activate this feature
-            //_firstRun = true;
-        }
-
-        private static void OnAppUninstall(Version version)
-        {
-            Logger.Info("Triggered OnAppUninstall...");
-
-            using (var manager = new UpdateManager(Constants.GithubRepository))
-            {
-                manager.RemoveShortcutsForExecutable("Popcorn.exe", ShortcutLocation.Desktop);
-                manager.RemoveShortcutsForExecutable("Popcorn.exe", ShortcutLocation.StartMenu);
-                manager.RemoveShortcutsForExecutable("Popcorn.exe", ShortcutLocation.AppRoot);
-
-                manager.RemoveUninstallerRegistryEntry();
-            }
-        }
-
-        private static void OnInitialInstall(Version version)
-        {
-            Logger.Info("Triggered OnInitialInstall...");
-
-            using (var manager = new UpdateManager(Constants.GithubRepository))
-            {
-                manager.CreateShortcutForThisExe();
-
-                manager.CreateShortcutsForExecutable("Popcorn.exe", ShortcutLocation.Desktop, false);
-                manager.CreateShortcutsForExecutable("Popcorn.exe", ShortcutLocation.StartMenu, false);
-                manager.CreateShortcutsForExecutable("Popcorn.exe", ShortcutLocation.AppRoot, false);
-
-                manager.CreateUninstallerRegistryEntry();
-            }
-        }
-
-        private static void OnAppUpdate(Version version)
-        {
-            Logger.Info("Triggered OnAppUpdate...");
-
-            using (var manager = new UpdateManager(Constants.GithubRepository))
-            {
-                manager.CreateShortcutsForExecutable("Popcorn.exe", ShortcutLocation.Desktop, true);
-                manager.CreateShortcutsForExecutable("Popcorn.exe", ShortcutLocation.StartMenu, true);
-                manager.CreateShortcutsForExecutable("Popcorn.exe", ShortcutLocation.AppRoot, true);
-
-                manager.RemoveUninstallerRegistryEntry();
-                manager.CreateUninstallerRegistryEntry();
-            }
-        }
-
         static App()
         {
             DispatcherHelper.Initialize();
             LocalizeDictionary.Instance.SetCurrentThreadCulture = true;
             BlobCache.ApplicationName = "Popcorn";
-            Cef.Initialize();
         }
 
         /// <summary>
@@ -115,20 +51,6 @@ namespace Popcorn
         /// </summary>
         public App()
         {
-            try
-            {
-                SquirrelAwareApp.HandleEvents(
-                    onInitialInstall: OnInitialInstall,
-                    onAppUpdate: OnAppUpdate,
-                    onAppUninstall: OnAppUninstall,
-                    onFirstRun: OnFirstRun);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
-
-            ShutdownMode = ShutdownMode.OnExplicitShutdown;
             DispatcherUnhandledException += AppDispatcherUnhandledException;
             Dispatcher.UnhandledException += Dispatcher_UnhandledException;
             TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
@@ -222,8 +144,6 @@ namespace Popcorn
                     if (vm != null)
                     {
                         vm.InitializeAsyncCommand.Execute(null);
-                        if(_firstRun)
-                            vm.OpenWelcomeCommand.Execute(null);
                     }
                     WatchStart.Stop();
                     var elapsedStartMs = WatchStart.ElapsedMilliseconds;

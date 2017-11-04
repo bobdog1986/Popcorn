@@ -10,7 +10,6 @@ using GalaSoft.MvvmLight.Messaging;
 using Popcorn.Controls;
 using Popcorn.Extensions;
 using Popcorn.Messaging;
-using Popcorn.UserControls.Tray;
 using Popcorn.Utils;
 using Popcorn.ViewModels.Windows;
 
