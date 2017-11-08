@@ -1,4 +1,11 @@
-﻿# 3.4.0 - 04/11/2017 #
+﻿# 3.4.1 - 08/11/2017 #
+***
+Fixed issue
+
+### Details ###
+* Improved update system
+
+# 3.4.0 - 04/11/2017 #
 ***
 Cleanup unused resources
 
