@@ -211,8 +211,9 @@ namespace Popcorn.UserControls.Player
                 vm.PlayerTime = PositionSlider.Value;
                 _pieceAvailability = pieceAvailability;
                 double startPieceAvailabilityPercentage =
-                    (double)_pieceAvailability.StartAvailablePiece / (double)_pieceAvailability.TotalPieces;
-                double endPieceAvailabilityPercentage = (double)_pieceAvailability.EndAvailablePiece / (double)_pieceAvailability.TotalPieces;
+                    (double) _pieceAvailability.StartAvailablePiece / (double) _pieceAvailability.TotalPieces;
+                double endPieceAvailabilityPercentage =
+                    (double) _pieceAvailability.EndAvailablePiece / (double) _pieceAvailability.TotalPieces;
                 var playPercentage = PositionSlider.Value / Media.NaturalDuration.TimeSpan.TotalSeconds;
 
                 if (_isPausedForBuffering && playPercentage > startPieceAvailabilityPercentage &&
@@ -223,7 +224,7 @@ namespace Popcorn.UserControls.Player
                     Media.Position = TimeSpan.FromSeconds(PositionSlider.Value);
                     PlayMedia();
                 }
-                else if(!_isPausedForBuffering)
+                else if (!_isPausedForBuffering)
                 {
                     PositionSlider.Value = Media.Position.TotalSeconds;
                 }
@@ -496,6 +497,9 @@ namespace Popcorn.UserControls.Player
         /// </summary>
         private void PlayMedia()
         {
+            if (_isPausedForBuffering)
+                return;
+
             try
             {
                 _applicationService.SwitchConstantDisplayAndPower(true);
@@ -824,10 +828,12 @@ namespace Popcorn.UserControls.Player
                 return;
 
             double startPieceAvailabilityPercentage =
-                (double)_pieceAvailability.StartAvailablePiece / (double)_pieceAvailability.TotalPieces;
-            double endPieceAvailabilityPercentage = (double)_pieceAvailability.EndAvailablePiece / (double)_pieceAvailability.TotalPieces;
+                (double) _pieceAvailability.StartAvailablePiece / (double) _pieceAvailability.TotalPieces;
+            double endPieceAvailabilityPercentage =
+                (double) _pieceAvailability.EndAvailablePiece / (double) _pieceAvailability.TotalPieces;
             var playPercentage = e.NewValue / Media.NaturalDuration.TimeSpan.TotalSeconds;
-            if (playPercentage < startPieceAvailabilityPercentage || playPercentage > endPieceAvailabilityPercentage)
+            if (playPercentage < startPieceAvailabilityPercentage ||
+                playPercentage > endPieceAvailabilityPercentage)
             {
                 Buffering.Visibility = Visibility.Visible;
                 _isPausedForBuffering = true;

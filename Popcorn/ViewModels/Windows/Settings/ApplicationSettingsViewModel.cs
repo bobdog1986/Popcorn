@@ -543,16 +543,8 @@ namespace Popcorn.ViewModels.Windows.Settings
                                         Logger.Info(
                                             "Restarting...");
 
-                                        var process = await UpdateManager.RestartAppWhenExited($@"{_updateFilePath}\Popcorn.exe", "updated");
-                                        ThreadStart ts = delegate
-                                        {
-                                            Application.Current.Dispatcher.BeginInvoke((Action)delegate
-                                            {
-                                                Application.Current.Shutdown();
-                                            });
-                                        };
-                                        Thread t = new Thread(ts);
-                                        t.Start();
+                                        await UpdateManager.RestartAppWhenExited($@"{_updateFilePath}\Popcorn.exe", "updated");
+                                        Application.Current.MainWindow.Close();
                                     })
                                 .Dismiss().WithButton(
                                     LocalizationProviderHelper.GetLocalizedValue<string>("LaterLabel"),

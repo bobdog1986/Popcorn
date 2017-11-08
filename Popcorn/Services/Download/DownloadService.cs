@@ -147,7 +147,6 @@ namespace Popcorn.Services.Download
         {
             handle.set_upload_limit(uploadLimit * 1024);
             handle.set_download_limit(downloadLimit * 1024);
-            handle.set_sequential_download(true);
             var alreadyBuffered = false;
             var bandwidth = new Progress<BandwidthRate>();
             var prog = new Progress<double>();
@@ -207,17 +206,17 @@ namespace Popcorn.Services.Download
                         });
 
                         var numPieces = handle.torrent_file().num_pieces() - 1;
-                        var cursor = Math.Floor(numPieces * playingProgression);
+                        var cursor = Math.Floor((numPieces - 3 * numPieces / 100d) * playingProgression);
                         var pieces = handle.piece_priorities()
                             .Select((piece, index) => new {Piece = piece, Index = index})
-                            .Where(a => a.Index >= cursor - 3 * numPieces / 100d).ToList();
+                            .ToList();
 
                         var lastPieceAvailableIndex = 0;
-                        foreach (var piece in pieces)
+                        foreach (var piece in pieces.Where(a => a.Index >= cursor))
                         {
                             if (!handle.have_piece(piece.Index))
                             {
-                                handle.set_piece_deadline(piece.Index, 2000);
+                                handle.set_piece_deadline(piece.Index, 50);
                                 foreach (var otherPiece in pieces.Where(a => a.Index != piece.Index))
                                 {
                                     handle.reset_piece_deadline(otherPiece.Index);
@@ -232,7 +231,7 @@ namespace Popcorn.Services.Download
                             }
                         }
 
-                        pieceAvailability.Report(new PieceAvailability(numPieces, pieces.FirstOrDefault().Index, lastPieceAvailableIndex));
+                        pieceAvailability.Report(new PieceAvailability(numPieces, pieces.FirstOrDefault(a => a.Index >= cursor - 3 * numPieces / 100d).Index, lastPieceAvailableIndex));
                     }
                     
                     handle.flush_cache();

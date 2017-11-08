@@ -106,6 +106,7 @@ namespace Popcorn.Services.Subtitles
         /// <returns></returns>
         public IEnumerable<SubtitleItem> LoadCaptions(string filePath)
         {
+            if (string.IsNullOrEmpty(filePath)) return new List<SubtitleItem>();
             var parser = new SubtitlesParser.Classes.Parsers.SubParser();
             using (var fileStream = File.OpenRead(filePath))
             {
