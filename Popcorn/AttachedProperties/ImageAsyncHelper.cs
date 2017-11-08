@@ -231,11 +231,14 @@ namespace Popcorn.AttachedProperties
                                             var errorThumbnail = resourceDictionary["ImageError"] as DrawingImage;
                                             errorThumbnail.Freeze();
                                             image.RenderTransformOrigin = new Point(0.5d, 0.5d);
+                                            image.RenderTransform = new TransformGroup();
                                             image.Stretch = Stretch.None;
                                             image.Source = errorThumbnail;
                                         }
                                         else
                                         {
+                                            image.RenderTransformOrigin = new Point(0, 0);
+                                            image.RenderTransform = new TransformGroup();
                                             image.Source = new BitmapImage();
                                         }
                                     });
@@ -251,11 +254,14 @@ namespace Popcorn.AttachedProperties
                                     var errorThumbnail = resourceDictionary["ImageError"] as DrawingImage;
                                     errorThumbnail.Freeze();
                                     image.RenderTransformOrigin = new Point(0.5d, 0.5d);
+                                    image.RenderTransform = new TransformGroup();
                                     image.Stretch = Stretch.None;
                                     image.Source = errorThumbnail;
                                 }
                                 else
                                 {
+                                    image.RenderTransformOrigin = new Point(0, 0);
+                                    image.RenderTransform = new TransformGroup();
                                     image.Source = new BitmapImage();
                                 }
                             });
