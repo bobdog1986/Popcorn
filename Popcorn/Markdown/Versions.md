@@ -1,4 +1,11 @@
-﻿# 3.4.1 - 08/11/2017 #
+﻿# 3.4.2 - 08/11/2017 #
+***
+Fixed issue
+
+### Details ###
+* Fixed issue with local server
+
+# 3.4.2 - 08/11/2017 #
 ***
 Fixed issue
 

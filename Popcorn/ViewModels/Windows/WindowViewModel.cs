@@ -774,7 +774,7 @@ namespace Popcorn.ViewModels.Windows
 
                 try
                 {
-                    _localServer = WebApp.Start<Startup>(Constants.ServerUrl);
+                    _localServer = WebApp.Start<Startup>(new StartOptions());
                 }
                 catch (Exception ex)
                 {
