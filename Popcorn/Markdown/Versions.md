@@ -1,4 +1,11 @@
-﻿# 3.4.2 - 08/11/2017 #
+﻿# 3.4.3 - 09/11/2017 #
+***
+Fixed issue
+
+### Details ###
+* Fixed issue with close button visibility for shows
+
+# 3.4.2 - 08/11/2017 #
 ***
 Fixed issue
 
