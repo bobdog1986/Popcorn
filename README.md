@@ -34,11 +34,11 @@
 
 ### Frontend
 #### Framework
-The app is a .NET 4.6 application using WPF framework. 
+The app is a .NET 4.6.2 application using WPF framework. 
 
 #### Basics
 It communicates with its own [API](https://github.com/bbougot/PopcornAPI) to query movies, shows, trailers, cast, assets and torrents.
-The app includes a video player ([VLC](https://github.com/higankanshi/Meta.Vlc)) and a torrent handler ([libtorrent](https://github.com/bbougot/libtorrent-net)). It is also able to cast to a Chromecast device.
+The app includes a video player ([ffmediaelement](https://github.com/unosquare/ffmediaelement)) and a torrent handler ([libtorrent](https://github.com/bbougot/libtorrent-net)). It is also able to cast to a Chromecast device.
 
 #### Advanced
 The app can update by itself automatically using an incremental update system.
@@ -46,7 +46,7 @@ The app can update by itself automatically using an incremental update system.
 Popcorn also sends usage data to Azure Application Insights.
 
 ### Backend
-The [API](https://github.com/bbougot/PopcornAPI) is a ASP.NET WebApi app which serves movies and shows from SQL Server database.
+The [API](https://github.com/bbougot/PopcornAPI) is a ASP.NET Core app which serves movies and shows from SQL Server database.
 It also supports caching using Redis database.
 
 The assets (images and torrent files) are stored on Azure Blob Storage.
