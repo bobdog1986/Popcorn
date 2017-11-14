@@ -18,9 +18,16 @@
   <a target="_blank" href="https://github.com/bbougot/Popcorn/pulls">
     <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome" />
   </a>
+  
 </div>
 
 <br />
+
+<div align="center">
+  <a href="http://forthebadge.com" target="_blank" style="text-align:center;">
+    <img alt="Netflix" src="http://forthebadge.com/images/badges/powered-by-netflix.svg">
+  </a>
+</div>
 
 ## Features
 
