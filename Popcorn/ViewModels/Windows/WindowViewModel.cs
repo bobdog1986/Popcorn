@@ -16,9 +16,11 @@ using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
+using Ignite.SharpNetSH;
 using MahApps.Metro.Controls.Dialogs;
 using Microsoft.Owin.Hosting;
 using Microsoft.Win32;
+using NetFwTypeLib;
 using NLog;
 using Polly.Timeout;
 using Popcorn.Dialogs;
@@ -565,12 +567,19 @@ namespace Popcorn.ViewModels.Windows
                     }
                     catch (Exception ex)
                     {
-                        Logger.Error(ex);
                         cts.TrySetException(ex);
                     }
                 };
-                await _dialogCoordinator.ShowMetroDialogAsync(this, castDialog);
-                await cts.Task;
+
+                try
+                {
+                    await _dialogCoordinator.ShowMetroDialogAsync(this, castDialog);
+                    await cts.Task;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                }
             });
 
             _showSubtitleDialogMessage = Messenger.Default.RegisterAsyncMessage<ShowSubtitleDialogMessage>(
@@ -593,12 +602,19 @@ namespace Popcorn.ViewModels.Windows
                         }
                         catch (Exception ex)
                         {
-                            Logger.Error(ex);
                             cts.TrySetException(ex);
                         }
                     };
-                    await _dialogCoordinator.ShowMetroDialogAsync(this, subtitleDialog);
-                    await cts.Task;
+
+                    try
+                    {
+                        await _dialogCoordinator.ShowMetroDialogAsync(this, subtitleDialog);
+                        await cts.Task;
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(ex);
+                    }
                 });
 
             _customSubtitleMessage = Messenger.Default.RegisterAsyncMessage<CustomSubtitleMessage>(
@@ -693,10 +709,24 @@ namespace Popcorn.ViewModels.Windows
                                 await vm.Download(settings.UploadLimit, settings.DownloadLimit,
                                     async () =>
                                     {
-                                        await _dialogCoordinator.HideMetroDialogAsync(this, dropTorrentDialog);
+                                        try
+                                        {
+                                            await _dialogCoordinator.HideMetroDialogAsync(this, dropTorrentDialog);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            Logger.Error(ex);
+                                        }
                                     }, async () =>
                                     {
-                                        await _dialogCoordinator.HideMetroDialogAsync(this, dropTorrentDialog);
+                                        try
+                                        {
+                                            await _dialogCoordinator.HideMetroDialogAsync(this, dropTorrentDialog);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            Logger.Error(ex);
+                                        }
                                     });
                             });
                         }
@@ -727,7 +757,14 @@ namespace Popcorn.ViewModels.Windows
                 var aboutDialog = new AboutDialog();
                 var vm = new AboutDialogViewModel(async () =>
                 {
-                    await _dialogCoordinator.HideMetroDialogAsync(this, aboutDialog);
+                    try
+                    {
+                        await _dialogCoordinator.HideMetroDialogAsync(this, aboutDialog);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(ex);
+                    }
                 });
 
                 aboutDialog.DataContext = vm;
@@ -739,7 +776,14 @@ namespace Popcorn.ViewModels.Windows
                 var helpDialog = new HelpDialog();
                 var vm = new HelpDialogViewModel(async () =>
                 {
-                    await _dialogCoordinator.HideMetroDialogAsync(this, helpDialog);
+                    try
+                    {
+                        await _dialogCoordinator.HideMetroDialogAsync(this, helpDialog);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(ex);
+                    }
                 });
 
                 helpDialog.DataContext = vm;
@@ -772,15 +816,84 @@ namespace Popcorn.ViewModels.Windows
                     }
                 }
 
+                var netsh = new NetSH(new Utils.CommandLineHarness());
+                var showResponse = netsh.Http.Show.UrlAcl(Constants.ServerUrl);
+                if (showResponse.ResponseObject.Count == 0)
+                    RegisterUrlAcl();
+
+                if (!FirewallRuleExists("Popcorn Server"))
+                    RegisterFirewallRule();
+
                 try
                 {
-                    _localServer = WebApp.Start<Startup>(new StartOptions());
+                    _localServer = WebApp.Start<Startup>(Constants.ServerUrl);
                 }
                 catch (Exception ex)
                 {
                     Logger.Error(ex);
                 }
             });
+        }
+
+        private bool FirewallRuleExists(string ruleName)
+        {
+            try
+            {
+                Type tNetFwPolicy2 = Type.GetTypeFromProgID("HNetCfg.FwPolicy2");
+                INetFwPolicy2 fwPolicy2 = (INetFwPolicy2)Activator.CreateInstance(tNetFwPolicy2);
+                foreach (INetFwRule rule in fwPolicy2.Rules)
+                {
+                    if (rule.Name.IndexOf(ruleName, StringComparison.Ordinal) != -1)
+                    {
+                        return true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+
+            return false;
+        }
+
+        private static void RegisterFirewallRule()
+        {
+            try
+            {
+                INetFwRule firewallRule = (INetFwRule)Activator.CreateInstance(
+                    Type.GetTypeFromProgID("HNetCfg.FWRule"));
+                firewallRule.Action = NET_FW_ACTION_.NET_FW_ACTION_ALLOW;
+                firewallRule.Description = "Enables Popcorn server.";
+                firewallRule.Direction = NET_FW_RULE_DIRECTION_.NET_FW_RULE_DIR_IN;
+                firewallRule.Enabled = true;
+                firewallRule.InterfaceTypes = "All";
+                firewallRule.Name = "Popcorn Server";
+                firewallRule.Protocol = (int)NET_FW_IP_PROTOCOL_.NET_FW_IP_PROTOCOL_TCP;
+                firewallRule.LocalPorts = "9900";
+                INetFwPolicy2 firewallPolicy = (INetFwPolicy2)Activator.CreateInstance(
+                    Type.GetTypeFromProgID("HNetCfg.FwPolicy2"));
+                firewallPolicy.Rules.Add(firewallRule);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+        }
+
+        private static void RegisterUrlAcl()
+        {
+            try
+            {
+                var username = Environment.GetEnvironmentVariable("USERNAME");
+                var domain = Environment.GetEnvironmentVariable("USERDOMAIN");
+                var netsh = new NetSH(new Utils.CommandLineHarness());
+                netsh.Http.Add.UrlAcl(Constants.ServerUrl, $"{domain}\\{username}", true);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
         }
 
         private async Task HandleTorrentDownload(string path)

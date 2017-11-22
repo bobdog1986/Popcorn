@@ -31,6 +31,11 @@
                 <Setter Property="TitleFontSize" Value="14" />
             </Style>
 
+            <iconPacks:PackIconMaterialKind x:Key="AccountCircle">
+                AccountCircle
+            </iconPacks:PackIconMaterialKind>
+
+            <converters:PackIconMaterialImageSourceConverter x:Key="PackIconMaterialImageSourceConverter" />
             <converters:ValueToBrushConverter x:Key="ValueToBrushConverter" />
             <converters:MultiBooleanToBoolConverter x:Key="MultiBooleanToBoolConverter" />
             <converters:BoolToInverseVisibilityConverter x:Key="BoolToInverseVisibilityConverter" />
@@ -579,7 +584,8 @@
                                                                     Width="60"
                                                                     Height="60"
                                                                     HorizontalAlignment="Left"
-                                                                    Source="{Binding SmallImage}" />
+                                                                    ImageFailed="OnImageFailed"
+                                                                    Source="{Binding SmallImage, Converter={StaticResource PackIconMaterialImageSourceConverter}, ConverterParameter={StaticResource AccountCircle}}" />
                                                             </StackPanel>
                                                         </Grid>
                                                     </Border>

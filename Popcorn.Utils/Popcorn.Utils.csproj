@@ -29,6 +29,7 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="CommandLineHarness.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Exceptions\NoDataInDroppedFileException.cs" />
     <Compile Include="Exceptions\PopcornException.cs" />
@@ -44,6 +45,12 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Humanizer, Version=1.33.7.0, Culture=neutral, PublicKeyToken=979442b78dfc278e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Humanizer.1.33.7\lib\portable-win+net40+sl50+wp8+wpa81\Humanizer.dll</HintPath>
+    </Reference>
+    <Reference Include="Ignite.SharpNetSH, Version=1.0.5735.15453, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpNetSH.2.0.5\lib\net45\Ignite.SharpNetSH.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Collections.Specialized, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Collections.Specialized.4.3.0\lib\net46\System.Collections.Specialized.dll</HintPath>

@@ -20,7 +20,12 @@ namespace Popcorn.Utils
         /// Endpoint to API
         /// </summary>
         public const string PopcornApi = "https://popcornapi.azurewebsites.net/api";
-        
+
+        /// <summary>
+        /// Url used to start a local OWIN server
+        /// </summary>
+        public const string ServerUrl = "http://*:9900/";
+
         /// <summary>
         /// Open Subtitles User Agent
         /// </summary>

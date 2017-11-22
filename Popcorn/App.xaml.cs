@@ -6,8 +6,11 @@ using System.Windows;
 using System.Windows.Threading;
 using Akavache;
 using GalaSoft.MvvmLight.Threading;
+using Ignite.SharpNetSH;
+using NetFwTypeLib;
 using NLog;
 using Popcorn.Helpers;
+using Popcorn.Utils;
 using Popcorn.ViewModels.Windows;
 using Popcorn.Windows;
 using WPFLocalizeExtension.Engine;
@@ -68,7 +71,7 @@ namespace Popcorn
                 "Popcorn starting...");
             AsyncSynchronizationContext.Register();
         }
-
+        
         /// <summary>
         /// Observe unhandled exceptions
         /// </summary>

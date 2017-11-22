@@ -1,8 +1,14 @@
 ﻿using System;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using MahApps.Metro.IconPacks;
 using Popcorn.Controls;
+using Popcorn.Converters;
 
 namespace Popcorn.UserControls.Home.Movie.Details
 {
@@ -34,6 +40,15 @@ namespace Popcorn.UserControls.Home.Movie.Details
             {
                 scv.TargetHorizontalOffset -= e.Delta;
             }
+        }
+
+        private void OnImageFailed(object sender, ExceptionRoutedEventArgs e)
+        {
+            var image = PackIconMaterialKind.AccountCircle;
+            var converter = new PackIconMaterialImageSourceConverter();
+            var bitmapImage = converter.Convert(image, typeof(Image), new SolidColorBrush(Color.FromRgb(255, 255, 255)),
+                CultureInfo.InvariantCulture);
+            ((Image) sender).Source = (DrawingImage)bitmapImage;
         }
     }
 }

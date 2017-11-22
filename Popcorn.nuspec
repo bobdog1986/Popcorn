@@ -247,10 +247,52 @@
         <file src="FFmpeg\avutil-55.dll" target="lib\net45\FFmpeg\avutil-55.dll" />
         <file src="FFmpeg\postproc-54.dll" target="lib\net45\FFmpeg\postproc-54.dll" />
         <file src="FFmpeg\swresample-2.dll" target="lib\net45\FFmpeg\swresample-2.dll" />
-        <file src="FFmpeg\swscale-4.dll" target="lib\net45\swscale-4.dll" />
+        <file src="FFmpeg\swscale-4.dll" target="lib\net45\FFmpeg\swscale-4.dll" />
         <file src="Popcorn.FFME.dll" target="lib\net45\Popcorn.FFME.dll" />
         <file src="FFmpeg.AutoGen.dll" target="lib\net45\FFmpeg.AutoGen.dll" />
         <file src="SubtitlesParser.dll" target="lib\net45\SubtitlesParser.dll" />
         <file src="System.Runtime.Serialization.Primitives.dll" target="lib\net45\System.Runtime.Serialization.Primitives.dll" />
+        <file src="Humanizer.dll" target="lib\net45\Humanizer.dll" />
+        <file src="af\Humanizer.resources.dll" target="lib\net45\af\Humanizer.resources.dll" />
+        <file src="ar\Humanizer.resources.dll" target="lib\net45\ar\Humanizer.resources.dll" />
+        <file src="bg\Humanizer.resources.dll" target="lib\net45\bg\Humanizer.resources.dll" />
+        <file src="bn-BD\Humanizer.resources.dll" target="lib\net45\bn-BD\Humanizer.resources.dll" />
+        <file src="cs\Humanizer.resources.dll" target="lib\net45\cs\Humanizer.resources.dll" />
+        <file src="da\Humanizer.resources.dll" target="lib\net45\da\Humanizer.resources.dll" />
+        <file src="de\Humanizer.resources.dll" target="lib\net45\de\Humanizer.resources.dll" />
+        <file src="el\Humanizer.resources.dll" target="lib\net45\el\Humanizer.resources.dll" />
+        <file src="es\Humanizer.resources.dll" target="lib\net45\es\Humanizer.resources.dll" />
+        <file src="fa\Humanizer.resources.dll" target="lib\net45\fa\Humanizer.resources.dll" />
+        <file src="fi-FI\Humanizer.resources.dll" target="lib\net45\fi-FI\Humanizer.resources.dll" />
+        <file src="fr\Humanizer.resources.dll" target="lib\net45\fr\Humanizer.resources.dll" />
+        <file src="fr-BE\Humanizer.resources.dll" target="lib\net45\fr-BE\Humanizer.resources.dll" />
+        <file src="he\Humanizer.resources.dll" target="lib\net45\he\Humanizer.resources.dll" />
+        <file src="hu\Humanizer.resources.dll" target="lib\net45\hu\Humanizer.resources.dll" />
+        <file src="id\Humanizer.resources.dll" target="lib\net45\id\Humanizer.resources.dll" />
+        <file src="it\Humanizer.resources.dll" target="lib\net45\it\Humanizer.resources.dll" />
+        <file src="ja\Humanizer.resources.dll" target="lib\net45\ja\Humanizer.resources.dll" />
+        <file src="nb\Humanizer.resources.dll" target="lib\net45\nb\Humanizer.resources.dll" />
+        <file src="nb-NO\Humanizer.resources.dll" target="lib\net45\nb-NO\Humanizer.resources.dll" />
+        <file src="nl\Humanizer.resources.dll" target="lib\net45\nl\Humanizer.resources.dll" />
+        <file src="pl\Humanizer.resources.dll" target="lib\net45\pl\Humanizer.resources.dll" />
+        <file src="ro\Humanizer.resources.dll" target="lib\net45\ro\Humanizer.resources.dll" />
+        <file src="ru\Humanizer.resources.dll" target="lib\net45\ru\Humanizer.resources.dll" />
+        <file src="sk\Humanizer.resources.dll" target="lib\net45\sk\Humanizer.resources.dll" />
+        <file src="sr\Humanizer.resources.dll" target="lib\net45\sr\Humanizer.resources.dll" />
+        <file src="sr-Latn\Humanizer.resources.dll" target="lib\net45\sr-Latn\Humanizer.resources.dll" />
+        <file src="sv\Humanizer.resources.dll" target="lib\net45\sv\Humanizer.resources.dll" />
+        <file src="tr\Humanizer.resources.dll" target="lib\net45\tr\Humanizer.resources.dll" />
+        <file src="uz-Cyrl-UZ\Humanizer.resources.dll" target="lib\net45\uz-Cyrl-UZ\Humanizer.resources.dll" />
+        <file src="uz-Latn-UZ\Humanizer.resources.dll" target="lib\net45\uz-Latn-UZ\Humanizer.resources.dll" />
+        <file src="vi\Humanizer.resources.dll" target="lib\net45\vi\Humanizer.resources.dll" />
+        <file src="zh-CN\Humanizer.resources.dll" target="lib\net45\zh-CN\Humanizer.resources.dll" />
+        <file src="zh-Hans\Humanizer.resources.dll" target="lib\net45\zh-Hans\Humanizer.resources.dll" />
+        <file src="zh-Hant\Humanizer.resources.dll" target="lib\net45\zh-Hant\Humanizer.resources.dll" />
+        <file src="hr\Humanizer.resources.dll" target="lib\net45\hr\Humanizer.resources.dll" />
+        <file src="lv\Humanizer.resources.dll" target="lib\net45\lv\Humanizer.resources.dll" />
+        <file src="pt\Humanizer.resources.dll" target="lib\net45\pt\Humanizer.resources.dll" />
+        <file src="sl\Humanizer.resources.dll" target="lib\net45\sl\Humanizer.resources.dll" />
+        <file src="uk\Humanizer.resources.dll" target="lib\net45\uk\Humanizer.resources.dll" />
+        <file src="Ignite.SharpNetSH.dll" target="lib\net45\Ignite.SharpNetSH.dll" />
     </files>
 </package>
