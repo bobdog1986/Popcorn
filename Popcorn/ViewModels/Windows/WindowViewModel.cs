@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -16,11 +14,8 @@ using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
-using Ignite.SharpNetSH;
 using MahApps.Metro.Controls.Dialogs;
-using Microsoft.Owin.Hosting;
 using Microsoft.Win32;
-using NetFwTypeLib;
 using NLog;
 using Polly.Timeout;
 using Popcorn.Dialogs;
@@ -30,7 +25,6 @@ using Popcorn.Messaging;
 using Popcorn.Services.Application;
 using Popcorn.Services.Cache;
 using Popcorn.Services.Chromecast;
-using Popcorn.Services.Server;
 using Popcorn.Services.User;
 using Popcorn.Utils;
 using Popcorn.Utils.Exceptions;
@@ -63,11 +57,6 @@ namespace Popcorn.ViewModels.Windows
         /// Holds the async message relative to <see cref="ShowSubtitleDialogMessage"/>
         /// </summary>
         private IDisposable _showSubtitleDialogMessage;
-
-        /// <summary>
-        /// The disposable local OWIN server
-        /// </summary>
-        private IDisposable _localServer;
 
         /// <summary>
         /// Holds the async message relative to <see cref="CastMediaMessage"/>
@@ -123,7 +112,7 @@ namespace Popcorn.ViewModels.Windows
         /// The chromecast service
         /// </summary>
         private readonly IChromecastService _chromecastService;
-        
+
         /// <summary>
         /// <see cref="MediaPlayer"/>
         /// </summary>
@@ -674,7 +663,6 @@ namespace Popcorn.ViewModels.Windows
                 try
                 {
                     await _userService.UpdateUser();
-                    _localServer?.Dispose();
                     await SaveCacheOnExit();
                     FileHelper.ClearFolders();
                 }
@@ -816,85 +804,14 @@ namespace Popcorn.ViewModels.Windows
                     }
                 }
 
-                var netsh = new NetSH(new Utils.CommandLineHarness());
-                var showResponse = netsh.Http.Show.UrlAcl(Constants.ServerUrl);
-                if (showResponse.ResponseObject.Count == 0)
-                    RegisterUrlAcl();
-
-                if (!FirewallRuleExists("Popcorn Server"))
-                    RegisterFirewallRule();
-
-                try
+                await Task.Run(() =>
                 {
-                    _localServer = WebApp.Start<Startup>(Constants.ServerUrl);
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error(ex);
-                }
+                    
+                });
             });
         }
 
-        private bool FirewallRuleExists(string ruleName)
-        {
-            try
-            {
-                Type tNetFwPolicy2 = Type.GetTypeFromProgID("HNetCfg.FwPolicy2");
-                INetFwPolicy2 fwPolicy2 = (INetFwPolicy2)Activator.CreateInstance(tNetFwPolicy2);
-                foreach (INetFwRule rule in fwPolicy2.Rules)
-                {
-                    if (rule.Name.IndexOf(ruleName, StringComparison.Ordinal) != -1)
-                    {
-                        return true;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
-
-            return false;
-        }
-
-        private static void RegisterFirewallRule()
-        {
-            try
-            {
-                INetFwRule firewallRule = (INetFwRule)Activator.CreateInstance(
-                    Type.GetTypeFromProgID("HNetCfg.FWRule"));
-                firewallRule.Action = NET_FW_ACTION_.NET_FW_ACTION_ALLOW;
-                firewallRule.Description = "Enables Popcorn server.";
-                firewallRule.Direction = NET_FW_RULE_DIRECTION_.NET_FW_RULE_DIR_IN;
-                firewallRule.Enabled = true;
-                firewallRule.InterfaceTypes = "All";
-                firewallRule.Name = "Popcorn Server";
-                firewallRule.Protocol = (int)NET_FW_IP_PROTOCOL_.NET_FW_IP_PROTOCOL_TCP;
-                firewallRule.LocalPorts = "9900";
-                INetFwPolicy2 firewallPolicy = (INetFwPolicy2)Activator.CreateInstance(
-                    Type.GetTypeFromProgID("HNetCfg.FwPolicy2"));
-                firewallPolicy.Rules.Add(firewallRule);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
-        }
-
-        private static void RegisterUrlAcl()
-        {
-            try
-            {
-                var username = Environment.GetEnvironmentVariable("USERNAME");
-                var domain = Environment.GetEnvironmentVariable("USERDOMAIN");
-                var netsh = new NetSH(new Utils.CommandLineHarness());
-                netsh.Http.Add.UrlAcl(Constants.ServerUrl, $"{domain}\\{username}", true);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
-        }
+        
 
         private async Task HandleTorrentDownload(string path)
         {

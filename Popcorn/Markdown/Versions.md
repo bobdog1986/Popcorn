@@ -1,4 +1,13 @@
-﻿# 3.4.3 - 09/11/2017 #
+﻿# 3.4.4 - 22/11/2017 #
+***
+Fixed issues
+
+### Details ###
+* Fixed issue [#148](https://github.com/bbougot/Popcorn/issues/148).
+* Fixed issue [#146](https://github.com/bbougot/Popcorn/issues/146).
+* Fixed issue [#144](https://github.com/bbougot/Popcorn/issues/144).
+
+# 3.4.3 - 09/11/2017 #
 ***
 Fixed issue
 

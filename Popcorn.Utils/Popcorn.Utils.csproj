@@ -34,6 +34,7 @@
     <Compile Include="Exceptions\NoDataInDroppedFileException.cs" />
     <Compile Include="Exceptions\PopcornException.cs" />
     <Compile Include="Exceptions\TrailerNotAvailableException.cs" />
+    <Compile Include="Helper.cs" />
     <Compile Include="LowLevelKeyboardListener.cs" />
     <Compile Include="MediaType.cs" />
     <Compile Include="NativeMethods.cs" />
@@ -45,8 +46,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Humanizer, Version=1.33.7.0, Culture=neutral, PublicKeyToken=979442b78dfc278e, processorArchitecture=MSIL">
-      <HintPath>..\packages\Humanizer.1.33.7\lib\portable-win+net40+sl50+wp8+wpa81\Humanizer.dll</HintPath>
+    <Reference Include="Humanizer, Version=2.2.0.0, Culture=neutral, PublicKeyToken=979442b78dfc278e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Humanizer.Core.2.2.0\lib\netstandard1.0\Humanizer.dll</HintPath>
     </Reference>
     <Reference Include="Ignite.SharpNetSH, Version=1.0.5735.15453, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpNetSH.2.0.5\lib\net45\Ignite.SharpNetSH.dll</HintPath>
