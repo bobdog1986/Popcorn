@@ -538,12 +538,23 @@ namespace Popcorn.ViewModels.Windows.Settings
                                 .HasBadge("Info")
                                 .HasMessage(LocalizationProviderHelper.GetLocalizedValue<string>("UpdateApplied"))
                                 .Dismiss().WithButton(LocalizationProviderHelper.GetLocalizedValue<string>("Restart"),
-                                    async button =>
+                                    button =>
                                     {
                                         Logger.Info(
                                             "Restarting...");
 
-                                        await UpdateManager.RestartAppWhenExited($@"{_updateFilePath}\Popcorn.exe", "updated");
+                                        var info = new ProcessStartInfo($@"{_updateFilePath}\Popcorn.exe")
+                                        {
+                                            Verb = "runas",
+                                            Arguments = "updated"
+                                        };
+
+                                        var process = new Process
+                                        {
+                                            StartInfo = info
+                                        };
+
+                                        process.Start();
                                         Application.Current.MainWindow.Close();
                                     })
                                 .Dismiss().WithButton(

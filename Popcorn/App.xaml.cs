@@ -264,8 +264,7 @@ namespace Popcorn
             splashScreenThread.SetApartmentState(ApartmentState.STA);
             splashScreenThread.Start();
 
-            var mainWindow = new MainWindow();
-            mainWindow.Topmost = true;
+            var mainWindow = new MainWindow {Topmost = true};
             MainWindow = mainWindow;
             mainWindow.Loaded += async (sender2, e2) =>
                 await mainWindow.Dispatcher.InvokeAsync(async () =>
@@ -275,8 +274,7 @@ namespace Popcorn
                         return;
                     _splashScreenDispatcher.BeginInvokeShutdown(DispatcherPriority.Background);
                     mainWindow.Activate();
-                    var vm = mainWindow.DataContext as WindowViewModel;
-                    if (vm != null)
+                    if (mainWindow.DataContext is WindowViewModel vm)
                     {
                         vm.InitializeAsyncCommand.Execute(null);
                     }
