@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -122,10 +123,18 @@ namespace Popcorn
 
         private static void RestartAsAdmin()
         {
+            var args = string.Empty;
+            var cmd = Environment.GetCommandLineArgs();
+            if (cmd.Any())
+            {
+                args = string.Join(" ", cmd);
+            }
+
             var info = new ProcessStartInfo(
                 Assembly.GetEntryAssembly().Location)
             {
-                Verb = "runas"
+                Verb = "runas",
+                Arguments = args
             };
 
             var process = new Process
@@ -134,7 +143,7 @@ namespace Popcorn
             };
 
             process.Start();
-            DispatcherHelper.CheckBeginInvokeOnUI(() => { Current.MainWindow.Close(); });
+            Current.Shutdown();
         }
 
         private bool FirewallRuleExists(string ruleName)
