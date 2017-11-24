@@ -21,14 +21,6 @@
   
 </div>
 
-<br />
-
-<div align="center">
-  <a href="http://forthebadge.com" target="_blank" style="text-align:center;">
-    <img alt="Netflix" src="http://forthebadge.com/images/badges/powered-by-netflix.svg">
-  </a>
-</div>
-
 ## Features
 
 **Huge database**: The API collects most of known movies (6000+) and shows (3000+)
