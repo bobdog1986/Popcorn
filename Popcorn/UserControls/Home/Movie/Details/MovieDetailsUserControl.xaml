@@ -158,8 +158,8 @@
             <Image
                 Grid.Row="0"
                 Grid.RowSpan="3"
-                attachedProperties:ImageAsyncHelper.ImagePath="{Binding Movie.BackdropImage}"
-                attachedProperties:ImageAsyncHelper.Type="Backdrop"
+                attachedProperties:ImageAsyncHelper.ImagePath="{Binding Movie.BackgroundImage}"
+                attachedProperties:ImageAsyncHelper.Type="Background"
                 Opacity="0.3" />
             <TextBlock
                 Grid.Row="0"

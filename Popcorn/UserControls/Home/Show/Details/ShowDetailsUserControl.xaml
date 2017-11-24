@@ -176,7 +176,7 @@
                 Grid.Row="0"
                 Grid.RowSpan="2"
                 attachedProperties:ImageAsyncHelper.ImagePath="{Binding Show.Images.Banner}"
-                attachedProperties:ImageAsyncHelper.Type="Backdrop"
+                attachedProperties:ImageAsyncHelper.Type="Background"
                 Opacity="0.3" />
             <Grid
                 Grid.Row="0"
@@ -184,7 +184,7 @@
                 Visibility="{Binding DownloadShow.IsDownloadingEpisode, Converter={StaticResource BoolToInverseVisibilityConverter}}">
                 <Image
                     attachedProperties:ImageAsyncHelper.ImagePath="{Binding Show.Images.Banner}"
-                    attachedProperties:ImageAsyncHelper.Type="Backdrop"
+                    attachedProperties:ImageAsyncHelper.Type="Background"
                     Opacity="0.3" />
                 <ContentControl
                     HorizontalAlignment="Stretch"

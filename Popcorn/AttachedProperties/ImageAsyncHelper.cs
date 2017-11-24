@@ -18,7 +18,7 @@ namespace Popcorn.AttachedProperties
     {
         Thumbnail,
         Poster,
-        Backdrop,
+        Background,
         None
     }
 
@@ -54,7 +54,7 @@ namespace Popcorn.AttachedProperties
             DependencyProperty.RegisterAttached("Type",
                 typeof(ImageType),
                 typeof(ImageAsyncHelper),
-                new PropertyMetadata(ImageType.Backdrop));
+                new PropertyMetadata(ImageType.Background));
 
         /// <summary>
         /// Get source uri

@@ -25,7 +25,6 @@ namespace Popcorn.Models.Movie
         private int _imdbId;
         private string _dateUploaded;
         private string _posterImage;
-        private string _backdropImage;
         private int _dateUploadedUnix;
         private string _descriptionFull;
         private string _descriptionIntro;
@@ -35,15 +34,6 @@ namespace Popcorn.Models.Movie
         private List<string> _genres;
         private bool _hasBeenSeen;
         private string _backgroundImage;
-        private string _largeCoverImage;
-        private string _largeScreenshotImage1;
-        private string _largeScreenshotImage2;
-        private string _largeScreenshotImage3;
-        private string _mediumCoverImage;
-        private string _mediumScreenshotImage1;
-        private string _mediumScreenshotImage2;
-        private string _mediumScreenshotImage3;
-        private string _smallCoverImage;
         private string _imdbCode;
         private bool _isFavorite;
         private string _language;
@@ -202,13 +192,6 @@ namespace Popcorn.Models.Movie
             set { Set(() => PosterImage, ref _posterImage, value); }
         }
 
-        [DataMember(Name = "backdrop_image")]
-        public string BackdropImage
-        {
-            get => _backdropImage;
-            set { Set(() => BackdropImage, ref _backdropImage, value); }
-        }
-
         [DataMember(Name = "date_uploaded_unix")]
         public int DateUploadedUnix
         {
@@ -221,69 +204,6 @@ namespace Popcorn.Models.Movie
         {
             get => _backgroundImage;
             set { Set(() => BackgroundImage, ref _backgroundImage, value); }
-        }
-
-        [DataMember(Name = "small_cover_image")]
-        public string SmallCoverImage
-        {
-            get => _smallCoverImage;
-            set { Set(() => SmallCoverImage, ref _smallCoverImage, value); }
-        }
-
-        [DataMember(Name = "medium_cover_image")]
-        public string MediumCoverImage
-        {
-            get => _mediumCoverImage;
-            set { Set(() => MediumCoverImage, ref _mediumCoverImage, value); }
-        }
-
-        [DataMember(Name = "large_cover_image")]
-        public string LargeCoverImage
-        {
-            get => _largeCoverImage;
-            set { Set(() => LargeCoverImage, ref _largeCoverImage, value); }
-        }
-
-        [DataMember(Name = "medium_screenshot_image1")]
-        public string MediumScreenshotImage1
-        {
-            get => _mediumScreenshotImage1;
-            set { Set(() => MediumScreenshotImage1, ref _mediumScreenshotImage1, value); }
-        }
-
-        [DataMember(Name = "medium_screenshot_image2")]
-        public string MediumScreenshotImage2
-        {
-            get => _mediumScreenshotImage2;
-            set { Set(() => MediumScreenshotImage2, ref _mediumScreenshotImage2, value); }
-        }
-
-        [DataMember(Name = "medium_screenshot_image3")]
-        public string MediumScreenshotImage3
-        {
-            get => _mediumScreenshotImage3;
-            set { Set(() => MediumScreenshotImage3, ref _mediumScreenshotImage3, value); }
-        }
-
-        [DataMember(Name = "large_screenshot_image1")]
-        public string LargeScreenshotImage1
-        {
-            get => _largeScreenshotImage1;
-            set { Set(() => LargeScreenshotImage1, ref _largeScreenshotImage1, value); }
-        }
-
-        [DataMember(Name = "large_screenshot_image2")]
-        public string LargeScreenshotImage2
-        {
-            get => _largeScreenshotImage2;
-            set { Set(() => LargeScreenshotImage2, ref _largeScreenshotImage2, value); }
-        }
-
-        [DataMember(Name = "large_screenshot_image3")]
-        public string LargeScreenshotImage3
-        {
-            get => _largeScreenshotImage3;
-            set { Set(() => LargeScreenshotImage3, ref _largeScreenshotImage3, value); }
         }
 
         [DataMember(Name = "similar")]

@@ -803,15 +803,8 @@ namespace Popcorn.ViewModels.Windows
                         await HandleTorrentDownload(path);
                     }
                 }
-
-                await Task.Run(() =>
-                {
-                    
-                });
             });
         }
-
-        
 
         private async Task HandleTorrentDownload(string path)
         {

@@ -1,4 +1,11 @@
-﻿# 3.4.4 - 22/11/2017 #
+﻿# 3.4.5 - 24/11/2017 #
+***
+Fixed issue
+
+### Details ###
+* Fixed issue with images
+
+# 3.4.4 - 22/11/2017 #
 ***
 Fixed issues
 
