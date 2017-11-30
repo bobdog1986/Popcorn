@@ -72,14 +72,10 @@ namespace Popcorn.Services.Movies.Movie
         /// <summary>
         /// Get similar movies
         /// </summary>
-        /// <param name="page">Page to return</param>
-        /// <param name="limit">The maximum number of movies to return</param>
         /// <param name="imdbIds">The imdbIds of the movies, split by comma</param>
         /// <param name="ct">Cancellation token</param>
         /// <returns>Similar movies</returns>
-        Task<(IEnumerable<MovieLightJson> movies, int nbMovies)> GetSimilarAsync(int page,
-            int limit,
-            IEnumerable<string> imdbIds,
+        Task<(IEnumerable<MovieLightJson> movies, int nbMovies)> GetSimilarAsync(IEnumerable<string> imdbIds,
             CancellationToken ct);
 
         /// <summary>

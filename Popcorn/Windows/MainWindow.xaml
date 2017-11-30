@@ -136,12 +136,13 @@
                 HeaderTemplate="{Binding Source={StaticResource FlyoutHeaderTemplate}}"
                 IsOpen="{Binding IsCastFlyoutOpen}"
                 Position="Right">
-                <cast:CastUserControl x:Name="CastUc" />
+                <cast:CastUserControl />
             </controls:Flyout>
             <controls:Flyout
                 Header="{lex:LocText SettingsMenuTitle}"
                 IsModal="True"
                 IsOpen="{Binding IsSettingsFlyoutOpen}"
+                IsPinned="False"
                 Opacity="0.9"
                 Position="Right"
                 Theme="Dark">

@@ -21,7 +21,6 @@ using Polly;
 using Polly.Timeout;
 using Popcorn.Extensions;
 using TMDbLib.Objects.Find;
-using TMDbLib.Objects.General;
 using TMDbLib.Objects.People;
 using Utf8Json;
 
@@ -158,6 +157,7 @@ namespace Popcorn.Services.Movies.Movie
 
                         movie = JsonSerializer.Deserialize<MovieJson>(response.RawBytes);
                         movie.TranslationLanguage = TmdbClient.DefaultLanguage;
+                        movie.TmdbId = (await TmdbClient.GetMovieAsync(movie.ImdbCode).ConfigureAwait(false)).Id;
                     }
                     catch (Exception exception) when (exception is TaskCanceledException)
                     {
@@ -269,7 +269,7 @@ namespace Popcorn.Services.Movies.Movie
                     {
                         if (movie.Similars != null && movie.Similars.Any())
                         {
-                            similarMovies = await GetSimilarAsync(0, Utils.Constants.MaxMoviesPerPage, movie.Similars,
+                            similarMovies = await GetSimilarAsync(movie.Similars,
                                     CancellationToken.None)
                                 .ConfigureAwait(false);
                         }
@@ -399,14 +399,10 @@ namespace Popcorn.Services.Movies.Movie
         /// <summary>
         /// Get similar movies
         /// </summary>
-        /// <param name="page">Page to return</param>
-        /// <param name="limit">The maximum number of movies to return</param>
         /// <param name="imdbIds">The imdbIds of the movies, split by comma</param>
         /// <param name="ct">Cancellation token</param>
         /// <returns>Similar movies</returns>
-        public async Task<(IEnumerable<MovieLightJson> movies, int nbMovies)> GetSimilarAsync(int page,
-            int limit,
-            IEnumerable<string> imdbIds,
+        public async Task<(IEnumerable<MovieLightJson> movies, int nbMovies)> GetSimilarAsync(IEnumerable<string> imdbIds,
             CancellationToken ct)
         {
             var timeoutPolicy =
@@ -417,18 +413,10 @@ namespace Popcorn.Services.Movies.Movie
                 {
                     var watch = Stopwatch.StartNew();
                     var wrapper = new MovieLightResponse();
-                    if (limit < 1 || limit > 50)
-                        limit = Utils.Constants.MaxMoviesPerPage;
-
-                    if (page < 1)
-                        page = 1;
-
                     var restClient = new RestClient(Utils.Constants.PopcornApi);
                     var request = new RestRequest("/{segment}/{subsegment}", Method.POST);
                     request.AddUrlSegment("segment", "movies");
-                    request.AddUrlSegment("subsegment", "similar");
-                    request.AddQueryParameter("limit", limit.ToString());
-                    request.AddQueryParameter("page", page.ToString());
+                    request.AddUrlSegment("subsegment", "ids");
                     request.AddJsonBody(imdbIds);
 
                     try
@@ -459,7 +447,7 @@ namespace Popcorn.Services.Movies.Movie
                         watch.Stop();
                         var elapsedMs = watch.ElapsedMilliseconds;
                         Logger.Debug(
-                            $"GetSimilarAsync ({page}, {limit}, {string.Join(",", imdbIds)}) in {elapsedMs} milliseconds.");
+                            $"GetSimilarAsync ({string.Join(",", imdbIds)}) in {elapsedMs} milliseconds.");
                     }
 
                     var result = wrapper?.Movies ?? new List<MovieLightJson>();

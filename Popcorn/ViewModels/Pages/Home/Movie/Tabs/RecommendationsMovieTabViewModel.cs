@@ -71,7 +71,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                     var favorites = UserService.GetFavoritesMovies(Page);
                     var movies = seen.allMovies.Union(favorites.allMovies).Distinct().ToList();
                     var result = await MovieService
-                        .GetSimilarAsync(Page, Utils.Constants.MaxMoviesPerPage, movies,
+                        .GetSimilarAsync(movies,
                             CancellationLoadingMovies.Token).ConfigureAwait(false);
                     getMoviesWatcher.Stop();
                     var getMoviesEllapsedTime = getMoviesWatcher.ElapsedMilliseconds;

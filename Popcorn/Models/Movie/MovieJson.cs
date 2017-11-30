@@ -22,7 +22,6 @@ namespace Popcorn.Models.Movie
         private ObservableCollection<Subtitle> _availableSubtitles =
             new ObservableCollection<Subtitle>();
 
-        private int _imdbId;
         private string _dateUploaded;
         private string _posterImage;
         private int _dateUploadedUnix;
@@ -51,6 +50,7 @@ namespace Popcorn.Models.Movie
         private int _year;
         private string _ytTrailerCode;
         private List<string> _similars;
+        private int _tmdbId;
 
         [DataMember(Name = "url")]
         public string Url
@@ -298,12 +298,12 @@ namespace Popcorn.Models.Movie
         }
 
         /// <summary>
-        /// Imdb id
+        /// Tmdb id
         /// </summary>
-        public int ImdbId
+        public int TmdbId
         {
-            get => _imdbId;
-            set { Set(() => ImdbId, ref _imdbId, value); }
+            get => _tmdbId;
+            set { Set(() => TmdbId, ref _tmdbId, value); }
         }
 
         public string TranslationLanguage { get; set; }

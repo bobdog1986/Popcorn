@@ -287,7 +287,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show
             else
             {
                 IsSearchActive = true;
-                SelectedShowsIndexMenuTab = 3;
+                SelectedShowsIndexMenuTab = 4;
                 if (Tabs.OfType<SearchShowTabViewModel>().Any())
                 {
                     foreach (var searchTab in Tabs.OfType<SearchShowTabViewModel>().ToList())
