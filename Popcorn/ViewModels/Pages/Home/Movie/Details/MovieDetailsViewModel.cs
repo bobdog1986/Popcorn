@@ -526,7 +526,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
                     _userService.SyncMovieHistory(new List<IMovie> { Movie });
                     IsMovieLoading = false;
                     Movie.FullHdAvailable = Movie.Torrents.Count != 1;
-                    Movie.WatchInFullHdQuality = Movie.FullHdAvailable && Movie.Torrents.Count == 1 || Movie.FullHdAvailable && applicationSettings.DefaultHdQuality;
+                    Movie.WatchInFullHdQuality = Movie.Torrents.Any(torrent => torrent.Quality == "1080p") && Movie.Torrents.Count == 1 || Movie.Torrents.Any(torrent => torrent.Quality == "1080p") && applicationSettings.DefaultHdQuality;
                     ComputeTorrentHealth();
                     var tasks = new Func<Task>[]
                     {

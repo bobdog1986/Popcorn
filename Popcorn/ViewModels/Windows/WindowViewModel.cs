@@ -662,9 +662,9 @@ namespace Popcorn.ViewModels.Windows
             {
                 try
                 {
+                    FileHelper.ClearFolders();
                     await _userService.UpdateUser();
                     await SaveCacheOnExit();
-                    FileHelper.ClearFolders();
                 }
                 catch (Exception ex)
                 {

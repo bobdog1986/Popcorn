@@ -1,4 +1,11 @@
-﻿# 3.4.6 - 30/11/2017 #
+﻿# 3.4.7 - 19/12/2017 #
+***
+Fixed missing movies
+
+### Details ###
+* Fixed an issue which could lead to missing movies.
+
+# 3.4.6 - 30/11/2017 #
 ***
 Fixed issues
 
