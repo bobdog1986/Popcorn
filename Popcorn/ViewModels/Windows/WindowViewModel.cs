@@ -613,8 +613,8 @@ namespace Popcorn.ViewModels.Windows
                     {
                         Title = "Open Sub File",
                         Filter = "SUB files (*.sub,*srt,*sbv)|*.sub;*.srt;*.sbv",
-                        InitialDirectory = @"C:\"
-                    };
+                        InitialDirectory = Path.GetPathRoot(Environment.SystemDirectory)
+                };
 
                     if (fileDialog.ShowDialog() == true)
                     {

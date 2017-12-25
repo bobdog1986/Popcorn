@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using CookComputing.XmlRpc;
 using Popcorn.OSDB.Backend;
@@ -107,28 +109,22 @@ namespace Popcorn.OSDB
                 //if file has been downloaded before - there is no need to download it again
                 return destinationfile;
             }
-
-            var tempZipName = Path.GetTempFileName();
-            try
+           
+            using (var client = new HttpClient())
             {
-                using (var client = new HttpClient())
+                using (var response = await client.GetAsync(subtitle.SubTitleDownloadLink))
                 {
-                    using (var response = await client.GetAsync(subtitle.SubTitleDownloadLink))
+                    response.EnsureSuccessStatusCode();
+                    using (var content = response.Content)
                     {
-                        response.EnsureSuccessStatusCode();
-                        using (var content = response.Content)
-                        {
-                            await content.ReadAsFileAsync(tempZipName, true);
-                        }
+                        string strLang = subtitle.ISO639.ToLower();
+                        Encoding enc = Encoding.GetEncoding("windows-1252");
+                        if (strLang =="he") enc = Encoding.GetEncoding("windows-1255");
+                        if (strLang =="el") enc = Encoding.GetEncoding("windows-1253");
+                        if (strLang =="ar") enc = Encoding.GetEncoding("windows-1256");
+                        await UnZipSubtitleFileToFile(await content.ReadAsByteArrayAsync(), destinationfile, enc);
                     }
                 }
-
-                UnZipSubtitleFileToFile(tempZipName, destinationfile);
-
-            }
-            finally
-            {
-                File.Delete(tempZipName);
             }
 
             return destinationfile;
@@ -191,13 +187,22 @@ namespace Popcorn.OSDB
             Dispose(false);
         }
 
-        private void UnZipSubtitleFileToFile(string zipFileName, string subFileName)
+        private async Task UnZipSubtitleFileToFile(byte[] gzipStream, string subFileName, Encoding enc)
         {
-            using (FileStream subFile = File.OpenWrite(subFileName))
-            using (FileStream tempFile = File.OpenRead(zipFileName))
+            using (var subFile = new StreamWriter(subFileName, false, Encoding.UTF8))
+            using (var compressedMs = new MemoryStream(gzipStream))
             {
-                var gzip = new GZipStream(tempFile, CompressionMode.Decompress);
-                gzip.CopyTo(subFile);
+                using (var decompressedMs = new MemoryStream())
+                {
+                    using (var gzs = new BufferedStream(new GZipStream(compressedMs,
+                        CompressionMode.Decompress)))
+                    {
+                        gzs.CopyTo(decompressedMs);
+                    }
+                    var decompressed = decompressedMs.ToArray();
+                    var str = Encoding.Convert(enc, Encoding.UTF8, decompressed);
+                    await subFile.WriteAsync(WebUtility.HtmlDecode(Encoding.UTF8.GetString(str)));
+                }
             }
         }
 
@@ -219,7 +224,8 @@ namespace Popcorn.OSDB
                 MovieId = info.IDMovie,
                 MovieName = info.MovieName,
                 OriginalMovieName = info.MovieNameEng,
-                MovieYear = int.Parse(info.MovieYear)
+                MovieYear = int.Parse(info.MovieYear),
+                ISO639 = info.ISO639
             };
             return sub;
         }

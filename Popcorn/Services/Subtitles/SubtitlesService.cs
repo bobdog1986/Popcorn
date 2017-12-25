@@ -110,7 +110,7 @@ namespace Popcorn.Services.Subtitles
             var parser = new SubtitlesParser.Classes.Parsers.SubParser();
             using (var fileStream = File.OpenRead(filePath))
             {
-                return parser.ParseStream(fileStream, Encoding.GetEncoding("iso-8859-1"));
+                return parser.ParseStream(fileStream, Encoding.UTF8);
             }
         }
 
@@ -124,8 +124,8 @@ namespace Popcorn.Services.Subtitles
             try
             {
                 var path = Path.ChangeExtension(sFilePath, "vtt");
-                using (var strReader = new StreamReader(sFilePath, Encoding.GetEncoding("iso-8859-1")))
-                using (var strWriter = new StreamWriter(File.Create(path), Encoding.GetEncoding("iso-8859-1")))
+                using (var strReader = new StreamReader(sFilePath, Encoding.UTF8))
+                using (var strWriter = new StreamWriter(File.Create(path), Encoding.UTF8))
                 {
                     var rgxDialogNumber = new Regex(@"^\d+$");
                     var rgxTimeFrame = new Regex(@"(\d\d:\d\d:\d\d,\d\d\d) --> (\d\d:\d\d:\d\d,\d\d\d)");

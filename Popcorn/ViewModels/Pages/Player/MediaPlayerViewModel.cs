@@ -18,6 +18,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight.Ioc;
+using GalaSoft.MvvmLight.Threading;
 using GoogleCast;
 using GoogleCast.Models.Media;
 using Popcorn.Services.Subtitles;
@@ -358,7 +359,7 @@ namespace Popcorn.ViewModels.Pages.Player
                         message.SelectedSubtitle.SubtitleId != "custom")
                     {
                         OnResumedMedia(new EventArgs());
-                        if (CurrentSubtitle != null && CurrentSubtitle.ImdbId == message.SelectedSubtitle.ImdbId)
+                        if (CurrentSubtitle != null && CurrentSubtitle.SubtitleId == message.SelectedSubtitle.SubtitleId)
                         {
                             IsSubtitleChosen = true;
                         }
@@ -366,11 +367,17 @@ namespace Popcorn.ViewModels.Pages.Player
                         {
                             var path = Path.Combine(_cacheService.Subtitles + message.SelectedSubtitle.ImdbId);
                             Directory.CreateDirectory(path);
-                            var subtitlePath = await
-                                _subtitlesService.DownloadSubtitleToPath(path,
-                                    message.SelectedSubtitle);
-                            OnSubtitleChosen(new SubtitleChangedEventArgs(subtitlePath, message.SelectedSubtitle));
-                            IsSubtitleChosen = true;
+                            Task.Run(async () =>
+                            {
+                                var subtitlePath = await
+                                    _subtitlesService.DownloadSubtitleToPath(path,
+                                        message.SelectedSubtitle);
+                                DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                                {
+                                    OnSubtitleChosen(new SubtitleChangedEventArgs(subtitlePath, message.SelectedSubtitle));
+                                    IsSubtitleChosen = true;
+                                });
+                            });
                         }
                     }
                     else if (message.SelectedSubtitle != null &&

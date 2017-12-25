@@ -5,10 +5,12 @@
     xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:dialogs="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
+    xmlns:dialogs1="clr-namespace:Popcorn.ViewModels.Dialogs"
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:lex="http://wpflocalizeextension.codeplex.com"
     xmlns:local="clr-namespace:Popcorn.Dialogs"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DataContext="{d:DesignInstance Type=dialogs1:SubtitleDialogViewModel}"
     d:DesignHeight="300"
     d:DesignWidth="300"
     Background="Transparent"
@@ -105,7 +107,7 @@
                 Margin="0,15,0,15"
                 HorizontalAlignment="Center"
                 controls:ControlsHelper.ContentCharacterCasing="Normal"
-                Command="{Binding CloseCommand}"
+                Click="CloseDialog"
                 Content="{lex:LocText CloseLabel}"
                 Style="{StaticResource AccentedSquareButtonStyle}" />
         </StackPanel>

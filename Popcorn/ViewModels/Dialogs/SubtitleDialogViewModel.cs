@@ -1,5 +1,5 @@
 ﻿using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.CommandWpf;
 using Popcorn.Models.Subtitles;
 using System;
 using System.Collections.Generic;
@@ -18,8 +18,6 @@ namespace Popcorn.ViewModels.Dialogs
 
         private Subtitle _selectedSubtitle;
 
-        private ICommand _closeCommand;
-
         public SubtitleDialogViewModel(IEnumerable<Subtitle> subtitles, OSDB.Subtitle currentSubtitle)
         {
             AvailableSubtitles = new ObservableCollection<Subtitle>(subtitles ?? new List<Subtitle>());
@@ -35,11 +33,6 @@ namespace Popcorn.ViewModels.Dialogs
                                                            LocalizationProviderHelper.GetLocalizedValue<string>(
                                                                "NoneLabel"));
             }
-
-            CloseCommand = new RelayCommand(() =>
-             {
-                 OnCloseAction.Invoke();
-             });
         }
 
         public Subtitle SelectedSubtitle
@@ -52,12 +45,6 @@ namespace Popcorn.ViewModels.Dialogs
         {
             get => _availableSubtitles;
             set => Set(ref _availableSubtitles, value);
-        }
-
-        public ICommand CloseCommand
-        {
-            get => _closeCommand;
-            set => Set(ref _closeCommand, value);
         }
     }
 }

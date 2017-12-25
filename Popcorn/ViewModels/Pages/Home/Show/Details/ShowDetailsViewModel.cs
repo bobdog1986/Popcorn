@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Net;
 using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Messaging;
 using NLog;
 using Popcorn.Messaging;

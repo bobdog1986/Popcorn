@@ -48,6 +48,7 @@ namespace Popcorn.OSDB.Backend
         public string MovieYear;
         public string LanguageName;
         public string SubDownloadLink;
+        public String ISO639;
         public string SubtitlesLink;
     }
 

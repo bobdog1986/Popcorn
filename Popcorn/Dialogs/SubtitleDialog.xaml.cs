@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Popcorn.ViewModels.Dialogs;
 
 namespace Popcorn.Dialogs
 {
@@ -23,6 +24,12 @@ namespace Popcorn.Dialogs
         public SubtitleDialog()
         {
             InitializeComponent();
+        }
+
+        private void CloseDialog(object sender, RoutedEventArgs e)
+        {
+            var vm = DataContext as SubtitleDialogViewModel;
+            vm?.OnCloseAction.Invoke();
         }
     }
 }

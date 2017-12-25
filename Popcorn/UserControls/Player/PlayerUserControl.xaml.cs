@@ -263,6 +263,10 @@ namespace Popcorn.UserControls.Player
 
                 Subtitles.Text = string.Join(Environment.NewLine, formattedLines);
             }
+            else
+            {
+                Subtitles.Text = string.Empty;
+            }
         }
 
         /// <summary>

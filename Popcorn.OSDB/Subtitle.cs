@@ -22,5 +22,7 @@ namespace Popcorn.OSDB
 
         public Uri SubTitleDownloadLink { get; set; }
         public Uri SubtitlePageLink { get; set; }
+
+        public String ISO639 { get; internal set; }
     }
 }
