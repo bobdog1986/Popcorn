@@ -71,6 +71,7 @@ namespace Popcorn.Services.Shows.Show
         /// Get show by its Imdb code
         /// </summary>
         /// <param name="imdbId">Show's Imdb code</param>
+        /// <param name="ct">Cancellation token</param>
         /// <returns>The show</returns>
         public async Task<ShowJson> GetShowAsync(string imdbId, CancellationToken ct)
         {

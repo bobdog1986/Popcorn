@@ -474,4 +474,10 @@
   <data name="RemainingLabel" xml:space="preserve">
     <value>Temps restant</value>
   </data>
+  <data name="FailedLoadingLabel" xml:space="preserve">
+    <value>Echec du chargement de</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Chargement...</value>
+  </data>
 </root>

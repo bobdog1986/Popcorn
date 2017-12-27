@@ -26,6 +26,7 @@ using Popcorn.Models.Torrent.Movie;
 using Popcorn.Services.Cache;
 using Popcorn.Services.Download;
 using Popcorn.Services.User;
+using Popcorn.Utils.Exceptions;
 using Popcorn.ViewModels.Pages.Home.Movie.Tabs;
 using Popcorn.ViewModels.Windows.Settings;
 using Subtitle = Popcorn.Models.Subtitles.Subtitle;
@@ -91,6 +92,11 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
         /// Command used to set a movie as watched
         /// </summary>
         public ICommand SetWatchedMovieCommand { get; private set; }
+
+        /// <summary>
+        /// Command used to stop loading a movie
+        /// </summary>
+        public ICommand StopLoadingMovieCommand { get; private set; }
 
         /// <summary>
         /// The movie to manage
@@ -502,6 +508,12 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
                 _userService.SetMovie(Movie);
                 Messenger.Default.Send(new ChangeSeenMovieMessage());
             });
+
+            StopLoadingMovieCommand = new RelayCommand(() =>
+            {
+                StopLoadingMovie();
+                Messenger.Default.Send(new StopPlayingMovieMessage());
+            });
         }
 
         /// <summary>
@@ -512,21 +524,26 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
         private async Task LoadMovie(IMovie movie, CancellationToken ct)
         {
             var watch = Stopwatch.StartNew();
-            try
+
+            Messenger.Default.Send(new LoadMovieMessage());
+            Movie = new MovieJson {Title = movie.Title};
+            IsMovieLoading = true;
+            SimilarMovies.Clear();
+            await Task.Run(async () =>
             {
-                Messenger.Default.Send(new LoadMovieMessage());
-                Movie = new MovieJson();
-                IsMovieLoading = true;
-                SimilarMovies.Clear();
-                await Task.Run(async () =>
+                try
                 {
                     var applicationSettings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
                     Movie = await _movieService.GetMovieAsync(movie.ImdbCode, ct).ConfigureAwait(false);
+                    ct.ThrowIfCancellationRequested();
                     _movieService.TranslateMovie(Movie);
-                    _userService.SyncMovieHistory(new List<IMovie> { Movie });
+                    _userService.SyncMovieHistory(new List<IMovie> {Movie});
                     IsMovieLoading = false;
                     Movie.FullHdAvailable = Movie.Torrents.Count != 1;
-                    Movie.WatchInFullHdQuality = Movie.Torrents.Any(torrent => torrent.Quality == "1080p") && Movie.Torrents.Count == 1 || Movie.Torrents.Any(torrent => torrent.Quality == "1080p") && applicationSettings.DefaultHdQuality;
+                    Movie.WatchInFullHdQuality =
+                        Movie.Torrents.Any(torrent => torrent.Quality == "1080p") && Movie.Torrents.Count == 1 ||
+                        Movie.Torrents.Any(torrent => torrent.Quality == "1080p") &&
+                        applicationSettings.DefaultHdQuality;
                     ComputeTorrentHealth();
                     var tasks = new Func<Task>[]
                     {
@@ -548,19 +565,21 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
                     };
 
                     await Task.WhenAll(tasks.Select(task => task()).ToArray()).ConfigureAwait(false);
-                }).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(
-                    $"Failed loading movie : {movie.ImdbCode}. {ex.Message}");
-            }
-
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(
+                        $"Failed loading movie : {movie.ImdbCode}. {ex.Message}");
+                    Messenger.Default.Send(new NavigateToHomePageMessage());
+                    if (!ct.IsCancellationRequested)
+                        Messenger.Default.Send(new ManageExceptionMessage(new PopcornException(
+                            $"{LocalizationProviderHelper.GetLocalizedValue<string>("FailedLoadingLabel")} {movie.Title}")));
+                }
+            }, ct).ConfigureAwait(false);
             watch.Stop();
             var elapsedMs = watch.ElapsedMilliseconds;
             Logger.Debug($"LoadMovie ({movie.ImdbCode}) in {elapsedMs} milliseconds.");
         }
-
         /// <summary>
         /// Compute torrent health
         /// </summary>

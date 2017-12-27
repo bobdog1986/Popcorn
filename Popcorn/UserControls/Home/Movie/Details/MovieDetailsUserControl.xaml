@@ -74,7 +74,7 @@
                 </Style.Triggers>
             </Style>
 
-            <Style x:Key="ProgressBarOnMovieLoading" TargetType="{x:Type controls:MetroProgressBar}">
+            <Style x:Key="ProgressRingOnMovieLoading" TargetType="{x:Type controls:ProgressRing}">
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding Path=IsMovieLoading}" Value="True">
                         <DataTrigger.EnterActions>
@@ -140,12 +140,6 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
-        <controls:MetroProgressBar
-            Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}, Path=ActualWidth, Mode=OneWay}"
-            EllipseDiameter="6"
-            Foreground="{StaticResource AccentColorBrush}"
-            IsIndeterminate="True"
-            Style="{StaticResource ProgressBarOnMovieLoading}" />
         <Grid
             x:Name="MoviePageContainer"
             Opacity="0.0"
@@ -846,5 +840,34 @@
                 Style="{DynamicResource SquareButtonStyle}"
                 Visibility="{Binding IsTrailerLoading, Converter={StaticResource BoolToInverseVisibilityConverter}}" />
         </Grid>
+        <StackPanel
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Orientation="Vertical">
+            <controls:ProgressRing
+                Width="40"
+                Height="40"
+                VerticalAlignment="Center"
+                IsActive="True"
+                Style="{StaticResource ProgressRingOnMovieLoading}" />
+            <TextBlock
+                Margin="0,10,0,0"
+                HorizontalAlignment="Center"
+                FontSize="36"
+                Foreground="White"
+                Text="{lex:LocText Loading}"
+                TextTrimming="CharacterEllipsis"
+                Visibility="{Binding IsMovieLoading, Converter={StaticResource BoolToInverseVisibilityConverter}}" />
+            <Button
+                Width="100"
+                Height="30"
+                Margin="0,15,0,0"
+                HorizontalAlignment="Center"
+                controls:ControlsHelper.ContentCharacterCasing="Normal"
+                Command="{Binding StopLoadingMovieCommand}"
+                Content="{lex:LocText CancelButton}"
+                Style="{DynamicResource SquareButtonStyle}"
+                Visibility="{Binding IsMovieLoading, Converter={StaticResource BoolToInverseVisibilityConverter}}" />
+        </StackPanel>
     </Grid>
 </UserControl>

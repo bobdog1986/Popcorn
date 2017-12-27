@@ -439,6 +439,15 @@ namespace Popcorn.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Failed loading.
+        /// </summary>
+        public static string FailedLoadingLabel {
+            get {
+                return ResourceManager.GetString("FailedLoadingLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à A critical error has occured. You should restart the app immediately..
         /// </summary>
         public static string FatalError {
@@ -552,6 +561,15 @@ namespace Popcorn.Properties {
         public static string LicenseLabel {
             get {
                 return ResourceManager.GetString("LicenseLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Loading....
+        /// </summary>
+        public static string Loading {
+            get {
+                return ResourceManager.GetString("Loading", resourceCulture);
             }
         }
         

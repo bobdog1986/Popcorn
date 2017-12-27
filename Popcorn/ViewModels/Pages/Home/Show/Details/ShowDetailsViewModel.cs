@@ -14,8 +14,11 @@ using Popcorn.Models.Episode;
 using Popcorn.Services.Shows.Trailer;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Input;
+using Popcorn.Helpers;
 using Popcorn.Services.Cache;
 using Popcorn.Services.Shows.Show;
+using Popcorn.Utils.Exceptions;
 
 namespace Popcorn.ViewModels.Pages.Home.Show.Details
 {
@@ -37,6 +40,11 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Details
         private readonly IShowService _showService;
 
         /// <summary>
+        /// Command used to stop loading a show
+        /// </summary>
+        public ICommand StopLoadingShowCommand { get; private set; }
+
+        /// <summary>
         /// The show
         /// </summary>
         private ShowJson _show;
@@ -45,7 +53,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Details
         /// Specify if a trailer is playing
         /// </summary>
         private bool _isPlayingTrailer;
-        
+
         /// <summary>
         /// Specify if a movie is loading
         /// </summary>
@@ -67,13 +75,19 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Details
         private CancellationTokenSource CancellationLoadingTrailerToken { get; set; }
 
         /// <summary>
+        /// Token to cancel show loading
+        /// </summary>
+        private CancellationTokenSource CancellationLoadingToken { get; set; }
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="showService">The show service</param>
         /// <param name="subtitlesService">The subtitles service</param>
         /// <param name="showTrailerService">The show trailer service</param>
         /// <param name="cacheService">The cache service</param>
-        public ShowDetailsViewModel(IShowService showService, ISubtitlesService subtitlesService, IShowTrailerService showTrailerService, ICacheService cacheService)
+        public ShowDetailsViewModel(IShowService showService, ISubtitlesService subtitlesService,
+            IShowTrailerService showTrailerService, ICacheService cacheService)
         {
             _showTrailerService = showTrailerService;
             _showService = showService;
@@ -81,6 +95,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Details
             RegisterCommands();
             RegisterMessages();
             CancellationLoadingTrailerToken = new CancellationTokenSource();
+            CancellationLoadingToken = new CancellationTokenSource();
             var downloadService = new DownloadShowService<EpisodeShowJson>(cacheService);
             DownloadShow = new DownloadShowViewModel(downloadService, subtitlesService, cacheService);
         }
@@ -90,7 +105,8 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Details
         /// </summary>
         private void RegisterCommands()
         {
-            LoadShowCommand = new RelayCommand<ShowLightJson>(async show => await LoadShow(show).ConfigureAwait(false));
+            LoadShowCommand = new RelayCommand<ShowLightJson>(async show =>
+                await LoadShow(show, CancellationLoadingToken.Token).ConfigureAwait(false));
             GoToImdbCommand = new RelayCommand<string>(e =>
             {
                 Process.Start($"http://www.imdb.com/title/{e}");
@@ -102,12 +118,19 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Details
                 {
                     IsPlayingTrailer = true;
                     IsTrailerLoading = true;
-                    await _showTrailerService.LoadTrailerAsync(Show, CancellationLoadingTrailerToken.Token).ConfigureAwait(false);
+                    await _showTrailerService.LoadTrailerAsync(Show, CancellationLoadingTrailerToken.Token)
+                        .ConfigureAwait(false);
                     IsTrailerLoading = false;
                 });
             });
 
             StopLoadingTrailerCommand = new RelayCommand(StopLoadingTrailer);
+
+            StopLoadingShowCommand = new RelayCommand(() =>
+            {
+                StopLoadingShow();
+                Messenger.Default.Send(new StopPlayingMovieMessage());
+            });
         }
 
         /// <summary>
@@ -203,34 +226,40 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Details
         /// Load the requested show
         /// </summary>
         /// <param name="show">The show to load</param>
-        private async Task LoadShow(ShowLightJson show)
+        /// <param name="ct">Cancellation token</param>
+        private async Task LoadShow(ShowLightJson show, CancellationToken ct)
         {
             var watch = Stopwatch.StartNew();
-            try
+
+            Messenger.Default.Send(new LoadShowMessage());
+            Show = new ShowJson {Title = show.Title};
+            IsShowLoading = true;
+            await Task.Run(async () =>
             {
-                Messenger.Default.Send(new LoadShowMessage());
-                Show = new ShowJson();
-                IsShowLoading = true;
-                await Task.Run(async () =>
+                try
                 {
-                    Show = await _showService.GetShowAsync(show.ImdbId, CancellationToken.None).ConfigureAwait(false);
+                    Show = await _showService.GetShowAsync(show.ImdbId, ct).ConfigureAwait(false);
+                    ct.ThrowIfCancellationRequested();
                     foreach (var episode in Show.Episodes)
                     {
                         episode.Title = WebUtility.HtmlDecode(episode.Title);
                         episode.ImdbId = Show.ImdbId;
                     }
-                }).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(
-                    $"Failed loading show : {show.ImdbId}. {ex.Message}");
-            }
-            finally
-            {
-                IsShowLoading = false;
-            }
-
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(
+                        $"Failed loading show : {show.ImdbId}. {ex.Message}");
+                    Messenger.Default.Send(new NavigateToHomePageMessage());
+                    if (!ct.IsCancellationRequested)
+                        Messenger.Default.Send(new ManageExceptionMessage(new PopcornException(
+                            $"{LocalizationProviderHelper.GetLocalizedValue<string>("FailedLoadingLabel")} {show.Title}")));
+                }
+                finally
+                {
+                    IsShowLoading = false;
+                }
+            }, ct).ConfigureAwait(false);
             watch.Stop();
             var elapsedMs = watch.ElapsedMilliseconds;
             Logger.Debug($"LoadShow ({show.ImdbId}) in {elapsedMs} milliseconds.");
@@ -251,6 +280,23 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Details
                 CancellationLoadingTrailerToken.Dispose();
                 CancellationLoadingTrailerToken = new CancellationTokenSource();
                 StopPlayingTrailer();
+            }
+        }
+
+        /// <summary>
+        /// Stop loading the movie
+        /// </summary>
+        private void StopLoadingShow()
+        {
+            if (IsShowLoading)
+            {
+                Logger.Info(
+                    $"Stop loading show: {Show.Title}.");
+
+                IsShowLoading = false;
+                CancellationLoadingToken.Cancel();
+                CancellationLoadingToken.Dispose();
+                CancellationLoadingToken = new CancellationTokenSource();
             }
         }
 

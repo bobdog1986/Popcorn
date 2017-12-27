@@ -15,5 +15,7 @@ namespace Popcorn.Models.Movie
         bool HasBeenSeen { get; set; }
 
         string TranslationLanguage { get; set; }
+
+        string Title { get; set; }
     }
 }

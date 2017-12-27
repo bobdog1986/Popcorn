@@ -474,6 +474,20 @@ namespace Popcorn.ViewModels.Windows
                 ApplicationService.IsMediaPlaying = false;
             });
 
+            Messenger.Default.Register<NavigateToHomePageMessage>(this, message =>
+            {
+                IgnoreTaskbarOnMaximize = false;
+                if (ApplicationService.IsMediaPlaying && ApplicationService.IsFullScreen)
+                {
+                    ApplicationService.IsFullScreen = false;
+                    ApplicationService.IsFullScreen = true;
+                }
+
+                ApplicationService.IsMediaPlaying = false;
+                IsMovieFlyoutOpen = false;
+                IsShowFlyoutOpen = false;
+            });
+
             Messenger.Default.Register<StopPlayingEpisodeMessage>(
                 this,
                 message =>

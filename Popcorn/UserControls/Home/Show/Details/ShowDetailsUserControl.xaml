@@ -101,7 +101,7 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="ProgressBarOnShowLoading" TargetType="{x:Type controls1:MetroProgressBar}">
+        <Style x:Key="ProgressRingOnMovieLoading" TargetType="{x:Type controls1:ProgressRing}">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding Path=IsShowLoading}" Value="True">
                     <DataTrigger.EnterActions>
@@ -158,12 +158,6 @@
         </Style>
     </UserControl.Resources>
     <Grid>
-        <controls1:MetroProgressBar
-            Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}, Path=ActualWidth, Mode=OneWay}"
-            EllipseDiameter="6"
-            Foreground="{StaticResource AccentColorBrush}"
-            IsIndeterminate="True"
-            Style="{StaticResource ProgressBarOnShowLoading}" />
         <Grid
             Background="#252525"
             Opacity="0.0"
@@ -437,18 +431,18 @@
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Orientation="Vertical">
+                    <controls1:ProgressRing
+                        Foreground="{StaticResource AccentColorBrush}"
+                        IsActive="True"
+                        Visibility="{Binding IsTrailerLoading, Converter={StaticResource BoolToInverseVisibilityConverter}}" />
                     <TextBlock
+                        Margin="0,30,0,0"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Bottom"
                         FontSize="36"
                         Foreground="White"
                         Text="{lex:LocText LoadingTrailerLabel}"
                         TextTrimming="CharacterEllipsis"
-                        Visibility="{Binding IsTrailerLoading, Converter={StaticResource BoolToInverseVisibilityConverter}}" />
-                    <controls1:ProgressRing
-                        Margin="0,30,0,0"
-                        Foreground="{StaticResource AccentColorBrush}"
-                        IsActive="True"
                         Visibility="{Binding IsTrailerLoading, Converter={StaticResource BoolToInverseVisibilityConverter}}" />
                     <Button
                         Width="100"
@@ -462,5 +456,34 @@
                 </StackPanel>
             </Grid>
         </Grid>
+        <StackPanel
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Orientation="Vertical">
+            <controls1:ProgressRing
+                Width="40"
+                Height="40"
+                VerticalAlignment="Center"
+                IsActive="True"
+                Style="{StaticResource ProgressRingOnMovieLoading}" />
+            <TextBlock
+                Margin="0,10,0,0"
+                HorizontalAlignment="Center"
+                FontSize="36"
+                Foreground="White"
+                Text="{lex:LocText Loading}"
+                TextTrimming="CharacterEllipsis"
+                Visibility="{Binding IsShowLoading, Converter={StaticResource BoolToInverseVisibilityConverter}}" />
+            <Button
+                Width="100"
+                Height="30"
+                Margin="0,15,0,0"
+                HorizontalAlignment="Center"
+                controls1:ControlsHelper.ContentCharacterCasing="Normal"
+                Command="{Binding StopLoadingShowCommand}"
+                Content="{lex:LocText CancelButton}"
+                Style="{DynamicResource SquareButtonStyle}"
+                Visibility="{Binding IsShowLoading, Converter={StaticResource BoolToInverseVisibilityConverter}}" />
+        </StackPanel>
     </Grid>
 </UserControl>

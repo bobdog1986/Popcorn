@@ -25,19 +25,19 @@
             VerticalAlignment="Center"
             Orientation="Vertical"
             Visibility="{Binding LoadingChromecasts, Converter={StaticResource BoolToInverseVisibilityConverter}}">
+            <controls:ProgressRing
+                Width="48"
+                Height="48"
+                HorizontalAlignment="Center"
+                Foreground="#11171c"
+                IsActive="True" />
             <TextBlock
+                Margin="0,15,0,0"
                 HorizontalAlignment="Center"
                 FontSize="24"
                 FontWeight="Light"
                 Foreground="#11171c"
                 Text="{lex:LocText LoadingChromecastsLabel}" />
-            <controls:ProgressRing
-                Width="48"
-                Height="48"
-                Margin="0,15,0,0"
-                HorizontalAlignment="Center"
-                Foreground="#11171c"
-                IsActive="True" />
             <Button
                 Width="100"
                 Height="35"
@@ -94,19 +94,19 @@
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Orientation="Vertical">
+                <controls:ProgressRing
+                    Width="48"
+                    Height="48"
+                    HorizontalAlignment="Center"
+                    Foreground="#11171c"
+                    IsActive="True" />
                 <TextBlock
+                    Margin="0,15,0,0"
                     HorizontalAlignment="Center"
                     FontSize="24"
                     FontWeight="Light"
                     Foreground="#11171c"
                     Text="{lex:LocText ConnectingToChomecastLabel}" />
-                <controls:ProgressRing
-                    Width="48"
-                    Height="48"
-                    Margin="0,15,0,0"
-                    HorizontalAlignment="Center"
-                    Foreground="#11171c"
-                    IsActive="True" />
                 <Button
                     Width="100"
                     Height="35"
