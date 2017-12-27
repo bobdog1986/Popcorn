@@ -1,4 +1,12 @@
-﻿# 3.4.7 - 19/12/2017 #
+﻿# 3.4.8 - 27/12/2017 #
+***
+Fixed issues
+
+### Details ###
+* Fixed issue [#168](https://github.com/bbougot/Popcorn/issues/168).
+* Fixed issue [#164](https://github.com/bbougot/Popcorn/issues/164).
+
+# 3.4.7 - 19/12/2017 #
 ***
 Fixed missing movies
 
