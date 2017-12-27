@@ -203,6 +203,20 @@ namespace Popcorn.UserControls.Player
                 if (!(DataContext is MediaPlayerViewModel vm))
                     return;
 
+                var minBuffer = 0d;
+                switch (vm.MediaType)
+                {
+                    case MediaType.Movie:
+                        minBuffer = Constants.MinimumMovieBuffering / 100d;
+                        break;
+                    case MediaType.Show:
+                        minBuffer = Constants.MinimumShowBuffering / 100d;
+                        break;
+                    default:
+                        minBuffer = 0.03d;
+                        break;
+                }
+
                 vm.MediaLength = Media.NaturalDuration.TimeSpan.TotalSeconds;
                 vm.PlayerTime = PositionSlider.Value;
                 _pieceAvailability = pieceAvailability;
@@ -211,9 +225,9 @@ namespace Popcorn.UserControls.Player
                 var endPieceAvailabilityPercentage =
                     (double) _pieceAvailability.EndAvailablePiece / (double) _pieceAvailability.TotalPieces;
                 var playPercentage = PositionSlider.Value / Media.NaturalDuration.TimeSpan.TotalSeconds;
-                var end = 1 - endPieceAvailabilityPercentage <= Constants.MinimumMovieBuffering / 100d
+                var end = 1 - endPieceAvailabilityPercentage <= minBuffer
                     ? endPieceAvailabilityPercentage == 1d
-                    : playPercentage + Constants.MinimumMovieBuffering / 100d < endPieceAvailabilityPercentage;
+                    : playPercentage + minBuffer < endPieceAvailabilityPercentage;
                 if (_isPausedForBuffering && playPercentage > startPieceAvailabilityPercentage && end)
                 {
                     _isPausedForBuffering = false;
@@ -784,8 +798,7 @@ namespace Popcorn.UserControls.Player
         {
             if (_isPausedForBuffering) return;
             Media.Position = TimeSpan.FromSeconds(PositionSlider.Value);
-            var vm = DataContext as MediaPlayerViewModel;
-            if (vm != null && vm.IsCasting)
+            if (DataContext is MediaPlayerViewModel vm && vm.IsCasting)
             {
                 vm.SeekCastCommand.Execute(Media.Position.TotalSeconds);
             }
@@ -816,14 +829,31 @@ namespace Popcorn.UserControls.Player
             if (_pieceAvailability == null || !Media.NaturalDuration.HasTimeSpan)
                 return;
 
+            if (!(DataContext is MediaPlayerViewModel vm))
+                return;
+
+            var minBuffer = 0d;
+            switch (vm.MediaType)
+            {
+                case MediaType.Movie:
+                    minBuffer = Constants.MinimumMovieBuffering / 100d;
+                    break;
+                case MediaType.Show:
+                    minBuffer = Constants.MinimumShowBuffering / 100d;
+                    break;
+                default:
+                    minBuffer = 0.03d;
+                    break;
+            }
+
             double startPieceAvailabilityPercentage =
                 (double) _pieceAvailability.StartAvailablePiece / (double) _pieceAvailability.TotalPieces;
             double endPieceAvailabilityPercentage =
                 (double) _pieceAvailability.EndAvailablePiece / (double) _pieceAvailability.TotalPieces;
             var playPercentage = e.NewValue / Media.NaturalDuration.TimeSpan.TotalSeconds;
-            var end = 1 - playPercentage <= Constants.MinimumMovieBuffering / 100d
+            var end = 1 - playPercentage <= minBuffer
                 ? endPieceAvailabilityPercentage < 1d
-                : playPercentage + Constants.MinimumMovieBuffering / 100d > endPieceAvailabilityPercentage;
+                : playPercentage + minBuffer > endPieceAvailabilityPercentage;
             if (playPercentage < startPieceAvailabilityPercentage ||
                 end)
             {

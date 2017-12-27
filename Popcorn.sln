@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2006
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Popcorn", "Popcorn\Popcorn.csproj", "{5BFADF51-CE11-45CF-8E36-DC9DC061C274}"
 EndProject
@@ -22,8 +22,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Popcorn.ColorPickerControls", "Popcorn.ColorPickerControls\Popcorn.ColorPickerControls.csproj", "{02E6C16F-757F-44AC-BE66-C0D79C0EBE0B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Popcorn.Adorners", "Popcorn.Adorners\Popcorn.Adorners.csproj", "{9D7B857D-71E4-42CD-ADCE-F9B2DEC1BB52}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Popcorn.FFME", "Popcorn.FFME\Popcorn.FFME.csproj", "{A6EB99A6-AAE2-4E6E-AB9E-93992CE5B84D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -71,10 +69,6 @@ Global
 		{9D7B857D-71E4-42CD-ADCE-F9B2DEC1BB52}.Debug|x86.Build.0 = Debug|x86
 		{9D7B857D-71E4-42CD-ADCE-F9B2DEC1BB52}.Release|x86.ActiveCfg = Release|x86
 		{9D7B857D-71E4-42CD-ADCE-F9B2DEC1BB52}.Release|x86.Build.0 = Release|x86
-		{A6EB99A6-AAE2-4E6E-AB9E-93992CE5B84D}.Debug|x86.ActiveCfg = Debug|x86
-		{A6EB99A6-AAE2-4E6E-AB9E-93992CE5B84D}.Debug|x86.Build.0 = Debug|x86
-		{A6EB99A6-AAE2-4E6E-AB9E-93992CE5B84D}.Release|x86.ActiveCfg = Release|x86
-		{A6EB99A6-AAE2-4E6E-AB9E-93992CE5B84D}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

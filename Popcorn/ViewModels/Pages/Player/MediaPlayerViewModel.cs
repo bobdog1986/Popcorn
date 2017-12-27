@@ -421,6 +421,7 @@ namespace Popcorn.ViewModels.Pages.Player
                 catch (Exception ex)
                 {
                     IsSubtitleChosen = previousSubtitleChosen;
+                    OnResumedMedia(new EventArgs());
                     Logger.Trace(ex);
                 }
             });
