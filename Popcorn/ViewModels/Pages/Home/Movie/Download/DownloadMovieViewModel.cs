@@ -213,10 +213,18 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Download
                         {
                             var path = Path.Combine(_cacheService.Subtitles + message.Movie.ImdbCode);
                             Directory.CreateDirectory(path);
+                            var isRemote = true;
+                            if (message.Movie.SelectedSubtitle.Sub.SubtitleId == "custom")
+                            {
+                                isRemote = false;
+                                message.Movie.SelectedSubtitle.Sub.SubtitleFileName = "custom";
+                                message.Movie.SelectedSubtitle.Sub.SubTitleDownloadLink =
+                                    new Uri(message.Movie.SelectedSubtitle.FilePath);
+                            }
+
                             var subtitlePath = await
                                 _subtitlesService.DownloadSubtitleToPath(path,
-                                    message.Movie.SelectedSubtitle.Sub);
-
+                                    message.Movie.SelectedSubtitle.Sub, isRemote);
                             message.Movie.SelectedSubtitle.FilePath = subtitlePath;
                         }
                     }

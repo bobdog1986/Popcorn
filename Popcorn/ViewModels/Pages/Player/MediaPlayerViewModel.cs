@@ -89,6 +89,11 @@ namespace Popcorn.ViewModels.Pages.Player
         public readonly string MediaName;
 
         /// <summary>
+        /// The media volume from 0 to 1
+        /// </summary>
+        private double _volume;
+
+        /// <summary>
         /// The media duration in seconds
         /// </summary>
         public double MediaDuration { get; set; }
@@ -622,6 +627,20 @@ namespace Popcorn.ViewModels.Pages.Player
         {
             get { return _chromecastReceiver; }
             set { Set(ref _chromecastReceiver, value); }
+        }
+
+        public double Volume
+        {
+            get => _volume;
+            set
+            {
+                Set(ref _volume, value);
+                if (IsCasting)
+                    Task.Run(async () =>
+                    {
+                        await SetVolume(Convert.ToSingle(value));
+                    });
+            }
         }
 
         /// <summary>

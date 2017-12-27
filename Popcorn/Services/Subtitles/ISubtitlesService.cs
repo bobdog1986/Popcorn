@@ -31,8 +31,9 @@ namespace Popcorn.Services.Subtitles
         /// </summary>
         /// <param name="path">Path to download</param>
         /// <param name="subtitle">Subtitle to download</param>
+        /// <param name="remote">Is remote download path</param>
         /// <returns>Downloaded subtitle path</returns>
-        Task<string> DownloadSubtitleToPath(string path, Subtitle subtitle);
+        Task<string> DownloadSubtitleToPath(string path, Subtitle subtitle, bool remote = true);
 
         /// <summary>
         /// Convert a .srt file to a .vtt file

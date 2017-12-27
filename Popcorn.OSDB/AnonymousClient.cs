@@ -81,53 +81,66 @@ namespace Popcorn.OSDB
             return tcs.Task;
         }
 
-        public Task<string> DownloadSubtitleToPath(string path, Subtitle subtitle)
+        public Task<string> DownloadSubtitleToPath(string path, Subtitle subtitle, bool remote)
         {
-            return DownloadSubtitleToPath(path, subtitle, null);
+            return DownloadSubtitleToPath(path, subtitle, null, remote);
         }
 
-        private async Task<string> DownloadSubtitleToPath(string path, Subtitle subtitle, string newSubtitleName)
+        private async Task<string> DownloadSubtitleToPath(string path, Subtitle subtitle, string newSubtitleName, bool remote)
         {
-            if (string.IsNullOrEmpty(path))
-            {
-                throw new ArgumentNullException(nameof(path));
-            }
-            if (null == subtitle)
-            {
-                throw new ArgumentNullException(nameof(subtitle));
-            }
-            if (!Directory.Exists(path))
-            {
-                throw new ArgumentException("path should point to a valid location");
-            }
-
             var destinationfile = Path.Combine(path,
                 (string.IsNullOrEmpty(newSubtitleName)) ? subtitle.SubtitleFileName : newSubtitleName);
-
-            if (File.Exists(destinationfile))
+            if (remote)
             {
-                //if file has been downloaded before - there is no need to download it again
-                return destinationfile;
-            }
-           
-            using (var client = new HttpClient())
-            {
-                using (var response = await client.GetAsync(subtitle.SubTitleDownloadLink))
+                if (string.IsNullOrEmpty(path))
                 {
-                    response.EnsureSuccessStatusCode();
-                    using (var content = response.Content)
+                    throw new ArgumentNullException(nameof(path));
+                }
+
+                if (!Directory.Exists(path))
+                {
+                    throw new ArgumentException("path should point to a valid location");
+                }
+
+                if (File.Exists(destinationfile))
+                {
+                    //if file has been downloaded before - there is no need to download it again
+                    return destinationfile;
+                }
+
+                using (var client = new HttpClient())
+                {
+                    using (var response = await client.GetAsync(subtitle.SubTitleDownloadLink))
                     {
-                        string strLang = subtitle.ISO639.ToLower();
-                        Encoding enc = Encoding.GetEncoding("windows-1252");
-                        if (strLang =="he") enc = Encoding.GetEncoding("windows-1255");
-                        if (strLang =="el") enc = Encoding.GetEncoding("windows-1253");
-                        if (strLang =="ar") enc = Encoding.GetEncoding("windows-1256");
-                        await UnZipSubtitleFileToFile(await content.ReadAsByteArrayAsync(), destinationfile, enc);
+                        response.EnsureSuccessStatusCode();
+                        using (var content = response.Content)
+                        {
+                            var decompressed = await UnZipSubtitleFileToFile(await content.ReadAsByteArrayAsync());
+                            await DecodeAndWriteFile(subtitle.ISO639.ToLower(), destinationfile, decompressed);
+                        }
                     }
                 }
             }
+            else
+            {
+                await DecodeAndWriteFile(string.Empty, destinationfile,
+                    File.ReadAllBytes(subtitle.SubTitleDownloadLink.AbsolutePath));
+            }
 
             return destinationfile;
+        }
+
+        private async Task DecodeAndWriteFile(string strLang, string destinationfile, byte[] decompressed)
+        {
+            using (var subFile = new StreamWriter(destinationfile, false, Encoding.UTF8))
+            {
+                var enc = Encoding.GetEncoding("windows-1252");
+                if (strLang == "he") enc = Encoding.GetEncoding("windows-1255");
+                if (strLang == "el") enc = Encoding.GetEncoding("windows-1253");
+                if (strLang == "ar") enc = Encoding.GetEncoding("windows-1256");
+                var str = Encoding.Convert(enc, Encoding.UTF8, decompressed);
+                await subFile.WriteAsync(WebUtility.HtmlDecode(Encoding.UTF8.GetString(str)));
+            }
         }
 
         public Task<IEnumerable<Language>> GetSubLanguages()
@@ -187,9 +200,8 @@ namespace Popcorn.OSDB
             Dispose(false);
         }
 
-        private async Task UnZipSubtitleFileToFile(byte[] gzipStream, string subFileName, Encoding enc)
+        private async Task<byte[]> UnZipSubtitleFileToFile(byte[] gzipStream)
         {
-            using (var subFile = new StreamWriter(subFileName, false, Encoding.UTF8))
             using (var compressedMs = new MemoryStream(gzipStream))
             {
                 using (var decompressedMs = new MemoryStream())
@@ -197,11 +209,9 @@ namespace Popcorn.OSDB
                     using (var gzs = new BufferedStream(new GZipStream(compressedMs,
                         CompressionMode.Decompress)))
                     {
-                        gzs.CopyTo(decompressedMs);
+                        await gzs.CopyToAsync(decompressedMs);
                     }
-                    var decompressed = decompressedMs.ToArray();
-                    var str = Encoding.Convert(enc, Encoding.UTF8, decompressed);
-                    await subFile.WriteAsync(WebUtility.HtmlDecode(Encoding.UTF8.GetString(str)));
+                    return decompressedMs.ToArray();
                 }
             }
         }

@@ -248,7 +248,8 @@
         <file src="FFmpeg\postproc-54.dll" target="lib\net45\FFmpeg\postproc-54.dll" />
         <file src="FFmpeg\swresample-2.dll" target="lib\net45\FFmpeg\swresample-2.dll" />
         <file src="FFmpeg\swscale-4.dll" target="lib\net45\FFmpeg\swscale-4.dll" />
-        <file src="Popcorn.FFME.dll" target="lib\net45\Popcorn.FFME.dll" />
+        <file src="ffme.common.dll" target="lib\net45\ffme.common.dll" />
+        <file src="ffme.win.dll" target="lib\net45\ffme.win.dll" />
         <file src="FFmpeg.AutoGen.dll" target="lib\net45\FFmpeg.AutoGen.dll" />
         <file src="SubtitlesParser.dll" target="lib\net45\SubtitlesParser.dll" />
         <file src="System.Runtime.Serialization.Primitives.dll" target="lib\net45\System.Runtime.Serialization.Primitives.dll" />

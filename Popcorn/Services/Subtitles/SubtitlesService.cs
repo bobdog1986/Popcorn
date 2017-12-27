@@ -81,8 +81,9 @@ namespace Popcorn.Services.Subtitles
         /// </summary>
         /// <param name="path">Path to download</param>
         /// <param name="subtitle">Subtitle to download</param>
+        /// <param name="remote">Is remote download path</param>
         /// <returns>Downloaded subtitle path</returns>
-        public async Task<string> DownloadSubtitleToPath(string path, Subtitle subtitle)
+        public async Task<string> DownloadSubtitleToPath(string path, Subtitle subtitle, bool remote = true)
         {
             var retryDownloadSubtitleToPathPolicy = Policy
                 .Handle<XmlRpcServerException>()
@@ -94,7 +95,7 @@ namespace Popcorn.Services.Subtitles
             {
                 using (var osdb = new Osdb().Login(Constants.OsdbUa))
                 {
-                    return await osdb.DownloadSubtitleToPath(path, subtitle);
+                    return await osdb.DownloadSubtitleToPath(path, subtitle, remote);
                 }
             });
         }

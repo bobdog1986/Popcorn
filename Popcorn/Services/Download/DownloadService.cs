@@ -224,14 +224,12 @@ namespace Popcorn.Services.Download
 
                                 break;
                             }
-                            else
-                            {
-                                lastPieceAvailableIndex = piece.Index;
-                                handle.reset_piece_deadline(piece.Index);
-                            }
+
+                            lastPieceAvailableIndex = piece.Index;
+                            handle.reset_piece_deadline(piece.Index);
                         }
 
-                        pieceAvailability.Report(new PieceAvailability(numPieces, pieces.FirstOrDefault(a => a.Index >= cursor - 3 * numPieces / 100d).Index, lastPieceAvailableIndex));
+                        pieceAvailability.Report(new PieceAvailability(numPieces, pieces.First(a => a.Index >= cursor).Index, lastPieceAvailableIndex));
                     }
                     
                     handle.flush_cache();

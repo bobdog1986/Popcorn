@@ -7,7 +7,7 @@
     xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:converters="clr-namespace:Popcorn.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:ffme="clr-namespace:Popcorn.FFME;assembly=Popcorn.FFME"
+    xmlns:ffme="clr-namespace:Unosquare.FFME;assembly=ffme.win"
     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:lex="http://wpflocalizeextension.codeplex.com"
@@ -63,7 +63,8 @@
             attachedProperties:EnableDragHelper.EnableDrag="True"
             attachedProperties:MaximizeDoubleClickHelper.MaximizeDoubleClick="True"
             Background="Black"
-            PreviewMouseLeftButtonDown="OnPreviewMouseLeftButtonDown" />
+            PreviewMouseLeftButtonDown="OnPreviewMouseLeftButtonDown"
+            Volume="{Binding Volume}" />
         <Grid
             x:Name="Buffering"
             HorizontalAlignment="Stretch"

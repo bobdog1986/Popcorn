@@ -26,11 +26,9 @@ using System.Linq;
 using System.Windows.Controls;
 using GalaSoft.MvvmLight.CommandWpf;
 using Popcorn.Converters;
-using Popcorn.FFME;
 using Popcorn.Models.Chromecast;
 using Popcorn.Models.Download;
-using MediaElement = Popcorn.FFME.MediaElement;
-using MouseButton = System.Windows.Input.MouseButton;
+using Unosquare.FFME;
 
 namespace Popcorn.UserControls.Player
 {
@@ -73,7 +71,6 @@ namespace Popcorn.UserControls.Player
         /// </summary>
         public PlayerUserControl()
         {
-            MediaElement.FFmpegDirectory = Constants.FFmpegPath;
             _applicationService = SimpleIoc.Default.GetInstance<IApplicationService>();
             InitializeComponent();
             AddHandler(Keyboard.PreviewKeyDownEvent, new KeyEventHandler(OnPreviewKeyDownEvent));
@@ -192,7 +189,6 @@ namespace Popcorn.UserControls.Player
             }
 
             Media.MediaFailed += EncounteredError;
-            Media.VolumeChanged += OnVolumeChanged;
             Title.Text = vm.MediaName;
             PlayMedia();
         }
@@ -210,14 +206,15 @@ namespace Popcorn.UserControls.Player
                 vm.MediaLength = Media.NaturalDuration.TimeSpan.TotalSeconds;
                 vm.PlayerTime = PositionSlider.Value;
                 _pieceAvailability = pieceAvailability;
-                double startPieceAvailabilityPercentage =
+                var startPieceAvailabilityPercentage =
                     (double) _pieceAvailability.StartAvailablePiece / (double) _pieceAvailability.TotalPieces;
-                double endPieceAvailabilityPercentage =
+                var endPieceAvailabilityPercentage =
                     (double) _pieceAvailability.EndAvailablePiece / (double) _pieceAvailability.TotalPieces;
                 var playPercentage = PositionSlider.Value / Media.NaturalDuration.TimeSpan.TotalSeconds;
-
-                if (_isPausedForBuffering && playPercentage > startPieceAvailabilityPercentage &&
-                    playPercentage < endPieceAvailabilityPercentage)
+                var end = 1 - endPieceAvailabilityPercentage <= Constants.MinimumMovieBuffering / 100d
+                    ? endPieceAvailabilityPercentage == 1d
+                    : playPercentage + Constants.MinimumMovieBuffering / 100d < endPieceAvailabilityPercentage;
+                if (_isPausedForBuffering && playPercentage > startPieceAvailabilityPercentage && end)
                 {
                     _isPausedForBuffering = false;
                     Buffering.Visibility = Visibility.Collapsed;
@@ -454,21 +451,6 @@ namespace Popcorn.UserControls.Player
 
                 vm.MediaEnded();
             });
-        }
-
-        /// <summary>
-        /// When media's volume changed, update volume
-        /// </summary>
-        /// <param name="sender">Sender</param>
-        /// <param name="args">Args</param>
-        private async void OnVolumeChanged(object sender, VolumeEventArgs args)
-        {
-            var newVolume = args.Volume;
-            var vm = DataContext as MediaPlayerViewModel;
-            if (vm != null && vm.IsCasting)
-            {
-                await vm.SetVolume(Convert.ToSingle(newVolume));
-            }
         }
 
         /// <summary>
@@ -778,11 +760,14 @@ namespace Popcorn.UserControls.Player
                     vm.BandwidthRate.ProgressChanged -= OnBandwidthChanged;
                 }
 
-                Media.Dispose();
                 _applicationService.SwitchConstantDisplayAndPower(false);
                 RemoveHandler(Keyboard.PreviewKeyDownEvent, new KeyEventHandler(OnPreviewKeyDownEvent));
                 PositionSlider.RemoveHandler(Slider.PreviewMouseLeftButtonDownEvent,
                     new MouseButtonEventHandler(OnSliderMouseLeftButtonDown));
+                Task.Run(() =>
+                {
+                    Media.Dispose();
+                });
             }
             catch (Exception ex)
             {
@@ -836,8 +821,11 @@ namespace Popcorn.UserControls.Player
             double endPieceAvailabilityPercentage =
                 (double) _pieceAvailability.EndAvailablePiece / (double) _pieceAvailability.TotalPieces;
             var playPercentage = e.NewValue / Media.NaturalDuration.TimeSpan.TotalSeconds;
+            var end = 1 - playPercentage <= Constants.MinimumMovieBuffering / 100d
+                ? endPieceAvailabilityPercentage < 1d
+                : playPercentage + Constants.MinimumMovieBuffering / 100d > endPieceAvailabilityPercentage;
             if (playPercentage < startPieceAvailabilityPercentage ||
-                playPercentage > endPieceAvailabilityPercentage)
+                end)
             {
                 Buffering.Visibility = Visibility.Visible;
                 _isPausedForBuffering = true;
