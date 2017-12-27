@@ -56,9 +56,9 @@
         <file src="vccorlib120.dll" target="lib\net45\vccorlib120.dll" /> 
         <file src="WPFLocalizeExtension.dll" target="lib\net45\WPFLocalizeExtension.dll" />
         <file src="XAMLMarkupExtensions.dll" target="lib\net45\XAMLMarkupExtensions.dll" />
-        <file src="Popcorn.Spinner.dll" target="lib\net45\Popcorn.Spinner.dll" />
+        <file src="LoadingIndicators.WPF.dll" target="lib\net45\LoadingIndicators.WPF.dll" />
         <file src="Popcorn.Utils.dll" target="lib\net45\Popcorn.Utils.dll" />
-        <file src="Popcorn.YTVideoProvider.dll" target="lib\net45\Popcorn.YTVideoProvider.dll" />
+        <file src="libvideo.dll" target="lib\net45\libvideo.dll" />
         <file src="Microsoft.ApplicationInsights.dll" target="lib\net45\Microsoft.ApplicationInsights.dll" />
         <file src="Microsoft.ApplicationInsights.NLogTarget.dll" target="lib\net45\Microsoft.ApplicationInsights.NLogTarget.dll" />
         <file src="System.IO.dll" target="lib\net45\System.IO.dll" />
@@ -154,7 +154,7 @@
         <file src="System.Xml.ReaderWriter.dll" target="lib\net45\System.Xml.ReaderWriter.dll" />
         <file src="Enterwell.Clients.Wpf.Notifications.dll" target="lib\net45\Enterwell.Clients.Wpf.Notifications.dll" />
         <file src="netstandard.dll" target="lib\net45\netstandard.dll" />
-        <file src="Popcorn.Adorners.dll" target="lib\net45\Popcorn.Adorners.dll" />
+        <file src="Gu.Wpf.Adorners.dll" target="lib\net45\Gu.Wpf.Adorners.dll" />
         <file src="System.Collections.Concurrent.dll" target="lib\net45\System.Collections.Concurrent.dll" />
         <file src="System.Collections.dll" target="lib\net45\System.Collections.dll" />
         <file src="System.Collections.NonGeneric.dll" target="lib\net45\System.Collections.NonGeneric.dll" />

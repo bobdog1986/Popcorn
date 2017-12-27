@@ -4,20 +4,22 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:wpf="clr-namespace:Popcorn.Spinner;assembly=Popcorn.Spinner"
+    xmlns:wpf="clr-namespace:LoadingIndicators.WPF;assembly=LoadingIndicators.WPF"
     Title="Popcorn"
     AllowsTransparency="True"
     Background="Transparent"
+    Loaded="OnLoaded"
     ShowInTaskbar="False"
     WindowStartupLocation="CenterScreen"
     WindowStyle="None"
-    Loaded="OnLoaded"
     mc:Ignorable="d">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Popcorn.Spinner;component/Colors.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Popcorn.Spinner;component/Styles.xaml" />
+                <ResourceDictionary>
+                    <SolidColorBrush x:Key="AccentColorBrush" Color="#FFE51400" />
+                </ResourceDictionary>
+                <ResourceDictionary Source="pack://application:,,,/LoadingIndicators.WPF;component/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>

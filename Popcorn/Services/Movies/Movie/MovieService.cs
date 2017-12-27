@@ -16,13 +16,13 @@ using Popcorn.Models.Genres;
 using Popcorn.Models.User;
 using Popcorn.Utils.Exceptions;
 using Popcorn.ViewModels.Windows.Settings;
-using Popcorn.YTVideoProvider;
 using Polly;
 using Polly.Timeout;
 using Popcorn.Extensions;
 using TMDbLib.Objects.Find;
 using TMDbLib.Objects.People;
 using Utf8Json;
+using VideoLibrary;
 
 namespace Popcorn.Services.Movies.Movie
 {

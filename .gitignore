@@ -52,22 +52,16 @@ Popcorn/Bin
 Popcorn/Obj
 Popcorn.Tests/Bin
 Popcorn.Tests/Obj
-Popcorn.Spinner/Bin
-Popcorn.Spinner/Obj
 Popcorn.Utils/Bin
 Popcorn.Utils/Obj
 Popcorn.OSDB/Bin
 Popcorn.OSDB/Obj
-Popcorn.YTVideoProvider/Bin
-Popcorn.YTVideoProvider/Obj
 Popcorn.Markdown/Bin
 Popcorn.Markdown/Obj
 Popcorn.ColorPicker/Bin
 Popcorn.ColorPicker/Obj
 Popcorn.ColorPickerControls/Bin
 Popcorn.ColorPickerControls/Obj
-Popcorn.Adorners/Bin
-Popcorn.Adorners/Obj
 
 # User files
 *.suo

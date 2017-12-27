@@ -2,7 +2,7 @@
     x:Class="Popcorn.Windows.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:adorners="clr-namespace:Popcorn.Adorners;assembly=Popcorn.Adorners"
+    xmlns:adorners="http://gu.se/Adorners"
     xmlns:cast="clr-namespace:Popcorn.UserControls.Home.Movie.Cast"
     xmlns:command="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Platform"
     xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"

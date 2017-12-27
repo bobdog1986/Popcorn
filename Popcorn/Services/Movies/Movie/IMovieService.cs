@@ -4,10 +4,8 @@ using System.Threading.Tasks;
 using Popcorn.Models.Genres;
 using Popcorn.Models.Movie;
 using Popcorn.Models.User;
-using Popcorn.YTVideoProvider;
-using TMDbLib.Client;
-using TMDbLib.Objects.General;
 using TMDbLib.Objects.People;
+using VideoLibrary;
 
 namespace Popcorn.Services.Movies.Movie
 {

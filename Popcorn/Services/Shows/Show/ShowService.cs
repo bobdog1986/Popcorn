@@ -17,9 +17,8 @@ using Polly;
 using Polly.Timeout;
 using Popcorn.Utils.Exceptions;
 using Popcorn.ViewModels.Windows.Settings;
-using Popcorn.YTVideoProvider;
-using TMDbLib.Objects.TvShows;
 using Utf8Json;
+using VideoLibrary;
 using Video = TMDbLib.Objects.General.Video;
 
 namespace Popcorn.Services.Shows.Show
