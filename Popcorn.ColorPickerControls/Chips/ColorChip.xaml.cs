@@ -104,16 +104,28 @@ namespace Popcorn.ColorPickerControls.Chips
             switch (ColorDialog)
             {
                 case EColorDialog.Full:
-                    dialog = new ColorPickerFullDialog();
+                    dialog = new ColorPickerFullDialog
+                    {
+                        Owner = Window.GetWindow(this)
+                    };
                     break;
                 case EColorDialog.FullWithAlpha:
-                    dialog = new ColorPickerFullWithAlphaDialog();
+                    dialog = new ColorPickerFullWithAlphaDialog
+                    {
+                        Owner = Window.GetWindow(this)
+                    };
                     break;
                 case EColorDialog.Standard:
-                    dialog = new ColorPickerStandardDialog();
+                    dialog = new ColorPickerStandardDialog
+                    {
+                        Owner = Window.GetWindow(this)
+                    };
                     break;
                 case EColorDialog.StandardWithAlpha:
-                    dialog = new ColorPickerStandardWithAlphaDialog();
+                    dialog = new ColorPickerStandardWithAlphaDialog
+                    {
+                        Owner = Window.GetWindow(this)
+                    };
                     break;
             }
             return dialog;

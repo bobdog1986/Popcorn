@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -92,6 +93,11 @@ namespace Popcorn.ViewModels.Windows
         /// If an update is available
         /// </summary>
         private bool _updateAvailable;
+
+        /// <summary>
+        /// Toggle fullscreen mode
+        /// </summary>
+        private bool _toggleFullscreen;
 
         /// <summary>
         /// Application state
@@ -261,9 +267,19 @@ namespace Popcorn.ViewModels.Windows
         public ICommand OpenAboutCommand { get; private set; }
 
         /// <summary>
+        /// Command used to switch fullscreen mode
+        /// </summary>
+        public ICommand SwitchFullScreenCommand { get; private set; }
+
+        /// <summary>
         /// Command used to open help dialog
         /// </summary>
         public ICommand OpenHelpCommand { get; private set; }
+
+        /// <summary>
+        /// Command used to open Github
+        /// </summary>
+        public ICommand GoToGitHubCommand { get; private set; }
 
         /// <summary>
         /// Command used to load tabs
@@ -441,10 +457,11 @@ namespace Popcorn.ViewModels.Windows
 
             Messenger.Default.Register<StopPlayingTrailerMessage>(this, message =>
             {
-                IgnoreTaskbarOnMaximize = false;
+                if(!_toggleFullscreen)
+                    IgnoreTaskbarOnMaximize = false;
                 if (ApplicationService.IsMediaPlaying)
                 {
-                    if (ApplicationService.IsFullScreen)
+                    if (!_toggleFullscreen && ApplicationService.IsFullScreen)
                     {
                         ApplicationService.IsFullScreen = false;
                         ApplicationService.IsFullScreen = true;
@@ -464,11 +481,14 @@ namespace Popcorn.ViewModels.Windows
 
             Messenger.Default.Register<StopPlayMediaMessage>(this, message =>
             {
-                IgnoreTaskbarOnMaximize = false;
-                if (ApplicationService.IsMediaPlaying && ApplicationService.IsFullScreen)
+                if (!_toggleFullscreen)
                 {
-                    ApplicationService.IsFullScreen = false;
-                    ApplicationService.IsFullScreen = true;
+                    IgnoreTaskbarOnMaximize = false;
+                    if (ApplicationService.IsMediaPlaying && ApplicationService.IsFullScreen)
+                    {
+                        ApplicationService.IsFullScreen = false;
+                        ApplicationService.IsFullScreen = true;
+                    }
                 }
 
                 ApplicationService.IsMediaPlaying = false;
@@ -476,11 +496,14 @@ namespace Popcorn.ViewModels.Windows
 
             Messenger.Default.Register<NavigateToHomePageMessage>(this, message =>
             {
-                IgnoreTaskbarOnMaximize = false;
-                if (ApplicationService.IsMediaPlaying && ApplicationService.IsFullScreen)
+                if (!_toggleFullscreen)
                 {
-                    ApplicationService.IsFullScreen = false;
-                    ApplicationService.IsFullScreen = true;
+                    IgnoreTaskbarOnMaximize = false;
+                    if (ApplicationService.IsMediaPlaying && ApplicationService.IsFullScreen)
+                    {
+                        ApplicationService.IsFullScreen = false;
+                        ApplicationService.IsFullScreen = true;
+                    }
                 }
 
                 ApplicationService.IsMediaPlaying = false;
@@ -492,11 +515,14 @@ namespace Popcorn.ViewModels.Windows
                 this,
                 message =>
                 {
-                    IgnoreTaskbarOnMaximize = false;
-                    if (ApplicationService.IsMediaPlaying && ApplicationService.IsFullScreen)
+                    if (!_toggleFullscreen)
                     {
-                        ApplicationService.IsFullScreen = false;
-                        ApplicationService.IsFullScreen = true;
+                        IgnoreTaskbarOnMaximize = false;
+                        if (ApplicationService.IsMediaPlaying && ApplicationService.IsFullScreen)
+                        {
+                            ApplicationService.IsFullScreen = false;
+                            ApplicationService.IsFullScreen = true;
+                        }
                     }
 
                     ApplicationService.IsMediaPlaying = false;
@@ -507,11 +533,14 @@ namespace Popcorn.ViewModels.Windows
                 this,
                 message =>
                 {
-                    IgnoreTaskbarOnMaximize = false;
-                    if (ApplicationService.IsMediaPlaying && ApplicationService.IsFullScreen)
+                    if (!_toggleFullscreen)
                     {
-                        ApplicationService.IsFullScreen = false;
-                        ApplicationService.IsFullScreen = true;
+                        IgnoreTaskbarOnMaximize = false;
+                        if (ApplicationService.IsMediaPlaying && ApplicationService.IsFullScreen)
+                        {
+                            ApplicationService.IsFullScreen = false;
+                            ApplicationService.IsFullScreen = true;
+                        }
                     }
 
                     ApplicationService.IsMediaPlaying = false;
@@ -754,6 +783,13 @@ namespace Popcorn.ViewModels.Windows
                 }
             });
 
+            SwitchFullScreenCommand = new RelayCommand(() =>
+            {
+                IgnoreTaskbarOnMaximize = !IgnoreTaskbarOnMaximize;
+                ApplicationService.IsFullScreen = !ApplicationService.IsFullScreen;
+                ToggleFullscren = !ToggleFullscren;
+            });
+
             OpenAboutCommand = new RelayCommand(async () =>
             {
                 var aboutDialog = new AboutDialog();
@@ -771,6 +807,11 @@ namespace Popcorn.ViewModels.Windows
 
                 aboutDialog.DataContext = vm;
                 await _dialogCoordinator.ShowMetroDialogAsync(this, aboutDialog);
+            });
+
+            GoToGitHubCommand = new RelayCommand(() =>
+            {
+                Process.Start(new ProcessStartInfo("https://github.com/bbougot/Popcorn"));
             });
 
             OpenHelpCommand = new RelayCommand(async () =>
@@ -858,6 +899,12 @@ namespace Popcorn.ViewModels.Windows
             {
                 Logger.Error(ex);
             }
+        }
+
+        public bool ToggleFullscren
+        {
+            get { return _toggleFullscreen; }
+            set { Set(ref _toggleFullscreen, value); }
         }
 
         /// <summary>

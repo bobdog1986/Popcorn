@@ -55,7 +55,7 @@ namespace Popcorn.Utils
                 }
                 catch (Exception)
                 {
-                    return 10d;
+                    return 3d;
                 }
             }
         }
@@ -73,7 +73,7 @@ namespace Popcorn.Utils
                 }
                 catch (Exception)
                 {
-                    return 15d;
+                    return 5d;
                 }
             }
         }

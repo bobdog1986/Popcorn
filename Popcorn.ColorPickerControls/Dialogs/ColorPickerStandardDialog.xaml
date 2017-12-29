@@ -18,6 +18,7 @@
     ResizeMode="NoResize"
     ShowCloseButton="False"
     ShowIconOnTitleBar="False"
+    ShowInTaskbar="False"
     ShowTitleBar="False"
     WindowStartupLocation="CenterScreen"
     WindowStyle="None">

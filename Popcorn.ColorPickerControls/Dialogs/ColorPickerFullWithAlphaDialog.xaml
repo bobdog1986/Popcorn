@@ -6,7 +6,8 @@
     Title="Color Picker"
     Width="570"
     Height="344"
-    ResizeMode="NoResize">
+    ResizeMode="NoResize"
+    ShowInTaskbar="False">
     <Grid Background="#FFE8E8E8">
         <Grid.RowDefinitions>
             <RowDefinition Height="274" />

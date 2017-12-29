@@ -13,10 +13,10 @@
     xmlns:details1="clr-namespace:Popcorn.UserControls.Home.Show.Details"
     xmlns:dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
     xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:lex="http://wpflocalizeextension.codeplex.com"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:settings="clr-namespace:Popcorn.UserControls.Window.Settings"
-    xmlns:tb="http://www.hardcodet.net/taskbar"
     xmlns:windows="clr-namespace:Popcorn.ViewModels.Windows"
     Title="Popcorn"
     Width="{Binding Source={x:Static SystemParameters.PrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.8'}"
@@ -47,6 +47,11 @@
     <Window.Resources>
         <ResourceDictionary>
             <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+            <converters:BoolToInverseVisibilityConverter x:Key="BoolToInverseVisibilityConverter" />
+
+            <Style TargetType="{x:Type controls:WindowCommands}">
+                <Setter Property="Foreground" Value="White" />
+            </Style>
             <Style TargetType="{x:Type controls:WindowButtonCommands}">
                 <Setter Property="Foreground" Value="White" />
                 <Style.Triggers>
@@ -77,7 +82,7 @@
     </i:Interaction.Triggers>
 
     <controls:MetroWindow.WindowButtonCommands>
-        <controls:WindowButtonCommands Visibility="{Binding ApplicationService.IsMediaPlaying, Converter={StaticResource BoolToVisibilityConverter}}" />
+        <controls:WindowButtonCommands Template="{DynamicResource MahApps.Metro.Templates.WindowButtonCommands.Win10}" Visibility="{Binding ApplicationService.IsMediaPlaying, Converter={StaticResource BoolToVisibilityConverter}}" />
     </controls:MetroWindow.WindowButtonCommands>
 
     <controls:MetroWindow.RightWindowCommands>
@@ -85,19 +90,47 @@
             <StackPanel Orientation="Horizontal">
                 <Button
                     Command="{Binding OpenSettingsCommand}"
-                    Content="{lex:LocText SettingsMenuTitle}"
+                    Content="{iconPacks:PackIconFontAwesome Cogs,
+                                                            Width=20,
+                                                            Height=20}"
                     Foreground="White"
                     ToolTip="{lex:LocText SettingsMenuTitle}" />
                 <Button
                     Command="{Binding OpenAboutCommand}"
-                    Content="{lex:LocText AboutLabel}"
+                    Content="{iconPacks:PackIconMaterial Information,
+                                                         Width=20,
+                                                         Height=20}"
                     Foreground="White"
                     ToolTip="{lex:LocText AboutLabel}" />
-                <Button
+                <!--<Button
+                    Margin="0"
                     Command="{Binding OpenHelpCommand}"
-                    Content="{lex:LocText HelpLabel}"
+                    Content="{iconPacks:PackIconMaterial HelpCircleOutline,
+                                                         Width=20,
+                                                         Height=20}"
                     Foreground="White"
-                    ToolTip="{lex:LocText HelpLabel}" />
+                    ToolTip="{lex:LocText HelpLabel}" />-->
+                <Button
+                    Command="{Binding GoToGitHubCommand}"
+                    Content="{iconPacks:PackIconModern SocialGithubOctocat,
+                                                       Width=20,
+                                                       Height=20}"
+                    Foreground="White"
+                    ToolTip="Popcorn on GitHub" />
+                <Button
+                    Command="{Binding SwitchFullScreenCommand}"
+                    Content="{iconPacks:PackIconModern WindowMaximize,
+                                                         Width=20,
+                                                         Height=20}"
+                    Foreground="White"
+                    Visibility="{Binding ToggleFullscren, Converter={StaticResource BoolToVisibilityConverter}}" />
+                <Button
+                    Command="{Binding SwitchFullScreenCommand}"
+                    Content="{iconPacks:PackIconModern WindowMinimize,
+                                                         Width=20,
+                                                         Height=20}"
+                    Foreground="White"
+                    Visibility="{Binding ToggleFullscren, Converter={StaticResource BoolToInverseVisibilityConverter}}" />
             </StackPanel>
         </controls:WindowCommands>
     </controls:MetroWindow.RightWindowCommands>
