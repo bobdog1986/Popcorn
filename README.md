@@ -13,7 +13,7 @@
   </a>
    [![Releases](https://img.shields.io/github/release/bbougot/Popcorn.svg)](https://github.com/bbougot/Popcorn/releases)
   [![Build status](https://ci.appveyor.com/api/projects/status/mjnfwck6otg9c5wj/branch/master?svg=true)](https://ci.appveyor.com/project/bbougot/popcorn/branch/master)
-  [![Quality Gate](https://sonarqube.com/api/badges/gate?key=Popcorn)](https://sonarqube.com/dashboard/index/Popcorn)
+  [![Quality Gate](https://sonarcloud.io/api/badges/gate?key=Popcorn)](https://sonarcloud.io/dashboard?id=Popcorn)
   [![Coverage Status](https://coveralls.io/repos/github/bbougot/Popcorn/badge.svg?branch=master)](https://coveralls.io/github/bbougot/Popcorn?branch=master) 
   <a target="_blank" href="https://github.com/bbougot/Popcorn/pulls">
     <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome" />
