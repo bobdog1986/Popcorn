@@ -126,9 +126,6 @@
     <Compile Include="Dialogs\DropTorrentDialog.xaml.cs">
       <DependentUpon>DropTorrentDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\HelpDialog.xaml.cs">
-      <DependentUpon>HelpDialog.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Dialogs\SubtitleDialog.xaml.cs">
       <DependentUpon>SubtitleDialog.xaml</DependentUpon>
     </Compile>
@@ -327,7 +324,6 @@
     <Compile Include="ViewModels\Dialogs\ChromecastDialogViewModel.cs" />
     <Compile Include="ViewModels\Dialogs\DropTorrentDialogViewModel.cs" />
     <Compile Include="ViewModels\Dialogs\AboutDialogViewModel.cs" />
-    <Compile Include="ViewModels\Dialogs\HelpDialogViewModel.cs" />
     <Compile Include="ViewModels\Dialogs\SubtitleDialogViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\Cast\CastViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\IPageViewModel.cs" />
@@ -405,10 +401,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Dialogs\DropTorrentDialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\HelpDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -553,7 +545,6 @@
     <EmbeddedResource Include="Markdown\Versions.md" />
     <EmbeddedResource Include="Markdown\License.md" />
     <EmbeddedResource Include="Markdown\About.md" />
-    <EmbeddedResource Include="Markdown\Help.md" />
     <None Include="ApplicationInsights.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <SubType>Designer</SubType>

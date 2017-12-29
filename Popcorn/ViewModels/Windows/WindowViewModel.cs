@@ -272,11 +272,6 @@ namespace Popcorn.ViewModels.Windows
         public ICommand SwitchFullScreenCommand { get; private set; }
 
         /// <summary>
-        /// Command used to open help dialog
-        /// </summary>
-        public ICommand OpenHelpCommand { get; private set; }
-
-        /// <summary>
         /// Command used to open Github
         /// </summary>
         public ICommand GoToGitHubCommand { get; private set; }
@@ -785,9 +780,23 @@ namespace Popcorn.ViewModels.Windows
 
             SwitchFullScreenCommand = new RelayCommand(() =>
             {
-                IgnoreTaskbarOnMaximize = !IgnoreTaskbarOnMaximize;
-                ApplicationService.IsFullScreen = !ApplicationService.IsFullScreen;
                 ToggleFullscren = !ToggleFullscren;
+                if (ApplicationService.IsFullScreen && !IgnoreTaskbarOnMaximize)
+                    IgnoreTaskbarOnMaximize = true;
+                else if (ApplicationService.IsFullScreen && IgnoreTaskbarOnMaximize)
+                {
+                    IgnoreTaskbarOnMaximize = false;
+                    ApplicationService.IsFullScreen = false;
+                }
+                else if (!ApplicationService.IsFullScreen && IgnoreTaskbarOnMaximize)
+                {
+                    IgnoreTaskbarOnMaximize = false;
+                }
+                else
+                {
+                    IgnoreTaskbarOnMaximize = true;
+                    ApplicationService.IsFullScreen = true;
+                }
             });
 
             OpenAboutCommand = new RelayCommand(async () =>
@@ -812,25 +821,6 @@ namespace Popcorn.ViewModels.Windows
             GoToGitHubCommand = new RelayCommand(() =>
             {
                 Process.Start(new ProcessStartInfo("https://github.com/bbougot/Popcorn"));
-            });
-
-            OpenHelpCommand = new RelayCommand(async () =>
-            {
-                var helpDialog = new HelpDialog();
-                var vm = new HelpDialogViewModel(async () =>
-                {
-                    try
-                    {
-                        await _dialogCoordinator.HideMetroDialogAsync(this, helpDialog);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Error(ex);
-                    }
-                });
-
-                helpDialog.DataContext = vm;
-                await _dialogCoordinator.ShowMetroDialogAsync(this, helpDialog);
             });
 
             DragEnterFileCommand = new RelayCommand<DragEventArgs>(e =>

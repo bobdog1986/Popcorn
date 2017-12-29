@@ -102,14 +102,6 @@
                                                          Height=20}"
                     Foreground="White"
                     ToolTip="{lex:LocText AboutLabel}" />
-                <!--<Button
-                    Margin="0"
-                    Command="{Binding OpenHelpCommand}"
-                    Content="{iconPacks:PackIconMaterial HelpCircleOutline,
-                                                         Width=20,
-                                                         Height=20}"
-                    Foreground="White"
-                    ToolTip="{lex:LocText HelpLabel}" />-->
                 <Button
                     Command="{Binding GoToGitHubCommand}"
                     Content="{iconPacks:PackIconModern SocialGithubOctocat,
@@ -120,15 +112,15 @@
                 <Button
                     Command="{Binding SwitchFullScreenCommand}"
                     Content="{iconPacks:PackIconModern WindowMaximize,
-                                                         Width=20,
-                                                         Height=20}"
+                                                       Width=20,
+                                                       Height=20}"
                     Foreground="White"
                     Visibility="{Binding ToggleFullscren, Converter={StaticResource BoolToVisibilityConverter}}" />
                 <Button
                     Command="{Binding SwitchFullScreenCommand}"
                     Content="{iconPacks:PackIconModern WindowMinimize,
-                                                         Width=20,
-                                                         Height=20}"
+                                                       Width=20,
+                                                       Height=20}"
                     Foreground="White"
                     Visibility="{Binding ToggleFullscren, Converter={StaticResource BoolToInverseVisibilityConverter}}" />
             </StackPanel>

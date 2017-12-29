@@ -130,11 +130,6 @@ namespace Popcorn.Windows
                 var vm = DataContext as WindowViewModel;
                 vm?.OpenAboutCommand.Execute(null);
             }
-            else if (e.Key == Key.F1)
-            {
-                var vm = DataContext as WindowViewModel;
-                vm?.OpenHelpCommand.Execute(null);
-            }
             else if (e.Key == Key.F3 || (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift &&
                      e.Key == Key.F)
             {
