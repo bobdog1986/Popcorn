@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight.Messaging;
-using GalaSoft.MvvmLight.Threading;
 using NuGet;
 using Popcorn.Comparers;
 using Popcorn.Helpers;
@@ -39,17 +38,18 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
         /// </summary>
         public override async Task LoadShowsAsync(bool reset = false)
         {
-            await LoadingSemaphore.WaitAsync();
+            await LoadingSemaphore.WaitAsync(CancellationLoadingShows.Token);
             StopLoadingShows();
             if (reset)
             {
                 Shows.Clear();
                 Page = 0;
+                VerticalScroll = 0d;
             }
 
             var watch = Stopwatch.StartNew();
             Page++;
-            if (Page > 1 && Shows.Count == MaxNumberOfShows)
+            if (Page > 1 && Shows.Count == MaxNumberOfShows && reset)
             {
                 Page--;
                 LoadingSemaphore.Release();
@@ -62,25 +62,19 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
             try
             {
                 IsLoadingShows = true;
-                await Task.Run(async () =>
-                {
-                    var result =
-                        await ShowService.SearchShowsAsync(SearchFilter,
-                            Page,
-                            MaxNumberOfShows,
-                            Genre,
-                            Rating * 10,
-                            CancellationLoadingShows.Token).ConfigureAwait(false);
-                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
-                    {
-                        Shows.AddRange(result.shows.Except(Shows, new ShowLightComparer()));
-                        IsLoadingShows = false;
-                        IsShowFound = Shows.Any();
-                        CurrentNumberOfShows = Shows.Count;
-                        MaxNumberOfShows = result.nbShows;
-                        UserService.SyncShowHistory(Shows);
-                    });
-                }).ConfigureAwait(false);
+                var result =
+                    await ShowService.SearchShowsAsync(SearchFilter,
+                        Page,
+                        MaxNumberOfShows,
+                        Genre,
+                        Rating * 10,
+                        CancellationLoadingShows.Token);
+                Shows.AddRange(result.shows.Except(Shows, new ShowLightComparer()));
+                IsLoadingShows = false;
+                IsShowFound = Shows.Any();
+                CurrentNumberOfShows = Shows.Count;
+                MaxNumberOfShows = result.nbShows;
+                UserService.SyncShowHistory(Shows);
             }
             catch (Exception exception)
             {

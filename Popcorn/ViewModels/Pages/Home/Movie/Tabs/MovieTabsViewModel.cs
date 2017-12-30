@@ -300,36 +300,29 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
             try
             {
                 IsLoadingMovies = true;
-                await Task.Run(async () =>
+                var getMoviesWatcher = new Stopwatch();
+                getMoviesWatcher.Start();
+                var result =
+                    await MovieService.GetMoviesAsync(Page,
+                        MaxMoviesPerPage,
+                        Rating,
+                        SortBy,
+                        CancellationLoadingMovies.Token,
+                        Genre);
+                getMoviesWatcher.Stop();
+                var getMoviesEllapsedTime = getMoviesWatcher.ElapsedMilliseconds;
+                if (reset && getMoviesEllapsedTime < 500)
                 {
-                    var getMoviesWatcher = new Stopwatch();
-                    getMoviesWatcher.Start();
-                    var result =
-                        await MovieService.GetMoviesAsync(Page,
-                            MaxMoviesPerPage,
-                            Rating,
-                            SortBy,
-                            CancellationLoadingMovies.Token,
-                            Genre).ConfigureAwait(false);
-                    getMoviesWatcher.Stop();
-                    var getMoviesEllapsedTime = getMoviesWatcher.ElapsedMilliseconds;
-                    if (reset && getMoviesEllapsedTime < 500)
-                    {
-                        // Wait for VerticalOffset to reach 0 (animation lasts 500ms)
-                        await Task.Delay(500 - (int) getMoviesEllapsedTime, CancellationLoadingMovies.Token)
-                            .ConfigureAwait(false);
-                    }
+                    // Wait for VerticalOffset to reach 0 (animation lasts 500ms)
+                    await Task.Delay(500 - (int) getMoviesEllapsedTime, CancellationLoadingMovies.Token);
+                }
 
-                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
-                    {
-                        Movies.AddRange(result.movies.Except(Movies, new MovieLightComparer()));
-                        IsLoadingMovies = false;
-                        IsMovieFound = Movies.Any();
-                        CurrentNumberOfMovies = Movies.Count;
-                        MaxNumberOfMovies = result.nbMovies == 0 ? Movies.Count : result.nbMovies;
-                        UserService.SyncMovieHistory(Movies);
-                    });
-                }, CancellationLoadingMovies.Token).ConfigureAwait(false);
+                Movies.AddRange(result.movies.Except(Movies, new MovieLightComparer()));
+                IsLoadingMovies = false;
+                IsMovieFound = Movies.Any();
+                CurrentNumberOfMovies = Movies.Count;
+                MaxNumberOfMovies = result.nbMovies == 0 ? Movies.Count : result.nbMovies;
+                UserService.SyncMovieHistory(Movies);
             }
             catch (Exception exception)
             {

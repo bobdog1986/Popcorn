@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight.Messaging;
-using GalaSoft.MvvmLight.Threading;
 using NuGet;
 using Popcorn.Comparers;
 using Popcorn.Helpers;
@@ -42,17 +41,18 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
         /// </summary>
         public override async Task LoadMoviesAsync(bool reset = false)
         {
-            await LoadingSemaphore.WaitAsync();
+            await LoadingSemaphore.WaitAsync(CancellationLoadingMovies.Token);
             StopLoadingMovies();
             if (reset)
             {
                 Movies.Clear();
                 Page = 0;
+                VerticalScroll = 0d;
             }
 
             var watch = Stopwatch.StartNew();
             Page++;
-            if (Page > 1 && Movies.Count == MaxNumberOfMovies)
+            if (Page > 1 && Movies.Count == MaxNumberOfMovies && reset)
             {
                 Page--;
                 LoadingSemaphore.Release();
@@ -65,26 +65,20 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
             try
             {
                 IsLoadingMovies = true;
-                await Task.Run(async () =>
-                {
-                    var result =
-                        await MovieService.SearchMoviesAsync(SearchFilter,
-                            Page,
-                            MaxMoviesPerPage,
-                            Genre,
-                            Rating,
-                            CancellationLoadingMovies.Token).ConfigureAwait(false);
+                var result =
+                    await MovieService.SearchMoviesAsync(SearchFilter,
+                        Page,
+                        MaxMoviesPerPage,
+                        Genre,
+                        Rating,
+                        CancellationLoadingMovies.Token);
 
-                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
-                    {
-                        Movies.AddRange(result.movies.Except(Movies, new MovieLightComparer()));
-                        IsLoadingMovies = false;
-                        IsMovieFound = Movies.Any();
-                        CurrentNumberOfMovies = Movies.Count;
-                        MaxNumberOfMovies = result.nbMovies;
-                        UserService.SyncMovieHistory(Movies);
-                    });
-                }).ConfigureAwait(false);
+                Movies.AddRange(result.movies.Except(Movies, new MovieLightComparer()));
+                IsLoadingMovies = false;
+                IsMovieFound = Movies.Any();
+                CurrentNumberOfMovies = Movies.Count;
+                MaxNumberOfMovies = result.nbMovies;
+                UserService.SyncMovieHistory(Movies);
             }
             catch (Exception exception)
             {

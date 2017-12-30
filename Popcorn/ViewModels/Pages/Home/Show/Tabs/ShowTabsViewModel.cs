@@ -179,7 +179,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
             get => _isLoadingShows;
             protected set { Set(() => IsLoadingShows, ref _isLoadingShows, value); }
         }
-        
+
         /// <summary>
         /// Vertical scroll offset
         /// </summary>
@@ -270,7 +270,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
         /// </summary>
         public virtual async Task LoadShowsAsync(bool reset = false)
         {
-            await LoadingSemaphore.WaitAsync();
+            await LoadingSemaphore.WaitAsync(CancellationLoadingShows.Token);
             if (reset)
             {
                 Shows.Clear();
@@ -280,7 +280,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
 
             var watch = Stopwatch.StartNew();
             Page++;
-            if (Page > 1 && Shows.Count == MaxNumberOfShows)
+            if (Page > 1 && Shows.Count == MaxNumberOfShows && reset)
             {
                 Page--;
                 LoadingSemaphore.Release();
@@ -294,34 +294,28 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
             try
             {
                 IsLoadingShows = true;
-                await Task.Run(async () =>
+                var getShowWatcher = new Stopwatch();
+                var result =
+                    await ShowService.GetShowsAsync(Page,
+                        MaxShowsPerPage,
+                        Rating * 10,
+                        SortBy,
+                        CancellationLoadingShows.Token,
+                        Genre);
+                getShowWatcher.Stop();
+                var getShowEllapsedTime = getShowWatcher.ElapsedMilliseconds;
+                if (reset && getShowEllapsedTime < 500)
                 {
-                    var getShowWatcher = new Stopwatch();
-                    var result =
-                        await ShowService.GetShowsAsync(Page,
-                            MaxShowsPerPage,
-                            Rating * 10,
-                            SortBy,
-                            CancellationLoadingShows.Token,
-                            Genre).ConfigureAwait(false);
-                    getShowWatcher.Stop();
-                    var getShowEllapsedTime = getShowWatcher.ElapsedMilliseconds;
-                    if (reset && getShowEllapsedTime < 500)
-                    {
-                        // Wait for VerticalOffset to reach 0 (animation lasts 500ms)
-                        await Task.Delay(500 - (int)getShowEllapsedTime).ConfigureAwait(false);
-                    }
+                    // Wait for VerticalOffset to reach 0 (animation lasts 500ms)
+                    await Task.Delay(500 - (int) getShowEllapsedTime);
+                }
 
-                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
-                    {
-                        Shows.AddRange(result.shows.Except(Shows, new ShowLightComparer()));
-                        IsLoadingShows = false;
-                        IsShowFound = Shows.Any();
-                        CurrentNumberOfShows = Shows.Count;
-                        MaxNumberOfShows = result.nbShows == 0 ? Shows.Count : result.nbShows;
-                        UserService.SyncShowHistory(Shows);
-                    });
-                }).ConfigureAwait(false);
+                Shows.AddRange(result.shows.Except(Shows, new ShowLightComparer()));
+                IsLoadingShows = false;
+                IsShowFound = Shows.Any();
+                CurrentNumberOfShows = Shows.Count;
+                MaxNumberOfShows = result.nbShows == 0 ? Shows.Count : result.nbShows;
+                UserService.SyncShowHistory(Shows);
             }
             catch (Exception exception)
             {

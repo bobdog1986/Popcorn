@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Async;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight.Messaging;
-using GalaSoft.MvvmLight.Threading;
 using Popcorn.Comparers;
 using Popcorn.Helpers;
 using Popcorn.Messaging;
@@ -74,30 +71,23 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                 var movies = moviesToAdd.ToList();
                 var moviesToAddAndToOrder = new List<MovieLightJson>();
 
-                try
+                if (movies.Any())
                 {
-                    if (movies.Any())
+                    var movieByIds = await MovieService.GetMoviesByIds(movies, CancellationLoadingMovies.Token);
+                    foreach (var movie in movieByIds.movies)
                     {
-                        var movieByIds = await MovieService.GetMoviesByIds(movies, CancellationLoadingMovies.Token);
-                        foreach (var movie in movieByIds.movies)
+                        if ((Genre == null || movie.Genres.Contains(Genre.EnglishName)) &&
+                            movie.Rating >= Rating)
                         {
-                            if ((Genre == null || movie.Genres.Contains(Genre.EnglishName)) &&
-                                movie.Rating >= Rating)
-                            {
-                                moviesToAddAndToOrder.Add(movie);
-                            }
+                            moviesToAddAndToOrder.Add(movie);
                         }
                     }
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error(ex);
                 }
 
                 foreach (var movie in moviesToAddAndToOrder.Except(Movies.ToList(), new MovieLightComparer()))
                 {
                     var pair = Movies
-                        .Select((value, index) => new { value, index })
+                        .Select((value, index) => new {value, index})
                         .FirstOrDefault(x => string.CompareOrdinal(x.value.Title, movie.Title) > 0);
 
                     if (pair == null)

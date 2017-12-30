@@ -101,6 +101,6 @@ namespace Popcorn.Utils
         /// <summary>
         /// Default request timeout
         /// </summary>
-        public const int DefaultRequestTimeoutInSecond = 10;
+        public const int DefaultRequestTimeoutInSecond = 15;
     }
 }
