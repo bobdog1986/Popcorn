@@ -71,14 +71,18 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                     var favorites = UserService.GetFavoritesMovies(Page);
                     var movies = seen.allMovies.Union(favorites.allMovies).Distinct().ToList();
                     var result = await MovieService
-                        .GetSimilar(movies,
-                            CancellationLoadingMovies.Token).ConfigureAwait(false);
+                        .GetSimilar(Page,
+                            MaxMoviesPerPage,
+                            Rating,
+                            SortBy, movies,
+                            CancellationLoadingMovies.Token, Genre).ConfigureAwait(false);
                     getMoviesWatcher.Stop();
                     var getMoviesEllapsedTime = getMoviesWatcher.ElapsedMilliseconds;
                     if (reset && getMoviesEllapsedTime < 500)
                     {
                         // Wait for VerticalOffset to reach 0 (animation lasts 500ms)
-                        await Task.Delay(500 - (int) getMoviesEllapsedTime, CancellationLoadingMovies.Token).ConfigureAwait(false);
+                        await Task.Delay(500 - (int) getMoviesEllapsedTime, CancellationLoadingMovies.Token)
+                            .ConfigureAwait(false);
                     }
 
                     DispatcherHelper.CheckBeginInvokeOnUI(() =>

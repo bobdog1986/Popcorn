@@ -79,11 +79,21 @@ namespace Popcorn.Services.Movies.Movie
         /// <summary>
         /// Get similar movies
         /// </summary>
+        /// <param name="page">Page</param>
+        /// <param name="limit">Limit</param>
+        /// <param name="ratingFilter">Rating</param>
+        /// <param name="sortBy">SortBy</param>
         /// <param name="imdbIds">The imdbIds of the movies, split by comma</param>
         /// <param name="ct">Cancellation token</param>
+        /// <param name="genre">Genre</param>
         /// <returns>Similar movies</returns>
-        Task<(IEnumerable<MovieLightJson> movies, int nbMovies)> GetSimilar(IEnumerable<string> imdbIds,
-            CancellationToken ct);
+        Task<(IEnumerable<MovieLightJson> movies, int nbMovies)> GetSimilar(int page,
+            int limit,
+            double ratingFilter,
+            string sortBy,
+            IEnumerable<string> imdbIds,
+            CancellationToken ct,
+            GenreJson genre = null);
 
         /// <summary>
         /// Translate movie informations (title, description, ...)

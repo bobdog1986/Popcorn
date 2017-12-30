@@ -466,11 +466,21 @@ namespace Popcorn.Services.Movies.Movie
         /// <summary>
         /// Get similar movies
         /// </summary>
+        /// <param name="page">Page</param>
+        /// <param name="limit">Limit</param>
+        /// <param name="ratingFilter">Rating</param>
+        /// <param name="sortBy">SortBy</param>
         /// <param name="imdbIds">The imdbIds of the movies, split by comma</param>
         /// <param name="ct">Cancellation token</param>
+        /// <param name="genre">Genre</param>
         /// <returns>Similar movies</returns>
-        public async Task<(IEnumerable<MovieLightJson> movies, int nbMovies)> GetSimilar(IEnumerable<string> imdbIds,
-            CancellationToken ct)
+        public async Task<(IEnumerable<MovieLightJson> movies, int nbMovies)> GetSimilar(int page,
+            int limit,
+            double ratingFilter,
+            string sortBy,
+            IEnumerable<string> imdbIds,
+            CancellationToken ct,
+            GenreJson genre = null)
         {
             var timeoutPolicy =
                 Policy.TimeoutAsync(Utils.Constants.DefaultRequestTimeoutInSecond, TimeoutStrategy.Pessimistic);
@@ -480,10 +490,21 @@ namespace Popcorn.Services.Movies.Movie
                 {
                     var watch = Stopwatch.StartNew();
                     var wrapper = new MovieLightResponse();
+                    if (limit < 1 || limit > 50)
+                        limit = Utils.Constants.MaxMoviesPerPage;
+
+                    if (page < 1)
+                        page = 1;
+
                     var restClient = new RestClient(Utils.Constants.PopcornApi);
                     var request = new RestRequest("/{segment}/{subsegment}", Method.POST);
                     request.AddUrlSegment("segment", "movies");
                     request.AddUrlSegment("subsegment", "similar");
+                    request.AddQueryParameter("limit", limit.ToString());
+                    request.AddQueryParameter("page", page.ToString());
+                    if (genre != null) request.AddQueryParameter("genre", genre.EnglishName);
+                    request.AddQueryParameter("minimum_rating", Convert.ToInt32(ratingFilter).ToString());
+                    request.AddQueryParameter("sort_by", sortBy);
                     request.AddJsonBody(imdbIds);
 
                     try
