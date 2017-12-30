@@ -316,7 +316,8 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                     if (reset && getMoviesEllapsedTime < 500)
                     {
                         // Wait for VerticalOffset to reach 0 (animation lasts 500ms)
-                        await Task.Delay(500 - (int)getMoviesEllapsedTime, CancellationLoadingMovies.Token).ConfigureAwait(false);
+                        await Task.Delay(500 - (int) getMoviesEllapsedTime, CancellationLoadingMovies.Token)
+                            .ConfigureAwait(false);
                     }
 
                     DispatcherHelper.CheckBeginInvokeOnUI(() =>
@@ -377,7 +378,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                 message =>
                 {
                     var movies = Movies.ToList();
-                    foreach(var movie in movies)
+                    foreach (var movie in movies)
                     {
                         MovieService.TranslateMovie(movie);
                     }
@@ -424,10 +425,13 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                 async message =>
                 {
                     UserService.SyncMovieHistory(Movies);
-                    if(this is RecommendationsMovieTabViewModel && !(SelectedTab is RecommendationsMovieTabViewModel))
+                    if (this is FavoritesMovieTabViewModel && !(SelectedTab is FavoritesMovieTabViewModel) ||
+                        this is RecommendationsMovieTabViewModel && !(SelectedTab is RecommendationsMovieTabViewModel))
                         NeedSync = true;
-                    else if(this is RecommendationsMovieTabViewModel && SelectedTab is RecommendationsMovieTabViewModel)
-                        await LoadMoviesAsync(true).ConfigureAwait(false);
+                    else if (this is FavoritesMovieTabViewModel && SelectedTab is FavoritesMovieTabViewModel ||
+                             this is RecommendationsMovieTabViewModel &&
+                             SelectedTab is RecommendationsMovieTabViewModel)
+                        await LoadMoviesAsync().ConfigureAwait(false);
                 });
 
             Messenger.Default.Register<ChangeSeenMovieMessage>(
@@ -438,7 +442,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                     if (this is SeenMovieTabViewModel && !(SelectedTab is SeenMovieTabViewModel))
                         NeedSync = true;
                     else if (this is SeenMovieTabViewModel && SelectedTab is SeenMovieTabViewModel)
-                        await LoadMoviesAsync(true).ConfigureAwait(false);
+                        await LoadMoviesAsync().ConfigureAwait(false);
                 });
         }
 

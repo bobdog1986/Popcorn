@@ -24,7 +24,12 @@ namespace Popcorn.Utils
         /// <summary>
         /// Url used to start a local OWIN server
         /// </summary>
-        public const string ServerUrl = "http://*:9900/";
+        public static string ServerUrl {get;} = $"http://*:{ServerPort}/";
+
+        /// <summary>
+        /// Local server port
+        /// </summary>
+        public const int ServerPort = 9900;
 
         /// <summary>
         /// Open Subtitles User Agent

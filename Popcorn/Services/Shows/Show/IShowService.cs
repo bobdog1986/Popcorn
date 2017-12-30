@@ -32,6 +32,15 @@ namespace Popcorn.Services.Shows.Show
         Task<ShowLightJson> GetShowLightAsync(string imdbId, CancellationToken ct);
 
         /// <summary>
+        /// Get shows by ids
+        /// </summary>
+        /// <param name="imdbIds">The imdbIds of the shows, split by comma</param>
+        /// <param name="ct">Cancellation token</param>
+        /// <returns>Shows</returns>
+        Task<(IEnumerable<ShowLightJson> movies, int nbMovies)> GetShowsByIds(IEnumerable<string> imdbIds,
+            CancellationToken ct);
+
+        /// <summary>
         /// Get popular shows by page
         /// </summary>
         /// <param name="page">Page to return</param>

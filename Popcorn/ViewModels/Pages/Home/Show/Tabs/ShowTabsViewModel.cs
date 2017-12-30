@@ -367,9 +367,13 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
         {
             Messenger.Default.Register<ChangeFavoriteShowMessage>(
                 this,
-                message =>
+                async message =>
                 {
                     UserService.SyncShowHistory(Shows);
+                    if (this is FavoritesShowTabViewModel && !(SelectedTab is FavoritesShowTabViewModel))
+                        NeedSync = true;
+                    else if (this is FavoritesShowTabViewModel && SelectedTab is FavoritesShowTabViewModel)
+                        await LoadShowsAsync().ConfigureAwait(false);
                 });
 
             Messenger.Default.Register<ChangeLanguageMessage>(

@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections.Async;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight.Messaging;
-using GalaSoft.MvvmLight.Threading;
-using NuGet;
 using Popcorn.Comparers;
-using Popcorn.Extensions;
 using Popcorn.Helpers;
 using Popcorn.Messaging;
-using Popcorn.Models.Image;
 using Popcorn.Models.Shows;
 using Popcorn.Services.Application;
 using Popcorn.Services.Shows.Show;
@@ -32,18 +27,6 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
             : base(applicationService, showService, userService,
                 () => LocalizationProviderHelper.GetLocalizedValue<string>("FavoritesTitleTab"))
         {
-            Messenger.Default.Register<ChangeFavoriteShowMessage>(
-                this,
-                message =>
-                {
-                    var movies = UserService.GetFavoritesShows(Page);
-                    DispatcherHelper.CheckBeginInvokeOnUI(async () =>
-                    {
-                        MaxNumberOfShows = movies.nbShows;
-                        NeedSync = true;
-                        await LoadShowsAsync();
-                    });
-                });
         }
 
         /// <summary>
@@ -51,17 +34,18 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
         /// </summary>
         public override async Task LoadShowsAsync(bool reset = false)
         {
-            await LoadingSemaphore.WaitAsync();
+            await LoadingSemaphore.WaitAsync(CancellationLoadingShows.Token);
             StopLoadingShows();
             if (reset)
             {
                 Shows.Clear();
                 Page = 0;
+                VerticalScroll = 0d;
             }
 
             var watch = Stopwatch.StartNew();
             Page++;
-            if (Page > 1 && Shows.Count == MaxNumberOfShows)
+            if (Page > 1 && Shows.Count == MaxNumberOfShows && reset)
             {
                 Page--;
                 LoadingSemaphore.Release();
@@ -75,86 +59,49 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
             {
                 IsLoadingShows = true;
                 var imdbIds = UserService.GetFavoritesShows(Page);
-                if (!NeedSync)
+
+                var showsToDelete = Shows.Select(a => a.ImdbId).Except(imdbIds.allShows);
+                var showsToAdd = imdbIds.shows.Except(Shows.Select(a => a.ImdbId));
+
+                foreach (var movie in showsToDelete.ToList())
                 {
-                    var shows = new List<ShowLightJson>();
-                    await imdbIds.shows.ParallelForEachAsync(async imdbId =>
-                    {
-                        try
-                        {
-                            var show = await ShowService.GetShowLightAsync(imdbId, CancellationLoadingShows.Token);
-                            if (show != null)
-                            {
-                                show.IsFavorite = true;
-                                shows.Add(show);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.Error(ex);
-                        }
-                    });
-                    var updatedShows = shows.OrderBy(a => a.Title)
-                        .Where(a => (Genre == null || a.Genres.Contains(Genre.EnglishName)) &&
-                                    a.Rating.Percentage >= Rating * 10);
-                    foreach (var show in updatedShows.Except(Shows.ToList(), new ShowLightComparer()))
-                    {
-                        var pair = Shows
-                            .Select((value, index) => new {value, index})
-                            .FirstOrDefault(x => string.CompareOrdinal(x.value.Title, show.Title) > 0);
+                    Shows.Remove(Shows.FirstOrDefault(a => a.ImdbId == movie));
+                }
 
-
-                        if (pair == null)
+                var shows = showsToAdd.ToList();
+                var showsToAddAndToOrder = new List<ShowLightJson>();
+                try
+                {
+                    var showByIds = await ShowService.GetShowsByIds(shows, CancellationLoadingShows.Token);
+                    foreach (var show in showByIds.movies)
+                    {
+                        if ((Genre == null || show.Genres.Contains(Genre.EnglishName)) &&
+                            show.Rating.Percentage >= Rating * 10)
                         {
-                            Shows.Add(show);
-                        }
-                        else
-                        {
-                            Shows.Insert(pair.index, show);
+                            showsToAddAndToOrder.Add(show);
                         }
                     }
                 }
-                else
+                catch (Exception ex)
                 {
-                    var showsToDelete = Shows.Select(a => a.ImdbId).Except(imdbIds.allShows);
-                    var showsToAdd = imdbIds.allShows.Except(Shows.Select(a => a.ImdbId));
-                    foreach (var movie in showsToDelete.ToList())
-                    {
-                        Shows.Remove(Shows.FirstOrDefault(a => a.ImdbId == movie));
-                    }
+                    Logger.Error(ex);
+                }
 
-                    var shows = showsToAdd.ToList();
-                    var showsToAddAndToOrder = new List<ShowLightJson>();
-                    await shows.ParallelForEachAsync(async imdbId =>
+                foreach (var show in showsToAddAndToOrder.Except(Shows.ToList(), new ShowLightComparer()))
+                {
+                    var pair = Shows
+                        .Select((value, index) => new {value, index})
+                        .FirstOrDefault(x => string.CompareOrdinal(x.value.Title, show.Title) > 0);
+                    if (pair == null)
                     {
-                        try
-                        {
-                            var show = await ShowService.GetShowLightAsync(imdbId, CancellationLoadingShows.Token);
-                            if ((Genre == null || show.Genres.Contains(Genre.EnglishName)) && show.Rating.Percentage >= Rating * 10)
-                            {
-                                showsToAddAndToOrder.Add(show);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.Error(ex);
-                        }
-                    });
-                    foreach (var show in showsToAddAndToOrder.Except(Shows.ToList(), new ShowLightComparer()))
+                        Shows.Add(show);
+                    }
+                    else
                     {
-                        var pair = Shows
-                            .Select((value, index) => new {value, index})
-                            .FirstOrDefault(x => string.CompareOrdinal(x.value.Title, show.Title) > 0);
-                        if (pair == null)
-                        {
-                            Shows.Add(show);
-                        }
-                        else
-                        {
-                            Shows.Insert(pair.index, show);
-                        }
+                        Shows.Insert(pair.index, show);
                     }
                 }
+
                 IsLoadingShows = false;
                 IsShowFound = Shows.Any();
                 CurrentNumberOfShows = Shows.Count;

@@ -182,7 +182,7 @@ namespace Popcorn
                 firewallRule.InterfaceTypes = "All";
                 firewallRule.Name = "Popcorn Server";
                 firewallRule.Protocol = (int)NET_FW_IP_PROTOCOL_.NET_FW_IP_PROTOCOL_TCP;
-                firewallRule.LocalPorts = "9900";
+                firewallRule.LocalPorts = Constants.ServerPort.ToString();
                 INetFwPolicy2 firewallPolicy = (INetFwPolicy2)Activator.CreateInstance(
                     Type.GetTypeFromProgID("HNetCfg.FwPolicy2"));
                 firewallPolicy.Rules.Add(firewallRule);

@@ -30,18 +30,6 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
             : base(applicationService, movieService, userService,
                 () => LocalizationProviderHelper.GetLocalizedValue<string>("FavoritesTitleTab"))
         {
-            Messenger.Default.Register<ChangeFavoriteMovieMessage>(
-                this,
-                message =>
-                {
-                    var movies = UserService.GetFavoritesMovies(Page);
-                    DispatcherHelper.CheckBeginInvokeOnUI(async () =>
-                    {
-                        MaxNumberOfMovies = movies.nbMovies;
-                        NeedSync = true;
-                        await LoadMoviesAsync();
-                    });
-                });
         }
 
         /// <summary>
@@ -55,11 +43,12 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
             {
                 Movies.Clear();
                 Page = 0;
+                VerticalScroll = 0d;
             }
 
             var watch = Stopwatch.StartNew();
             Page++;
-            if (Page > 1 && Movies.Count == MaxNumberOfMovies)
+            if (Page > 1 && Movies.Count == MaxNumberOfMovies && reset)
             {
                 Page--;
                 LoadingSemaphore.Release();
@@ -73,85 +62,51 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
             {
                 IsLoadingMovies = true;
                 var imdbIds = UserService.GetFavoritesMovies(Page);
-                if (!NeedSync)
-                {
-                    var movies = new List<MovieLightJson>();
-                    await imdbIds.movies.ParallelForEachAsync(async imdbId =>
-                    {
-                        try
-                        {
-                            var movie = await MovieService.GetMovieLightAsync(imdbId, CancellationLoadingMovies.Token);
-                            if (movie != null)
-                            {
-                                movie.IsFavorite = true;
-                                movies.Add(movie);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.Error(ex);
-                        }
-                    }, CancellationLoadingMovies.Token);
-                    var updatedMovies = movies.OrderBy(a => a.Title)
-                        .Where(a => (Genre == null || a.Genres.Contains(Genre.EnglishName)) &&
-                                    a.Rating >= Rating);
-                    foreach (var movie in updatedMovies.Except(Movies.ToList(), new MovieLightComparer()))
-                    {
-                        var pair = Movies
-                            .Select((value, index) => new {value, index})
-                            .FirstOrDefault(x => string.CompareOrdinal(x.value.Title, movie.Title) > 0);
 
-                        if (pair == null)
-                        {
-                            Movies.Add(movie);
-                        }
-                        else
-                        {
-                            Movies.Insert(pair.index, movie);
-                        }
-                    }
+                var moviesToDelete = Movies.Select(a => a.ImdbCode).Except(imdbIds.allMovies);
+                var moviesToAdd = imdbIds.movies.Except(Movies.Select(a => a.ImdbCode));
+
+                foreach (var movie in moviesToDelete.ToList())
+                {
+                    Movies.Remove(Movies.FirstOrDefault(a => a.ImdbCode == movie));
                 }
-                else
-                {
-                    var moviesToDelete = Movies.Select(a => a.ImdbCode).Except(imdbIds.allMovies);
-                    var moviesToAdd = imdbIds.allMovies.Except(Movies.Select(a => a.ImdbCode));
-                    foreach (var movie in moviesToDelete.ToList())
-                    {
-                        Movies.Remove(Movies.FirstOrDefault(a => a.ImdbCode == movie));
-                    }
 
-                    var movies = moviesToAdd.ToList();
-                    var moviesToAddAndToOrder = new List<MovieLightJson>();
-                    await movies.ParallelForEachAsync(async imdbId =>
+                var movies = moviesToAdd.ToList();
+                var moviesToAddAndToOrder = new List<MovieLightJson>();
+
+                try
+                {
+                    if (movies.Any())
                     {
-                        try
+                        var movieByIds = await MovieService.GetMoviesByIds(movies, CancellationLoadingMovies.Token);
+                        foreach (var movie in movieByIds.movies)
                         {
-                            var movie = await MovieService.GetMovieLightAsync(imdbId, CancellationLoadingMovies.Token);
-                            if ((Genre == null || movie.Genres.Contains(Genre.EnglishName)) && movie.Rating >= Rating)
+                            if ((Genre == null || movie.Genres.Contains(Genre.EnglishName)) &&
+                                movie.Rating >= Rating)
                             {
                                 moviesToAddAndToOrder.Add(movie);
                             }
                         }
-                        catch (Exception ex)
-                        {
-                            Logger.Error(ex);
-                        }
-                    }, CancellationLoadingMovies.Token);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                }
 
-                    foreach (var movie in moviesToAddAndToOrder.Except(Movies.ToList(), new MovieLightComparer()))
+                foreach (var movie in moviesToAddAndToOrder.Except(Movies.ToList(), new MovieLightComparer()))
+                {
+                    var pair = Movies
+                        .Select((value, index) => new { value, index })
+                        .FirstOrDefault(x => string.CompareOrdinal(x.value.Title, movie.Title) > 0);
+
+                    if (pair == null)
                     {
-                        var pair = Movies
-                            .Select((value, index) => new {value, index})
-                            .FirstOrDefault(x => string.CompareOrdinal(x.value.Title, movie.Title) > 0);
-
-                        if (pair == null)
-                        {
-                            Movies.Add(movie);
-                        }
-                        else
-                        {
-                            Movies.Insert(pair.index, movie);
-                        }
+                        Movies.Add(movie);
+                    }
+                    else
+                    {
+                        Movies.Insert(pair.index, movie);
                     }
                 }
 

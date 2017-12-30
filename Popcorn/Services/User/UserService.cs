@@ -136,7 +136,6 @@ namespace Popcorn.Services.User
         /// <param name="movies">All movies to compute</param>
         public void SyncMovieHistory(IEnumerable<IMovie> movies)
         {
-            var watch = Stopwatch.StartNew();
             try
             {
                 foreach (var movie in movies)
@@ -152,13 +151,6 @@ namespace Popcorn.Services.User
                 Logger.Error(
                     $"SyncMovieHistory: {exception.Message}");
             }
-            finally
-            {
-                watch.Stop();
-                var elapsedMs = watch.ElapsedMilliseconds;
-                Logger.Debug(
-                    $"SyncMovieHistory in {elapsedMs} milliseconds.");
-            }
         }
 
         /// <summary>
@@ -167,7 +159,6 @@ namespace Popcorn.Services.User
         /// <param name="shows">All shows to compute</param>
         public void SyncShowHistory(IEnumerable<IShow> shows)
         {
-            var watch = Stopwatch.StartNew();
             try
             {
                 foreach (var show in shows)
@@ -182,13 +173,6 @@ namespace Popcorn.Services.User
                 Logger.Error(
                     $"SyncShowHistory: {exception.Message}");
             }
-            finally
-            {
-                watch.Stop();
-                var elapsedMs = watch.ElapsedMilliseconds;
-                Logger.Debug(
-                    $"SyncShowHistory in {elapsedMs} milliseconds.");
-            }
         }
 
         /// <summary>
@@ -197,7 +181,6 @@ namespace Popcorn.Services.User
         /// <param name="movie">Movie</param>
         public void SetMovie(IMovie movie)
         {
-            var watch = Stopwatch.StartNew();
             try
             {
                 var movieToUpdate = User.MovieHistory.FirstOrDefault(a => a.ImdbId == movie.ImdbCode);
@@ -220,13 +203,6 @@ namespace Popcorn.Services.User
             {
                 Logger.Error(
                     $"SetMovie: {exception.Message}");
-            }
-            finally
-            {
-                watch.Stop();
-                var elapsedMs = watch.ElapsedMilliseconds;
-                Logger.Debug(
-                    $"SetMovie ({movie.ImdbCode}) in {elapsedMs} milliseconds.");
             }
         }
 

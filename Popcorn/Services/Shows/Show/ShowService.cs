@@ -129,6 +129,7 @@ namespace Popcorn.Services.Shows.Show
         /// Get show light by its Imdb code
         /// </summary>
         /// <param name="imdbId">Show's Imdb code</param>
+        /// <param name="ct">Cancellation token</param>
         /// <returns>The show</returns>
         public async Task<ShowLightJson> GetShowLightAsync(string imdbId, CancellationToken ct)
         {
@@ -179,6 +180,67 @@ namespace Popcorn.Services.Shows.Show
             {
                 Logger.Error(ex);
                 throw;
+            }
+        }
+
+        /// <summary>
+        /// Get shows by ids
+        /// </summary>
+        /// <param name="imdbIds">The imdbIds of the shows, split by comma</param>
+        /// <param name="ct">Cancellation token</param>
+        /// <returns>Shows</returns>
+        public async Task<(IEnumerable<ShowLightJson> movies, int nbMovies)> GetShowsByIds(IEnumerable<string> imdbIds, CancellationToken ct)
+        {
+            var timeoutPolicy =
+                Policy.TimeoutAsync(Utils.Constants.DefaultRequestTimeoutInSecond, TimeoutStrategy.Pessimistic);
+            try
+            {
+                return await timeoutPolicy.ExecuteAsync(async cancellation =>
+                {
+                    var watch = Stopwatch.StartNew();
+                    var wrapper = new ShowLightResponse();
+                    var restClient = new RestClient(Utils.Constants.PopcornApi);
+                    var request = new RestRequest("/{segment}/{subsegment}", Method.POST);
+                    request.AddUrlSegment("segment", "shows");
+                    request.AddUrlSegment("subsegment", "ids");
+                    request.AddJsonBody(imdbIds);
+
+                    try
+                    {
+                        var response = await restClient.ExecuteTaskAsync(request, cancellation);
+                        if (response.ErrorException != null)
+                            throw response.ErrorException;
+
+                        wrapper = JsonSerializer.Deserialize<ShowLightResponse>(response.RawBytes);
+                    }
+                    catch (Exception exception) when (exception is TaskCanceledException)
+                    {
+                        Logger.Debug(
+                            "GetShowsByIds cancelled.");
+                    }
+                    catch (Exception exception)
+                    {
+                        Logger.Error(
+                            $"GetShowsByIds: {exception.Message}");
+                        throw;
+                    }
+                    finally
+                    {
+                        watch.Stop();
+                        var elapsedMs = watch.ElapsedMilliseconds;
+                        Logger.Debug(
+                            $"GetShowsByIds ({string.Join(",", imdbIds)}) in {elapsedMs} milliseconds.");
+                    }
+
+                    var result = wrapper?.Shows ?? new List<ShowLightJson>();
+                    var nbResult = wrapper?.TotalShows ?? 0;
+                    return (result, nbResult);
+                }, ct).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                return (new List<ShowLightJson>(), 0);
             }
         }
 

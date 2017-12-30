@@ -13,8 +13,6 @@ using System.Windows.Input;
 using Popcorn.Helpers;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight.Ioc;
@@ -364,7 +362,8 @@ namespace Popcorn.ViewModels.Pages.Player
                         message.SelectedSubtitle.SubtitleId != "custom")
                     {
                         OnResumedMedia(new EventArgs());
-                        if (CurrentSubtitle != null && CurrentSubtitle.SubtitleId == message.SelectedSubtitle.SubtitleId)
+                        if (CurrentSubtitle != null &&
+                            CurrentSubtitle.SubtitleId == message.SelectedSubtitle.SubtitleId)
                         {
                             IsSubtitleChosen = true;
                         }
@@ -379,7 +378,8 @@ namespace Popcorn.ViewModels.Pages.Player
                                         message.SelectedSubtitle);
                                 DispatcherHelper.CheckBeginInvokeOnUI(() =>
                                 {
-                                    OnSubtitleChosen(new SubtitleChangedEventArgs(subtitlePath, message.SelectedSubtitle));
+                                    OnSubtitleChosen(new SubtitleChangedEventArgs(subtitlePath,
+                                        message.SelectedSubtitle));
                                     IsSubtitleChosen = true;
                                 });
                             });
@@ -513,18 +513,6 @@ namespace Popcorn.ViewModels.Pages.Player
             }
         }
 
-        private string GetLocalIpAddress()
-        {
-            string localIp;
-            using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0))
-            {
-                socket.Connect("8.8.8.8", 65530);
-                IPEndPoint endPoint = socket.LocalEndPoint as IPEndPoint;
-                localIp = endPoint.Address.ToString();
-            }
-            return localIp;
-        }
-
         private async Task LoadCastAsync(Action closeCastDialog)
         {
             var isRemote = Uri.TryCreate(MediaPath, UriKind.Absolute, out var uriResult)
@@ -532,7 +520,7 @@ namespace Popcorn.ViewModels.Pages.Player
 
             var videoPath = MediaPath.Split(new[] {"Popcorn\\"}, StringSplitOptions.RemoveEmptyEntries).Last()?
                 .Replace("\\", "/");
-            var mediaPath = $"http://{GetLocalIpAddress()}:9900/{videoPath}";
+            var mediaPath = $"http://{Helper.GetLocalIpAddress()}:{Constants.ServerPort}/{videoPath}";
             var subtitle = SubtitleFilePath;
             if (!string.IsNullOrEmpty(subtitle))
             {
@@ -541,7 +529,7 @@ namespace Popcorn.ViewModels.Pages.Player
                 {
                     subtitle = subtitle.Split(new[] {"Popcorn\\"}, StringSplitOptions.RemoveEmptyEntries).Last()?
                         .Replace("\\", "/");
-                    subtitle = $"http://{GetLocalIpAddress()}:9900/{subtitle}";
+                    subtitle = $"http://{Helper.GetLocalIpAddress()}:{Constants.ServerPort}/{subtitle}";
                 }
             }
 
@@ -578,45 +566,45 @@ namespace Popcorn.ViewModels.Pages.Player
 
         public ICommand PlayCastCommand
         {
-            get { return _playCastCommand; }
-            set { Set(ref _playCastCommand, value); }
+            get => _playCastCommand;
+            private set => Set(ref _playCastCommand, value);
         }
 
         public ICommand PauseCastCommand
         {
-            get { return _pauseCastCommand; }
-            set { Set(ref _pauseCastCommand, value); }
+            get => _pauseCastCommand;
+            private set => Set(ref _pauseCastCommand, value);
         }
 
         public ICommand SeekCastCommand
         {
-            get { return _seekCastCommand; }
-            set { Set(ref _seekCastCommand, value); }
+            get => _seekCastCommand;
+            private set => Set(ref _seekCastCommand, value);
         }
 
         public ICommand StopCastCommand
         {
-            get { return _stopCastCommand; }
-            set { Set(ref _stopCastCommand, value); }
+            get => _stopCastCommand;
+            private set => Set(ref _stopCastCommand, value);
         }
 
         public OSDB.Subtitle CurrentSubtitle
         {
-            get { return _currentSubtitle; }
-            set { Set(ref _currentSubtitle, value); }
+            get => _currentSubtitle;
+            set => Set(ref _currentSubtitle, value);
         }
 
         public bool IsSubtitleChosen
         {
-            get { return _isSubtitleChosen; }
-            set { Set(ref _isSubtitleChosen, value); }
+            get => _isSubtitleChosen;
+            set => Set(ref _isSubtitleChosen, value);
         }
 
         public double MediaLength { get; set; }
 
         public double PlayerTime
         {
-            get { return _playerTime; }
+            get => _playerTime;
             set
             {
                 Set(ref _playerTime, value);
@@ -626,8 +614,8 @@ namespace Popcorn.ViewModels.Pages.Player
 
         public IReceiver ChromecastReceiver
         {
-            get { return _chromecastReceiver; }
-            set { Set(ref _chromecastReceiver, value); }
+            get => _chromecastReceiver;
+            set => Set(ref _chromecastReceiver, value);
         }
 
         public double Volume

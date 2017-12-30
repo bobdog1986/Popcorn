@@ -40,6 +40,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
         public override async Task LoadMoviesAsync(bool reset = false)
         {
             await LoadingSemaphore.WaitAsync(CancellationLoadingMovies.Token);
+            StopLoadingMovies();
             if (reset)
             {
                 Movies.Clear();
@@ -49,7 +50,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
 
             var watch = Stopwatch.StartNew();
             Page++;
-            if (Page > 1 && Movies.Count == MaxNumberOfMovies)
+            if (Page > 1 && Movies.Count == MaxNumberOfMovies && reset)
             {
                 Page--;
                 LoadingSemaphore.Release();

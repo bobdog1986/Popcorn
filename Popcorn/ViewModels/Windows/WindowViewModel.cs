@@ -472,7 +472,7 @@ namespace Popcorn.ViewModels.Windows
 
             Messenger.Default.Register<StopPlayingTrailerMessage>(this, message =>
             {
-                if(!_toggleFullscreen)
+                if (!_toggleFullscreen)
                     IgnoreTaskbarOnMaximize = false;
                 if (ApplicationService.IsMediaPlaying)
                 {
@@ -685,7 +685,7 @@ namespace Popcorn.ViewModels.Windows
                         Title = "Open Sub File",
                         Filter = "SUB files (*.sub,*srt,*sbv)|*.sub;*.srt;*.sbv",
                         InitialDirectory = Path.GetPathRoot(Environment.SystemDirectory)
-                };
+                    };
 
                     if (fileDialog.ShowDialog() == true)
                     {
@@ -770,8 +770,9 @@ namespace Popcorn.ViewModels.Windows
                                     {
                                         try
                                         {
-                                            var dialog = await _dialogCoordinator.GetCurrentDialogAsync<DropTorrentDialog>(
-                                                this);
+                                            var dialog =
+                                                await _dialogCoordinator.GetCurrentDialogAsync<DropTorrentDialog>(
+                                                    this);
                                             if (dialog != null)
                                                 await _dialogCoordinator.HideMetroDialogAsync(this, dialog);
                                         }
@@ -783,8 +784,9 @@ namespace Popcorn.ViewModels.Windows
                                     {
                                         try
                                         {
-                                            var dialog = await _dialogCoordinator.GetCurrentDialogAsync<DropTorrentDialog>(
-                                                this);
+                                            var dialog =
+                                                await _dialogCoordinator.GetCurrentDialogAsync<DropTorrentDialog>(
+                                                    this);
                                             if (dialog != null)
                                                 await _dialogCoordinator.HideMetroDialogAsync(this, dialog);
                                         }
@@ -947,8 +949,8 @@ namespace Popcorn.ViewModels.Windows
 
         public bool ToggleFullscren
         {
-            get { return _toggleFullscreen; }
-            set { Set(ref _toggleFullscreen, value); }
+            get => _toggleFullscreen;
+            set => Set(ref _toggleFullscreen, value);
         }
 
         /// <summary>
