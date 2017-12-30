@@ -160,21 +160,27 @@
             Background="Black"
             Opacity="0"
             OpacityMask="{StaticResource HeaderBackgroundOpacityMask}">
-            <StackPanel
+            <Grid
                 Margin="20"
-                HorizontalAlignment="Left"
+                HorizontalAlignment="Stretch"
                 VerticalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
                 <TextBlock
                     x:Name="Title"
+                    Grid.Column="0"
                     FontSize="20"
-                    Foreground="White" />
-            </StackPanel>
-            <StackPanel
-                x:Name="DownloadProgress"
-                Margin="20"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Center">
-                <StackPanel Opacity="0.8" Orientation="Vertical">
+                    Foreground="White"
+                    TextTrimming="CharacterEllipsis"
+                    TextWrapping="NoWrap" />
+                <StackPanel
+                    x:Name="DownloadProgress"
+                    Grid.Column="1"
+                    Margin="20"
+                    Opacity="0.8"
+                    Orientation="Vertical">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Foreground="White" Text="{lex:LocText DownloadLabel}" />
                         <TextBlock
@@ -217,7 +223,7 @@
                             Foreground="White" />
                     </StackPanel>
                 </StackPanel>
-            </StackPanel>
+            </Grid>
         </Grid>
         <StatusBar x:Name="PlayerStatusBar" VerticalAlignment="Bottom">
             <StatusBar.ItemsPanel>

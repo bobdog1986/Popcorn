@@ -8,6 +8,9 @@
     d:DesignWidth="300"
     mc:Ignorable="d">
     <Grid>
-        <TextBlock x:Name="DisplayText" />
+        <TextBlock
+            x:Name="DisplayText"
+            TextTrimming="CharacterEllipsis"
+            TextWrapping="NoWrap" />
     </Grid>
 </UserControl>

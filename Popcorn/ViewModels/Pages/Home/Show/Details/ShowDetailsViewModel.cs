@@ -129,7 +129,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Details
             StopLoadingShowCommand = new RelayCommand(() =>
             {
                 StopLoadingShow();
-                Messenger.Default.Send(new StopPlayingMovieMessage());
+                Messenger.Default.Send(new StopPlayingEpisodeMessage());
             });
         }
 

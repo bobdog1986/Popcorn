@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -23,6 +24,7 @@ using Popcorn.Dialogs;
 using Popcorn.Extensions;
 using Popcorn.Helpers;
 using Popcorn.Messaging;
+using Popcorn.Models.Subtitles;
 using Popcorn.Services.Application;
 using Popcorn.Services.Cache;
 using Popcorn.Services.Chromecast;
@@ -358,16 +360,34 @@ namespace Popcorn.ViewModels.Windows
                         MediaType.Unkown,
                         () =>
                         {
-                            Messenger.Default.Send(new StopPlayMediaMessage());
+                            Messenger.Default.Send(new NavigateToHomePageMessage());
                         },
                         () =>
                         {
-                            Messenger.Default.Send(new StopPlayMediaMessage());
+                            Messenger.Default.Send(new NavigateToHomePageMessage());
                         },
                         message.PlayingProgress,
                         message.BufferProgress,
                         message.PieceAvailability,
-                        message.BandwidthRate);
+                        message.BandwidthRate, subtitles: new List<Subtitle>
+                        {
+                            new Subtitle
+                            {
+                                Sub = new OSDB.Subtitle
+                                {
+                                    LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"),
+                                    SubtitleId = "none"
+                                }
+                            },
+                            new Subtitle
+                            {
+                                Sub = new OSDB.Subtitle
+                                {
+                                    LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("CustomLabel"),
+                                    SubtitleId = "custom"
+                                }
+                            }
+                        });
 
                     ApplicationService.IsMediaPlaying = true;
                     IsShowFlyoutOpen = false;
@@ -489,8 +509,9 @@ namespace Popcorn.ViewModels.Windows
                 ApplicationService.IsMediaPlaying = false;
             });
 
-            Messenger.Default.Register<NavigateToHomePageMessage>(this, message =>
+            Messenger.Default.Register<NavigateToHomePageMessage>(this, async message =>
             {
+                await Task.Delay(500);
                 if (!_toggleFullscreen)
                 {
                     IgnoreTaskbarOnMaximize = false;
@@ -504,6 +525,12 @@ namespace Popcorn.ViewModels.Windows
                 ApplicationService.IsMediaPlaying = false;
                 IsMovieFlyoutOpen = false;
                 IsShowFlyoutOpen = false;
+
+                if (NavigationService.CurrentSource.OriginalString != "Pages/HomePage.xaml" &&
+                    NavigationService.CanGoBack)
+                {
+                    NavigationService.GoBack();
+                }
             });
 
             Messenger.Default.Register<StopPlayingEpisodeMessage>(
@@ -589,7 +616,10 @@ namespace Popcorn.ViewModels.Windows
                 {
                     try
                     {
-                        await _dialogCoordinator.HideMetroDialogAsync(this, castDialog);
+                        var dialog = await _dialogCoordinator.GetCurrentDialogAsync<CastDialog>(
+                            this);
+                        if (dialog != null)
+                            await _dialogCoordinator.HideMetroDialogAsync(this, dialog);
                         cts.TrySetResult(null);
                     }
                     catch (Exception ex)
@@ -624,7 +654,10 @@ namespace Popcorn.ViewModels.Windows
                         try
                         {
                             message.SelectedSubtitle = vm.SelectedSubtitle?.Sub;
-                            await _dialogCoordinator.HideMetroDialogAsync(this, subtitleDialog);
+                            var dialog = await _dialogCoordinator.GetCurrentDialogAsync<SubtitleDialog>(
+                                this);
+                            if (dialog != null)
+                                await _dialogCoordinator.HideMetroDialogAsync(this, dialog);
                             cts.TrySetResult(null);
                         }
                         catch (Exception ex)
@@ -737,7 +770,10 @@ namespace Popcorn.ViewModels.Windows
                                     {
                                         try
                                         {
-                                            await _dialogCoordinator.HideMetroDialogAsync(this, dropTorrentDialog);
+                                            var dialog = await _dialogCoordinator.GetCurrentDialogAsync<DropTorrentDialog>(
+                                                this);
+                                            if (dialog != null)
+                                                await _dialogCoordinator.HideMetroDialogAsync(this, dialog);
                                         }
                                         catch (Exception ex)
                                         {
@@ -747,7 +783,10 @@ namespace Popcorn.ViewModels.Windows
                                     {
                                         try
                                         {
-                                            await _dialogCoordinator.HideMetroDialogAsync(this, dropTorrentDialog);
+                                            var dialog = await _dialogCoordinator.GetCurrentDialogAsync<DropTorrentDialog>(
+                                                this);
+                                            if (dialog != null)
+                                                await _dialogCoordinator.HideMetroDialogAsync(this, dialog);
                                         }
                                         catch (Exception ex)
                                         {
@@ -806,7 +845,10 @@ namespace Popcorn.ViewModels.Windows
                 {
                     try
                     {
-                        await _dialogCoordinator.HideMetroDialogAsync(this, aboutDialog);
+                        var dialog = await _dialogCoordinator.GetCurrentDialogAsync<AboutDialog>(
+                            this);
+                        if (dialog != null)
+                            await _dialogCoordinator.HideMetroDialogAsync(this, dialog);
                     }
                     catch (Exception ex)
                     {
@@ -881,8 +923,20 @@ namespace Popcorn.ViewModels.Windows
                     await _dialogCoordinator.ShowMetroDialogAsync(this, dropTorrentDialog);
                     var settings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
                     await vm.Download(settings.UploadLimit, settings.DownloadLimit,
-                        async () => { await _dialogCoordinator.HideMetroDialogAsync(this, dropTorrentDialog); },
-                        async () => { await _dialogCoordinator.HideMetroDialogAsync(this, dropTorrentDialog); });
+                        async () =>
+                        {
+                            var dialog = await _dialogCoordinator.GetCurrentDialogAsync<DropTorrentDialog>(
+                                this);
+                            if (dialog != null)
+                                await _dialogCoordinator.HideMetroDialogAsync(this, dialog);
+                        },
+                        async () =>
+                        {
+                            var dialog = await _dialogCoordinator.GetCurrentDialogAsync<DropTorrentDialog>(
+                                this);
+                            if (dialog != null)
+                                await _dialogCoordinator.HideMetroDialogAsync(this, dialog);
+                        });
                 });
             }
             catch (Exception ex)
