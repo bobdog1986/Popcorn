@@ -146,7 +146,7 @@ namespace Popcorn.OSDB
         {
             using (var subFile = new StreamWriter(destinationfile, false, Encoding.UTF8))
             {
-                var enc = Encoding.GetEncoding("windows-1252");
+                var enc = Encoding.UTF8;
                 if (strLang == "he") enc = Encoding.GetEncoding("windows-1255");
                 if (strLang == "el") enc = Encoding.GetEncoding("windows-1253");
                 if (strLang == "ar") enc = Encoding.GetEncoding("windows-1256");

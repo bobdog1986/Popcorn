@@ -80,6 +80,7 @@
             Fill="Black"
             Opacity="0.6" />
         <StackPanel
+            Margin="20"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
             Orientation="Vertical">

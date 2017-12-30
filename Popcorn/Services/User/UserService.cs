@@ -114,7 +114,7 @@ namespace Popcorn.Services.User
             {
                 User.DefaultSubtitleSize = new SubtitleSize
                 {
-                    Size = 22,
+                    Size = 26,
                     Label = LocalizationProviderHelper.GetLocalizedValue<string>("Normal")
                 };
             }
