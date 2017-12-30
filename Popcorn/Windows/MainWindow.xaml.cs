@@ -36,7 +36,6 @@ namespace Popcorn.Windows
                 vm.NavigationService = MainFrame.NavigationService;
             }
 
-            StateChanged += OnStateChanged;
             Messenger.Default.Register<DropFileMessage>(this, e =>
             {
                 if (e.Event == DropFileMessage.DropFileEvent.Enter)
@@ -112,13 +111,6 @@ namespace Popcorn.Windows
                     Messenger.Default.Send(new DownloadMagnetLinkMessage(clipboard));
                 }
             }
-        }
-
-        private void OnStateChanged(object sender, EventArgs e)
-        {
-            MovieDetailsUc.Margin = WindowState == WindowState.Maximized
-                ? new Thickness(0, 0, 16, 0)
-                : new Thickness(0, 0, 0, 0);
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e)

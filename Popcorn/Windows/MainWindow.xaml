@@ -131,7 +131,6 @@
         <controls:FlyoutsControl adorners:Overlay.IsVisible="True">
             <controls:Flyout
                 Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MetroWindow}, Path=ActualWidth, Mode=OneWay}"
-                Margin="0.01,0,0,0"
                 AnimateOpacity="True"
                 CloseButtonVisibility="{Binding ShowDetails.DownloadShow.IsDownloadingEpisode, Converter={StaticResource BoolToVisibilityConverter}, Source={StaticResource Locator}}"
                 CloseCommand="{Binding CloseShowPageCommand}"
@@ -143,7 +142,6 @@
             </controls:Flyout>
             <controls:Flyout
                 Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MetroWindow}, Path=ActualWidth, Mode=OneWay}"
-                Margin="0.01,0,0,0"
                 AnimateOpacity="True"
                 CloseButtonVisibility="{Binding MovieDetails.IsDownloadingMovie, Converter={StaticResource BoolToVisibilityConverter}, Source={StaticResource Locator}}"
                 CloseCommand="{Binding CloseMoviePageCommand}"
@@ -151,11 +149,10 @@
                 HeaderTemplate="{Binding Source={StaticResource FlyoutHeaderTemplate}}"
                 IsOpen="{Binding IsMovieFlyoutOpen}"
                 Position="Right">
-                <details:MovieDetailsUserControl x:Name="MovieDetailsUc" />
+                <details:MovieDetailsUserControl />
             </controls:Flyout>
             <controls:Flyout
                 Width="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MetroWindow}, Path=ActualWidth, Mode=OneWay}"
-                Margin="0.01,0,0,0"
                 AnimateOpacity="True"
                 Header="{Binding Cast.Person.Name, Source={StaticResource Locator}}"
                 HeaderTemplate="{Binding Source={StaticResource FlyoutHeaderTemplate}}"

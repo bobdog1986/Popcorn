@@ -140,30 +140,13 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
-        <Grid
-            x:Name="MoviePageContainer"
-            Opacity="0.0"
-            Style="{StaticResource AnimationContentOnMovieLoading}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="3*" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="3*" />
-            </Grid.RowDefinitions>
+        <Grid Opacity="0.0" Style="{StaticResource AnimationContentOnMovieLoading}">
             <Image
-                Grid.Row="0"
-                Grid.RowSpan="3"
                 attachedProperties:ImageAsyncHelper.ImagePath="{Binding Movie.BackgroundImage}"
                 attachedProperties:ImageAsyncHelper.Type="Background"
                 Opacity="0.3" />
-            <ContentControl
-                Grid.Row="0"
-                Grid.RowSpan="3"
-                Content="{Binding DownloadMovie}"
-                Visibility="{Binding IsDownloadingMovie, Converter={StaticResource BoolToInverseVisibilityConverter}}" />
-            <Grid
-                Grid.Row="0"
-                Grid.RowSpan="3"
-                Style="{StaticResource AnimationContentOnMediaLoading}">
+            <ContentControl Content="{Binding DownloadMovie}" Visibility="{Binding IsDownloadingMovie, Converter={StaticResource BoolToInverseVisibilityConverter}}" />
+            <Grid Style="{StaticResource AnimationContentOnMediaLoading}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*" />
                     <RowDefinition Height="6*" />
@@ -778,7 +761,8 @@
                                             HorizontalAlignment="Left"
                                             FontSize="12"
                                             Foreground="Gray"
-                                            Text="{Binding Genres}" />
+                                            Text="{Binding Genres}"
+                                            TextTrimming="CharacterEllipsis" />
                                         <TextBlock
                                             Width="100"
                                             HorizontalAlignment="Left"
@@ -814,8 +798,6 @@
                 </Grid>
             </Grid>
             <StackPanel
-                Grid.Row="0"
-                Grid.RowSpan="3"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Orientation="Vertical">
@@ -849,7 +831,8 @@
         <StackPanel
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
-            Orientation="Vertical">
+            Orientation="Vertical"
+            Visibility="{Binding IsMovieLoading, Converter={StaticResource BoolToInverseVisibilityConverter}}">
             <controls:ProgressRing
                 Width="40"
                 Height="40"
@@ -862,8 +845,7 @@
                 FontSize="36"
                 Foreground="White"
                 Text="{lex:LocText Loading}"
-                TextTrimming="CharacterEllipsis"
-                Visibility="{Binding IsMovieLoading, Converter={StaticResource BoolToInverseVisibilityConverter}}" />
+                TextTrimming="CharacterEllipsis" />
             <Button
                 Width="100"
                 Height="30"
@@ -872,8 +854,7 @@
                 controls:ControlsHelper.ContentCharacterCasing="Normal"
                 Command="{Binding StopLoadingMovieCommand}"
                 Content="{lex:LocText CancelButton}"
-                Style="{DynamicResource SquareButtonStyle}"
-                Visibility="{Binding IsMovieLoading, Converter={StaticResource BoolToInverseVisibilityConverter}}" />
+                Style="{DynamicResource SquareButtonStyle}" />
         </StackPanel>
     </Grid>
 </UserControl>

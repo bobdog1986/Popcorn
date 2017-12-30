@@ -379,7 +379,8 @@
                                             HorizontalAlignment="Left"
                                             FontSize="12"
                                             Foreground="Gray"
-                                            Text="{Binding Genres}" />
+                                            Text="{Binding Genres}"
+                                            TextTrimming="CharacterEllipsis" />
                                         <TextBlock
                                             Width="100"
                                             HorizontalAlignment="Left"

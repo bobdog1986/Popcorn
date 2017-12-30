@@ -69,6 +69,7 @@
         <file src="Popcorn.ColorPickerControls.dll" target="lib\net45\Popcorn.ColorPickerControls.dll" />
         <file src="WPFToolkit.dll" target="lib\net45\WPFToolkit.dll" />
         <file src="GoogleCast.dll" target="lib\net45\GoogleCast.dll" />
+        <file src="ControlzEx.dll" target="lib\net45\ControlzEx.dll" />
         <file src="Polly.dll" target="lib\net45\Polly.dll" />
         <file src="System.Windows.Controls.Input.Toolkit.dll" target="lib\net45\System.Windows.Controls.Input.Toolkit.dll" />
         <file src="System.Windows.Controls.Layout.Toolkit.dll" target="lib\net45\System.Windows.Controls.Layout.Toolkit.dll" />
