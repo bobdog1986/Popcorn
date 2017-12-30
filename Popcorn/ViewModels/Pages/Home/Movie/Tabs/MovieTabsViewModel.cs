@@ -424,7 +424,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                     else if (this is FavoritesMovieTabViewModel && SelectedTab is FavoritesMovieTabViewModel ||
                              this is RecommendationsMovieTabViewModel &&
                              SelectedTab is RecommendationsMovieTabViewModel)
-                        await LoadMoviesAsync();
+                        await LoadMoviesAsync(this is RecommendationsMovieTabViewModel);
                 });
 
             Messenger.Default.Register<ChangeSeenMovieMessage>(
@@ -432,10 +432,13 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                 async message =>
                 {
                     UserService.SyncMovieHistory(Movies);
-                    if (this is SeenMovieTabViewModel && !(SelectedTab is SeenMovieTabViewModel))
+                    if (this is SeenMovieTabViewModel && !(SelectedTab is SeenMovieTabViewModel) ||
+                        this is RecommendationsMovieTabViewModel && !(SelectedTab is RecommendationsMovieTabViewModel))
                         NeedSync = true;
-                    else if (this is SeenMovieTabViewModel && SelectedTab is SeenMovieTabViewModel)
-                        await LoadMoviesAsync();
+                    else if (this is SeenMovieTabViewModel && SelectedTab is SeenMovieTabViewModel ||
+                             this is RecommendationsMovieTabViewModel &&
+                             SelectedTab is RecommendationsMovieTabViewModel)
+                        await LoadMoviesAsync(this is RecommendationsMovieTabViewModel);
                 });
         }
 
