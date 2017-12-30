@@ -1,4 +1,11 @@
-﻿# 3.4.9 - 29/12/2017 #
+﻿# 3.4.10 - 30/12/2017 #
+***
+Fixed issues
+
+### Details ###
+* Fixed recommendations.
+
+# 3.4.9 - 29/12/2017 #
 ***
 Fixed issues
 

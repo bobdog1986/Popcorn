@@ -501,7 +501,7 @@ namespace Popcorn.ViewModels.Pages.Player
             }
         }
 
-        public async Task SetVolume(float volume)
+        private async Task SetVolume(float volume)
         {
             try
             {
