@@ -68,12 +68,21 @@ namespace Popcorn.Services.Movies.Movie
             CancellationToken ct);
 
         /// <summary>
+        /// Get movies by ids
+        /// </summary>
+        /// <param name="imdbIds">The imdbIds of the movies, split by comma</param>
+        /// <param name="ct">Cancellation token</param>
+        /// <returns>Similar movies</returns>
+        Task<(IEnumerable<MovieLightJson> movies, int nbMovies)> GetMoviesByIds(IEnumerable<string> imdbIds,
+            CancellationToken ct);
+
+        /// <summary>
         /// Get similar movies
         /// </summary>
         /// <param name="imdbIds">The imdbIds of the movies, split by comma</param>
         /// <param name="ct">Cancellation token</param>
         /// <returns>Similar movies</returns>
-        Task<(IEnumerable<MovieLightJson> movies, int nbMovies)> GetSimilarAsync(IEnumerable<string> imdbIds,
+        Task<(IEnumerable<MovieLightJson> movies, int nbMovies)> GetSimilar(IEnumerable<string> imdbIds,
             CancellationToken ct);
 
         /// <summary>

@@ -269,7 +269,7 @@ namespace Popcorn.Services.Movies.Movie
                     {
                         if (movie.Similars != null && movie.Similars.Any())
                         {
-                            similarMovies = await GetSimilarAsync(movie.Similars,
+                            similarMovies = await GetMoviesByIds(movie.Similars,
                                     CancellationToken.None)
                                 .ConfigureAwait(false);
                         }
@@ -397,12 +397,12 @@ namespace Popcorn.Services.Movies.Movie
         }
 
         /// <summary>
-        /// Get similar movies
+        /// Get movies by ids
         /// </summary>
         /// <param name="imdbIds">The imdbIds of the movies, split by comma</param>
         /// <param name="ct">Cancellation token</param>
         /// <returns>Similar movies</returns>
-        public async Task<(IEnumerable<MovieLightJson> movies, int nbMovies)> GetSimilarAsync(IEnumerable<string> imdbIds,
+        public async Task<(IEnumerable<MovieLightJson> movies, int nbMovies)> GetMoviesByIds(IEnumerable<string> imdbIds,
             CancellationToken ct)
         {
             var timeoutPolicy =
@@ -434,12 +434,12 @@ namespace Popcorn.Services.Movies.Movie
                     catch (Exception exception) when (exception is TaskCanceledException)
                     {
                         Logger.Debug(
-                            "GetSimilarAsync cancelled.");
+                            "GetMoviesByIds cancelled.");
                     }
                     catch (Exception exception)
                     {
                         Logger.Error(
-                            $"GetSimilarAsync: {exception.Message}");
+                            $"GetMoviesByIds: {exception.Message}");
                         throw;
                     }
                     finally
@@ -447,7 +447,74 @@ namespace Popcorn.Services.Movies.Movie
                         watch.Stop();
                         var elapsedMs = watch.ElapsedMilliseconds;
                         Logger.Debug(
-                            $"GetSimilarAsync ({string.Join(",", imdbIds)}) in {elapsedMs} milliseconds.");
+                            $"GetMoviesByIds ({string.Join(",", imdbIds)}) in {elapsedMs} milliseconds.");
+                    }
+
+                    var result = wrapper?.Movies ?? new List<MovieLightJson>();
+                    ProcessTranslations(result);
+                    var nbResult = wrapper?.TotalMovies ?? 0;
+                    return (result, nbResult);
+                }, ct).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                return (new List<MovieLightJson>(), 0);
+            }
+        }
+
+        /// <summary>
+        /// Get similar movies
+        /// </summary>
+        /// <param name="imdbIds">The imdbIds of the movies, split by comma</param>
+        /// <param name="ct">Cancellation token</param>
+        /// <returns>Similar movies</returns>
+        public async Task<(IEnumerable<MovieLightJson> movies, int nbMovies)> GetSimilar(IEnumerable<string> imdbIds,
+            CancellationToken ct)
+        {
+            var timeoutPolicy =
+                Policy.TimeoutAsync(Utils.Constants.DefaultRequestTimeoutInSecond, TimeoutStrategy.Pessimistic);
+            try
+            {
+                return await timeoutPolicy.ExecuteAsync(async cancellation =>
+                {
+                    var watch = Stopwatch.StartNew();
+                    var wrapper = new MovieLightResponse();
+                    var restClient = new RestClient(Utils.Constants.PopcornApi);
+                    var request = new RestRequest("/{segment}/{subsegment}", Method.POST);
+                    request.AddUrlSegment("segment", "movies");
+                    request.AddUrlSegment("subsegment", "similar");
+                    request.AddJsonBody(imdbIds);
+
+                    try
+                    {
+                        var response = await restClient.ExecuteTaskAsync(request, cancellation);
+                        if (response.ErrorException != null)
+                            throw response.ErrorException;
+
+                        wrapper = JsonSerializer.Deserialize<MovieLightResponse>(response.RawBytes);
+                        foreach (var movie in wrapper.Movies)
+                        {
+                            movie.TranslationLanguage = TmdbClient.DefaultLanguage;
+                        }
+                    }
+                    catch (Exception exception) when (exception is TaskCanceledException)
+                    {
+                        Logger.Debug(
+                            "GetMoviesByIds cancelled.");
+                    }
+                    catch (Exception exception)
+                    {
+                        Logger.Error(
+                            $"GetMoviesByIds: {exception.Message}");
+                        throw;
+                    }
+                    finally
+                    {
+                        watch.Stop();
+                        var elapsedMs = watch.ElapsedMilliseconds;
+                        Logger.Debug(
+                            $"GetMoviesByIds ({string.Join(",", imdbIds)}) in {elapsedMs} milliseconds.");
                     }
 
                     var result = wrapper?.Movies ?? new List<MovieLightJson>();
