@@ -56,16 +56,16 @@ namespace Popcorn.Services.Download
         /// Download a torrent
         /// </summary>
         /// <returns><see cref="Task"/></returns>
-        public async Task Download(T media, TorrentType torrentType, MediaType mediaType, string torrentPath,
+        public Task Download(T media, TorrentType torrentType, MediaType mediaType, string torrentPath,
             int uploadLimit, int downloadLimit, IProgress<double> downloadProgress,
             IProgress<BandwidthRate> bandwidthRate, IProgress<int> nbSeeds, IProgress<int> nbPeers, Action buffered,
             Action cancelled,
             CancellationTokenSource cts)
         {
-            Logger.Info(
-                $"Start downloading : {torrentPath}");
-            await Task.Run(async () =>
+            return Task.Run(async () =>
             {
+                Logger.Info(
+                $"Start downloading : {torrentPath}");
                 using (var session = new session())
                 {
                     downloadProgress.Report(0d);

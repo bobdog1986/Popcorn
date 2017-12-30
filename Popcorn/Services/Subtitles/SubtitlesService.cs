@@ -39,7 +39,7 @@ namespace Popcorn.Services.Subtitles
             {
                 return await retryGetSubLanguagesPolicy.ExecuteAsync(async () =>
                 {
-                    using (var osdb = new Osdb().Login(Constants.OsdbUa))
+                    using (var osdb = await new Osdb().Login(Constants.OsdbUa))
                     {
                         return await osdb.GetSubLanguages();
                     }
@@ -69,7 +69,7 @@ namespace Popcorn.Services.Subtitles
 
             return await retrySearchSubtitlesFromImdbPolicy.ExecuteAsync(async () =>
             {
-                using (var osdb = new Osdb().Login(Constants.OsdbUa))
+                using (var osdb = await new Osdb().Login(Constants.OsdbUa))
                 {
                     return await osdb.SearchSubtitlesFromImdb(languages, imdbId, season, episode);
                 }
@@ -93,7 +93,7 @@ namespace Popcorn.Services.Subtitles
 
             return await retryDownloadSubtitleToPathPolicy.ExecuteAsync(async () =>
             {
-                using (var osdb = new Osdb().Login(Constants.OsdbUa))
+                using (var osdb = await new Osdb().Login(Constants.OsdbUa))
                 {
                     return await osdb.DownloadSubtitleToPath(path, subtitle, remote);
                 }

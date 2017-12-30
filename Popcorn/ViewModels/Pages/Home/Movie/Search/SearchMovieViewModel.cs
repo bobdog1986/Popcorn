@@ -59,8 +59,6 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Search
         private void RegisterCommands() => SearchCommand =
             new RelayCommand(() =>
             {
-                Logger.Debug(
-                    $"New search criteria: {SearchFilter}");
                 Messenger.Default.Send(new SearchMovieMessage(SearchFilter));
             });
     }

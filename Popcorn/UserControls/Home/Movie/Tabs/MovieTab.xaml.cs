@@ -32,7 +32,7 @@ namespace Popcorn.UserControls.Home.Movie.Tabs
             {
                 if (!vm.IsLoadingMovies && vm.NeedSync)
                 {
-                    await vm.LoadMoviesAsync(true).ConfigureAwait(false);
+                    await vm.LoadMoviesAsync(true);
                     vm.NeedSync = false;
                 }
             }
@@ -41,7 +41,7 @@ namespace Popcorn.UserControls.Home.Movie.Tabs
                 var searchVm = vm as SearchMovieTabViewModel;
                 if (!searchVm.IsLoadingMovies && vm.NeedSync)
                 {
-                    await searchVm.LoadMoviesAsync(true).ConfigureAwait(false);
+                    await searchVm.LoadMoviesAsync(true);
                     vm.NeedSync = false;
                 }
             }
@@ -77,13 +77,13 @@ namespace Popcorn.UserControls.Home.Movie.Tabs
                 vm is FavoritesMovieTabViewModel || vm is SeenMovieTabViewModel || vm is RecommendationsMovieTabViewModel)
             {
                 if (!vm.IsLoadingMovies)
-                    await vm.LoadMoviesAsync().ConfigureAwait(false);
+                    await vm.LoadMoviesAsync();
             }
             else if (vm is SearchMovieTabViewModel)
             {
                 var searchVm = vm as SearchMovieTabViewModel;
                 if (!searchVm.IsLoadingMovies)
-                    await searchVm.LoadMoviesAsync().ConfigureAwait(false);
+                    await searchVm.LoadMoviesAsync();
             }
 
             _semaphore.Release();

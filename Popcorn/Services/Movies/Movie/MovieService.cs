@@ -69,7 +69,7 @@ namespace Popcorn.Services.Movies.Movie
                                     try
                                     {
                                         var movie = await TmdbClient.GetMovieAsync(movieToTranslate.ImdbCode,
-                                            MovieMethods.Credits).ConfigureAwait(false);
+                                            MovieMethods.Credits);
                                         if (movieToTranslate is MovieJson refMovie)
                                         {
                                             refMovie.TranslationLanguage = TmdbClient.DefaultLanguage;
@@ -96,7 +96,7 @@ namespace Popcorn.Services.Movies.Movie
                                         Logger.Error(
                                             $"TranslateMovieAsync: {exception.Message}");
                                     }
-                                }).ConfigureAwait(false);
+                                });
                             }
                             catch (Exception ex)
                             {
@@ -150,8 +150,7 @@ namespace Popcorn.Services.Movies.Movie
 
                     try
                     {
-                        var response = await restClient.ExecuteTaskAsync(request, cancellation)
-                            .ConfigureAwait(false);
+                        var response = await restClient.ExecuteTaskAsync(request, cancellation);
                         if (response.ErrorException != null)
                             throw response.ErrorException;
 
@@ -174,12 +173,12 @@ namespace Popcorn.Services.Movies.Movie
                     {
                         watch.Stop();
                         var elapsedMs = watch.ElapsedMilliseconds;
-                        Logger.Debug(
+                        Logger.Trace(
                             $"GetMovieAsync ({imdbCode}) in {elapsedMs} milliseconds.");
                     }
 
                     return movie;
-                }, ct).ConfigureAwait(false);
+                }, ct);
             }
             catch (Exception ex)
             {
@@ -212,8 +211,7 @@ namespace Popcorn.Services.Movies.Movie
 
                     try
                     {
-                        var response = await restClient.ExecuteTaskAsync(request, cancellation)
-                            .ConfigureAwait(false);
+                        var response = await restClient.ExecuteTaskAsync(request, cancellation);
                         if (response.ErrorException != null)
                             throw response.ErrorException;
 
@@ -235,12 +233,12 @@ namespace Popcorn.Services.Movies.Movie
                     {
                         watch.Stop();
                         var elapsedMs = watch.ElapsedMilliseconds;
-                        Logger.Debug(
+                        Logger.Trace(
                             $"GetMovieLightAsync ({imdbCode}) in {elapsedMs} milliseconds.");
                     }
 
                     return movie;
-                }, ct).ConfigureAwait(false);
+                }, ct);
             }
             catch (Exception ex)
             {
@@ -270,8 +268,7 @@ namespace Popcorn.Services.Movies.Movie
                         if (movie.Similars != null && movie.Similars.Any())
                         {
                             similarMovies = await GetMoviesByIds(movie.Similars,
-                                    CancellationToken.None)
-                                .ConfigureAwait(false);
+                                    CancellationToken.None);
                         }
                     }
                     catch (Exception exception)
@@ -284,13 +281,13 @@ namespace Popcorn.Services.Movies.Movie
                     {
                         watch.Stop();
                         var elapsedMs = watch.ElapsedMilliseconds;
-                        Logger.Debug(
+                        Logger.Trace(
                             $"GetMoviesSimilarAsync in {elapsedMs} milliseconds.");
                     }
 
                     return similarMovies.movies.Where(
                         a => a.ImdbCode != movie.ImdbCode);
-                }, ct).ConfigureAwait(false);
+                }, ct);
             }
             catch (Exception ex)
             {
@@ -340,8 +337,7 @@ namespace Popcorn.Services.Movies.Movie
                     request.AddParameter("sort_by", sortBy);
                     try
                     {
-                        var response = await restClient.ExecuteTaskAsync(request, cancellation)
-                            .ConfigureAwait(false);
+                        var response = await restClient.ExecuteTaskAsync(request, cancellation);
                         if (response.ErrorException != null)
                             throw response.ErrorException;
 
@@ -366,7 +362,7 @@ namespace Popcorn.Services.Movies.Movie
                     {
                         watch.Stop();
                         var elapsedMs = watch.ElapsedMilliseconds;
-                        Logger.Debug(
+                        Logger.Trace(
                             $"GetMoviesAsync ({page}, {limit}) in {elapsedMs} milliseconds.");
                     }
 
@@ -374,7 +370,7 @@ namespace Popcorn.Services.Movies.Movie
                     ProcessTranslations(result);
                     var nbResult = wrapper?.TotalMovies ?? 0;
                     return (result, nbResult);
-                }, ct).ConfigureAwait(false);
+                }, ct);
             }
             catch (Exception ex)
             {
@@ -446,7 +442,7 @@ namespace Popcorn.Services.Movies.Movie
                     {
                         watch.Stop();
                         var elapsedMs = watch.ElapsedMilliseconds;
-                        Logger.Debug(
+                        Logger.Trace(
                             $"GetMoviesByIds ({string.Join(",", imdbIds)}) in {elapsedMs} milliseconds.");
                     }
 
@@ -454,7 +450,7 @@ namespace Popcorn.Services.Movies.Movie
                     ProcessTranslations(result);
                     var nbResult = wrapper?.TotalMovies ?? 0;
                     return (result, nbResult);
-                }, ct).ConfigureAwait(false);
+                }, ct);
             }
             catch (Exception ex)
             {
@@ -534,7 +530,7 @@ namespace Popcorn.Services.Movies.Movie
                     {
                         watch.Stop();
                         var elapsedMs = watch.ElapsedMilliseconds;
-                        Logger.Debug(
+                        Logger.Trace(
                             $"GetMoviesByIds ({string.Join(",", imdbIds)}) in {elapsedMs} milliseconds.");
                     }
 
@@ -542,7 +538,7 @@ namespace Popcorn.Services.Movies.Movie
                     ProcessTranslations(result);
                     var nbResult = wrapper?.TotalMovies ?? 0;
                     return (result, nbResult);
-                }, ct).ConfigureAwait(false);
+                }, ct);
             }
             catch (Exception ex)
             {
@@ -618,7 +614,7 @@ namespace Popcorn.Services.Movies.Movie
                     {
                         watch.Stop();
                         var elapsedMs = watch.ElapsedMilliseconds;
-                        Logger.Debug(
+                        Logger.Trace(
                             $"SearchMoviesAsync ({criteria}, {page}, {limit}) in {elapsedMs} milliseconds.");
                     }
 
@@ -626,7 +622,7 @@ namespace Popcorn.Services.Movies.Movie
                     ProcessTranslations(result);
                     var nbResult = wrapper?.TotalMovies ?? 0;
                     return (result, nbResult);
-                }, ct).ConfigureAwait(false);
+                }, ct);
             }
             catch (Exception ex)
             {
@@ -665,8 +661,7 @@ namespace Popcorn.Services.Movies.Movie
                     var uri = string.Empty;
                     try
                     {
-                        var tmdbMovie = await TmdbClient.GetMovieAsync(movie.ImdbCode, MovieMethods.Videos)
-                            .ConfigureAwait(false);
+                        var tmdbMovie = await TmdbClient.GetMovieAsync(movie.ImdbCode, MovieMethods.Videos);
                         var trailers = tmdbMovie?.Videos;
                         if (trailers != null && trailers.Results.Any())
                         {
@@ -696,12 +691,12 @@ namespace Popcorn.Services.Movies.Movie
                     {
                         watch.Stop();
                         var elapsedMs = watch.ElapsedMilliseconds;
-                        Logger.Debug(
+                        Logger.Trace(
                             $"GetMovieTrailerAsync ({movie.ImdbCode}) in {elapsedMs} milliseconds.");
                     }
 
                     return uri;
-                }, ct).ConfigureAwait(false);
+                }, ct);
             }
             catch (Exception ex)
             {
@@ -772,8 +767,7 @@ namespace Popcorn.Services.Movies.Movie
                     request.AddUrlSegment("segment", imdbCode);
                     try
                     {
-                        var response = await restClient.ExecuteTaskAsync(request, cancellation)
-                            .ConfigureAwait(false);
+                        var response = await restClient.ExecuteTaskAsync(request, cancellation);
                         if (response.ErrorException != null)
                             throw response.ErrorException;
 
@@ -798,14 +792,14 @@ namespace Popcorn.Services.Movies.Movie
                     {
                         watch.Stop();
                         var elapsedMs = watch.ElapsedMilliseconds;
-                        Logger.Debug(
+                        Logger.Trace(
                             $"GetMovieFromCast ({imdbCode}) in {elapsedMs} milliseconds.");
                     }
 
                     var result = wrapper?.Movies ?? new List<MovieLightJson>();
                     ProcessTranslations(result);
                     return result;
-                }, ct).ConfigureAwait(false);
+                }, ct);
             }
             catch (Exception ex)
             {

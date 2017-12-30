@@ -761,44 +761,40 @@ namespace Popcorn.ViewModels.Windows
                                 DataContext = vm
                             };
 
+                            Messenger.Default.Send(new DropFileMessage(DropFileMessage.DropFileEvent.Leave));
                             await _dialogCoordinator.ShowMetroDialogAsync(this, dropTorrentDialog);
                             var settings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
-                            Task.Run(async () =>
-                            {
-                                await vm.Download(settings.UploadLimit, settings.DownloadLimit,
-                                    async () =>
+                            await vm.Download(settings.UploadLimit, settings.DownloadLimit,
+                                async () =>
+                                {
+                                    try
                                     {
-                                        try
-                                        {
-                                            var dialog =
-                                                await _dialogCoordinator.GetCurrentDialogAsync<DropTorrentDialog>(
-                                                    this);
-                                            if (dialog != null)
-                                                await _dialogCoordinator.HideMetroDialogAsync(this, dialog);
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            Logger.Error(ex);
-                                        }
-                                    }, async () =>
+                                        var dialog =
+                                            await _dialogCoordinator.GetCurrentDialogAsync<DropTorrentDialog>(
+                                                this);
+                                        if (dialog != null)
+                                            await _dialogCoordinator.HideMetroDialogAsync(this, dialog);
+                                    }
+                                    catch (Exception ex)
                                     {
-                                        try
-                                        {
-                                            var dialog =
-                                                await _dialogCoordinator.GetCurrentDialogAsync<DropTorrentDialog>(
-                                                    this);
-                                            if (dialog != null)
-                                                await _dialogCoordinator.HideMetroDialogAsync(this, dialog);
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            Logger.Error(ex);
-                                        }
-                                    });
-                            });
+                                        Logger.Error(ex);
+                                    }
+                                }, async () =>
+                                {
+                                    try
+                                    {
+                                        var dialog =
+                                            await _dialogCoordinator.GetCurrentDialogAsync<DropTorrentDialog>(
+                                                this);
+                                        if (dialog != null)
+                                            await _dialogCoordinator.HideMetroDialogAsync(this, dialog);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Logger.Error(ex);
+                                    }
+                                });
                         }
-
-                        Messenger.Default.Send(new DropFileMessage(DropFileMessage.DropFileEvent.Leave));
                     }
                     else
                     {
@@ -920,26 +916,23 @@ namespace Popcorn.ViewModels.Windows
 
             try
             {
-                Task.Run(async () =>
-                {
-                    await _dialogCoordinator.ShowMetroDialogAsync(this, dropTorrentDialog);
-                    var settings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
-                    await vm.Download(settings.UploadLimit, settings.DownloadLimit,
-                        async () =>
-                        {
-                            var dialog = await _dialogCoordinator.GetCurrentDialogAsync<DropTorrentDialog>(
-                                this);
-                            if (dialog != null)
-                                await _dialogCoordinator.HideMetroDialogAsync(this, dialog);
-                        },
-                        async () =>
-                        {
-                            var dialog = await _dialogCoordinator.GetCurrentDialogAsync<DropTorrentDialog>(
-                                this);
-                            if (dialog != null)
-                                await _dialogCoordinator.HideMetroDialogAsync(this, dialog);
-                        });
-                });
+                await _dialogCoordinator.ShowMetroDialogAsync(this, dropTorrentDialog);
+                var settings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
+                await vm.Download(settings.UploadLimit, settings.DownloadLimit,
+                    async () =>
+                    {
+                        var dialog = await _dialogCoordinator.GetCurrentDialogAsync<DropTorrentDialog>(
+                            this);
+                        if (dialog != null)
+                            await _dialogCoordinator.HideMetroDialogAsync(this, dialog);
+                    },
+                    async () =>
+                    {
+                        var dialog = await _dialogCoordinator.GetCurrentDialogAsync<DropTorrentDialog>(
+                            this);
+                        if (dialog != null)
+                            await _dialogCoordinator.HideMetroDialogAsync(this, dialog);
+                    });
             }
             catch (Exception ex)
             {

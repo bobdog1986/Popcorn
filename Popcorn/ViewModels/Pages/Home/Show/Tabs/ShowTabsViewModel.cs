@@ -288,7 +288,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
             }
 
             StopLoadingShows();
-            Logger.Info(
+            Logger.Trace(
                 $"Loading page {Page}...");
             HasLoadingFailed = false;
             try
@@ -329,7 +329,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
             {
                 watch.Stop();
                 var elapsedMs = watch.ElapsedMilliseconds;
-                Logger.Info(
+                Logger.Trace(
                     $"Loaded page {Page} in {elapsedMs} milliseconds.");
                 LoadingSemaphore.Release();
             }
@@ -367,7 +367,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
                     if (this is FavoritesShowTabViewModel && !(SelectedTab is FavoritesShowTabViewModel))
                         NeedSync = true;
                     else if (this is FavoritesShowTabViewModel && SelectedTab is FavoritesShowTabViewModel)
-                        await LoadShowsAsync().ConfigureAwait(false);
+                        await LoadShowsAsync();
                 });
 
             Messenger.Default.Register<ChangeLanguageMessage>(
@@ -382,7 +382,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
                 _genre = e.NewValue;
                 if (SelectedTab == this)
                 {
-                    await LoadShowsAsync(true).ConfigureAwait(false);
+                    await LoadShowsAsync(true);
                 }
                 else
                 {
@@ -398,7 +398,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
                 _rating = e.NewValue;
                 if (SelectedTab == this)
                 {
-                    await LoadShowsAsync(true).ConfigureAwait(false);
+                    await LoadShowsAsync(true);
                 }
                 else
                 {
@@ -430,7 +430,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
             ReloadShows = new RelayCommand(async () =>
             {
                 ApplicationService.IsConnectionInError = false;
-                await LoadShowsAsync().ConfigureAwait(false);
+                await LoadShowsAsync();
             });
         }
     }

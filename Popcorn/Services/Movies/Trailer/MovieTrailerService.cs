@@ -67,7 +67,7 @@ namespace Popcorn.Services.Movies.Trailer
 
                         if (!cancellation.IsCancellationRequested)
                         {
-                            Logger.Debug(
+                            Logger.Info(
                                 $"Movie's trailer loaded: {movie.Title}");
                             Messenger.Default.Send(new PlayTrailerMessage(trailer, movie.Title, () =>
                                 {
@@ -96,7 +96,7 @@ namespace Popcorn.Services.Movies.Trailer
                                         "TrailerNotAvailable"))));
                         Messenger.Default.Send(new StopPlayingTrailerMessage(Utils.MediaType.Movie));
                     }
-                }, ct).ConfigureAwait(false);
+                }, ct);
             }
             catch (Exception ex)
             {

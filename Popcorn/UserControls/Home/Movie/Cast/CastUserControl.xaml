@@ -92,7 +92,7 @@
             <Image
                 Grid.Row="0"
                 Grid.RowSpan="3"
-                attachedProperties:ImageAsyncHelper.ImagePath="{Binding MainImageUrl}"
+                attachedProperties:ImageAsyncHelper.ImagePath="{Binding MainImageUrl, IsAsync=True}"
                 attachedProperties:ImageAsyncHelper.Type="None"
                 Opacity="0.3"
                 Stretch="UniformToFill" />
@@ -116,7 +116,7 @@
                     Grid.Column="1"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
-                    attachedProperties:ImageAsyncHelper.ImagePath="{Binding ProfileImageUrl}"
+                    attachedProperties:ImageAsyncHelper.ImagePath="{Binding ProfileImageUrl, IsAsync=True}"
                     attachedProperties:ImageAsyncHelper.Type="Poster"
                     UseLayoutRounding="True">
                     <Image.Effect>
@@ -329,7 +329,7 @@
                                                     Grid.ColumnSpan="3"
                                                     HorizontalAlignment="Center"
                                                     VerticalAlignment="Center"
-                                                    attachedProperties:ImageAsyncHelper.ImagePath="{Binding PosterImage}"
+                                                    attachedProperties:ImageAsyncHelper.ImagePath="{Binding PosterImage, Mode=OneTime, IsAsync=True}"
                                                     attachedProperties:ImageAsyncHelper.Type="Thumbnail" />
                                                 <Grid
                                                     x:Name="PlayCanvas"

@@ -24,7 +24,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Download
         /// <summary>
         /// Logger of the class
         /// </summary>
-        private static Logger Logger { get; }= LogManager.GetCurrentClassLogger();
+        private static Logger Logger { get; } = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// Used to interact with subtitles
@@ -185,63 +185,59 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Download
         /// </summary>
         private void RegisterMessages() => Messenger.Default.Register<DownloadShowEpisodeMessage>(
             this,
-            message =>
+            async message =>
             {
-                if(IsDownloadingEpisode)
+                if (IsDownloadingEpisode)
                     return;
 
                 IsDownloadingEpisode = true;
-                Task.Run(async () =>
-                {
-                    Episode = message.Episode;
-                    EpisodeDownloadRate = 0d;
-                    EpisodeDownloadProgress = 0d;
-                    NbPeers = 0;
-                    NbSeeders = 0;
-                    var reportDownloadProgress = new Progress<double>(ReportEpisodeDownloadProgress);
-                    var reportDownloadRate = new Progress<BandwidthRate>(ReportEpisodeDownloadRate);
-                    var reportNbPeers = new Progress<int>(ReportNbPeers);
-                    var reportNbSeeders = new Progress<int>(ReportNbSeeders);
+                Episode = message.Episode;
+                EpisodeDownloadRate = 0d;
+                EpisodeDownloadProgress = 0d;
+                NbPeers = 0;
+                NbSeeders = 0;
+                var reportDownloadProgress = new Progress<double>(ReportEpisodeDownloadProgress);
+                var reportDownloadRate = new Progress<BandwidthRate>(ReportEpisodeDownloadRate);
+                var reportNbPeers = new Progress<int>(ReportNbPeers);
+                var reportNbSeeders = new Progress<int>(ReportNbSeeders);
 
+                try
+                {
+                    if (message.Episode.SelectedSubtitle != null &&
+                        message.Episode.SelectedSubtitle.Sub.LanguageName !=
+                        LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"))
+                    {
+                        var path = Path.Combine(_cacheService.Subtitles + message.Episode.ImdbId);
+                        Directory.CreateDirectory(path);
+                        var subtitlePath =
+                            await _subtitlesService.DownloadSubtitleToPath(path,
+                                message.Episode.SelectedSubtitle.Sub);
+
+                        message.Episode.SelectedSubtitle.FilePath = subtitlePath;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Warn(ex);
+                }
+                finally
+                {
                     try
                     {
-                        if (message.Episode.SelectedSubtitle != null &&
-                            message.Episode.SelectedSubtitle.Sub.LanguageName !=
-                            LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"))
-                        {
-                            var path = Path.Combine(_cacheService.Subtitles + message.Episode.ImdbId);
-                            Directory.CreateDirectory(path);
-                            var subtitlePath =
-                                await _subtitlesService.DownloadSubtitleToPath(path,
-                                    message.Episode.SelectedSubtitle.Sub);
-
-                            message.Episode.SelectedSubtitle.FilePath = subtitlePath;
-                        }
+                        var settings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
+                        await _downloadService.Download(message.Episode, TorrentType.Magnet, MediaType.Show,
+                            Episode.SelectedTorrent.Url, settings.UploadLimit, settings.DownloadLimit,
+                            reportDownloadProgress,
+                            reportDownloadRate, reportNbSeeders, reportNbPeers, () => { }, () => { },
+                            CancellationDownloadingEpisode);
                     }
                     catch (Exception ex)
                     {
-                        Logger.Warn(ex);
+                        // An error occured.
+                        Messenger.Default.Send(new ManageExceptionMessage(ex));
+                        Messenger.Default.Send(new StopPlayingEpisodeMessage());
                     }
-                    finally
-                    {
-                        try
-                        {
-                            var settings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
-                            await _downloadService.Download(message.Episode, TorrentType.Magnet, MediaType.Show,
-                                    Episode.SelectedTorrent.Url, settings.UploadLimit, settings.DownloadLimit,
-                                    reportDownloadProgress,
-                                    reportDownloadRate, reportNbSeeders, reportNbPeers, () => { }, () => { },
-                                    CancellationDownloadingEpisode)
-                                .ConfigureAwait(false);
-                        }
-                        catch (Exception ex)
-                        {
-                            // An error occured.
-                            Messenger.Default.Send(new ManageExceptionMessage(ex));
-                            Messenger.Default.Send(new StopPlayingEpisodeMessage());
-                        }
-                    }
-                });
+                }
             });
 
         /// <summary>

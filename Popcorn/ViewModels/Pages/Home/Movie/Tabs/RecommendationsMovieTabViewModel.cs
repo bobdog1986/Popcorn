@@ -52,7 +52,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
             }
 
             StopLoadingMovies();
-            Logger.Info(
+            Logger.Trace(
                 $"Loading page {Page}...");
             HasLoadingFailed = false;
             try
@@ -96,7 +96,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
             {
                 watch.Stop();
                 var elapsedMs = watch.ElapsedMilliseconds;
-                Logger.Info(
+                Logger.Trace(
                     $"Loaded page {Page} in {elapsedMs} milliseconds.");
                 LoadingSemaphore.Release();
             }

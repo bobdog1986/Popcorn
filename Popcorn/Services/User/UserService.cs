@@ -411,7 +411,7 @@ namespace Popcorn.Services.User
             };
             watch.Stop();
             var elapsedMs = watch.ElapsedMilliseconds;
-            Logger.Debug(
+            Logger.Trace(
                 $"GetAvailableLanguages in {elapsedMs} milliseconds.");
 
             return availableLanguages;

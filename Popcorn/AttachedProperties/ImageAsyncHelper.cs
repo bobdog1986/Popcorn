@@ -2,14 +2,12 @@
 using System.IO;
 using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using GalaSoft.MvvmLight.Ioc;
-using GalaSoft.MvvmLight.Threading;
 using Popcorn.Services.Cache;
 
 namespace Popcorn.AttachedProperties
@@ -155,99 +153,69 @@ namespace Popcorn.AttachedProperties
                                 }
                             }
 
-                            await Task.Run(async () =>
+
+                            try
                             {
-                                try
+                                if (mustDownload)
                                 {
-                                    if (mustDownload)
+                                    using (var client = new HttpClient())
                                     {
-                                        using (var client = new HttpClient())
+                                        using (var ms = await client.GetStreamAsync(path))
                                         {
-                                            using (var ms = await client.GetStreamAsync(path).ConfigureAwait(false))
+                                            using (var stream = new MemoryStream())
                                             {
-                                                using (var stream = new MemoryStream())
+                                                await ms.CopyToAsync(stream);
+                                                if (!File.Exists(cacheService.Assets + hash))
                                                 {
-                                                    await ms.CopyToAsync(stream).ConfigureAwait(false);
-                                                    if (!File.Exists(cacheService.Assets + hash))
+                                                    using (var fs =
+                                                        new FileStream(localFile, FileMode.Create,
+                                                            FileAccess.ReadWrite, FileShare.ReadWrite, 4096, true))
                                                     {
-                                                        using (var fs =
-                                                            new FileStream(localFile, FileMode.Create,
-                                                                FileAccess.ReadWrite, FileShare.ReadWrite, 4096, true))
-                                                        {
-                                                            var writeAsync = stream.ToArray();
-                                                            await fs.WriteAsync(writeAsync, 0, writeAsync.Length)
-                                                                .ConfigureAwait(false);
-                                                        }
+                                                        var writeAsync = stream.ToArray();
+                                                        await fs.WriteAsync(writeAsync, 0, writeAsync.Length);
                                                     }
                                                 }
                                             }
                                         }
                                     }
-
-                                    using (var fs = new FileStream(localFile, FileMode.Open, FileAccess.Read))
-                                    {
-                                        var bitmapImage = new BitmapImage();
-                                        bitmapImage.BeginInit();
-                                        bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                                        if (imageType == ImageType.Thumbnail)
-                                        {
-                                            bitmapImage.DecodePixelWidth = 400;
-                                            bitmapImage.DecodePixelHeight = 600;
-                                        }
-                                        else if (imageType == ImageType.Poster)
-                                        {
-                                            bitmapImage.DecodePixelWidth = 500;
-                                            bitmapImage.DecodePixelHeight = 750;
-                                        }
-                                        else if (imageType != ImageType.None)
-                                        {
-                                            bitmapImage.DecodePixelWidth = 1920;
-                                            bitmapImage.DecodePixelHeight = 1080;
-                                        }
-
-                                        bitmapImage.StreamSource = fs;
-                                        bitmapImage.EndInit();
-                                        bitmapImage.Freeze();
-                                        DispatcherHelper.CheckBeginInvokeOnUI(() =>
-                                        {
-                                            image.RenderTransformOrigin = new Point(0, 0);
-                                            if (imageType != ImageType.Poster)
-                                            {
-                                                image.Stretch = Stretch.UniformToFill;
-                                            }
-
-                                            image.RenderTransform = new TransformGroup();
-                                            RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.HighQuality);
-                                            image.Source = bitmapImage;
-                                        });
-                                    }
                                 }
-                                catch (Exception)
+
+                                using (var fs = new FileStream(localFile, FileMode.Open, FileAccess.Read))
                                 {
-                                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                                    var bitmapImage = new BitmapImage();
+                                    bitmapImage.BeginInit();
+                                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                                    if (imageType == ImageType.Thumbnail)
                                     {
-                                        if (imageType == ImageType.Thumbnail)
-                                        {
-                                            var errorThumbnail = resourceDictionary["ImageError"] as DrawingImage;
-                                            errorThumbnail.Freeze();
-                                            image.RenderTransformOrigin = new Point(0.5d, 0.5d);
-                                            image.RenderTransform = new TransformGroup();
-                                            image.Stretch = Stretch.None;
-                                            image.Source = errorThumbnail;
-                                        }
-                                        else
-                                        {
-                                            image.RenderTransformOrigin = new Point(0, 0);
-                                            image.RenderTransform = new TransformGroup();
-                                            image.Source = new BitmapImage();
-                                        }
-                                    });
+                                        bitmapImage.DecodePixelWidth = 400;
+                                        bitmapImage.DecodePixelHeight = 600;
+                                    }
+                                    else if (imageType == ImageType.Poster)
+                                    {
+                                        bitmapImage.DecodePixelWidth = 500;
+                                        bitmapImage.DecodePixelHeight = 750;
+                                    }
+                                    else if (imageType != ImageType.None)
+                                    {
+                                        bitmapImage.DecodePixelWidth = 1920;
+                                        bitmapImage.DecodePixelHeight = 1080;
+                                    }
+
+                                    bitmapImage.StreamSource = fs;
+                                    bitmapImage.EndInit();
+                                    bitmapImage.Freeze();
+                                    image.RenderTransformOrigin = new Point(0, 0);
+                                    if (imageType != ImageType.Poster)
+                                    {
+                                        image.Stretch = Stretch.UniformToFill;
+                                    }
+
+                                    image.RenderTransform = new TransformGroup();
+                                    RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.HighQuality);
+                                    image.Source = bitmapImage;
                                 }
-                            }).ConfigureAwait(false);
-                        }
-                        catch (Exception)
-                        {
-                            DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                            }
+                            catch (Exception)
                             {
                                 if (imageType == ImageType.Thumbnail)
                                 {
@@ -264,7 +232,25 @@ namespace Popcorn.AttachedProperties
                                     image.RenderTransform = new TransformGroup();
                                     image.Source = new BitmapImage();
                                 }
-                            });
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            if (imageType == ImageType.Thumbnail)
+                            {
+                                var errorThumbnail = resourceDictionary["ImageError"] as DrawingImage;
+                                errorThumbnail.Freeze();
+                                image.RenderTransformOrigin = new Point(0.5d, 0.5d);
+                                image.RenderTransform = new TransformGroup();
+                                image.Stretch = Stretch.None;
+                                image.Source = errorThumbnail;
+                            }
+                            else
+                            {
+                                image.RenderTransformOrigin = new Point(0, 0);
+                                image.RenderTransform = new TransformGroup();
+                                image.Source = new BitmapImage();
+                            }
                         }
                     }
                 }

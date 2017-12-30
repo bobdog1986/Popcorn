@@ -114,14 +114,10 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Details
 
             PlayTrailerCommand = new RelayCommand(async () =>
             {
-                await Task.Run(async () =>
-                {
-                    IsPlayingTrailer = true;
-                    IsTrailerLoading = true;
-                    await _showTrailerService.LoadTrailerAsync(Show, CancellationLoadingTrailerToken.Token)
-                        .ConfigureAwait(false);
-                    IsTrailerLoading = false;
-                });
+                IsPlayingTrailer = true;
+                IsTrailerLoading = true;
+                await _showTrailerService.LoadTrailerAsync(Show, CancellationLoadingTrailerToken.Token);
+                IsTrailerLoading = false;
             });
 
             StopLoadingTrailerCommand = new RelayCommand(StopLoadingTrailer);
@@ -234,35 +230,33 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Details
             Messenger.Default.Send(new LoadShowMessage());
             Show = new ShowJson {Title = show.Title};
             IsShowLoading = true;
-            await Task.Run(async () =>
+            try
             {
-                try
+                Show = await _showService.GetShowAsync(show.ImdbId, ct);
+                ct.ThrowIfCancellationRequested();
+                foreach (var episode in Show.Episodes)
                 {
-                    Show = await _showService.GetShowAsync(show.ImdbId, ct).ConfigureAwait(false);
-                    ct.ThrowIfCancellationRequested();
-                    foreach (var episode in Show.Episodes)
-                    {
-                        episode.Title = WebUtility.HtmlDecode(episode.Title);
-                        episode.ImdbId = Show.ImdbId;
-                    }
+                    episode.Title = WebUtility.HtmlDecode(episode.Title);
+                    episode.ImdbId = Show.ImdbId;
                 }
-                catch (Exception ex)
-                {
-                    Logger.Error(
-                        $"Failed loading show : {show.ImdbId}. {ex.Message}");
-                    Messenger.Default.Send(new NavigateToHomePageMessage());
-                    if (!ct.IsCancellationRequested)
-                        Messenger.Default.Send(new ManageExceptionMessage(new PopcornException(
-                            $"{LocalizationProviderHelper.GetLocalizedValue<string>("FailedLoadingLabel")} {show.Title}")));
-                }
-                finally
-                {
-                    IsShowLoading = false;
-                }
-            }, ct).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(
+                    $"Failed loading show : {show.ImdbId}. {ex.Message}");
+                Messenger.Default.Send(new NavigateToHomePageMessage());
+                if (!ct.IsCancellationRequested)
+                    Messenger.Default.Send(new ManageExceptionMessage(new PopcornException(
+                        $"{LocalizationProviderHelper.GetLocalizedValue<string>("FailedLoadingLabel")} {show.Title}")));
+            }
+            finally
+            {
+                IsShowLoading = false;
+            }
+
             watch.Stop();
             var elapsedMs = watch.ElapsedMilliseconds;
-            Logger.Debug($"LoadShow ({show.ImdbId}) in {elapsedMs} milliseconds.");
+            Logger.Trace($"LoadShow ({show.ImdbId}) in {elapsedMs} milliseconds.");
         }
 
         /// <summary>

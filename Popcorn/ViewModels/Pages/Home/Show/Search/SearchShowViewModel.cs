@@ -64,8 +64,6 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Search
         private void RegisterCommands() => SearchCommand =
             new RelayCommand(() =>
             {
-                Logger.Debug(
-                    $"New search criteria: {SearchFilter}");
                 Messenger.Default.Send(new SearchShowMessage(SearchFilter));
             });
     }

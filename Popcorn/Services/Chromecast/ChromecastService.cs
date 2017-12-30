@@ -154,7 +154,10 @@ namespace Popcorn.Services.Chromecast
                 if (_isMuted != value)
                 {
                     _isMuted = value;
-                    Task.Run(SetIsMutedAsync);
+                    Task.Run(async () =>
+                    {
+                        await SetIsMutedAsync();
+                    });
                 }
             }
         }

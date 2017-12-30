@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Threading.Tasks;
 using CookComputing.XmlRpc;
 using Popcorn.OSDB.Backend;
 
@@ -10,16 +11,16 @@ namespace Popcorn.OSDB
 
         private IOsdb Proxy => ProxyInstance ?? (ProxyInstance = XmlRpcProxyGen.Create<IOsdb>());
 
-        public IAnonymousClient Login(string userAgent)
+        public Task<IAnonymousClient> Login(string userAgent)
         {
             var systemLanguage = GetSystemLanguage();
             return Login(systemLanguage, userAgent);
         }
 
-        private IAnonymousClient Login(string language, string userAgent)
+        private async Task<IAnonymousClient> Login(string language, string userAgent)
         {
             var client = new AnonymousClient(Proxy);
-            client.Login(string.Empty, string.Empty, language, userAgent);
+            await client.Login(string.Empty, string.Empty, language, userAgent);
             return client;
         }
 

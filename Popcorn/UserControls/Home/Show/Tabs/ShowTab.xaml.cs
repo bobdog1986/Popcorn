@@ -28,7 +28,7 @@ namespace Popcorn.UserControls.Home.Show.Tabs
             {
                 if (!vm.IsLoadingShows && vm.NeedSync)
                 {
-                    await vm.LoadShowsAsync(true).ConfigureAwait(false);
+                    await vm.LoadShowsAsync(true);
                     vm.NeedSync = false;
                 }
             }
@@ -37,7 +37,7 @@ namespace Popcorn.UserControls.Home.Show.Tabs
                 var searchVm = vm as SearchShowTabViewModel;
                 if (!searchVm.IsLoadingShows && vm.NeedSync)
                 {
-                    await searchVm.LoadShowsAsync(true).ConfigureAwait(false);
+                    await searchVm.LoadShowsAsync(true);
                     vm.NeedSync = false;
                 }
             }
@@ -74,13 +74,13 @@ namespace Popcorn.UserControls.Home.Show.Tabs
                 vm is FavoritesShowTabViewModel)
             {
                 if (!vm.IsLoadingShows)
-                    await vm.LoadShowsAsync().ConfigureAwait(false);
+                    await vm.LoadShowsAsync();
             }
             else if (vm is SearchShowTabViewModel)
             {
                 var searchVm = vm as SearchShowTabViewModel;
                 if (!searchVm.IsLoadingShows)
-                    await searchVm.LoadShowsAsync().ConfigureAwait(false);
+                    await searchVm.LoadShowsAsync();
             }
 
             _semaphore.Release();

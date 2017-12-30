@@ -81,7 +81,7 @@ namespace Popcorn.Helpers
                 catch (ObjectDisposedException exception)
                 {
                     watch.Stop();
-                    Logger.Info(
+                    Logger.Debug(
                         $"DownloadFileTaskAsync (can't cancel download, it has finished previously): {remotePath}");
                     return new Tuple<string, string, Exception>(remotePath, null, exception);
                 }
@@ -103,7 +103,7 @@ namespace Popcorn.Helpers
             {
                 watch.Stop();
                 var elapsedMs = watch.ElapsedMilliseconds;
-                Logger.Debug($"DownloadFileTaskAsync (downloaded in {elapsedMs} ms): {remotePath}");
+                Logger.Trace($"DownloadFileTaskAsync (downloaded in {elapsedMs} ms): {remotePath}");
             }
 
             return new Tuple<string, string, Exception>(remotePath, localPath, null);

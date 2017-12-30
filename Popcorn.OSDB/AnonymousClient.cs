@@ -24,15 +24,25 @@ namespace Popcorn.OSDB
             Proxy = proxy;
         }
 
-        internal void Login(string username, string password, string language, string userAgent)
+        internal Task Login(string username, string password, string language, string userAgent)
         {
-            try
+            var tcs = new TaskCompletionSource<bool>();
+            Task.Run(() =>
             {
-                var response = Proxy.Login(username, password, language, userAgent);
-                VerifyResponseCode(response);
-                Token = response.token;
-            }
-            catch (Exception) { }
+                try
+                {
+                    var response = Proxy.Login(username, password, language, userAgent);
+                    VerifyResponseCode(response);
+                    Token = response.token;
+                    tcs.TrySetResult(true);
+                }
+                catch (Exception ex)
+                {
+                    tcs.TrySetException(ex);
+                }
+            });
+
+            return tcs.Task;
         }
 
         public Task<IList<Subtitle>> SearchSubtitlesFromImdb(string languages, string imdbId, int? season, int? episode)
@@ -56,27 +66,29 @@ namespace Popcorn.OSDB
         private Task<IList<Subtitle>> SearchSubtitlesInternal(SearchSubtitlesRequest request)
         {
             var tcs = new TaskCompletionSource<IList<Subtitle>>();
-            try
+            Task.Run(() =>
             {
-                var response = Proxy.SearchSubtitles(Token, new[] {request});
-                VerifyResponseCode(response);
-
-                var subtitles = new List<Subtitle>();
-                var subtitlesInfo = response.data as object[];
-                if (null != subtitlesInfo)
+                try
                 {
-                    foreach (var infoObject in subtitlesInfo)
+                    var response = Proxy.SearchSubtitles(Token, new[] { request });
+                    VerifyResponseCode(response);
+
+                    var subtitles = new List<Subtitle>();
+                    if (response.data is object[] subtitlesInfo)
                     {
-                        var subInfo = SimpleObjectMapper.MapToObject<SearchSubtitlesInfo>((XmlRpcStruct) infoObject);
-                        subtitles.Add(BuildSubtitleObject(subInfo));
+                        foreach (var infoObject in subtitlesInfo)
+                        {
+                            var subInfo = SimpleObjectMapper.MapToObject<SearchSubtitlesInfo>((XmlRpcStruct)infoObject);
+                            subtitles.Add(BuildSubtitleObject(subInfo));
+                        }
                     }
+                    tcs.TrySetResult(subtitles);
                 }
-                tcs.TrySetResult(subtitles);
-            }
-            catch (Exception ex)
-            {
-                tcs.TrySetException(ex);
-            }
+                catch (Exception ex)
+                {
+                    tcs.TrySetException(ex);
+                }
+            });
 
             return tcs.Task;
         }
@@ -152,19 +164,22 @@ namespace Popcorn.OSDB
         private Task<IEnumerable<Language>> GetSubLanguages(string language)
         {
             var tcs = new TaskCompletionSource<IEnumerable<Language>>();
-            try
+            Task.Run(() =>
             {
-                var response = Proxy.GetSubLanguages(language);
-                VerifyResponseCode(response);
+                try
+                {
+                    var response = Proxy.GetSubLanguages(language);
+                    VerifyResponseCode(response);
 
-                IList<Language> languages = response.data.Select(languageInfo => BuildLanguageObject(languageInfo))
-                    .ToList();
-                tcs.TrySetResult(languages);
-            }
-            catch (Exception ex)
-            {
-                tcs.TrySetException(ex);
-            }
+                    IList<Language> languages = response.data.Select(BuildLanguageObject)
+                        .ToList();
+                    tcs.TrySetResult(languages);
+                }
+                catch (Exception ex)
+                {
+                    tcs.TrySetException(ex);
+                }
+            });
 
             return tcs.Task;
         }
@@ -181,15 +196,18 @@ namespace Popcorn.OSDB
             {
                 if (disposing && !string.IsNullOrEmpty(Token))
                 {
-                    try
+                    Task.Run(() =>
                     {
-                        Proxy.Logout(Token);
-                    }
-                    catch
-                    {
-                        //soak it. We don't want exception on disposing. It's better to let the session timeout.
-                    }
-                    Token = null;
+                        try
+                        {
+                            Proxy.Logout(Token);
+                        }
+                        catch
+                        {
+                            //soak it. We don't want exception on disposing. It's better to let the session timeout.
+                        }
+                        Token = null;
+                    });
                 }
                 Disposed = true;
             }

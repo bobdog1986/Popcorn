@@ -371,18 +371,12 @@ namespace Popcorn.ViewModels.Pages.Player
                         {
                             var path = Path.Combine(_cacheService.Subtitles + message.SelectedSubtitle.ImdbId);
                             Directory.CreateDirectory(path);
-                            Task.Run(async () =>
-                            {
-                                var subtitlePath = await
-                                    _subtitlesService.DownloadSubtitleToPath(path,
-                                        message.SelectedSubtitle);
-                                DispatcherHelper.CheckBeginInvokeOnUI(() =>
-                                {
-                                    OnSubtitleChosen(new SubtitleChangedEventArgs(subtitlePath,
-                                        message.SelectedSubtitle));
-                                    IsSubtitleChosen = true;
-                                });
-                            });
+                            var subtitlePath = await
+                                _subtitlesService.DownloadSubtitleToPath(path,
+                                    message.SelectedSubtitle);
+                            OnSubtitleChosen(new SubtitleChangedEventArgs(subtitlePath,
+                                message.SelectedSubtitle));
+                            IsSubtitleChosen = true;
                         }
                     }
                     else if (message.SelectedSubtitle != null &&
@@ -625,10 +619,12 @@ namespace Popcorn.ViewModels.Pages.Player
             {
                 Set(ref _volume, value);
                 if (IsCasting)
+                {
                     Task.Run(async () =>
                     {
                         await SetVolume(Convert.ToSingle(value));
                     });
+                }
             }
         }
 

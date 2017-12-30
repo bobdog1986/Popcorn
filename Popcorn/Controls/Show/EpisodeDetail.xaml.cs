@@ -59,7 +59,7 @@ namespace Popcorn.Controls.Show
                 typeof(EpisodeShowJson), typeof(EpisodeDetail),
                 new PropertyMetadata(null, PropertyChangedCallback));
 
-        private static void PropertyChangedCallback(DependencyObject dependencyObject,
+        private static async void PropertyChangedCallback(DependencyObject dependencyObject,
             DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
         {
             var detail = dependencyObject as EpisodeDetail;
@@ -78,10 +78,7 @@ namespace Popcorn.Controls.Show
                                   episode.Torrents.Torrent_1080p?.Url != null;
             episode.WatchHdQuality = episode.HdAvailable && applicationSettings.DefaultHdQuality;
             ComputeTorrentHealth(episode, detail);
-            Task.Run(async () =>
-            {
-                await detail.LoadSubtitles(episode);
-            });
+            await detail.LoadSubtitles(episode);
         }
 
         /// <summary>
@@ -220,77 +217,75 @@ namespace Popcorn.Controls.Show
         /// <param name="episode">The episode</param>
         private async Task LoadSubtitles(EpisodeShowJson episode)
         {
-            Logger.Debug(
+            Logger.Info(
                 $"Load subtitles for episode: {episode.Title}");
-            LoadingSubtitles = true;
             try
             {
-                var languages = (await _subtitlesService.GetSubLanguages()).ToList();
+                LoadingSubtitles = true;
+                var languages = await _subtitlesService.GetSubLanguages();
                 if (int.TryParse(new string(episode.ImdbId
                     .SkipWhile(x => !char.IsDigit(x))
                     .TakeWhile(char.IsDigit)
                     .ToArray()), out int imdbId))
                 {
                     var subtitles = await _subtitlesService.SearchSubtitlesFromImdb(
-                            languages.Select(lang => lang.SubLanguageID).Aggregate((a, b) => a + "," + b),
-                            imdbId.ToString(), episode.Season, episode.EpisodeNumber);
+                        languages.Select(lang => lang.SubLanguageID).Aggregate((a, b) => a + "," + b),
+                        imdbId.ToString(), episode.Season, episode.EpisodeNumber);
 
-                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                    episode.AvailableSubtitles =
+                        new ObservableCollection<Subtitle>(subtitles.OrderBy(a => a.LanguageName)
+                            .Select(sub => new Subtitle
+                            {
+                                Sub = sub
+                            })
+                            .GroupBy(x => x.Sub.LanguageName,
+                                (k, g) =>
+                                    g.Aggregate(
+                                        (a, x) =>
+                                            (Convert.ToDouble(x.Sub.Rating, CultureInfo.InvariantCulture) >=
+                                             Convert.ToDouble(a.Sub.Rating, CultureInfo.InvariantCulture))
+                                                ? x
+                                                : a)));
+                    episode.AvailableSubtitles.Insert(0, new Subtitle
                     {
-                        episode.AvailableSubtitles =
-                            new ObservableCollection<Subtitle>(subtitles.OrderBy(a => a.LanguageName)
-                                .Select(sub => new Subtitle
-                                {
-                                    Sub = sub
-                                })
-                                .GroupBy(x => x.Sub.LanguageName,
-                                    (k, g) =>
-                                        g.Aggregate(
-                                            (a, x) =>
-                                                (Convert.ToDouble(x.Sub.Rating, CultureInfo.InvariantCulture) >=
-                                                 Convert.ToDouble(a.Sub.Rating, CultureInfo.InvariantCulture))
-                                                    ? x
-                                                    : a)));
-                        episode.AvailableSubtitles.Insert(0, new Subtitle
+                        Sub = new OSDB.Subtitle
                         {
-                            Sub = new OSDB.Subtitle
-                            {
-                                LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"),
-                                SubtitleId = "none"
-                            }
-                        });
-
-                        episode.AvailableSubtitles.Insert(1, new Subtitle
-                        {
-                            Sub = new OSDB.Subtitle
-                            {
-                                LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("CustomLabel"),
-                                SubtitleId = "custom"
-                            }
-                        });
-
-                        var applicationSettings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
-                        if (!string.IsNullOrEmpty(applicationSettings.DefaultSubtitleLanguage) &&
-                            episode.AvailableSubtitles.Any(
-                                a => a.Sub.LanguageName == applicationSettings.DefaultSubtitleLanguage))
-                        {
-                            episode.SelectedSubtitle =
-                                episode.AvailableSubtitles.FirstOrDefault(
-                                    a => a.Sub.LanguageName == applicationSettings.DefaultSubtitleLanguage);
-                        }
-                        else
-                        {
-                            episode.SelectedSubtitle = episode.AvailableSubtitles.FirstOrDefault();
+                            LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"),
+                            SubtitleId = "none"
                         }
                     });
 
-                    LoadingSubtitles = false;
+                    episode.AvailableSubtitles.Insert(1, new Subtitle
+                    {
+                        Sub = new OSDB.Subtitle
+                        {
+                            LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("CustomLabel"),
+                            SubtitleId = "custom"
+                        }
+                    });
+
+                    var applicationSettings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
+                    if (!string.IsNullOrEmpty(applicationSettings.DefaultSubtitleLanguage) &&
+                        episode.AvailableSubtitles.Any(
+                            a => a.Sub.LanguageName == applicationSettings.DefaultSubtitleLanguage))
+                    {
+                        episode.SelectedSubtitle =
+                            episode.AvailableSubtitles.FirstOrDefault(
+                                a => a.Sub.LanguageName == applicationSettings.DefaultSubtitleLanguage);
+                    }
+                    else
+                    {
+                        episode.SelectedSubtitle = episode.AvailableSubtitles.FirstOrDefault();
+                    }
                 }
             }
             catch (Exception ex)
             {
                 Logger.Error(
                     $"Failed loading subtitles for : {episode.Title}. {ex.Message}");
+            }
+            finally
+            {
                 LoadingSubtitles = false;
             }
         }

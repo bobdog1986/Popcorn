@@ -86,7 +86,8 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Download
         /// <param name="subtitlesService">Instance of SubtitlesService</param>
         /// <param name="downloadService">Download service</param>
         /// <param name="cacheService">Cache service</param>
-        public DownloadMovieViewModel(ISubtitlesService subtitlesService, IDownloadService<MovieJson> downloadService, ICacheService cacheService)
+        public DownloadMovieViewModel(ISubtitlesService subtitlesService, IDownloadService<MovieJson> downloadService,
+            ICacheService cacheService)
         {
             _cacheService = cacheService;
             _subtitlesService = subtitlesService;
@@ -188,81 +189,77 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Download
         /// </summary>
         private void RegisterMessages() => Messenger.Default.Register<DownloadMovieMessage>(
             this,
-            message =>
+            async message =>
             {
                 if (IsDownloadingMovie)
                     return;
 
                 IsDownloadingMovie = true;
-                Task.Run(async () =>
+                Movie = message.Movie;
+                MovieDownloadRate = 0d;
+                MovieDownloadProgress = 0d;
+                NbPeers = 0;
+                NbSeeders = 0;
+                var reportDownloadProgress = new Progress<double>(ReportMovieDownloadProgress);
+                var reportDownloadRate = new Progress<BandwidthRate>(ReportMovieDownloadRate);
+                var reportNbPeers = new Progress<int>(ReportNbPeers);
+                var reportNbSeeders = new Progress<int>(ReportNbSeeders);
+                try
                 {
-                    Movie = message.Movie;
-                    MovieDownloadRate = 0d;
-                    MovieDownloadProgress = 0d;
-                    NbPeers = 0;
-                    NbSeeders = 0;
-                    var reportDownloadProgress = new Progress<double>(ReportMovieDownloadProgress);
-                    var reportDownloadRate = new Progress<BandwidthRate>(ReportMovieDownloadRate);
-                    var reportNbPeers = new Progress<int>(ReportNbPeers);
-                    var reportNbSeeders = new Progress<int>(ReportNbSeeders);
+                    if (message.Movie.SelectedSubtitle != null &&
+                        message.Movie.SelectedSubtitle.Sub.LanguageName !=
+                        LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"))
+                    {
+                        var path = Path.Combine(_cacheService.Subtitles + message.Movie.ImdbCode);
+                        Directory.CreateDirectory(path);
+                        var isRemote = true;
+                        if (message.Movie.SelectedSubtitle.Sub.SubtitleId == "custom")
+                        {
+                            isRemote = false;
+                            message.Movie.SelectedSubtitle.Sub.SubtitleFileName = "custom";
+                            message.Movie.SelectedSubtitle.Sub.SubTitleDownloadLink =
+                                new Uri(message.Movie.SelectedSubtitle.FilePath);
+                        }
+
+                        var subtitlePath = await
+                            _subtitlesService.DownloadSubtitleToPath(path,
+                                message.Movie.SelectedSubtitle.Sub, isRemote);
+                        message.Movie.SelectedSubtitle.FilePath = subtitlePath;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Warn(ex);
+                }
+                finally
+                {
                     try
                     {
-                        if (message.Movie.SelectedSubtitle != null &&
-                            message.Movie.SelectedSubtitle.Sub.LanguageName !=
-                            LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"))
-                        {
-                            var path = Path.Combine(_cacheService.Subtitles + message.Movie.ImdbCode);
-                            Directory.CreateDirectory(path);
-                            var isRemote = true;
-                            if (message.Movie.SelectedSubtitle.Sub.SubtitleId == "custom")
-                            {
-                                isRemote = false;
-                                message.Movie.SelectedSubtitle.Sub.SubtitleFileName = "custom";
-                                message.Movie.SelectedSubtitle.Sub.SubTitleDownloadLink =
-                                    new Uri(message.Movie.SelectedSubtitle.FilePath);
-                            }
+                        var torrentUrl = Movie.WatchInFullHdQuality
+                            ? Movie.Torrents?.FirstOrDefault(torrent => torrent.Quality == "1080p")?.Url
+                            : Movie.Torrents?.FirstOrDefault(torrent => torrent.Quality == "720p")?.Url;
 
-                            var subtitlePath = await
-                                _subtitlesService.DownloadSubtitleToPath(path,
-                                    message.Movie.SelectedSubtitle.Sub, isRemote);
-                            message.Movie.SelectedSubtitle.FilePath = subtitlePath;
-                        }
+                        var result =
+                            await
+                                DownloadFileHelper.DownloadFileTaskAsync(torrentUrl,
+                                    _cacheService.MovieTorrentDownloads + Movie.ImdbCode + ".torrent");
+                        var torrentPath = string.Empty;
+                        if (result.Item3 == null && !string.IsNullOrEmpty(result.Item2))
+                            torrentPath = result.Item2;
+
+                        var settings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
+                        await _downloadService.Download(Movie, TorrentType.File, MediaType.Movie, torrentPath,
+                                settings.UploadLimit, settings.DownloadLimit, reportDownloadProgress,
+                                reportDownloadRate, reportNbSeeders, reportNbPeers, () => { }, () => { },
+                                CancellationDownloadingMovie);
                     }
                     catch (Exception ex)
                     {
-                        Logger.Warn(ex);
+                        // An error occured.
+                        Messenger.Default.Send(new ManageExceptionMessage(ex));
+                        Messenger.Default.Send(new StopPlayingMovieMessage());
                     }
-                    finally
-                    {
-                        try
-                        {
-                            var torrentUrl = Movie.WatchInFullHdQuality
-                                ? Movie.Torrents?.FirstOrDefault(torrent => torrent.Quality == "1080p")?.Url
-                                : Movie.Torrents?.FirstOrDefault(torrent => torrent.Quality == "720p")?.Url;
-
-                            var result =
-                                await
-                                    DownloadFileHelper.DownloadFileTaskAsync(torrentUrl,
-                                        _cacheService.MovieTorrentDownloads + Movie.ImdbCode + ".torrent");
-                            var torrentPath = string.Empty;
-                            if (result.Item3 == null && !string.IsNullOrEmpty(result.Item2))
-                                torrentPath = result.Item2;
-
-                            var settings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
-                            await _downloadService.Download(Movie, TorrentType.File, MediaType.Movie, torrentPath,
-                                    settings.UploadLimit, settings.DownloadLimit, reportDownloadProgress,
-                                    reportDownloadRate, reportNbSeeders, reportNbPeers, () => { }, () => { },
-                                    CancellationDownloadingMovie)
-                                .ConfigureAwait(false);
-                        }
-                        catch (Exception ex)
-                        {
-                            // An error occured.
-                            Messenger.Default.Send(new ManageExceptionMessage(ex));
-                            Messenger.Default.Send(new StopPlayingMovieMessage());
-                        }
-                    }
-                });
+                }
             });
 
         /// <summary>

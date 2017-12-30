@@ -167,7 +167,8 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
             SubtitlesService = subtitlesService;
             CancellationLoadingToken = new CancellationTokenSource();
             CancellationLoadingTrailerToken = new CancellationTokenSource();
-            DownloadMovie = new DownloadMovieViewModel(subtitlesService, new DownloadMovieService<MovieJson>(cacheService), cacheService);
+            DownloadMovie = new DownloadMovieViewModel(subtitlesService,
+                new DownloadMovieService<MovieJson>(cacheService), cacheService);
             RegisterMessages();
             RegisterCommands();
         }
@@ -328,13 +329,13 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
         /// <param name="movie">The movie</param>
         private async Task LoadSubtitles(MovieJson movie)
         {
-            Logger.Debug(
+            Logger.Info(
                 $"Load subtitles for movie: {movie.Title}");
             Movie = movie;
             LoadingSubtitles = true;
             try
             {
-                var languages = (await SubtitlesService.GetSubLanguages().ConfigureAwait(false)).ToList();
+                var languages = await SubtitlesService.GetSubLanguages();
                 if (int.TryParse(new string(movie.ImdbCode
                     .SkipWhile(x => !char.IsDigit(x))
                     .TakeWhile(char.IsDigit)
@@ -342,57 +343,54 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
                 {
                     var subtitles = await SubtitlesService.SearchSubtitlesFromImdb(
                         languages.Select(lang => lang.SubLanguageID).Aggregate((a, b) => a + "," + b),
-                        imdbId.ToString(), null, null).ConfigureAwait(false);
+                        imdbId.ToString(), null, null);
 
-                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                    movie.AvailableSubtitles =
+                        new ObservableCollection<Subtitle>(subtitles.OrderBy(a => a.LanguageName)
+                            .Select(sub => new Subtitle
+                            {
+                                Sub = sub
+                            })
+                            .GroupBy(x => x.Sub.LanguageName,
+                                (k, g) =>
+                                    g.Aggregate(
+                                        (a, x) =>
+                                            (Convert.ToDouble(x.Sub.Rating, CultureInfo.InvariantCulture) >=
+                                             Convert.ToDouble(a.Sub.Rating, CultureInfo.InvariantCulture))
+                                                ? x
+                                                : a)));
+
+                    movie.AvailableSubtitles.Insert(0, new Subtitle
                     {
-                        movie.AvailableSubtitles =
-                            new ObservableCollection<Subtitle>(subtitles.OrderBy(a => a.LanguageName)
-                                .Select(sub => new Subtitle
-                                {
-                                    Sub = sub
-                                })
-                                .GroupBy(x => x.Sub.LanguageName,
-                                    (k, g) =>
-                                        g.Aggregate(
-                                            (a, x) =>
-                                                (Convert.ToDouble(x.Sub.Rating, CultureInfo.InvariantCulture) >=
-                                                 Convert.ToDouble(a.Sub.Rating, CultureInfo.InvariantCulture))
-                                                    ? x
-                                                    : a)));
-
-                        movie.AvailableSubtitles.Insert(0, new Subtitle
+                        Sub = new OSDB.Subtitle
                         {
-                            Sub = new OSDB.Subtitle
-                            {
-                                LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"),
-                                SubtitleId = "none"
-                            }
-                        });
-
-                        movie.AvailableSubtitles.Insert(1, new Subtitle
-                        {
-                            Sub = new OSDB.Subtitle
-                            {
-                                LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("CustomLabel"),
-                                SubtitleId = "custom"
-                            }
-                        });
-
-                        var applicationSettings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
-                        if (!string.IsNullOrEmpty(applicationSettings.DefaultSubtitleLanguage) &&
-                            movie.AvailableSubtitles.Any(
-                                a => a.Sub.LanguageName == applicationSettings.DefaultSubtitleLanguage))
-                        {
-                            movie.SelectedSubtitle =
-                                movie.AvailableSubtitles.FirstOrDefault(
-                                    a => a.Sub.LanguageName == applicationSettings.DefaultSubtitleLanguage);
-                        }
-                        else
-                        {
-                            movie.SelectedSubtitle = movie.AvailableSubtitles.FirstOrDefault();
+                            LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"),
+                            SubtitleId = "none"
                         }
                     });
+
+                    movie.AvailableSubtitles.Insert(1, new Subtitle
+                    {
+                        Sub = new OSDB.Subtitle
+                        {
+                            LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("CustomLabel"),
+                            SubtitleId = "custom"
+                        }
+                    });
+
+                    var applicationSettings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
+                    if (!string.IsNullOrEmpty(applicationSettings.DefaultSubtitleLanguage) &&
+                        movie.AvailableSubtitles.Any(
+                            a => a.Sub.LanguageName == applicationSettings.DefaultSubtitleLanguage))
+                    {
+                        movie.SelectedSubtitle =
+                            movie.AvailableSubtitles.FirstOrDefault(
+                                a => a.Sub.LanguageName == applicationSettings.DefaultSubtitleLanguage);
+                    }
+                    else
+                    {
+                        movie.SelectedSubtitle = movie.AvailableSubtitles.FirstOrDefault();
+                    }
 
                     LoadingSubtitles = false;
                 }
@@ -478,14 +476,10 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
 
             PlayTrailerCommand = new RelayCommand(async () =>
             {
-                await Task.Run(async () =>
-                {
-                    IsPlayingTrailer = true;
-                    IsTrailerLoading = true;
-                    await _movieTrailerService.LoadTrailerAsync(Movie, CancellationLoadingTrailerToken.Token)
-                        .ConfigureAwait(false);
-                    IsTrailerLoading = false;
-                }).ConfigureAwait(false);
+                IsPlayingTrailer = true;
+                IsTrailerLoading = true;
+                await _movieTrailerService.LoadTrailerAsync(Movie, CancellationLoadingTrailerToken.Token);
+                IsTrailerLoading = false;
             });
 
             StopLoadingTrailerCommand = new RelayCommand(StopLoadingTrailer);
@@ -525,61 +519,56 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
         {
             var watch = Stopwatch.StartNew();
 
-            Messenger.Default.Send(new LoadMovieMessage());
-            Movie = new MovieJson {Title = movie.Title};
-            IsMovieLoading = true;
-            SimilarMovies.Clear();
-            await Task.Run(async () =>
+            try
             {
-                try
+                Messenger.Default.Send(new LoadMovieMessage());
+                Movie = new MovieJson {Title = movie.Title};
+                IsMovieLoading = true;
+                SimilarMovies.Clear();
+                var applicationSettings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
+                Movie = await _movieService.GetMovieAsync(movie.ImdbCode, ct);
+                ct.ThrowIfCancellationRequested();
+                _movieService.TranslateMovie(Movie);
+                _userService.SyncMovieHistory(new List<IMovie> {Movie});
+                IsMovieLoading = false;
+                Movie.FullHdAvailable = Movie.Torrents.Count != 1;
+                Movie.WatchInFullHdQuality =
+                    Movie.Torrents.Any(torrent => torrent.Quality == "1080p") && Movie.Torrents.Count == 1 ||
+                    Movie.Torrents.Any(torrent => torrent.Quality == "1080p") &&
+                    applicationSettings.DefaultHdQuality;
+                ComputeTorrentHealth();
+                var tasks = new Func<Task>[]
                 {
-                    var applicationSettings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
-                    Movie = await _movieService.GetMovieAsync(movie.ImdbCode, ct).ConfigureAwait(false);
-                    ct.ThrowIfCancellationRequested();
-                    _movieService.TranslateMovie(Movie);
-                    _userService.SyncMovieHistory(new List<IMovie> {Movie});
-                    IsMovieLoading = false;
-                    Movie.FullHdAvailable = Movie.Torrents.Count != 1;
-                    Movie.WatchInFullHdQuality =
-                        Movie.Torrents.Any(torrent => torrent.Quality == "1080p") && Movie.Torrents.Count == 1 ||
-                        Movie.Torrents.Any(torrent => torrent.Quality == "1080p") &&
-                        applicationSettings.DefaultHdQuality;
-                    ComputeTorrentHealth();
-                    var tasks = new Func<Task>[]
+                    async () =>
                     {
-                        async () =>
-                        {
-                            LoadingSimilar = true;
-                            var similars = await _movieService.GetMoviesSimilarAsync(Movie, ct).ConfigureAwait(false);
-                            DispatcherHelper.CheckBeginInvokeOnUI(() =>
-                            {
-                                SimilarMovies.AddRange(similars);
-                                AnySimilar = SimilarMovies.Any();
-                                LoadingSimilar = false;
-                            });
-                        },
-                        async () =>
-                        {
-                            await LoadSubtitles(Movie).ConfigureAwait(false);
-                        }
-                    };
+                        LoadingSimilar = true;
+                        var similars = await _movieService.GetMoviesSimilarAsync(Movie, ct);
+                        SimilarMovies.AddRange(similars);
+                        AnySimilar = SimilarMovies.Any();
+                        LoadingSimilar = false;
+                    },
+                    async () =>
+                    {
+                        await LoadSubtitles(Movie);
+                    }
+                };
 
-                    await Task.WhenAll(tasks.Select(task => task()).ToArray()).ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error(
-                        $"Failed loading movie : {movie.ImdbCode}. {ex.Message}");
-                    Messenger.Default.Send(new NavigateToHomePageMessage());
-                    if (!ct.IsCancellationRequested)
-                        Messenger.Default.Send(new ManageExceptionMessage(new PopcornException(
-                            $"{LocalizationProviderHelper.GetLocalizedValue<string>("FailedLoadingLabel")} {movie.Title}")));
-                }
-            }, ct).ConfigureAwait(false);
+                await Task.WhenAll(tasks.Select(task => task()).ToArray());
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(
+                    $"Failed loading movie : {movie.ImdbCode}. {ex.Message}");
+                Messenger.Default.Send(new NavigateToHomePageMessage());
+                if (!ct.IsCancellationRequested)
+                    Messenger.Default.Send(new ManageExceptionMessage(new PopcornException(
+                        $"{LocalizationProviderHelper.GetLocalizedValue<string>("FailedLoadingLabel")} {movie.Title}")));
+            }
             watch.Stop();
             var elapsedMs = watch.ElapsedMilliseconds;
-            Logger.Debug($"LoadMovie ({movie.ImdbCode}) in {elapsedMs} milliseconds.");
+            Logger.Trace($"LoadMovie ({movie.ImdbCode}) in {elapsedMs} milliseconds.");
         }
+
         /// <summary>
         /// Compute torrent health
         /// </summary>

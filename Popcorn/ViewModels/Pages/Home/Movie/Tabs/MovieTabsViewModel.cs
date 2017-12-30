@@ -294,7 +294,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
             }
 
             StopLoadingMovies();
-            Logger.Info(
+            Logger.Trace(
                 $"Loading page {Page}...");
             HasLoadingFailed = false;
             try
@@ -336,7 +336,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
             {
                 watch.Stop();
                 var elapsedMs = watch.ElapsedMilliseconds;
-                Logger.Info(
+                Logger.Trace(
                     $"Loaded page {Page} in {elapsedMs} milliseconds.");
                 LoadingSemaphore.Release();
             }
@@ -389,7 +389,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                 _genre = e.NewValue;
                 if (SelectedTab == this)
                 {
-                    await LoadMoviesAsync(true).ConfigureAwait(false);
+                    await LoadMoviesAsync(true);
                 }
                 else
                 {
@@ -405,7 +405,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                 _rating = e.NewValue;
                 if (SelectedTab == this)
                 {
-                    await LoadMoviesAsync(true).ConfigureAwait(false);
+                    await LoadMoviesAsync(true);
                 }
                 else
                 {
@@ -424,7 +424,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                     else if (this is FavoritesMovieTabViewModel && SelectedTab is FavoritesMovieTabViewModel ||
                              this is RecommendationsMovieTabViewModel &&
                              SelectedTab is RecommendationsMovieTabViewModel)
-                        await LoadMoviesAsync().ConfigureAwait(false);
+                        await LoadMoviesAsync();
                 });
 
             Messenger.Default.Register<ChangeSeenMovieMessage>(
@@ -435,7 +435,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                     if (this is SeenMovieTabViewModel && !(SelectedTab is SeenMovieTabViewModel))
                         NeedSync = true;
                     else if (this is SeenMovieTabViewModel && SelectedTab is SeenMovieTabViewModel)
-                        await LoadMoviesAsync().ConfigureAwait(false);
+                        await LoadMoviesAsync();
                 });
         }
 
@@ -448,7 +448,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
             ReloadMovies = new RelayCommand(async () =>
             {
                 ApplicationService.IsConnectionInError = false;
-                await LoadMoviesAsync().ConfigureAwait(false);
+                await LoadMoviesAsync();
             });
 
             SetFavoriteMovieCommand =

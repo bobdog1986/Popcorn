@@ -398,7 +398,7 @@ namespace Popcorn.ViewModels.Windows.Settings
         {
             try
             {
-                var user = await _userService.GetUser().ConfigureAwait(false);
+                var user = await _userService.GetUser();
                 FileHelper.CreateFolders();
                 RefreshCacheSize();
                 SubtitleSizes = new ObservableCollection<SubtitleSize>
@@ -464,12 +464,12 @@ namespace Popcorn.ViewModels.Windows.Settings
                     async () =>
                     {
 #if !DEBUG
-                        await StartUpdateProcessAsync().ConfigureAwait(false);
+                        await StartUpdateProcessAsync();
 #endif
                     }
                 };
 
-                Task.WhenAll(tasks.Select(task => task()).ToArray()).ConfigureAwait(false);
+                await Task.WhenAll(tasks.Select(task => task()).ToArray());
             }
             catch (Exception ex)
             {

@@ -89,8 +89,7 @@ namespace Popcorn.Services.Shows.Show
                     var show = new ShowJson();
                     try
                     {
-                        var response = await restClient.ExecuteTaskAsync(request, cancellation)
-                            .ConfigureAwait(false);
+                        var response = await restClient.ExecuteTaskAsync(request, cancellation);
                         if (response.ErrorException != null)
                             throw response.ErrorException;
 
@@ -111,12 +110,12 @@ namespace Popcorn.Services.Shows.Show
                     {
                         watch.Stop();
                         var elapsedMs = watch.ElapsedMilliseconds;
-                        Logger.Debug(
+                        Logger.Trace(
                             $"GetShowAsync ({imdbId}) in {elapsedMs} milliseconds.");
                     }
 
                     return show;
-                }, ct).ConfigureAwait(false);
+                }, ct);
             }
             catch (Exception ex)
             {
@@ -147,8 +146,7 @@ namespace Popcorn.Services.Shows.Show
                     var show = new ShowLightJson();
                     try
                     {
-                        var response = await restClient.ExecuteTaskAsync(request, cancellation)
-                            .ConfigureAwait(false);
+                        var response = await restClient.ExecuteTaskAsync(request, cancellation);
                         if (response.ErrorException != null)
                             throw response.ErrorException;
 
@@ -169,12 +167,12 @@ namespace Popcorn.Services.Shows.Show
                     {
                         watch.Stop();
                         var elapsedMs = watch.ElapsedMilliseconds;
-                        Logger.Debug(
+                        Logger.Trace(
                             $"GetShowLightAsync ({imdbId}) in {elapsedMs} milliseconds.");
                     }
 
                     return show;
-                }, ct).ConfigureAwait(false);
+                }, ct);
             }
             catch (Exception ex)
             {
@@ -228,14 +226,14 @@ namespace Popcorn.Services.Shows.Show
                     {
                         watch.Stop();
                         var elapsedMs = watch.ElapsedMilliseconds;
-                        Logger.Debug(
+                        Logger.Trace(
                             $"GetShowsByIds ({string.Join(",", imdbIds)}) in {elapsedMs} milliseconds.");
                     }
 
                     var result = wrapper?.Shows ?? new List<ShowLightJson>();
                     var nbResult = wrapper?.TotalShows ?? 0;
                     return (result, nbResult);
-                }, ct).ConfigureAwait(false);
+                }, ct);
             }
             catch (Exception ex)
             {
@@ -285,8 +283,7 @@ namespace Popcorn.Services.Shows.Show
                     request.AddParameter("sort_by", sortBy);
                     try
                     {
-                        var response = await restClient.ExecuteTaskAsync(request, cancellation)
-                            .ConfigureAwait(false);
+                        var response = await restClient.ExecuteTaskAsync(request, cancellation);
                         if (response.ErrorException != null)
                             throw response.ErrorException;
 
@@ -307,14 +304,14 @@ namespace Popcorn.Services.Shows.Show
                     {
                         watch.Stop();
                         var elapsedMs = watch.ElapsedMilliseconds;
-                        Logger.Debug(
+                        Logger.Trace(
                             $"GetShowsAsync ({page}, {limit}) in {elapsedMs} milliseconds.");
                     }
 
                     var shows = wrapper?.Shows ?? new List<ShowLightJson>();
                     var nbShows = wrapper?.TotalShows ?? 0;
                     return (shows, nbShows);
-                }, ct).ConfigureAwait(false);
+                }, ct);
             }
             catch (Exception ex)
             {
@@ -364,8 +361,7 @@ namespace Popcorn.Services.Shows.Show
                     request.AddParameter("query_term", criteria);
                     try
                     {
-                        var response = await restClient.ExecuteTaskAsync(request, cancellation)
-                            .ConfigureAwait(false);
+                        var response = await restClient.ExecuteTaskAsync(request, cancellation);
                         if (response.ErrorException != null)
                             throw response.ErrorException;
 
@@ -386,14 +382,14 @@ namespace Popcorn.Services.Shows.Show
                     {
                         watch.Stop();
                         var elapsedMs = watch.ElapsedMilliseconds;
-                        Logger.Debug(
+                        Logger.Trace(
                             $"SearchShowsAsync ({criteria}, {page}, {limit}) in {elapsedMs} milliseconds.");
                     }
 
                     var result = wrapper?.Shows ?? new List<ShowLightJson>();
                     var nbResult = wrapper?.TotalShows ?? 0;
                     return (result, nbResult);
-                }, ct).ConfigureAwait(false);
+                }, ct);
             }
             catch(Exception ex)
             {
@@ -420,7 +416,7 @@ namespace Popcorn.Services.Shows.Show
                     var uri = string.Empty;
                     try
                     {
-                        var shows = await TmdbClient.SearchTvShowAsync(show.Title).ConfigureAwait(false);
+                        var shows = await TmdbClient.SearchTvShowAsync(show.Title);
                         if (shows.Results.Any())
                         {
                             Video trailer = null;
@@ -428,12 +424,10 @@ namespace Popcorn.Services.Shows.Show
                             {
                                 try
                                 {
-                                    var result = await TmdbClient.GetTvShowExternalIdsAsync(tvShow.Id)
-                                        .ConfigureAwait(false);
+                                    var result = await TmdbClient.GetTvShowExternalIdsAsync(tvShow.Id);
                                     if (result.ImdbId == show.ImdbId)
                                     {
-                                        var videos = await TmdbClient.GetTvShowVideosAsync(result.Id)
-                                            .ConfigureAwait(false);
+                                        var videos = await TmdbClient.GetTvShowVideosAsync(result.Id);
                                         if (videos != null && videos.Results.Any())
                                         {
                                             trailer = videos.Results.FirstOrDefault();
@@ -490,12 +484,12 @@ namespace Popcorn.Services.Shows.Show
                     {
                         watch.Stop();
                         var elapsedMs = watch.ElapsedMilliseconds;
-                        Logger.Debug(
+                        Logger.Trace(
                             $"GetShowTrailerAsync ({show.ImdbId}) in {elapsedMs} milliseconds.");
                     }
 
                     return uri;
-                }, ct).ConfigureAwait(false);
+                }, ct);
             }
             catch (Exception ex)
             {

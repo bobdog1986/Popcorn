@@ -52,7 +52,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                 return;
             }
 
-            Logger.Info(
+            Logger.Trace(
                 "Loading movies favorites page...");
             HasLoadingFailed = false;
             try
@@ -119,7 +119,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                 NeedSync = false;
                 watch.Stop();
                 var elapsedMs = watch.ElapsedMilliseconds;
-                Logger.Info(
+                Logger.Trace(
                     $"Loaded movies favorite page {Page} in {elapsedMs} milliseconds.");
                 LoadingSemaphore.Release();
             }
