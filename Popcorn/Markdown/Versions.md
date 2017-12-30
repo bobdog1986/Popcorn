@@ -1,4 +1,11 @@
-﻿# 3.4.10 - 30/12/2017 #
+﻿# 3.5.0 - 30/12/2017 #
+***
+Improved performances.
+
+### Details ###
+* Drastically improved UI performances.
+
+# 3.4.10 - 30/12/2017 #
 ***
 Fixed issues
 
