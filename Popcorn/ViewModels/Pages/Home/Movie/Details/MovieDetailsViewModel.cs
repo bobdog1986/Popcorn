@@ -400,19 +400,16 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
                 Logger.Error(
                     $"Failed loading subtitles for : {movie.Title}. {ex.Message}");
                 LoadingSubtitles = false;
-                DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                movie.AvailableSubtitles.Insert(0, new Subtitle
                 {
-                    movie.AvailableSubtitles.Insert(0, new Subtitle
+                    Sub = new OSDB.Subtitle
                     {
-                        Sub = new OSDB.Subtitle
-                        {
-                            LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"),
-                            SubtitleId = "none"
-                        }
-                    });
-
-                    movie.SelectedSubtitle = movie.AvailableSubtitles.FirstOrDefault();
+                        LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"),
+                        SubtitleId = "none"
+                    }
                 });
+
+                movie.SelectedSubtitle = movie.AvailableSubtitles.FirstOrDefault();
             }
         }
 

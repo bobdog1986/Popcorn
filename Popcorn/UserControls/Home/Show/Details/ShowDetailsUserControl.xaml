@@ -258,7 +258,7 @@
                                 Height="20"
                                 VerticalAlignment="Center"
                                 Foreground="White"
-                                Kind="Television" />
+                                Kind="TvSolid" />
                             <TextBlock
                                 Margin="5,0,0,0"
                                 VerticalAlignment="Center"
@@ -274,7 +274,7 @@
                                 Width="20"
                                 Height="20"
                                 VerticalAlignment="Center"
-                                Kind="ClockOutline" />
+                                Kind="ClockSolid" />
                             <TextBlock
                                 Margin="5,0,0,0"
                                 VerticalAlignment="Center"

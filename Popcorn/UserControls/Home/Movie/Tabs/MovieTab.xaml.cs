@@ -25,8 +25,7 @@ namespace Popcorn.UserControls.Home.Movie.Tabs
 
         private async void OnLoaded(object sender, RoutedEventArgs e)
         {
-            var vm = DataContext as MovieTabsViewModel;
-            if (vm == null) return;
+            if (!(DataContext is MovieTabsViewModel vm)) return;
             if (vm is PopularMovieTabViewModel || vm is GreatestMovieTabViewModel || vm is RecentMovieTabViewModel ||
                 vm is FavoritesMovieTabViewModel || vm is SeenMovieTabViewModel || vm is RecommendationsMovieTabViewModel)
             {
@@ -66,8 +65,7 @@ namespace Popcorn.UserControls.Home.Movie.Tabs
             }
 
             await _semaphore.WaitAsync();
-            var vm = DataContext as MovieTabsViewModel;
-            if (vm == null)
+            if (!(DataContext is MovieTabsViewModel vm))
             {
                 _semaphore.Release();
                 return;

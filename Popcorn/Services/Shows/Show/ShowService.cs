@@ -49,22 +49,7 @@ namespace Popcorn.Services.Shows.Show
         /// </summary>
         public ShowService()
         {
-            TmdbClient = new TMDbClient(Utils.Constants.TmDbClientId, true)
-            {
-                MaxRetryCount = 50
-            };
-
-            Task.Run(() =>
-            {
-                try
-                {
-                    TmdbClient.GetConfig();
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error(ex);
-                }
-            });
+            TmdbClient = new TMDbClient(Utils.Constants.TmDbClientId, true);
         }
 
         /// <summary>

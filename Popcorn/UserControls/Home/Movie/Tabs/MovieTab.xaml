@@ -274,7 +274,7 @@
                                         Opacity="0.0"
                                         Style="{StaticResource MetroCircleToggleButtonStyle}"
                                         Visibility="Collapsed">
-                                        <iconPacks:PackIconFontAwesome
+                                        <iconPacks:PackIconModern
                                             Width="30"
                                             Height="30"
                                             VerticalAlignment="Center"

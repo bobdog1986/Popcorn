@@ -330,7 +330,7 @@
                         <iconPacks:PackIconFontAwesome
                             Width="12"
                             Foreground="White"
-                            Kind="Font" />
+                            Kind="FontSolid" />
                     </Button>
                     <Button
                         Width="39"
@@ -342,7 +342,7 @@
                         <iconPacks:PackIconFontAwesome
                             Width="18"
                             Foreground="White"
-                            Kind="Font" />
+                            Kind="FontSolid" />
                     </Button>
                     <ToggleButton
                         x:Name="SubtitleButton"

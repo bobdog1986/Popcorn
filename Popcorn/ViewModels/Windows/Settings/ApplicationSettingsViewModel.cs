@@ -168,7 +168,8 @@ namespace Popcorn.ViewModels.Windows.Settings
         /// <param name="subtitlesService">Subtitles service</param>
         /// <param name="cacheService">Cache service</param>
         /// <param name="manager">Notification manager</param>
-        public ApplicationSettingsViewModel(IUserService userService, ISubtitlesService subtitlesService, ICacheService cacheService,
+        public ApplicationSettingsViewModel(IUserService userService, ISubtitlesService subtitlesService,
+            ICacheService cacheService,
             NotificationMessageManager manager)
         {
             _cacheService = cacheService;
@@ -297,7 +298,7 @@ namespace Popcorn.ViewModels.Windows.Settings
             get => _updateDownloading;
             set { Set(() => UpdateDownloading, ref _updateDownloading, value); }
         }
-        
+
         /// <summary>
         /// True if update is available
         /// </summary>
@@ -449,17 +450,14 @@ namespace Popcorn.ViewModels.Windows.Settings
                             .Select(a => a.LanguageName)
                             .OrderBy(a => a)
                             .ToList();
-                        DispatcherHelper.CheckBeginInvokeOnUI(() =>
-                        {
-                            languages.Insert(0,
-                                LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"));
-                            AvailableSubtitlesLanguages.AddRange(
-                                new ObservableRangeCollection<string>(languages));
-                            DefaultSubtitleLanguage = AvailableSubtitlesLanguages.Any(a => a == defaultSubtitleLanguage)
-                                ? defaultSubtitleLanguage
-                                : LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel");
-                            LoadingSubtitles = false;
-                        });
+                        languages.Insert(0,
+                            LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"));
+                        AvailableSubtitlesLanguages.AddRange(
+                            new ObservableRangeCollection<string>(languages));
+                        DefaultSubtitleLanguage = AvailableSubtitlesLanguages.Any(a => a == defaultSubtitleLanguage)
+                            ? defaultSubtitleLanguage
+                            : LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel");
+                        LoadingSubtitles = false;
                     },
                     async () =>
                     {
@@ -543,7 +541,8 @@ namespace Popcorn.ViewModels.Windows.Settings
                                         Logger.Info(
                                             "Restarting...");
 
-                                        await UpdateManager.RestartAppWhenExited($@"{_updateFilePath}\Popcorn.exe", "updated");
+                                        await UpdateManager.RestartAppWhenExited($@"{_updateFilePath}\Popcorn.exe",
+                                            "updated");
                                         Application.Current.MainWindow.Close();
                                     })
                                 .Dismiss().WithButton(

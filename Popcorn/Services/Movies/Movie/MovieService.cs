@@ -47,69 +47,63 @@ namespace Popcorn.Services.Movies.Movie
         public MovieService()
         {
             _moviesToTranslateObservable = new Subject<IMovie>();
-            TmdbClient = new TMDbClient(Utils.Constants.TmDbClientId, true)
-            {
-                MaxRetryCount = 50
-            };
+            TmdbClient = new TMDbClient(Utils.Constants.TmDbClientId, true);
 
-            Task.Run(() =>
+            try
             {
-                try
-                {
-                    TmdbClient.GetConfig();
-                    _moviesToTranslateObservable.Drain(s => Observable.Return(s).Delay(TimeSpan.FromMilliseconds(250)))
-                        .Subscribe(async movieToTranslate =>
+                _moviesToTranslateObservable.Drain(s => Observable.Return(s).Delay(TimeSpan.FromMilliseconds(250)))
+                    .Subscribe(async movieToTranslate =>
+                    {
+                        var timeoutPolicy =
+                            Policy.TimeoutAsync(Utils.Constants.DefaultRequestTimeoutInSecond,
+                                TimeoutStrategy.Pessimistic);
+                        try
                         {
-                            var timeoutPolicy =
-                                Policy.TimeoutAsync(Utils.Constants.DefaultRequestTimeoutInSecond, TimeoutStrategy.Pessimistic);
-                            try
+                            await timeoutPolicy.ExecuteAsync(async () =>
                             {
-                                await timeoutPolicy.ExecuteAsync(async () =>
+                                try
                                 {
-                                    try
+                                    var movie = await TmdbClient.GetMovieAsync(movieToTranslate.ImdbCode,
+                                        MovieMethods.Credits);
+                                    if (movieToTranslate is MovieJson refMovie)
                                     {
-                                        var movie = await TmdbClient.GetMovieAsync(movieToTranslate.ImdbCode,
-                                            MovieMethods.Credits);
-                                        if (movieToTranslate is MovieJson refMovie)
-                                        {
-                                            refMovie.TranslationLanguage = TmdbClient.DefaultLanguage;
-                                            refMovie.Title = movie?.Title;
-                                            refMovie.Genres = movie?.Genres?.Select(a => a.Name).ToList();
-                                            refMovie.DescriptionFull = movie?.Overview;
-                                        }
-                                        else if (movieToTranslate is MovieLightJson refMovieLight)
-                                        {
-                                            refMovieLight.TranslationLanguage = TmdbClient.DefaultLanguage;
-                                            refMovieLight.Title = movie?.Title;
-                                            refMovieLight.Genres = movie?.Genres != null
-                                                ? string.Join(", ", movie.Genres?.Select(a => a.Name))
-                                                : string.Empty;
-                                        }
+                                        refMovie.TranslationLanguage = TmdbClient.DefaultLanguage;
+                                        refMovie.Title = movie?.Title;
+                                        refMovie.Genres = movie?.Genres?.Select(a => a.Name).ToList();
+                                        refMovie.DescriptionFull = movie?.Overview;
                                     }
-                                    catch (Exception exception) when (exception is TaskCanceledException)
+                                    else if (movieToTranslate is MovieLightJson refMovieLight)
                                     {
-                                        Logger.Debug(
-                                            "TranslateMovieAsync cancelled.");
+                                        refMovieLight.TranslationLanguage = TmdbClient.DefaultLanguage;
+                                        refMovieLight.Title = movie?.Title;
+                                        refMovieLight.Genres = movie?.Genres != null
+                                            ? string.Join(", ", movie.Genres?.Select(a => a.Name))
+                                            : string.Empty;
                                     }
-                                    catch (Exception exception)
-                                    {
-                                        Logger.Error(
-                                            $"TranslateMovieAsync: {exception.Message}");
-                                    }
-                                });
-                            }
-                            catch (Exception ex)
-                            {
-                                Logger.Warn(
-                                    $"Movie {movieToTranslate.ImdbCode} has not been translated in {Utils.Constants.DefaultRequestTimeoutInSecond} seconds. Error {ex.Message}");
-                            }
-                        });
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error(ex);
-                }
-            });
+                                }
+                                catch (Exception exception) when (exception is TaskCanceledException)
+                                {
+                                    Logger.Debug(
+                                        "TranslateMovieAsync cancelled.");
+                                }
+                                catch (Exception exception)
+                                {
+                                    Logger.Error(
+                                        $"TranslateMovieAsync: {exception.Message}");
+                                }
+                            });
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Warn(
+                                $"Movie {movieToTranslate.ImdbCode} has not been translated in {Utils.Constants.DefaultRequestTimeoutInSecond} seconds. Error {ex.Message}");
+                        }
+                    });
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
         }
 
         /// <summary>
@@ -268,7 +262,7 @@ namespace Popcorn.Services.Movies.Movie
                         if (movie.Similars != null && movie.Similars.Any())
                         {
                             similarMovies = await GetMoviesByIds(movie.Similars,
-                                    CancellationToken.None);
+                                CancellationToken.None);
                         }
                     }
                     catch (Exception exception)
@@ -398,7 +392,8 @@ namespace Popcorn.Services.Movies.Movie
         /// <param name="imdbIds">The imdbIds of the movies, split by comma</param>
         /// <param name="ct">Cancellation token</param>
         /// <returns>Similar movies</returns>
-        public async Task<(IEnumerable<MovieLightJson> movies, int nbMovies)> GetMoviesByIds(IEnumerable<string> imdbIds,
+        public async Task<(IEnumerable<MovieLightJson> movies, int nbMovies)> GetMoviesByIds(
+            IEnumerable<string> imdbIds,
             CancellationToken ct)
         {
             var timeoutPolicy =
@@ -666,7 +661,7 @@ namespace Popcorn.Services.Movies.Movie
                         if (trailers != null && trailers.Results.Any())
                         {
                             var trailer = trailers.Results
-                                .FirstOrDefault()
+                                .First()
                                 .Key;
                             var video = await GetVideoFromYtVideoId(trailer);
                             uri = await video.GetUriAsync();
@@ -736,7 +731,7 @@ namespace Popcorn.Services.Movies.Movie
             try
             {
                 var search = await TmdbClient.FindAsync(FindExternalSource.Imdb, $"nm{imdbCode}");
-                return await TmdbClient.GetPersonAsync(search.PersonResults.FirstOrDefault().Id,
+                return await TmdbClient.GetPersonAsync(search.PersonResults.First().Id,
                     PersonMethods.Images | PersonMethods.TaggedImages);
             }
             catch (Exception ex)

@@ -209,7 +209,7 @@
                                         CommandParameter="{Binding Movie.HasBeenSeen}"
                                         IsChecked="{Binding Movie.HasBeenSeen}"
                                         Style="{StaticResource MetroCircleToggleButtonStyle}">
-                                        <iconPacks:PackIconFontAwesome
+                                        <iconPacks:PackIconModern
                                             Width="30"
                                             Height="30"
                                             VerticalAlignment="Center"

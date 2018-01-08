@@ -90,37 +90,37 @@
             <StackPanel Orientation="Horizontal">
                 <Button
                     Command="{Binding OpenSettingsCommand}"
-                    Content="{iconPacks:PackIconFontAwesome Cogs,
-                                                            Width=20,
-                                                            Height=20}"
+                    Content="{iconPacks:FontAwesome CogsSolid,
+                                                    Width=20,
+                                                    Height=20}"
                     Foreground="White"
                     ToolTip="{lex:LocText SettingsMenuTitle}" />
                 <Button
                     Command="{Binding OpenAboutCommand}"
-                    Content="{iconPacks:PackIconMaterial Information,
-                                                         Width=20,
-                                                         Height=20}"
+                    Content="{iconPacks:Material Information,
+                                                 Width=20,
+                                                 Height=20}"
                     Foreground="White"
                     ToolTip="{lex:LocText AboutLabel}" />
                 <Button
                     Command="{Binding GoToGitHubCommand}"
-                    Content="{iconPacks:PackIconModern SocialGithubOctocat,
-                                                       Width=20,
-                                                       Height=20}"
+                    Content="{iconPacks:Modern SocialGithubOctocat,
+                                               Width=20,
+                                               Height=20}"
                     Foreground="White"
                     ToolTip="Popcorn on GitHub" />
                 <Button
                     Command="{Binding SwitchFullScreenCommand}"
-                    Content="{iconPacks:PackIconModern WindowMaximize,
-                                                       Width=20,
-                                                       Height=20}"
+                    Content="{iconPacks:Modern WindowMaximize,
+                                               Width=20,
+                                               Height=20}"
                     Foreground="White"
                     Visibility="{Binding ToggleFullscren, Converter={StaticResource BoolToVisibilityConverter}}" />
                 <Button
                     Command="{Binding SwitchFullScreenCommand}"
-                    Content="{iconPacks:PackIconModern WindowMinimize,
-                                                       Width=20,
-                                                       Height=20}"
+                    Content="{iconPacks:Modern WindowMinimize,
+                                               Width=20,
+                                               Height=20}"
                     Foreground="White"
                     Visibility="{Binding ToggleFullscren, Converter={StaticResource BoolToInverseVisibilityConverter}}" />
             </StackPanel>
