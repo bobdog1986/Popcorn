@@ -1,4 +1,11 @@
-﻿# 3.5.0 - 30/12/2017 #
+﻿# 3.5.1 - 08/01/2018 #
+***
+Fixed issues
+
+### Details ###
+* Improved stability
+
+# 3.5.0 - 30/12/2017 #
 ***
 Improved performances.
 

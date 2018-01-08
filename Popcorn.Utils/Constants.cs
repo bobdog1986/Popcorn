@@ -14,7 +14,7 @@ namespace Popcorn.Utils
         /// <summary>
         /// App version
         /// </summary>
-        public const string AppVersion = "3.5.0";
+        public const string AppVersion = "3.5.1";
 
         /// <summary>
         /// Endpoint to API

@@ -51,7 +51,7 @@
         </TextBlock>
         <ItemsControl
             VerticalAlignment="Top"
-            ItemsSource="{Binding Movies, Mode=OneTime}"
+            ItemsSource="{Binding Movies, Mode=OneTime, IsAsync=True}"
             ScrollViewer.CanContentScroll="True"
             VirtualizingStackPanel.IsVirtualizing="True"
             VirtualizingStackPanel.VirtualizationMode="Recycling">

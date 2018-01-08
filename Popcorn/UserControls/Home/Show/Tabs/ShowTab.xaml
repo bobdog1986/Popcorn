@@ -49,7 +49,7 @@
         </TextBlock>
         <ItemsControl
             VerticalAlignment="Top"
-            ItemsSource="{Binding Shows, Mode=OneTime}"
+            ItemsSource="{Binding Shows, Mode=OneTime, IsAsync=True}"
             ScrollViewer.CanContentScroll="True"
             VirtualizingStackPanel.IsVirtualizing="True"
             VirtualizingStackPanel.VirtualizationMode="Recycling">
