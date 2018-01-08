@@ -45,6 +45,7 @@
     <Compile Include="AnonymousClient.cs" />
     <Compile Include="Backend\SimpleObjectMapper.cs" />
     <Compile Include="Comment.cs" />
+    <Compile Include="HashHelper.cs" />
     <Compile Include="Language.cs" />
     <Compile Include="Movie.cs" />
     <Compile Include="MovieDetails.cs" />
