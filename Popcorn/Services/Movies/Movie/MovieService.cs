@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using NLog;
 using Popcorn.Models.Movie;
 using RestSharp;
-using TMDbLib.Client;
 using TMDbLib.Objects.Movies;
 using GalaSoft.MvvmLight.Ioc;
 using Popcorn.Models.Genres;
@@ -19,6 +18,7 @@ using Popcorn.ViewModels.Windows.Settings;
 using Polly;
 using Polly.Timeout;
 using Popcorn.Extensions;
+using Popcorn.Services.Tmdb;
 using TMDbLib.Objects.Find;
 using TMDbLib.Objects.People;
 using Utf8Json;
@@ -41,13 +41,15 @@ namespace Popcorn.Services.Movies.Movie
         /// </summary>
         private readonly Subject<IMovie> _moviesToTranslateObservable;
 
+        private readonly ITmdbService _tmdbService;
+
         /// <summary>
         /// Initialize a new instance of MovieService class
         /// </summary>
-        public MovieService()
+        public MovieService(ITmdbService tmdbService)
         {
             _moviesToTranslateObservable = new Subject<IMovie>();
-            TmdbClient = new TMDbClient(Utils.Constants.TmDbClientId, true);
+            _tmdbService = tmdbService;
 
             try
             {
@@ -63,18 +65,18 @@ namespace Popcorn.Services.Movies.Movie
                             {
                                 try
                                 {
-                                    var movie = await TmdbClient.GetMovieAsync(movieToTranslate.ImdbCode,
+                                    var movie = await (await _tmdbService.GetClient).GetMovieAsync(movieToTranslate.ImdbCode,
                                         MovieMethods.Credits);
                                     if (movieToTranslate is MovieJson refMovie)
                                     {
-                                        refMovie.TranslationLanguage = TmdbClient.DefaultLanguage;
+                                        refMovie.TranslationLanguage = (await _tmdbService.GetClient).DefaultLanguage;
                                         refMovie.Title = movie?.Title;
                                         refMovie.Genres = movie?.Genres?.Select(a => a.Name).ToList();
                                         refMovie.DescriptionFull = movie?.Overview;
                                     }
                                     else if (movieToTranslate is MovieLightJson refMovieLight)
                                     {
-                                        refMovieLight.TranslationLanguage = TmdbClient.DefaultLanguage;
+                                        refMovieLight.TranslationLanguage = (await _tmdbService.GetClient).DefaultLanguage;
                                         refMovieLight.Title = movie?.Title;
                                         refMovieLight.Genres = movie?.Genres != null
                                             ? string.Join(", ", movie.Genres?.Select(a => a.Name))
@@ -107,17 +109,12 @@ namespace Popcorn.Services.Movies.Movie
         }
 
         /// <summary>
-        /// TMDb client
-        /// </summary>
-        private TMDbClient TmdbClient { get; }
-
-        /// <summary>
         /// Change the culture of TMDb
         /// </summary>
         /// <param name="language">Language to set</param>
-        public void ChangeTmdbLanguage(Language language)
+        public async Task ChangeTmdbLanguage(Language language)
         {
-            TmdbClient.DefaultLanguage = language.Culture;
+            (await _tmdbService.GetClient).DefaultLanguage = language.Culture;
         }
 
         /// <summary>
@@ -149,8 +146,8 @@ namespace Popcorn.Services.Movies.Movie
                             throw response.ErrorException;
 
                         movie = JsonSerializer.Deserialize<MovieJson>(response.RawBytes);
-                        movie.TranslationLanguage = TmdbClient.DefaultLanguage;
-                        movie.TmdbId = (await TmdbClient.GetMovieAsync(movie.ImdbCode).ConfigureAwait(false)).Id;
+                        movie.TranslationLanguage = (await _tmdbService.GetClient).DefaultLanguage;
+                        movie.TmdbId = (await (await _tmdbService.GetClient).GetMovieAsync(movie.ImdbCode).ConfigureAwait(false)).Id;
                     }
                     catch (Exception exception) when (exception is TaskCanceledException)
                     {
@@ -210,7 +207,7 @@ namespace Popcorn.Services.Movies.Movie
                             throw response.ErrorException;
 
                         movie = JsonSerializer.Deserialize<MovieLightJson>(response.RawBytes);
-                        movie.TranslationLanguage = TmdbClient.DefaultLanguage;
+                        movie.TranslationLanguage = (await _tmdbService.GetClient).DefaultLanguage;
                     }
                     catch (Exception exception) when (exception is TaskCanceledException)
                     {
@@ -338,7 +335,7 @@ namespace Popcorn.Services.Movies.Movie
                         wrapper = JsonSerializer.Deserialize<MovieLightResponse>(response.RawBytes);
                         foreach (var movie in wrapper.Movies)
                         {
-                            movie.TranslationLanguage = TmdbClient.DefaultLanguage;
+                            movie.TranslationLanguage = (await _tmdbService.GetClient).DefaultLanguage;
                         }
                     }
                     catch (Exception exception) when (exception is TaskCanceledException)
@@ -361,7 +358,7 @@ namespace Popcorn.Services.Movies.Movie
                     }
 
                     var result = wrapper?.Movies ?? new List<MovieLightJson>();
-                    ProcessTranslations(result);
+                    await ProcessTranslations(result);
                     var nbResult = wrapper?.TotalMovies ?? 0;
                     return (result, nbResult);
                 }, ct);
@@ -378,11 +375,11 @@ namespace Popcorn.Services.Movies.Movie
         /// </summary>
         /// <param name="movies"></param>
         /// <returns></returns>
-        private void ProcessTranslations(IEnumerable<IMovie> movies)
+        private async Task ProcessTranslations(IEnumerable<IMovie> movies)
         {
             foreach (var movie in movies)
             {
-                TranslateMovie(movie);
+                await TranslateMovie(movie);
             }
         }
 
@@ -419,7 +416,7 @@ namespace Popcorn.Services.Movies.Movie
                         wrapper = JsonSerializer.Deserialize<MovieLightResponse>(response.RawBytes);
                         foreach (var movie in wrapper.Movies)
                         {
-                            movie.TranslationLanguage = TmdbClient.DefaultLanguage;
+                            movie.TranslationLanguage = (await _tmdbService.GetClient).DefaultLanguage;
                         }
                     }
                     catch (Exception exception) when (exception is TaskCanceledException)
@@ -442,7 +439,7 @@ namespace Popcorn.Services.Movies.Movie
                     }
 
                     var result = wrapper?.Movies ?? new List<MovieLightJson>();
-                    ProcessTranslations(result);
+                    await ProcessTranslations(result);
                     var nbResult = wrapper?.TotalMovies ?? 0;
                     return (result, nbResult);
                 }, ct);
@@ -507,7 +504,7 @@ namespace Popcorn.Services.Movies.Movie
                         wrapper = JsonSerializer.Deserialize<MovieLightResponse>(response.RawBytes);
                         foreach (var movie in wrapper.Movies)
                         {
-                            movie.TranslationLanguage = TmdbClient.DefaultLanguage;
+                            movie.TranslationLanguage = (await _tmdbService.GetClient).DefaultLanguage;
                         }
                     }
                     catch (Exception exception) when (exception is TaskCanceledException)
@@ -530,7 +527,7 @@ namespace Popcorn.Services.Movies.Movie
                     }
 
                     var result = wrapper?.Movies ?? new List<MovieLightJson>();
-                    ProcessTranslations(result);
+                    await ProcessTranslations(result);
                     var nbResult = wrapper?.TotalMovies ?? 0;
                     return (result, nbResult);
                 }, ct);
@@ -591,7 +588,7 @@ namespace Popcorn.Services.Movies.Movie
                         wrapper = JsonSerializer.Deserialize<MovieLightResponse>(response.RawBytes);
                         foreach (var movie in wrapper.Movies)
                         {
-                            movie.TranslationLanguage = TmdbClient.DefaultLanguage;
+                            movie.TranslationLanguage = (await _tmdbService.GetClient).DefaultLanguage;
                         }
                     }
                     catch (Exception exception) when (exception is TaskCanceledException)
@@ -614,7 +611,7 @@ namespace Popcorn.Services.Movies.Movie
                     }
 
                     var result = wrapper?.Movies ?? new List<MovieLightJson>();
-                    ProcessTranslations(result);
+                    await ProcessTranslations(result);
                     var nbResult = wrapper?.TotalMovies ?? 0;
                     return (result, nbResult);
                 }, ct);
@@ -631,10 +628,10 @@ namespace Popcorn.Services.Movies.Movie
         /// </summary>
         /// <param name="movieToTranslate">Movie to translate</param>
         /// <returns>Task</returns>
-        public void TranslateMovie(IMovie movieToTranslate)
+        public async Task TranslateMovie(IMovie movieToTranslate)
         {
-            if (TmdbClient.DefaultLanguage == "en" &&
-                movieToTranslate.TranslationLanguage == TmdbClient.DefaultLanguage) return;
+            if ((await _tmdbService.GetClient).DefaultLanguage == "en" &&
+                movieToTranslate.TranslationLanguage == (await _tmdbService.GetClient).DefaultLanguage) return;
             _moviesToTranslateObservable.OnNext(movieToTranslate);
         }
 
@@ -656,7 +653,7 @@ namespace Popcorn.Services.Movies.Movie
                     var uri = string.Empty;
                     try
                     {
-                        var tmdbMovie = await TmdbClient.GetMovieAsync(movie.ImdbCode, MovieMethods.Videos);
+                        var tmdbMovie = await (await _tmdbService.GetClient).GetMovieAsync(movie.ImdbCode, MovieMethods.Videos);
                         var trailers = tmdbMovie?.Videos;
                         if (trailers != null && trailers.Results.Any())
                         {
@@ -730,8 +727,8 @@ namespace Popcorn.Services.Movies.Movie
         {
             try
             {
-                var search = await TmdbClient.FindAsync(FindExternalSource.Imdb, $"nm{imdbCode}");
-                return await TmdbClient.GetPersonAsync(search.PersonResults.First().Id,
+                var search = await (await _tmdbService.GetClient).FindAsync(FindExternalSource.Imdb, $"nm{imdbCode}");
+                return await (await _tmdbService.GetClient).GetPersonAsync(search.PersonResults.First().Id,
                     PersonMethods.Images | PersonMethods.TaggedImages);
             }
             catch (Exception ex)
@@ -769,7 +766,7 @@ namespace Popcorn.Services.Movies.Movie
                         wrapper = JsonSerializer.Deserialize<MovieLightResponse>(response.RawBytes);
                         foreach (var movie in wrapper.Movies)
                         {
-                            movie.TranslationLanguage = TmdbClient.DefaultLanguage;
+                            movie.TranslationLanguage = (await _tmdbService.GetClient).DefaultLanguage;
                         }
                     }
                     catch (Exception exception) when (exception is TaskCanceledException)
@@ -792,7 +789,7 @@ namespace Popcorn.Services.Movies.Movie
                     }
 
                     var result = wrapper?.Movies ?? new List<MovieLightJson>();
-                    ProcessTranslations(result);
+                    await ProcessTranslations(result);
                     return result;
                 }, ct);
             }
@@ -808,9 +805,9 @@ namespace Popcorn.Services.Movies.Movie
         /// </summary>
         /// <param name="url">Image to retrieve</param>
         /// <returns>Image url</returns>
-        public string GetImagePathFromTmdb(string url)
+        public async Task<string> GetImagePathFromTmdb(string url)
         {
-            return TmdbClient.GetImageUrl("original", url, true).AbsoluteUri;
+            return (await _tmdbService.GetClient).GetImageUrl("original", url, true).AbsoluteUri;
         }
     }
 }

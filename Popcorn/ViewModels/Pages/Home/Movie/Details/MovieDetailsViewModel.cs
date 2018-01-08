@@ -434,14 +434,14 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
 
             Messenger.Default.Register<ChangeLanguageMessage>(
                 this,
-                message =>
+                async message =>
                 {
                     if (!string.IsNullOrEmpty(Movie?.ImdbCode))
                     {
-                        _movieService.TranslateMovie(Movie);
+                        await _movieService.TranslateMovie(Movie);
                         foreach (var similar in SimilarMovies)
                         {
-                            _movieService.TranslateMovie(similar);
+                            await _movieService.TranslateMovie(similar);
                         }
                     }
                 });
@@ -525,7 +525,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
                 var applicationSettings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
                 Movie = await _movieService.GetMovieAsync(movie.ImdbCode, ct);
                 ct.ThrowIfCancellationRequested();
-                _movieService.TranslateMovie(Movie);
+                await _movieService.TranslateMovie(Movie);
                 _userService.SyncMovieHistory(new List<IMovie> {Movie});
                 IsMovieLoading = false;
                 Movie.FullHdAvailable = Movie.Torrents.Count != 1;

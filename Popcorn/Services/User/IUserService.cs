@@ -25,7 +25,7 @@ namespace Popcorn.Services.User
         /// Set the current language of the application
         /// </summary>
         /// <param name="language">Language</param>
-        void SetCurrentLanguage(Language language);
+        Task SetCurrentLanguage(Language language);
 
         /// <summary>
         /// Set if movies have been seen or set as favorite

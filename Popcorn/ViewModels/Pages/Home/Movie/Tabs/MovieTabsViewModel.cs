@@ -368,12 +368,12 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
         {
             Messenger.Default.Register<ChangeLanguageMessage>(
                 this,
-                message =>
+                async message =>
                 {
                     var movies = Movies.ToList();
                     foreach (var movie in movies)
                     {
-                        MovieService.TranslateMovie(movie);
+                        await MovieService.TranslateMovie(movie);
                     }
                 });
 

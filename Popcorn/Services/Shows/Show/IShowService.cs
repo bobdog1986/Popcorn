@@ -13,7 +13,7 @@ namespace Popcorn.Services.Shows.Show
         /// Change the culture of TMDb
         /// </summary>
         /// <param name="language">Language to set</param>
-        void ChangeTmdbLanguage(Language language);
+        Task ChangeTmdbLanguage(Language language);
 
         /// <summary>
         /// Get show by its Imdb code

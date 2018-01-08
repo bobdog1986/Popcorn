@@ -20,6 +20,7 @@ using Popcorn.ViewModels.Pages.Home.Show.Details;
 using Popcorn.ViewModels.Windows;
 using Popcorn.ViewModels.Windows.Settings;
 using Popcorn.Services.Shows.Trailer;
+using Popcorn.Services.Tmdb;
 using Popcorn.ViewModels.Pages.Home.Cast;
 
 namespace Popcorn.ViewModels
@@ -35,8 +36,9 @@ namespace Popcorn.ViewModels
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
 
             #region Services
-            var movieService = new MovieService();
-            var showService = new ShowService();
+            var tmdbService = new TmdbService();
+            var movieService = new MovieService(tmdbService);
+            var showService = new ShowService(tmdbService);
             SimpleIoc.Default.Register<IUserService>(() => new UserService(movieService, showService));
             SimpleIoc.Default.Register<IMovieService>(() => movieService);
             SimpleIoc.Default.Register<IShowService>(() => showService);

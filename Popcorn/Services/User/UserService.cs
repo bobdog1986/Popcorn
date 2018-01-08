@@ -460,11 +460,11 @@ namespace Popcorn.Services.User
         /// Set the current language of the application
         /// </summary>
         /// <param name="language">Language</param>
-        public void SetCurrentLanguage(Language language)
+        public async Task SetCurrentLanguage(Language language)
         {
             User.Language.Culture = language.Culture;
-            MovieService.ChangeTmdbLanguage(language);
-            ShowService.ChangeTmdbLanguage(language);
+            await MovieService.ChangeTmdbLanguage(language);
+            await ShowService.ChangeTmdbLanguage(language);
             try
             {
                 LocalizeDictionary.Instance.Culture = new CultureInfo(language.Culture);

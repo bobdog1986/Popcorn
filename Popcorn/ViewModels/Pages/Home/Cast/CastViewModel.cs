@@ -89,7 +89,7 @@ namespace Popcorn.ViewModels.Pages.Home.Cast
                     {
                         if (Person.TaggedImages.Results.Any())
                         {
-                            MainImageUrl = _movieService.GetImagePathFromTmdb(
+                            MainImageUrl = await _movieService.GetImagePathFromTmdb(
                                 Person.TaggedImages.Results.Aggregate((i1, i2) => i1.Width > i2.Width ? i1 : i2)
                                     .FilePath);
                         }
@@ -100,7 +100,7 @@ namespace Popcorn.ViewModels.Pages.Home.Cast
 
                         if (Person.Images.Profiles.Any())
                         {
-                            ProfileImageUrl = _movieService.GetImagePathFromTmdb(Person.Images.Profiles
+                            ProfileImageUrl = await _movieService.GetImagePathFromTmdb(Person.Images.Profiles
                                 .Aggregate((i1, i2) => i1.Width > i2.Width ? i1 : i2).FilePath);
                         }
                         else

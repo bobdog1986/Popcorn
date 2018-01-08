@@ -15,7 +15,7 @@ namespace Popcorn.Services.Movies.Movie
         /// Change the culture of TMDb
         /// </summary>
         /// <param name="language">Language to set</param>
-        void ChangeTmdbLanguage(Language language);
+        Task ChangeTmdbLanguage(Language language);
 
         /// <summary>
         /// Get movie by its Imdb code
@@ -100,7 +100,7 @@ namespace Popcorn.Services.Movies.Movie
         /// </summary>
         /// <param name="movieToTranslate">Movie to translate</param>
         /// <returns>Task</returns>
-        void TranslateMovie(IMovie movieToTranslate);
+        Task TranslateMovie(IMovie movieToTranslate);
 
         /// <summary>
         /// Get the youtube trailer of a movie
@@ -137,7 +137,7 @@ namespace Popcorn.Services.Movies.Movie
         /// </summary>
         /// <param name="url">Image to retrieve</param>
         /// <returns>Image url</returns>
-        string GetImagePathFromTmdb(string url);
+        Task<string> GetImagePathFromTmdb(string url);
 
         /// <summary>
         /// Get <see cref="YouTubeVideo"/> from YTVideo Id

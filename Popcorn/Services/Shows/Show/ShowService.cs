@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Async;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
@@ -9,12 +7,12 @@ using NLog;
 using Popcorn.Models.Genres;
 using Popcorn.Models.Shows;
 using RestSharp;
-using TMDbLib.Client;
 using Popcorn.Models.User;
 using System.Linq;
 using GalaSoft.MvvmLight.Ioc;
 using Polly;
 using Polly.Timeout;
+using Popcorn.Services.Tmdb;
 using Popcorn.Utils.Exceptions;
 using Popcorn.ViewModels.Windows.Settings;
 using Utf8Json;
@@ -30,26 +28,23 @@ namespace Popcorn.Services.Shows.Show
         /// </summary>
         private static Logger Logger { get; } = LogManager.GetCurrentClassLogger();
 
-        /// <summary>
-        /// TMDb client
-        /// </summary>
-        private TMDbClient TmdbClient { get; }
+        private readonly ITmdbService _tmdbService;
 
         /// <summary>
         /// Change the culture of TMDb
         /// </summary>
         /// <param name="language">Language to set</param>
-        public void ChangeTmdbLanguage(Language language)
+        public async Task ChangeTmdbLanguage(Language language)
         {
-            TmdbClient.DefaultLanguage = language.Culture;
+            (await _tmdbService.GetClient).DefaultLanguage = language.Culture;
         }
 
         /// <summary>
         /// Constructor
         /// </summary>
-        public ShowService()
+        public ShowService(ITmdbService tmdbService)
         {
-            TmdbClient = new TMDbClient(Utils.Constants.TmDbClientId, true);
+            _tmdbService = tmdbService;
         }
 
         /// <summary>
@@ -401,7 +396,7 @@ namespace Popcorn.Services.Shows.Show
                     var uri = string.Empty;
                     try
                     {
-                        var shows = await TmdbClient.SearchTvShowAsync(show.Title);
+                        var shows = await (await _tmdbService.GetClient).SearchTvShowAsync(show.Title);
                         if (shows.Results.Any())
                         {
                             Video trailer = null;
@@ -409,10 +404,10 @@ namespace Popcorn.Services.Shows.Show
                             {
                                 try
                                 {
-                                    var result = await TmdbClient.GetTvShowExternalIdsAsync(tvShow.Id);
+                                    var result = await (await _tmdbService.GetClient).GetTvShowExternalIdsAsync(tvShow.Id);
                                     if (result.ImdbId == show.ImdbId)
                                     {
-                                        var videos = await TmdbClient.GetTvShowVideosAsync(result.Id);
+                                        var videos = await (await _tmdbService.GetClient).GetTvShowVideosAsync(result.Id);
                                         if (videos != null && videos.Results.Any())
                                         {
                                             trailer = videos.Results.FirstOrDefault();
