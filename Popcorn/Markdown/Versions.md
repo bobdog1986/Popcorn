@@ -1,4 +1,11 @@
-﻿# 3.5.1 - 08/01/2018 #
+﻿# 3.5.2 - 09/01/2018 #
+***
+Improved UI
+
+### Details ###
+* Improved torrent informations
+
+# 3.5.1 - 08/01/2018 #
 ***
 Fixed issues
 
