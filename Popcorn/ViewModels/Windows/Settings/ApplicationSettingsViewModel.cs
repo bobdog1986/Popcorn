@@ -462,7 +462,10 @@ namespace Popcorn.ViewModels.Windows.Settings
                     async () =>
                     {
 #if !DEBUG
-                        await StartUpdateProcessAsync();
+                        await Task.Run(async () =>
+                        {
+                            await StartUpdateProcessAsync();
+                        });
 #endif
                     }
                 };
