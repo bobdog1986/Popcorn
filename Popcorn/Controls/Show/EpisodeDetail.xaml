@@ -21,7 +21,6 @@
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
@@ -30,12 +29,14 @@
                         Grid.Column="0"
                         FontSize="28"
                         Foreground="White"
-                        TextTrimming="WordEllipsis"
+                        TextTrimming="CharacterEllipsis"
                         TextWrapping="NoWrap" />
                     <Button
-                        Grid.Column="2"
+                        Grid.Column="1"
                         Width="105"
                         Height="35"
+                        Margin="10,0,0,0"
+                        HorizontalAlignment="Right"
                         controls1:ControlsHelper.ContentCharacterCasing="Normal"
                         Command="{Binding PlayCommand, ElementName=EpisodeDetailUc}"
                         Content="Watch"

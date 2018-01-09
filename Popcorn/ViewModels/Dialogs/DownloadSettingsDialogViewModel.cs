@@ -137,7 +137,7 @@ namespace Popcorn.ViewModels.Dialogs
                     _computeHealthTokenSource.Cancel();
                     _computeHealthTokenSource = new CancellationTokenSource();
                     ComputeTorrentHealth();
-                    if (SelectedTorrent == null) return;
+                    if (SelectedTorrent == null || SelectedTorrent.Peers > 0 && SelectedTorrent.Seeds > 0) return;
                     if (Media is EpisodeShowJson)
                     {
                         string filePath = Path.GetTempFileName();
@@ -153,16 +153,15 @@ namespace Popcorn.ViewModels.Dialogs
                                 magnet.parse_magnet_uri(SelectedTorrent.Url, addParams, error);
                                 using (var handle = session.add_torrent(addParams))
                                 {
-                                    handle.set_download_limit(1);
-                                    handle.set_upload_limit(1);
+                                    handle.pause();
                                     while (!_computeHealthTokenSource.IsCancellationRequested)
                                     {
                                         try
                                         {
                                             ComputeTorrentHealth();
                                             var status = handle.status();
-                                            SelectedTorrent.Peers = status.num_peers;
-                                            SelectedTorrent.Seeds = status.num_seeds;
+                                            SelectedTorrent.Peers = status.list_peers;
+                                            SelectedTorrent.Seeds = status.list_seeds;
 
                                             await Task.Delay(1000, _computeHealthTokenSource.Token);
                                         }
@@ -181,7 +180,7 @@ namespace Popcorn.ViewModels.Dialogs
                         }
                         catch (Exception)
                         {
-                            
+
                         }
                     }
                 }, _computeHealthTokenSource.Token);
@@ -220,7 +219,8 @@ namespace Popcorn.ViewModels.Dialogs
                 ? Media.AvailableTorrents.FirstOrDefault(a => a.Quality == "1080p")
                 : Media.AvailableTorrents.FirstOrDefault(a => a.Quality == "720p");
             if (SelectedTorrent == null)
-                SelectedTorrent = Media.AvailableTorrents.First(torrent => !string.IsNullOrWhiteSpace(torrent.Url));
+                SelectedTorrent = Media.AvailableTorrents.Where(torrent => !string.IsNullOrWhiteSpace(torrent.Url))
+                    .Aggregate((torrent1, torrent2) => torrent1.Seeds > torrent2.Seeds ? torrent1 : torrent2);
             if (SelectedTorrent != null && SelectedTorrent.Seeds < 4)
             {
                 TorrentHealth = 0;
