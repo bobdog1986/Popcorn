@@ -45,9 +45,9 @@ namespace Popcorn.ViewModels.Dialogs
 
         private bool _connectingToChromecast;
 
-        private readonly CastMediaMessage _message;
+        private readonly ShowCastMediaMessage _message;
 
-        public ChromecastDialogViewModel(CastMediaMessage message, IChromecastService chromecastService)
+        public ChromecastDialogViewModel(ShowCastMediaMessage message, IChromecastService chromecastService)
         {
             _chromecastService = chromecastService;
             _message = message;

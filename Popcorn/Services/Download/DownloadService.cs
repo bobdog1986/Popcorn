@@ -32,7 +32,7 @@ namespace Popcorn.Services.Download
 
         private readonly ICacheService _cacheService;
 
-        public DownloadService(ICacheService cacheService)
+        protected DownloadService(ICacheService cacheService)
         {
             _cacheService = cacheService;
         }
@@ -208,7 +208,7 @@ namespace Popcorn.Services.Download
                         });
 
                         var numPieces = handle.torrent_file().num_pieces() - 1;
-                        var minBuffer = 0d;
+                        double minBuffer;
                         switch (type)
                         {
                             case MediaType.Movie:
@@ -312,6 +312,7 @@ namespace Popcorn.Services.Download
                         }
                         catch (Exception)
                         {
+                            // ignored
                         }
                         break;
                     }

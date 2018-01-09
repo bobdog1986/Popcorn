@@ -8,7 +8,7 @@ namespace Popcorn.Models.Movie
 {
     public interface IMovie
     {
-        string ImdbCode { get; set; }
+        string ImdbId { get; set; }
 
         bool IsFavorite { get; set; }
 

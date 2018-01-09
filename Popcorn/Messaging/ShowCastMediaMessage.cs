@@ -6,7 +6,7 @@ using GoogleCast;
 
 namespace Popcorn.Messaging
 {
-    public class CastMediaMessage : MessageBase
+    public class ShowCastMediaMessage : MessageBase
     {
         public Action CloseCastDialog { get; set; }
 

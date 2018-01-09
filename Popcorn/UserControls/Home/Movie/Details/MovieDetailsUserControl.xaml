@@ -15,7 +15,6 @@
     xmlns:lex="http://wpflocalizeextension.codeplex.com"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:movie="clr-namespace:Popcorn.Controls.Movie"
-    xmlns:tabs="clr-namespace:Popcorn.UserControls.Home.Movie.Tabs"
     d:DesignHeight="300"
     d:DesignWidth="300"
     lex:LocalizeDictionary.DesignCulture="en"
@@ -36,13 +35,11 @@
             </iconPacks:PackIconMaterialKind>
 
             <converters:PackIconMaterialImageSourceConverter x:Key="PackIconMaterialImageSourceConverter" />
-            <converters:ValueToBrushConverter x:Key="ValueToBrushConverter" />
             <converters:MultiBooleanToBoolConverter x:Key="MultiBooleanToBoolConverter" />
             <converters:BoolToInverseVisibilityConverter x:Key="BoolToInverseVisibilityConverter" />
             <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
             <converters:MultiBooleanToVisibilityConverter x:Key="MultiBooleanToVisibilityConverter" />
             <converters:BoolToInverseBoolConverter x:Key="BoolToInverseBoolConverter" />
-            <converters:TorrentHealthToLabelConverter x:Key="TorrentHealthToLabelConverter" />
             <DataTemplate DataType="{x:Type downloadViewModel:DownloadMovieViewModel}">
                 <download:DownloadMovieUserControl />
             </DataTemplate>
@@ -208,7 +205,8 @@
                                         Command="{Binding SetWatchedMovieCommand}"
                                         CommandParameter="{Binding Movie.HasBeenSeen}"
                                         IsChecked="{Binding Movie.HasBeenSeen}"
-                                        Style="{StaticResource MetroCircleToggleButtonStyle}">
+                                        Style="{StaticResource MetroCircleToggleButtonStyle}"
+                                        ToolTip="Seen">
                                         <iconPacks:PackIconModern
                                             Width="30"
                                             Height="30"
@@ -225,7 +223,8 @@
                                         Command="{Binding SetFavoriteMovieCommand}"
                                         CommandParameter="{Binding Movie.IsFavorite}"
                                         IsChecked="{Binding Movie.IsFavorite}"
-                                        Style="{StaticResource MetroCircleToggleButtonStyle}">
+                                        Style="{StaticResource MetroCircleToggleButtonStyle}"
+                                        ToolTip="Liked">
                                         <Rectangle
                                             Width="20"
                                             Height="20"
@@ -252,48 +251,6 @@
                                             </Rectangle.OpacityMask>
                                         </Rectangle>
                                     </ToggleButton>
-                                    <Grid
-                                        Width="50"
-                                        Height="50"
-                                        Margin="5,0,0,0"
-                                        VerticalAlignment="Center">
-                                        <Viewbox
-                                            Width="50"
-                                            Height="50"
-                                            Opacity="0.8">
-                                            <Canvas Width="24" Height="24">
-                                                <Path Data="M13,9H11V7H13M13,17H11V11H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" Fill="White" />
-                                            </Canvas>
-                                        </Viewbox>
-                                        <Rectangle
-                                            Width="32"
-                                            Height="32"
-                                            Fill="Transparent" />
-                                        <Grid.ToolTip>
-                                            <StackPanel Orientation="Vertical">
-                                                <StackPanel Orientation="Horizontal">
-                                                    <TextBlock Text="Seeders:" />
-                                                    <TextBlock Margin="5,0,0,0" Text="{Binding SelectedTorrent.Seeds}" />
-                                                </StackPanel>
-                                                <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
-                                                    <TextBlock Text="Peers:" />
-                                                    <TextBlock Margin="5,0,0,0" Text="{Binding SelectedTorrent.Peers}" />
-                                                </StackPanel>
-                                                <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
-                                                    <TextBlock Text="Size:" />
-                                                    <TextBlock Margin="5,0,0,0" Text="{Binding SelectedTorrent.Size}" />
-                                                </StackPanel>
-                                                <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
-                                                    <TextBlock Text="{lex:LocText HealthLabel}" />
-                                                    <TextBlock Text=":" />
-                                                    <TextBlock
-                                                        Margin="5,0,0,0"
-                                                        Foreground="{Binding Path=TorrentHealth, Converter={StaticResource ValueToBrushConverter}, ConverterParameter='0|10', UpdateSourceTrigger=PropertyChanged}"
-                                                        Text="{Binding Path=TorrentHealth, Converter={StaticResource TorrentHealthToLabelConverter}, ConverterParameter='0|10', UpdateSourceTrigger=PropertyChanged}" />
-                                                </StackPanel>
-                                            </StackPanel>
-                                        </Grid.ToolTip>
-                                    </Grid>
                                 </StackPanel>
 
                             </Grid>
@@ -390,7 +347,7 @@
                                 </TextBlock>
                             </Grid>
                         </DockPanel>
-                        <DockPanel DockPanel.Dock="Bottom">
+                        <DockPanel Margin="0,15,0,0" DockPanel.Dock="Bottom">
                             <Grid HorizontalAlignment="Stretch">
                                 <WrapPanel HorizontalAlignment="Left" Orientation="Horizontal">
                                     <Button
@@ -403,7 +360,6 @@
                                         CommandParameter="{Binding Movie.TmdbId}"
                                         Content="TMDb"
                                         Style="{DynamicResource SquareButtonStyle}" />
-
                                     <Button
                                         Width="100"
                                         Height="30"
@@ -426,36 +382,6 @@
                                         Content="{lex:LocText WatchButton}"
                                         IsTabStop="False"
                                         Style="{DynamicResource SquareButtonStyle}" />
-                                    <controls:SplitButton
-                                        Width="130"
-                                        Height="35"
-                                        Margin="0,0,10,0"
-                                        HorizontalAlignment="Right"
-                                        VerticalAlignment="Center"
-                                        HorizontalContentAlignment="Left"
-                                        DisplayMemberPath="Sub.LanguageName"
-                                        ItemsSource="{Binding Movie.AvailableSubtitles}"
-                                        SelectedItem="{Binding Movie.SelectedSubtitle, UpdateSourceTrigger=PropertyChanged}">
-                                        <controls:SplitButton.Icon>
-                                            <iconPacks:PackIconMaterial Margin="6" Kind="Translate" />
-                                        </controls:SplitButton.Icon>
-                                    </controls:SplitButton>
-                                    <controls:ProgressRing
-                                        Width="20"
-                                        Height="20"
-                                        Margin="0,0,10,0"
-                                        VerticalAlignment="Center"
-                                        IsActive="True"
-                                        Visibility="{Binding LoadingSubtitles, Converter={StaticResource BoolToInverseVisibilityConverter}}" />
-                                    <controls:ToggleSwitch
-                                        HorizontalAlignment="Right"
-                                        VerticalAlignment="Center"
-                                        Header="{lex:LocText MovieQualityLabel}"
-                                        IsChecked="{Binding Movie.WatchInFullHdQuality}"
-                                        IsEnabled="{Binding Movie.FullHdAvailable}"
-                                        OffLabel="720"
-                                        OnLabel="1080"
-                                        Style="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}" />
                                 </WrapPanel>
                             </Grid>
                         </DockPanel>

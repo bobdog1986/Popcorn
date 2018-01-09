@@ -138,7 +138,6 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Details
             set { Set(() => IsShowLoading, ref _isShowLoading, value); }
         }
 
-
         /// <summary>
         /// Specify if a trailer is loading
         /// </summary>

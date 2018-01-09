@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using System.Linq;
 using System.Runtime.Serialization;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
@@ -8,14 +7,14 @@ using Popcorn.Extensions;
 using Popcorn.Messaging;
 using Popcorn.Models.Subtitles;
 using Popcorn.Models.Torrent.Show;
-using RestSharp.Deserializers;
 using Popcorn.Models.Media;
+using Popcorn.Models.Torrent;
 
 namespace Popcorn.Models.Episode
 {
-    public class EpisodeShowJson : ObservableObject, IMediaFile
+    public class EpisodeShowJson : ObservableObject, IMediaFile, IMedia
     {
-        private bool _watchHdQuality;
+        private bool _watchInFullHdQuality;
 
         private string _title;
 
@@ -36,23 +35,23 @@ namespace Popcorn.Models.Episode
 
         private string _overview;
 
-        private int _episodeNumber;
+        private int? _episodeNumber;
 
-        private int _season;
+        private int? _season;
 
         private int? _tvdbId;
 
-        private bool _hdAvailable;
+        private bool _fullHdAvailable;
 
-        private TorrentShowJson _selectedTorrent;
+        private ITorrent _selectedTorrent;
 
-        public bool WatchHdQuality
+        public bool WatchInFullHdQuality
         {
-            get => _watchHdQuality;
+            get => _watchInFullHdQuality;
             set
             {
-                var odlValue = _watchHdQuality;
-                Set(ref _watchHdQuality, value);
+                var odlValue = _watchInFullHdQuality;
+                Set(ref _watchInFullHdQuality, value);
                 if (Torrents == null) return;
 
                 if (value && (Torrents.Torrent_720p?.Url != null ||
@@ -70,17 +69,17 @@ namespace Popcorn.Models.Episode
                 }
 
                 Messenger.Default.Send(new PropertyChangedMessage<bool>(this,
-                    odlValue, value, nameof(WatchHdQuality)));
+                    odlValue, value, nameof(WatchInFullHdQuality)));
             }
         }
 
         /// <summary>
         /// Indicate if full HQ quality is available
         /// </summary>
-        public bool HdAvailable
+        public bool FullHdAvailable
         {
-            get => _hdAvailable;
-            set { Set(() => HdAvailable, ref _hdAvailable, value); }
+            get => _fullHdAvailable;
+            set { Set(() => FullHdAvailable, ref _fullHdAvailable, value); }
         }
 
         public string FilePath
@@ -89,7 +88,7 @@ namespace Popcorn.Models.Episode
             set => Set(ref _filePath, value);
         }
         
-        public TorrentShowJson SelectedTorrent
+        public ITorrent SelectedTorrent
         {
             get => _selectedTorrent;
             set => Set(ref _selectedTorrent, value);
@@ -100,6 +99,8 @@ namespace Popcorn.Models.Episode
             get => _imdbId;
             set => Set(ref _imdbId, value);
         }
+
+        public ObservableCollection<ITorrent> AvailableTorrents { get; set; }
 
         /// <summary>
         /// Available subtitles
@@ -123,7 +124,7 @@ namespace Popcorn.Models.Episode
                 {
                     DispatcherHelper.CheckBeginInvokeOnUI(async () =>
                     {
-                        var message = new CustomSubtitleMessage();
+                        var message = new ShowCustomSubtitleMessage();
                         await Messenger.Default.SendAsync(message);
                         if (message.Error || string.IsNullOrEmpty(message.FileName))
                         {
@@ -174,14 +175,14 @@ namespace Popcorn.Models.Episode
         }
 
         [DataMember(Name = "episode")]
-        public int EpisodeNumber
+        public int? EpisodeNumber
         {
             get => _episodeNumber;
             set => Set(ref _episodeNumber, value);
         }
 
         [DataMember(Name = "season")]
-        public int Season
+        public int? Season
         {
             get => _season;
             set => Set(ref _season, value);

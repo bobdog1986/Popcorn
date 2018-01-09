@@ -60,12 +60,12 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                 IsLoadingMovies = true;
                 var imdbIds = UserService.GetFavoritesMovies(Page);
 
-                var moviesToDelete = Movies.Select(a => a.ImdbCode).Except(imdbIds.allMovies);
-                var moviesToAdd = imdbIds.movies.Except(Movies.Select(a => a.ImdbCode));
+                var moviesToDelete = Movies.Select(a => a.ImdbId).Except(imdbIds.allMovies);
+                var moviesToAdd = imdbIds.movies.Except(Movies.Select(a => a.ImdbId));
 
                 foreach (var movie in moviesToDelete.ToList())
                 {
-                    Movies.Remove(Movies.FirstOrDefault(a => a.ImdbCode == movie));
+                    Movies.Remove(Movies.FirstOrDefault(a => a.ImdbId == movie));
                 }
 
                 var movies = moviesToAdd.ToList();

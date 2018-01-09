@@ -4,7 +4,7 @@ using RestSharp.Deserializers;
 
 namespace Popcorn.Models.Torrent.Movie
 {
-    public class TorrentJson : ObservableObject
+    public class TorrentJson : ObservableObject, ITorrent
     {
         private string _dateUploaded;
 
@@ -12,11 +12,11 @@ namespace Popcorn.Models.Torrent.Movie
 
         private string _hash;
 
-        private int _peers;
+        private int? _peers;
 
         private string _quality;
 
-        private int _seeds;
+        private int? _seeds;
 
         private string _size;
 
@@ -46,14 +46,14 @@ namespace Popcorn.Models.Torrent.Movie
         }
 
         [DataMember(Name = "seeds")]
-        public int Seeds
+        public int? Seeds
         {
             get => _seeds;
             set { Set(() => Seeds, ref _seeds, value); }
         }
 
         [DataMember(Name = "peers")]
-        public int Peers
+        public int? Peers
         {
             get => _peers;
             set { Set(() => Peers, ref _peers, value); }

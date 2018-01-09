@@ -140,7 +140,7 @@ namespace Popcorn.Services.User
             {
                 foreach (var movie in movies)
                 {
-                    var updatedMovie = User.MovieHistory.FirstOrDefault(p => p.ImdbId == movie.ImdbCode);
+                    var updatedMovie = User.MovieHistory.FirstOrDefault(p => p.ImdbId == movie.ImdbId);
                     if (updatedMovie == null) continue;
                     movie.IsFavorite = updatedMovie.Favorite;
                     movie.HasBeenSeen = updatedMovie.Seen;
@@ -183,12 +183,12 @@ namespace Popcorn.Services.User
         {
             try
             {
-                var movieToUpdate = User.MovieHistory.FirstOrDefault(a => a.ImdbId == movie.ImdbCode);
+                var movieToUpdate = User.MovieHistory.FirstOrDefault(a => a.ImdbId == movie.ImdbId);
                 if (movieToUpdate == null)
                 {
                     User.MovieHistory.Add(new MovieHistory
                     {
-                        ImdbId = movie.ImdbCode,
+                        ImdbId = movie.ImdbId,
                         Favorite = movie.IsFavorite,
                         Seen = movie.HasBeenSeen
                     });

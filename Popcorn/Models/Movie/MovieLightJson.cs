@@ -17,10 +17,10 @@ namespace Popcorn.Models.Movie
         private int _year;
         
         [DataMember(Name = "imdb_code")]
-        public string ImdbCode
+        public string ImdbId
         {
             get => _imdbCode;
-            set { Set(() => ImdbCode, ref _imdbCode, value); }
+            set { Set(() => ImdbId, ref _imdbCode, value); }
         }
 
         [DataMember(Name = "title")]

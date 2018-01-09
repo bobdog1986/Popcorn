@@ -52,7 +52,7 @@ namespace Popcorn.ViewModels.Windows
         private static Logger Logger { get; } = LogManager.GetCurrentClassLogger();
 
         /// <summary>
-        /// Holds the async message relative to <see cref="CustomSubtitleMessage"/>
+        /// Holds the async message relative to <see cref="ShowCustomSubtitleMessage"/>
         /// </summary>
         private IDisposable _customSubtitleMessage;
 
@@ -62,9 +62,14 @@ namespace Popcorn.ViewModels.Windows
         private IDisposable _showSubtitleDialogMessage;
 
         /// <summary>
-        /// Holds the async message relative to <see cref="CastMediaMessage"/>
+        /// Holds the async message relative to <see cref="ShowCastMediaMessage"/>
         /// </summary>
         private IDisposable _castMediaMessage;
+
+        /// <summary>
+        /// Holds the async message relative to <see cref="ShowDownloadSettingsDialogMessage"/>
+        /// </summary>
+        private IDisposable _showDownloadSettingsMessage;
 
         /// <summary>
         /// Used to define the dialog context
@@ -604,7 +609,7 @@ namespace Popcorn.ViewModels.Windows
                 await HandleTorrentDownload(message.MagnetLink);
             });
 
-            _castMediaMessage = Messenger.Default.RegisterAsyncMessage<CastMediaMessage>(async message =>
+            _castMediaMessage = Messenger.Default.RegisterAsyncMessage<ShowCastMediaMessage>(async message =>
             {
                 var vm = new ChromecastDialogViewModel(message, _chromecastService);
                 var castDialog = new CastDialog
@@ -677,7 +682,45 @@ namespace Popcorn.ViewModels.Windows
                     }
                 });
 
-            _customSubtitleMessage = Messenger.Default.RegisterAsyncMessage<CustomSubtitleMessage>(
+            _showDownloadSettingsMessage = Messenger.Default.RegisterAsyncMessage<ShowDownloadSettingsDialogMessage>(
+                async message =>
+                {
+                    var vm = new DownloadSettingsDialogViewModel(message.Media, _subtitlesService);
+                    var subtitleDialog = new DownloadSettingsDialog
+                    {
+                        DataContext = vm
+                    };
+
+                    var cts = new TaskCompletionSource<object>();
+                    vm.OnCloseAction = async result =>
+                    {
+                        try
+                        {
+                            message.Download = result;
+                            var dialog = await _dialogCoordinator.GetCurrentDialogAsync<DownloadSettingsDialog>(
+                                this);
+                            if (dialog != null)
+                                await _dialogCoordinator.HideMetroDialogAsync(this, dialog);
+                            cts.TrySetResult(null);
+                        }
+                        catch (Exception ex)
+                        {
+                            cts.TrySetException(ex);
+                        }
+                    };
+
+                    try
+                    {
+                        await _dialogCoordinator.ShowMetroDialogAsync(this, subtitleDialog);
+                        await cts.Task;
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(ex);
+                    }
+                });
+
+            _customSubtitleMessage = Messenger.Default.RegisterAsyncMessage<ShowCustomSubtitleMessage>(
                 async message =>
                 {
                     var fileDialog = new OpenFileDialog

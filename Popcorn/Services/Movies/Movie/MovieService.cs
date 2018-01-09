@@ -65,7 +65,7 @@ namespace Popcorn.Services.Movies.Movie
                             {
                                 try
                                 {
-                                    var movie = await (await _tmdbService.GetClient).GetMovieAsync(movieToTranslate.ImdbCode,
+                                    var movie = await (await _tmdbService.GetClient).GetMovieAsync(movieToTranslate.ImdbId,
                                         MovieMethods.Credits);
                                     if (movieToTranslate is MovieJson refMovie)
                                     {
@@ -98,7 +98,7 @@ namespace Popcorn.Services.Movies.Movie
                         catch (Exception ex)
                         {
                             Logger.Warn(
-                                $"Movie {movieToTranslate.ImdbCode} has not been translated in {Utils.Constants.DefaultRequestTimeoutInSecond} seconds. Error {ex.Message}");
+                                $"Movie {movieToTranslate.ImdbId} has not been translated in {Utils.Constants.DefaultRequestTimeoutInSecond} seconds. Error {ex.Message}");
                         }
                     });
             }
@@ -147,7 +147,7 @@ namespace Popcorn.Services.Movies.Movie
 
                         movie = JsonSerializer.Deserialize<MovieJson>(response.RawBytes);
                         movie.TranslationLanguage = (await _tmdbService.GetClient).DefaultLanguage;
-                        movie.TmdbId = (await (await _tmdbService.GetClient).GetMovieAsync(movie.ImdbCode).ConfigureAwait(false)).Id;
+                        movie.TmdbId = (await (await _tmdbService.GetClient).GetMovieAsync(movie.ImdbId).ConfigureAwait(false)).Id;
                     }
                     catch (Exception exception) when (exception is TaskCanceledException)
                     {
@@ -277,7 +277,7 @@ namespace Popcorn.Services.Movies.Movie
                     }
 
                     return similarMovies.movies.Where(
-                        a => a.ImdbCode != movie.ImdbCode);
+                        a => a.ImdbId != movie.ImdbId);
                 }, ct);
             }
             catch (Exception ex)
@@ -653,7 +653,7 @@ namespace Popcorn.Services.Movies.Movie
                     var uri = string.Empty;
                     try
                     {
-                        var tmdbMovie = await (await _tmdbService.GetClient).GetMovieAsync(movie.ImdbCode, MovieMethods.Videos);
+                        var tmdbMovie = await (await _tmdbService.GetClient).GetMovieAsync(movie.ImdbId, MovieMethods.Videos);
                         var trailers = tmdbMovie?.Videos;
                         if (trailers != null && trailers.Results.Any())
                         {
@@ -684,7 +684,7 @@ namespace Popcorn.Services.Movies.Movie
                         watch.Stop();
                         var elapsedMs = watch.ElapsedMilliseconds;
                         Logger.Trace(
-                            $"GetMovieTrailerAsync ({movie.ImdbCode}) in {elapsedMs} milliseconds.");
+                            $"GetMovieTrailerAsync ({movie.ImdbId}) in {elapsedMs} milliseconds.");
                     }
 
                     return uri;
@@ -739,7 +739,7 @@ namespace Popcorn.Services.Movies.Movie
         }
 
         /// <summary>
-        /// Get movies for a cast by its ImdbCode
+        /// Get movies for a cast by its ImdbId
         /// </summary>
         /// <param name="imdbCode"></param>
         /// <param name="ct"></param>

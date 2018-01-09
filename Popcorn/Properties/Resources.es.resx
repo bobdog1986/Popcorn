@@ -480,4 +480,13 @@
   <data name="Loading" xml:space="preserve">
     <value>Cargando...</value>
   </data>
+  <data name="OptionsLabel" xml:space="preserve">
+    <value>OPCIONES</value>
+  </data>
+  <data name="InformationsLabel" xml:space="preserve">
+    <value>Informaciones</value>
+  </data>
+  <data name="QualityLabel" xml:space="preserve">
+    <value>Calidad</value>
+  </data>
 </root>

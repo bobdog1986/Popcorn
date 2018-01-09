@@ -88,33 +88,36 @@ namespace Popcorn
             {
                 var userService = SimpleIoc.Default.GetInstance<IUserService>();
                 await userService.GetUser();
-                var netsh = new NetSH(new Utils.CommandLineHarness());
-                var showResponse = netsh.Http.Show.UrlAcl(Constants.ServerUrl);
-                if (showResponse.ResponseObject.Count == 0)
+                await Task.Run(() =>
                 {
-                    if (!Helper.IsAdministrator())
+                    var netsh = new NetSH(new Utils.CommandLineHarness());
+                    var showResponse = netsh.Http.Show.UrlAcl(Constants.ServerUrl);
+                    if (showResponse.ResponseObject.Count == 0)
                     {
-                        RestartAsAdmin();
+                        if (!Helper.IsAdministrator())
+                        {
+                            RestartAsAdmin();
+                        }
+                        else
+                        {
+                            RegisterUrlAcl();
+                        }
                     }
-                    else
-                    {
-                        RegisterUrlAcl();
-                    }
-                }
 
-                if (!FirewallRuleExists("Popcorn Server"))
-                {
-                    if (!Helper.IsAdministrator())
+                    if (!FirewallRuleExists("Popcorn Server"))
                     {
-                        RestartAsAdmin();
+                        if (!Helper.IsAdministrator())
+                        {
+                            RestartAsAdmin();
+                        }
+                        else
+                        {
+                            RegisterFirewallRule();
+                        }
                     }
-                    else
-                    {
-                        RegisterFirewallRule();
-                    }
-                }
 
-                _localServer = WebApp.Start<Startup>(Constants.ServerUrl);
+                    _localServer = WebApp.Start<Startup>(Constants.ServerUrl);
+                });
             }
             catch (Exception ex)
             {

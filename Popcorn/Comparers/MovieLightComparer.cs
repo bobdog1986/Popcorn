@@ -23,7 +23,7 @@ namespace Popcorn.Comparers
             if (ReferenceEquals(x, null) || ReferenceEquals(y, null))
                 return false;
 
-            return x.ImdbCode == y.ImdbCode;
+            return x.ImdbId == y.ImdbId;
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace Popcorn.Comparers
             if (ReferenceEquals(movie, null)) return 0;
 
             //Get hash code for the Id field
-            var hashId = movie.ImdbCode.GetHashCode();
+            var hashId = movie.ImdbId.GetHashCode();
 
             return hashId;
         }

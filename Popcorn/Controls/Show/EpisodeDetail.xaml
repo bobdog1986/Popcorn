@@ -4,20 +4,12 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:Popcorn.Controls"
     xmlns:controls1="http://metro.mahapps.com/winfx/xaml/controls"
-    xmlns:converters="clr-namespace:Popcorn.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
-    xmlns:lex="http://wpflocalizeextension.codeplex.com"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     x:Name="EpisodeDetailUc"
     d:DesignHeight="300"
     d:DesignWidth="300"
     mc:Ignorable="d">
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <converters:BoolToInverseVisibilityConverter x:Key="BoolToInverseVisibilityConverter" />
-        </ResourceDictionary>
-    </UserControl.Resources>
     <Grid>
         <controls:AnimatedScrollViewer>
             <Grid Margin="0,0,15,0">
@@ -26,58 +18,29 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
-                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <TextBlock
                         x:Name="Title"
                         Grid.Column="0"
-                        VerticalAlignment="Center"
                         FontSize="28"
                         Foreground="White"
                         TextTrimming="WordEllipsis"
                         TextWrapping="NoWrap" />
-                    <Grid
+                    <Button
                         Grid.Column="2"
-                        Width="32"
-                        Height="32"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Center">
-                        <Viewbox
-                            Width="32"
-                            Height="32"
-                            Opacity="0.8">
-                            <Canvas Width="24" Height="24">
-                                <Path Data="M13,9H11V7H13M13,17H11V11H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z" Fill="White" />
-                            </Canvas>
-                        </Viewbox>
-                        <Rectangle
-                            Width="32"
-                            Height="32"
-                            Fill="Transparent" />
-                        <Grid.ToolTip>
-                            <StackPanel Orientation="Vertical">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Seeders:" />
-                                    <TextBlock x:Name="Seeders" Margin="5,0,0,0" />
-                                </StackPanel>
-                                <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
-                                    <TextBlock Text="Peers:" />
-                                    <TextBlock x:Name="Peers" Margin="5,0,0,0" />
-                                </StackPanel>
-                                <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
-                                    <TextBlock Text="{lex:LocText HealthLabel}" />
-                                    <TextBlock Text=":" />
-                                    <TextBlock x:Name="Health" Margin="5,0,0,0" />
-                                </StackPanel>
-                            </StackPanel>
-                        </Grid.ToolTip>
-                    </Grid>
+                        Width="105"
+                        Height="35"
+                        controls1:ControlsHelper.ContentCharacterCasing="Normal"
+                        Command="{Binding PlayCommand, ElementName=EpisodeDetailUc}"
+                        Content="Watch"
+                        FontSize="14"
+                        Style="{DynamicResource SquareButtonStyle}" />
                 </Grid>
                 <StackPanel
                     Grid.Row="1"
@@ -107,57 +70,6 @@
                     TextAlignment="Justify"
                     TextTrimming="WordEllipsis"
                     TextWrapping="Wrap" />
-
-                <Grid Grid.Row="4">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0" Orientation="Horizontal">
-                        <controls1:ToggleSwitch
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Top"
-                            Header="{lex:LocText MovieQualityLabel}"
-                            IsChecked="{Binding Episode.WatchHdQuality, ElementName=EpisodeDetailUc}"
-                            IsEnabled="{Binding Episode.HdAvailable, ElementName=EpisodeDetailUc}"
-                            OffLabel="SD"
-                            OnLabel="HD"
-                            Style="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}" />
-                        <controls1:SplitButton
-                            Width="130"
-                            Height="35"
-                            Margin="20,10,0,0"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Top"
-                            HorizontalContentAlignment="Left"
-                            DisplayMemberPath="Sub.LanguageName"
-                            ItemsSource="{Binding Episode.AvailableSubtitles, ElementName=EpisodeDetailUc}"
-                            SelectedItem="{Binding Episode.SelectedSubtitle, ElementName=EpisodeDetailUc}">
-                            <controls1:SplitButton.Icon>
-                                <iconPacks:PackIconMaterial Margin="6" Kind="Translate" />
-                            </controls1:SplitButton.Icon>
-                        </controls1:SplitButton>
-                        <controls1:ProgressRing
-                            Width="20"
-                            Height="20"
-                            Margin="10,10,0,0"
-                            VerticalAlignment="Center"
-                            IsActive="True"
-                            Visibility="{Binding LoadingSubtitles, Converter={StaticResource BoolToInverseVisibilityConverter}, ElementName=EpisodeDetailUc}" />
-                    </StackPanel>
-                    <Button
-                        Grid.Column="2"
-                        Width="105"
-                        Height="35"
-                        Margin="0,15,0,0"
-                        VerticalAlignment="Bottom"
-                        controls1:ControlsHelper.ContentCharacterCasing="Normal"
-                        Command="{Binding PlayCommand, ElementName=EpisodeDetailUc}"
-                        Content="Watch"
-                        FontSize="14"
-                        Style="{DynamicResource SquareButtonStyle}" />
-                </Grid>
             </Grid>
         </controls:AnimatedScrollViewer>
     </Grid>

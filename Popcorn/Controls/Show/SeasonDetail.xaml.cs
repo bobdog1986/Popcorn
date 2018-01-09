@@ -51,7 +51,7 @@ namespace Popcorn.Controls.Show
                 collection.Add(new Season
                 {
                     Label = $"Season {nbSeason}",
-                    Number = nbSeason
+                    Number = nbSeason ?? 0
                 });
             }
 

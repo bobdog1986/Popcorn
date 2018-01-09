@@ -384,7 +384,7 @@ namespace Popcorn.ViewModels.Pages.Player
                              LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel") &&
                              message.SelectedSubtitle.SubtitleId == "custom")
                     {
-                        var subMessage = new CustomSubtitleMessage();
+                        var subMessage = new ShowCustomSubtitleMessage();
                         await Messenger.Default.SendAsync(subMessage);
                         if (!subMessage.Error && !string.IsNullOrEmpty(subMessage.FileName))
                         {
@@ -451,7 +451,7 @@ namespace Popcorn.ViewModels.Pages.Player
                         IsCasting = false;
                         OnPausedMedia(new EventArgs());
                         var message =
-                            new CastMediaMessage {CastCancellationTokenSource = new CancellationTokenSource()};
+                            new ShowCastMediaMessage {CastCancellationTokenSource = new CancellationTokenSource()};
                         message.StartCast = async chromecastReseiver =>
                         {
                             await LoadCastAsync(message.CloseCastDialog);

@@ -529,6 +529,15 @@ namespace Popcorn.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Informations.
+        /// </summary>
+        public static string InformationsLabel {
+            get {
+                return ResourceManager.GetString("InformationsLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Language.
         /// </summary>
         public static string LanguageLabel {
@@ -772,6 +781,15 @@ namespace Popcorn.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à OPTIONS.
+        /// </summary>
+        public static string OptionsLabel {
+            get {
+                return ResourceManager.GetString("OptionsLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Password....
         /// </summary>
         public static string PasswordWatermark {
@@ -822,6 +840,15 @@ namespace Popcorn.Properties {
         public static string PopularTitleTab {
             get {
                 return ResourceManager.GetString("PopularTitleTab", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Quality.
+        /// </summary>
+        public static string QualityLabel {
+            get {
+                return ResourceManager.GetString("QualityLabel", resourceCulture);
             }
         }
         

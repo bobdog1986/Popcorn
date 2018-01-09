@@ -123,6 +123,9 @@
     <Compile Include="Dialogs\CastDialog.xaml.cs">
       <DependentUpon>CastDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dialogs\DownloadSettingsDialog.xaml.cs">
+      <DependentUpon>DownloadSettingsDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Dialogs\DropTorrentDialog.xaml.cs">
       <DependentUpon>DropTorrentDialog.xaml</DependentUpon>
     </Compile>
@@ -149,11 +152,11 @@
     <Compile Include="Helpers\ObservableRangeCollection.cs" />
     <Compile Include="Messaging\Async\AsyncMessage.cs" />
     <Compile Include="Messaging\Async\AsyncMessageReceiver.cs" />
-    <Compile Include="Messaging\CastMediaMessage.cs" />
+    <Compile Include="Messaging\ShowCastMediaMessage.cs" />
     <Compile Include="Messaging\ChangeFavoriteMovieMessage.cs" />
     <Compile Include="Messaging\ChangeFavoriteShowMessage.cs" />
     <Compile Include="Messaging\ChangeSeenMovieMessage.cs" />
-    <Compile Include="Messaging\CustomSubtitleMessage.cs" />
+    <Compile Include="Messaging\ShowCustomSubtitleMessage.cs" />
     <Compile Include="Messaging\DownloadMagnetLinkMessage.cs" />
     <Compile Include="Messaging\DropFileMessage.cs" />
     <Compile Include="Messaging\LoadShowMessage.cs" />
@@ -164,6 +167,7 @@
     <Compile Include="Messaging\PlayTrailerMessage.cs" />
     <Compile Include="Messaging\SearchCastMessage.cs" />
     <Compile Include="Messaging\SearchShowMessage.cs" />
+    <Compile Include="Messaging\ShowDownloadSettingsDialogMessage.cs" />
     <Compile Include="Messaging\ShowSubtitleDialogMessage.cs" />
     <Compile Include="Messaging\StopPlayingEpisodeMessage.cs" />
     <Compile Include="Messaging\StopPlayMediaMessage.cs" />
@@ -172,6 +176,7 @@
     <Compile Include="Models\Chromecast\MediaStatusEventArgs.cs" />
     <Compile Include="Models\Download\PieceAvailability.cs" />
     <Compile Include="Models\Localization\SpanishLanguage.cs" />
+    <Compile Include="Models\Media\IMedia.cs" />
     <Compile Include="Models\Movie\IMovie.cs" />
     <Compile Include="Models\Movie\MovieLightJson.cs" />
     <Compile Include="Models\Movie\MovieLightResponse.cs" />
@@ -179,6 +184,7 @@
     <Compile Include="Models\Shows\ShowLightJson.cs" />
     <Compile Include="Models\Shows\ShowLightResponse.cs" />
     <Compile Include="Models\Subtitles\SubtitleSize.cs" />
+    <Compile Include="Models\Torrent\ITorrent.cs" />
     <Compile Include="Models\Version\VersionInfo.cs" />
     <Compile Include="Panels\VirtualizingTilePanel.cs" />
     <Compile Include="Properties\Resources.es.Designer.cs">
@@ -324,6 +330,7 @@
       <DependentUpon>Trailer.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\Dialogs\ChromecastDialogViewModel.cs" />
+    <Compile Include="ViewModels\Dialogs\DownloadSettingsDialogViewModel.cs" />
     <Compile Include="ViewModels\Dialogs\DropTorrentDialogViewModel.cs" />
     <Compile Include="ViewModels\Dialogs\AboutDialogViewModel.cs" />
     <Compile Include="ViewModels\Dialogs\SubtitleDialogViewModel.cs" />
@@ -399,6 +406,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Dialogs\CastDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\DownloadSettingsDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -952,10 +963,10 @@
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="WPFLocalizeExtension, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\WPFLocalizeExtension.3.0.1\lib\net35\WPFLocalizeExtension.dll</HintPath>
+      <HintPath>..\packages\WPFLocalizeExtension.3.1.0\lib\net35\WPFLocalizeExtension.dll</HintPath>
     </Reference>
     <Reference Include="XAMLMarkupExtensions, Version=1.2.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\XAMLMarkupExtensions.1.2.2\lib\net40\XAMLMarkupExtensions.dll</HintPath>
+      <HintPath>..\packages\XAMLMarkupExtensions.1.3.0\lib\net40\XAMLMarkupExtensions.dll</HintPath>
     </Reference>
     <Reference Include="Zeroconf, Version=2.9.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Zeroconf.2.9.0\lib\net45\Zeroconf.dll</HintPath>

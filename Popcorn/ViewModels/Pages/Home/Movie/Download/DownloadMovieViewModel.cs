@@ -210,7 +210,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Download
                         message.Movie.SelectedSubtitle.Sub.LanguageName !=
                         LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"))
                     {
-                        var path = Path.Combine(_cacheService.Subtitles + message.Movie.ImdbCode);
+                        var path = Path.Combine(_cacheService.Subtitles + message.Movie.ImdbId);
                         Directory.CreateDirectory(path);
                         var isRemote = true;
                         if (message.Movie.SelectedSubtitle.Sub.SubtitleId == "custom")
@@ -242,7 +242,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Download
                         var result =
                             await
                                 DownloadFileHelper.DownloadFileTaskAsync(torrentUrl,
-                                    _cacheService.MovieTorrentDownloads + Movie.ImdbCode + ".torrent");
+                                    _cacheService.MovieTorrentDownloads + Movie.ImdbId + ".torrent");
                         var torrentPath = string.Empty;
                         if (result.Item3 == null && !string.IsNullOrEmpty(result.Item2))
                             torrentPath = result.Item2;
