@@ -1,4 +1,11 @@
-﻿# 3.5.2 - 09/01/2018 #
+﻿# 3.5.3 - 09/01/2018 #
+***
+Fixed issue
+
+### Details ###
+* Fixed issue with update process
+
+# 3.5.2 - 09/01/2018 #
 ***
 Improved UI
 
