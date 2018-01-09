@@ -446,7 +446,7 @@ namespace Popcorn.ViewModels.Windows.Settings
                     {
                         LoadingSubtitles = true;
                         AvailableSubtitlesLanguages = new ObservableRangeCollection<string>();
-                        var languages = (await _subtitlesService.GetSubLanguages().ConfigureAwait(false))
+                        var languages = (await _subtitlesService.GetSubLanguages())
                             .Select(a => a.LanguageName)
                             .OrderBy(a => a)
                             .ToList();
@@ -462,26 +462,20 @@ namespace Popcorn.ViewModels.Windows.Settings
                     async () =>
                     {
 #if !DEBUG
-                        await Task.Run(async () =>
-                        {
-                            await StartUpdateProcessAsync();
-                        });
+                        await StartUpdateProcessAsync();
 #endif
                     }
                 };
 
-                await Task.WhenAll(tasks.Select(task => task()).ToArray());
+                Task.WhenAll(tasks.Select(task => task()).ToArray());
             }
             catch (Exception ex)
             {
                 Logger.Error(ex);
-                DispatcherHelper.CheckBeginInvokeOnUI(() =>
-                {
-                    LoadingSubtitles = false;
-                    AvailableSubtitlesLanguages.Insert(0,
-                        LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"));
-                    DefaultSubtitleLanguage = AvailableSubtitlesLanguages.FirstOrDefault();
-                });
+                LoadingSubtitles = false;
+                AvailableSubtitlesLanguages.Insert(0,
+                    LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"));
+                DefaultSubtitleLanguage = AvailableSubtitlesLanguages.FirstOrDefault();
             }
 
             Language = new Language(_userService);
