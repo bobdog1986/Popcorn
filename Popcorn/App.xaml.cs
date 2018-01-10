@@ -59,7 +59,6 @@ namespace Popcorn
             DispatcherHelper.Initialize();
             LocalizeDictionary.Instance.SetCurrentThreadCulture = true;
             BlobCache.ApplicationName = "Popcorn";
-            Unosquare.FFME.MediaElement.FFmpegDirectory = Constants.FFmpegPath;
         }
 
         /// <summary>
@@ -83,6 +82,7 @@ namespace Popcorn
             Logger.Info(
                 "Popcorn starting...");
             AsyncSynchronizationContext.Register();
+            Unosquare.FFME.MediaElement.FFmpegDirectory = Constants.FFmpegPath;
 
             try
             {

@@ -62,6 +62,10 @@ Popcorn.ColorPicker/Bin
 Popcorn.ColorPicker/Obj
 Popcorn.ColorPickerControls/Bin
 Popcorn.ColorPickerControls/Obj
+Unosquare.FFME.Common/Bin
+Unosquare.FFME.Common/Obj
+Unosquare.FFME.Windows/Bin
+Unosquare.FFME.Windows/Obj
 
 # User files
 *.suo

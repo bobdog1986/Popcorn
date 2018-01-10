@@ -147,7 +147,7 @@ namespace Popcorn.Services.Movies.Movie
 
                         movie = JsonSerializer.Deserialize<MovieJson>(response.RawBytes);
                         movie.TranslationLanguage = (await _tmdbService.GetClient).DefaultLanguage;
-                        movie.TmdbId = (await (await _tmdbService.GetClient).GetMovieAsync(movie.ImdbId).ConfigureAwait(false)).Id;
+                        movie.TmdbId = (await (await _tmdbService.GetClient).GetMovieAsync(movie.ImdbId)).Id;
                     }
                     catch (Exception exception) when (exception is TaskCanceledException)
                     {
@@ -702,7 +702,7 @@ namespace Popcorn.Services.Movies.Movie
             using (var service = Client.For(YouTube.Default))
             {
                 var videos =
-                    (await service.GetAllVideosAsync($"https://youtube.com/watch?v={ytVideoId}").ConfigureAwait(false))
+                    (await service.GetAllVideosAsync($"https://youtube.com/watch?v={ytVideoId}"))
                     .ToList();
                 if (videos.Any())
                 {

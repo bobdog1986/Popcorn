@@ -425,8 +425,7 @@ namespace Popcorn.Services.Shows.Show
                                 using (var service = Client.For(YouTube.Default))
                                 {
                                     var videos = (await service
-                                            .GetAllVideosAsync("https://youtube.com/watch?v=" + trailer.Key)
-                                            .ConfigureAwait(false))
+                                            .GetAllVideosAsync("https://youtube.com/watch?v=" + trailer.Key))
                                         .ToList();
                                     if (videos.Any())
                                     {

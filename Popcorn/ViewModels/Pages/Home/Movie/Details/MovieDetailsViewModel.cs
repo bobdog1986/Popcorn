@@ -312,7 +312,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
         private void RegisterCommands()
         {
             LoadMovieCommand = new RelayCommand<IMovie>(async movie =>
-                await LoadMovie(movie, CancellationLoadingToken.Token).ConfigureAwait(false));
+                await LoadMovie(movie, CancellationLoadingToken.Token));
             GoToTmdbCommand = new RelayCommand<string>(e =>
             {
                 Process.Start($"https://www.themoviedb.org/movie/{e}");

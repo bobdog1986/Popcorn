@@ -1,4 +1,11 @@
-﻿# 3.5.4 - 09/01/2018 #
+﻿# 3.5.5 - 10/01/2018 #
+***
+Improved performances
+
+### Details ###
+* Improved player performances.
+
+# 3.5.4 - 09/01/2018 #
 ***
 Fixed issue
 

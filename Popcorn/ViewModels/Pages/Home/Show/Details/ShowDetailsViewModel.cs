@@ -106,7 +106,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Details
         private void RegisterCommands()
         {
             LoadShowCommand = new RelayCommand<ShowLightJson>(async show =>
-                await LoadShow(show, CancellationLoadingToken.Token).ConfigureAwait(false));
+                await LoadShow(show, CancellationLoadingToken.Token));
             GoToImdbCommand = new RelayCommand<string>(e =>
             {
                 Process.Start($"http://www.imdb.com/title/{e}");

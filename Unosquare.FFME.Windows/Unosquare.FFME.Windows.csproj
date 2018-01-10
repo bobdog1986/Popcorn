@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A6EB99A6-AAE2-4E6E-AB9E-93992CE5B84D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Unosquare.FFME</RootNamespace>
+    <AssemblyName>ffme.win</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>
+    </ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Release\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Windows" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="FFmpeg.AutoGen">
+      <HintPath>..\packages\FFmpeg.AutoGen.3.4.0.1\lib\net45\FFmpeg.AutoGen.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Events\RenderingAudioEventArgs.cs" />
+    <Compile Include="Events\RenderingEventArgs.cs" />
+    <Compile Include="Events\RenderingSubtitlesEventArgs.cs" />
+    <Compile Include="Events\RenderingVideoEventArgs.cs" />
+    <Compile Include="Platform\IGuiContext.cs" />
+    <Compile Include="Platform\WindowsMediaConnector.cs" />
+    <Compile Include="Platform\WindowsNativeMethods.cs" />
+    <Compile Include="Platform\WindowsPlatform.cs" />
+    <Compile Include="MediaElement.RenderEvents.cs" />
+    <Compile Include="Events\MediaLogMessageEventArgs.cs" />
+    <Compile Include="Platform\WinFormsGuiContext.cs" />
+    <Compile Include="Platform\WpfGuiContext.cs" />
+    <Compile Include="Events\PositionChangedRoutedEventArgs.cs" />
+    <Compile Include="Rendering\SharedMemoryBitmap.cs" />
+    <Compile Include="Rendering\SoundTouch.cs" />
+    <Compile Include="Rendering\Wave\IWaveProvider.cs" />
+    <Compile Include="Rendering\Wave\MmResult.cs" />
+    <Compile Include="Rendering\Wave\MmTime.cs" />
+    <Compile Include="Rendering\Wave\PlaybackState.cs" />
+    <Compile Include="Rendering\Wave\SupportedWaveFormat.cs" />
+    <Compile Include="Rendering\Wave\WaveFormat.cs" />
+    <Compile Include="Rendering\Wave\WaveHeader.cs" />
+    <Compile Include="Rendering\Wave\WaveHeaderFlags.cs" />
+    <Compile Include="Rendering\Wave\WaveInterop.cs" />
+    <Compile Include="Rendering\Wave\WaveOutBuffer.cs" />
+    <Compile Include="Rendering\Wave\WaveOutCapabilities.cs" />
+    <Compile Include="MediaElement.cs" />
+    <Compile Include="MediaElement.DependencyProperties.cs" />
+    <Compile Include="MediaElement.MediaProperties.cs" />
+    <Compile Include="MediaElement.RoutedEvents.cs" />
+    <Compile Include="Events\MediaOpeningRoutedEventArgs.cs" />
+    <Compile Include="Rendering\Wave\WaveOutSupport.cs" />
+    <Compile Include="Rendering\Wave\WavePlayer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\AudioRenderer.cs" />
+    <Compile Include="Rendering\SubtitleRenderer.cs" />
+    <Compile Include="Rendering\VideoRenderer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="Resources\ffme-preview.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="MediaElement.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.2\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
+    <Analyzer Include="..\packages\StyleCop.Analyzers.1.0.2\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Unosquare.FFME.Common\Unosquare.FFME.Common.csproj">
+      <Project>{76b2db70-c8ab-4517-8afb-051383e496b7}</Project>
+      <Name>Unosquare.FFME.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

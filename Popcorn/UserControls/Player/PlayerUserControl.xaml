@@ -63,7 +63,7 @@
             attachedProperties:EnableDragHelper.EnableDrag="True"
             attachedProperties:MaximizeDoubleClickHelper.MaximizeDoubleClick="True"
             Background="Black"
-            PreviewMouseLeftButtonDown="OnPreviewMouseLeftButtonDown"
+            PreviewMouseLeftButtonUp="OnPreviewMouseLeftButtonUp"
             Volume="{Binding Volume}" />
         <Grid
             x:Name="Buffering"

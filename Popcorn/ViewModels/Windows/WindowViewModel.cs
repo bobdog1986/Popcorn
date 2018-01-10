@@ -318,28 +318,29 @@ namespace Popcorn.ViewModels.Windows
 
             Messenger.Default.Register<LoadShowMessage>(this, e => IsShowFlyoutOpen = true);
 
-            Messenger.Default.Register<PlayShowEpisodeMessage>(this, message => DispatcherHelper.CheckBeginInvokeOnUI(
-                async () =>
-                {
-                    MediaPlayer = new MediaPlayerViewModel(_chromecastService, _subtitlesService, _cacheService,
-                        message.Episode.FilePath,
-                        message.Episode.Title,
-                        MediaType.Show,
-                        () =>
-                        {
-                            Messenger.Default.Send(new StopPlayingEpisodeMessage());
-                        },
-                        () =>
-                        {
-                            Messenger.Default.Send(new StopPlayingEpisodeMessage());
-                        },
-                        message.PlayingProgress,
-                        message.BufferProgress,
-                        message.PieceAvailability,
-                        message.BandwidthRate,
-                        message.Episode.SelectedSubtitle,
-                        message.Episode.AvailableSubtitles);
+            Messenger.Default.Register<PlayShowEpisodeMessage>(this, message =>
+            {
+                MediaPlayer = new MediaPlayerViewModel(_chromecastService, _subtitlesService, _cacheService,
+                    message.Episode.FilePath,
+                    message.Episode.Title,
+                    MediaType.Show,
+                    () =>
+                    {
+                        Messenger.Default.Send(new StopPlayingEpisodeMessage());
+                    },
+                    () =>
+                    {
+                        Messenger.Default.Send(new StopPlayingEpisodeMessage());
+                    },
+                    message.PlayingProgress,
+                    message.BufferProgress,
+                    message.PieceAvailability,
+                    message.BandwidthRate,
+                    message.Episode.SelectedSubtitle,
+                    message.Episode.AvailableSubtitles);
 
+                DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                {
                     ApplicationService.IsMediaPlaying = true;
                     IsShowFlyoutOpen = false;
                     if (NavigationService.CurrentSource.OriginalString == "Popcorn;component/Pages/PlayerPage.xaml")
@@ -352,48 +353,49 @@ namespace Popcorn.ViewModels.Windows
                             UriKind.Relative));
                     }
 
-                    await Task.Delay(500);
                     IgnoreTaskbarOnMaximize = true;
-                }));
+                });
+            });
 
-            Messenger.Default.Register<PlayMediaMessage>(this, message => DispatcherHelper.CheckBeginInvokeOnUI(
-                async () =>
-                {
-                    MediaPlayer = new MediaPlayerViewModel(_chromecastService, _subtitlesService, _cacheService,
-                        message.MediaPath,
-                        message.MediaPath,
-                        MediaType.Unkown,
-                        () =>
+            Messenger.Default.Register<PlayMediaMessage>(this, message =>
+            {
+                MediaPlayer = new MediaPlayerViewModel(_chromecastService, _subtitlesService, _cacheService,
+                    message.MediaPath,
+                    message.MediaPath,
+                    MediaType.Unkown,
+                    () =>
+                    {
+                        Messenger.Default.Send(new NavigateToHomePageMessage());
+                    },
+                    () =>
+                    {
+                        Messenger.Default.Send(new NavigateToHomePageMessage());
+                    },
+                    message.PlayingProgress,
+                    message.BufferProgress,
+                    message.PieceAvailability,
+                    message.BandwidthRate, subtitles: new List<Subtitle>
+                    {
+                        new Subtitle
                         {
-                            Messenger.Default.Send(new NavigateToHomePageMessage());
-                        },
-                        () =>
-                        {
-                            Messenger.Default.Send(new NavigateToHomePageMessage());
-                        },
-                        message.PlayingProgress,
-                        message.BufferProgress,
-                        message.PieceAvailability,
-                        message.BandwidthRate, subtitles: new List<Subtitle>
-                        {
-                            new Subtitle
+                            Sub = new OSDB.Subtitle
                             {
-                                Sub = new OSDB.Subtitle
-                                {
-                                    LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"),
-                                    SubtitleId = "none"
-                                }
-                            },
-                            new Subtitle
-                            {
-                                Sub = new OSDB.Subtitle
-                                {
-                                    LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("CustomLabel"),
-                                    SubtitleId = "custom"
-                                }
+                                LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"),
+                                SubtitleId = "none"
                             }
-                        });
+                        },
+                        new Subtitle
+                        {
+                            Sub = new OSDB.Subtitle
+                            {
+                                LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("CustomLabel"),
+                                SubtitleId = "custom"
+                            }
+                        }
+                    });
 
+                DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                {
                     ApplicationService.IsMediaPlaying = true;
                     IsShowFlyoutOpen = false;
                     IsMovieFlyoutOpen = false;
@@ -407,33 +409,34 @@ namespace Popcorn.ViewModels.Windows
                             UriKind.Relative));
                     }
 
-                    await Task.Delay(500);
                     IgnoreTaskbarOnMaximize = true;
-                }));
+                });
+            });
 
-            Messenger.Default.Register<PlayMovieMessage>(this, message => DispatcherHelper.CheckBeginInvokeOnUI(
-                async () =>
+            Messenger.Default.Register<PlayMovieMessage>(this, message =>
+            {
+                MediaPlayer = new MediaPlayerViewModel(_chromecastService, _subtitlesService, _cacheService,
+                    message.Movie.FilePath, message.Movie.Title,
+                    MediaType.Movie,
+                    () =>
+                    {
+                        Messenger.Default.Send(new StopPlayingMovieMessage());
+                    },
+                    () =>
+                    {
+                        _userService.SetMovie(message.Movie);
+                        Messenger.Default.Send(new ChangeSeenMovieMessage());
+                        Messenger.Default.Send(new StopPlayingMovieMessage());
+                    },
+                    message.PlayingProgress,
+                    message.BufferProgress,
+                    message.PieceAvailability,
+                    message.BandwidthRate,
+                    message.Movie.SelectedSubtitle,
+                    message.Movie.AvailableSubtitles);
+
+                DispatcherHelper.CheckBeginInvokeOnUI(() =>
                 {
-                    MediaPlayer = new MediaPlayerViewModel(_chromecastService, _subtitlesService, _cacheService,
-                        message.Movie.FilePath, message.Movie.Title,
-                        MediaType.Movie,
-                        () =>
-                        {
-                            Messenger.Default.Send(new StopPlayingMovieMessage());
-                        },
-                        () =>
-                        {
-                            _userService.SetMovie(message.Movie);
-                            Messenger.Default.Send(new ChangeSeenMovieMessage());
-                            Messenger.Default.Send(new StopPlayingMovieMessage());
-                        },
-                        message.PlayingProgress,
-                        message.BufferProgress,
-                        message.PieceAvailability,
-                        message.BandwidthRate,
-                        message.Movie.SelectedSubtitle,
-                        message.Movie.AvailableSubtitles);
-
                     ApplicationService.IsMediaPlaying = true;
                     IsMovieFlyoutOpen = false;
                     if (NavigationService.CurrentSource.OriginalString == "Popcorn;component/Pages/PlayerPage.xaml")
@@ -446,18 +449,20 @@ namespace Popcorn.ViewModels.Windows
                             UriKind.Relative));
                     }
 
-                    await Task.Delay(500);
                     IgnoreTaskbarOnMaximize = true;
-                }));
+                });
+            });
 
-            Messenger.Default.Register<PlayTrailerMessage>(this, message => DispatcherHelper.CheckBeginInvokeOnUI(
-                async () =>
+            Messenger.Default.Register<PlayTrailerMessage>(this, message =>
+            {
+                MediaPlayer = new MediaPlayerViewModel(_chromecastService, _subtitlesService, _cacheService,
+                    message.TrailerUrl,
+                    message.MovieTitle,
+                    MediaType.Trailer,
+                    message.TrailerStoppedAction, message.TrailerEndedAction);
+
+                DispatcherHelper.CheckBeginInvokeOnUI(() =>
                 {
-                    MediaPlayer = new MediaPlayerViewModel(_chromecastService, _subtitlesService, _cacheService,
-                        message.TrailerUrl,
-                        message.MovieTitle,
-                        MediaType.Trailer,
-                        message.TrailerStoppedAction, message.TrailerEndedAction);
                     ApplicationService.IsMediaPlaying = true;
                     IsMovieFlyoutOpen = false;
                     IsShowFlyoutOpen = false;
@@ -471,9 +476,9 @@ namespace Popcorn.ViewModels.Windows
                             UriKind.Relative));
                     }
 
-                    await Task.Delay(500);
                     IgnoreTaskbarOnMaximize = true;
-                }));
+                });
+            });
 
             Messenger.Default.Register<StopPlayingTrailerMessage>(this, message =>
             {
@@ -514,9 +519,8 @@ namespace Popcorn.ViewModels.Windows
                 ApplicationService.IsMediaPlaying = false;
             });
 
-            Messenger.Default.Register<NavigateToHomePageMessage>(this, async message =>
+            Messenger.Default.Register<NavigateToHomePageMessage>(this, message =>
             {
-                await Task.Delay(500);
                 if (!_toggleFullscreen)
                 {
                     IgnoreTaskbarOnMaximize = false;
