@@ -13,6 +13,7 @@
     xmlns:lex="http://wpflocalizeextension.codeplex.com"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     x:Name="PlayerUc"
+    AllowDrop="True"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>

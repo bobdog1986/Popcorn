@@ -380,6 +380,7 @@ namespace Popcorn.ViewModels.Windows
                         {
                             Sub = new OSDB.Subtitle
                             {
+                                LanguageId = LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"),
                                 LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"),
                                 SubtitleId = "none"
                             }
@@ -388,6 +389,7 @@ namespace Popcorn.ViewModels.Windows
                         {
                             Sub = new OSDB.Subtitle
                             {
+                                LanguageId = LocalizationProviderHelper.GetLocalizedValue<string>("CustomLabel"),
                                 LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("CustomLabel"),
                                 SubtitleId = "custom"
                             }
@@ -799,7 +801,7 @@ namespace Popcorn.ViewModels.Windows
                     if (e.Data.GetDataPresent(DataFormats.FileDrop))
                     {
                         var files = (string[]) e.Data.GetData(DataFormats.FileDrop);
-                        var torrentFile = files?.FirstOrDefault(a => a.Contains("torrent"));
+                        var torrentFile = files?.FirstOrDefault(a => a.Contains("torrent") || a.Contains("magnet"));
                         if (torrentFile != null)
                         {
                             var vm = new DropTorrentDialogViewModel(_cacheService, torrentFile);
@@ -842,10 +844,15 @@ namespace Popcorn.ViewModels.Windows
                                     }
                                 });
                         }
+
+                        var subtitleFile = files?.FirstOrDefault(a => a.Contains(".sub") || a.Contains(".srt") || a.Contains(".sbv"));
+                        if (subtitleFile != null)
+                        {
+                            MediaPlayer?.SelectSubtitlesCommand.Execute(subtitleFile);
+                        }
                     }
                     else
                     {
-                        Messenger.Default.Send(new DropFileMessage(DropFileMessage.DropFileEvent.Leave));
                         Messenger.Default.Send(
                             new UnhandledExceptionMessage(
                                 new NoDataInDroppedFileException(
@@ -854,11 +861,14 @@ namespace Popcorn.ViewModels.Windows
                 }
                 catch (Exception)
                 {
-                    Messenger.Default.Send(new DropFileMessage(DropFileMessage.DropFileEvent.Leave));
                     Messenger.Default.Send(
                         new UnhandledExceptionMessage(
                             new PopcornException(
                                 LocalizationProviderHelper.GetLocalizedValue<string>("DroppedFileIssue"))));
+                }
+                finally
+                {
+                    Messenger.Default.Send(new DropFileMessage(DropFileMessage.DropFileEvent.Leave));
                 }
             });
 
@@ -941,20 +951,21 @@ namespace Popcorn.ViewModels.Windows
         private async Task HandleTorrentDownload(string path)
         {
             var filePath = string.Empty;
-            if (path.StartsWith("magnet"))
-            {
-                filePath = $"{_cacheService.DropFilesDownloads}{Guid.NewGuid()}.torrent";
-                using (var file = File.Create(filePath))
-                using (var stream = new StreamWriter(file))
-                {
-                    await stream.WriteLineAsync(path);
-                }
-            }
-            else if (path.EndsWith("torrent"))
-            {
-                filePath = path;
-            }
+            //if (path.StartsWith("magnet"))
+            //{
+            //    filePath = $"{_cacheService.DropFilesDownloads}{Guid.NewGuid()}.torrent";
+            //    using (var file = File.Create(filePath))
+            //    using (var stream = new StreamWriter(file))
+            //    {
+            //        await stream.WriteLineAsync(path);
+            //    }
+            //}
+            //else if (path.EndsWith("torrent"))
+            //{
+            //    filePath = path;
+            //}
 
+            filePath = path;
             var vm = new DropTorrentDialogViewModel(_cacheService, filePath);
             var dropTorrentDialog = new DropTorrentDialog
             {

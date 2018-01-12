@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
+using AutoFixture;
 using NUnit.Framework;
-using Ploeh.AutoFixture;
 using Popcorn.Converters;
 
 namespace Popcorn.Tests.Converters

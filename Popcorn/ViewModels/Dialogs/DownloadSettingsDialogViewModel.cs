@@ -132,58 +132,74 @@ namespace Popcorn.ViewModels.Dialogs
             Messenger.Default.Register<PropertyChangedMessage<bool>>(this, async e =>
             {
                 if (e.PropertyName != GetPropertyName(() => Media.WatchInFullHdQuality)) return;
-                await Task.Run(async () =>
-                {
-                    _computeHealthTokenSource.Cancel();
-                    _computeHealthTokenSource = new CancellationTokenSource();
-                    ComputeTorrentHealth();
-                    if (SelectedTorrent == null || SelectedTorrent.Peers > 0 && SelectedTorrent.Seeds > 0) return;
-                    if (Media is EpisodeShowJson)
-                    {
-                        string filePath = Path.GetTempFileName();
-                        using (var session = new session())
-                        {
-                            var magnet = new magnet_uri();
-                            using (var error = new error_code())
-                            {
-                                var addParams = new add_torrent_params
-                                {
-                                    save_path = filePath
-                                };
-                                magnet.parse_magnet_uri(SelectedTorrent.Url, addParams, error);
-                                using (var handle = session.add_torrent(addParams))
-                                {
-                                    handle.pause();
-                                    while (!_computeHealthTokenSource.IsCancellationRequested)
-                                    {
-                                        try
-                                        {
-                                            ComputeTorrentHealth();
-                                            var status = handle.status();
-                                            SelectedTorrent.Peers = status.list_peers;
-                                            SelectedTorrent.Seeds = status.list_seeds;
 
-                                            await Task.Delay(1000, _computeHealthTokenSource.Token);
-                                        }
-                                        catch (Exception)
+                try
+                {
+                    await Task.Run(async () =>
+                    {
+                        try
+                        {
+                            _computeHealthTokenSource.Cancel();
+                            _computeHealthTokenSource = new CancellationTokenSource();
+                            ComputeTorrentHealth();
+                            if (SelectedTorrent == null || SelectedTorrent.Peers > 0 && SelectedTorrent.Seeds > 0)
+                                return;
+                            if (Media is EpisodeShowJson)
+                            {
+                                string filePath = Path.GetTempFileName();
+                                using (var session = new session())
+                                {
+                                    var magnet = new magnet_uri();
+                                    using (var error = new error_code())
+                                    {
+                                        var addParams = new add_torrent_params
                                         {
-                                            break;
+                                            save_path = filePath
+                                        };
+                                        magnet.parse_magnet_uri(SelectedTorrent.Url, addParams, error);
+                                        using (var handle = session.add_torrent(addParams))
+                                        {
+                                            handle.pause();
+                                            while (!_computeHealthTokenSource.IsCancellationRequested)
+                                            {
+                                                try
+                                                {
+                                                    ComputeTorrentHealth();
+                                                    var status = handle.status();
+                                                    SelectedTorrent.Peers = status.list_peers;
+                                                    SelectedTorrent.Seeds = status.list_seeds;
+
+                                                    await Task.Delay(1000, _computeHealthTokenSource.Token);
+                                                }
+                                                catch (Exception)
+                                                {
+                                                    break;
+                                                }
+                                            }
                                         }
                                     }
                                 }
+
+                                try
+                                {
+                                    File.Delete(filePath);
+                                }
+                                catch (Exception)
+                                {
+
+                                }
                             }
                         }
-
-                        try
+                        catch (Exception ex)
                         {
-                            File.Delete(filePath);
+                            Logger.Trace(ex);
                         }
-                        catch (Exception)
-                        {
-
-                        }
-                    }
-                }, _computeHealthTokenSource.Token);
+                    }, _computeHealthTokenSource.Token);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Trace(ex);
+                }
             });
 
             DownloadCommand = new RelayCommand(() =>
@@ -308,6 +324,7 @@ namespace Popcorn.ViewModels.Dialogs
                     {
                         Sub = new OSDB.Subtitle
                         {
+                            LanguageId = LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"),
                             LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"),
                             SubtitleId = "none"
                         }
@@ -317,6 +334,7 @@ namespace Popcorn.ViewModels.Dialogs
                     {
                         Sub = new OSDB.Subtitle
                         {
+                            LanguageId = LocalizationProviderHelper.GetLocalizedValue<string>("CustomLabel"),
                             LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("CustomLabel"),
                             SubtitleId = "custom"
                         }

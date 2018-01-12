@@ -346,77 +346,92 @@ namespace Popcorn.ViewModels.Pages.Player
 
             StopCastCommand = new RelayCommand(async () => { await StopCastPlayer(); });
 
-            SelectSubtitlesCommand = new RelayCommand(async () =>
+            SelectSubtitlesCommand = new RelayCommand<string>(async sub =>
             {
-                IsSubtitleChosen = !IsSubtitleChosen;
-                var previousSubtitleChosen = IsSubtitleChosen;
-                try
+                if (!string.IsNullOrEmpty(sub))
                 {
-                    IsSubtitleChosen = false;
-                    OnPausedMedia(new EventArgs());
-                    var message = new ShowSubtitleDialogMessage(_subtitles, CurrentSubtitle);
-                    await Messenger.Default.SendAsync(message);
-                    if (message.SelectedSubtitle != null &&
-                        message.SelectedSubtitle.LanguageName !=
-                        LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel") &&
-                        message.SelectedSubtitle.SubtitleId != "custom")
+                    OnSubtitleChosen(
+                        new SubtitleChangedEventArgs(sub, new OSDB.Subtitle
+                        {
+                            LanguageId = LocalizationProviderHelper.GetLocalizedValue<string>("CustomLabel"),
+                            LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("CustomLabel"),
+                            SubtitleId = "custom",
+                            SubtitleFileName = sub
+                        }));
+                    IsSubtitleChosen = true;
+                }
+                else
+                {
+                    IsSubtitleChosen = !IsSubtitleChosen;
+                    var previousSubtitleChosen = IsSubtitleChosen;
+                    try
                     {
-                        OnResumedMedia(new EventArgs());
-                        if (CurrentSubtitle != null &&
-                            CurrentSubtitle.SubtitleId == message.SelectedSubtitle.SubtitleId)
+                        IsSubtitleChosen = false;
+                        OnPausedMedia(new EventArgs());
+                        var message = new ShowSubtitleDialogMessage(_subtitles, CurrentSubtitle);
+                        await Messenger.Default.SendAsync(message);
+                        if (message.SelectedSubtitle != null &&
+                            message.SelectedSubtitle.LanguageName !=
+                            LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel") &&
+                            message.SelectedSubtitle.SubtitleId != "custom")
                         {
-                            IsSubtitleChosen = true;
+                            OnResumedMedia(new EventArgs());
+                            if (CurrentSubtitle != null &&
+                                CurrentSubtitle.SubtitleId == message.SelectedSubtitle.SubtitleId)
+                            {
+                                IsSubtitleChosen = true;
+                            }
+                            else
+                            {
+                                var path = Path.Combine(_cacheService.Subtitles + message.SelectedSubtitle.ImdbId);
+                                Directory.CreateDirectory(path);
+                                var subtitlePath = await
+                                    _subtitlesService.DownloadSubtitleToPath(path,
+                                        message.SelectedSubtitle);
+                                OnSubtitleChosen(new SubtitleChangedEventArgs(subtitlePath,
+                                    message.SelectedSubtitle));
+                                IsSubtitleChosen = true;
+                            }
                         }
-                        else
+                        else if (message.SelectedSubtitle != null &&
+                                 message.SelectedSubtitle.LanguageName !=
+                                 LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel") &&
+                                 message.SelectedSubtitle.SubtitleId == "custom" || !string.IsNullOrEmpty(sub))
                         {
-                            var path = Path.Combine(_cacheService.Subtitles + message.SelectedSubtitle.ImdbId);
-                            Directory.CreateDirectory(path);
-                            var subtitlePath = await
-                                _subtitlesService.DownloadSubtitleToPath(path,
-                                    message.SelectedSubtitle);
-                            OnSubtitleChosen(new SubtitleChangedEventArgs(subtitlePath,
-                                message.SelectedSubtitle));
-                            IsSubtitleChosen = true;
+                            var subMessage = new ShowCustomSubtitleMessage();
+                            await Messenger.Default.SendAsync(subMessage);
+                            if (!subMessage.Error && !string.IsNullOrEmpty(subMessage.FileName))
+                            {
+                                OnSubtitleChosen(
+                                    new SubtitleChangedEventArgs(subMessage.FileName, message.SelectedSubtitle));
+                                IsSubtitleChosen = true;
+                            }
+                            else
+                            {
+                                IsSubtitleChosen = false;
+                            }
+
+                            OnResumedMedia(new EventArgs());
                         }
-                    }
-                    else if (message.SelectedSubtitle != null &&
-                             message.SelectedSubtitle.LanguageName !=
-                             LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel") &&
-                             message.SelectedSubtitle.SubtitleId == "custom")
-                    {
-                        var subMessage = new ShowCustomSubtitleMessage();
-                        await Messenger.Default.SendAsync(subMessage);
-                        if (!subMessage.Error && !string.IsNullOrEmpty(subMessage.FileName))
+                        else if (message.SelectedSubtitle != null && message.SelectedSubtitle.LanguageName ==
+                                 LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"))
                         {
-                            OnSubtitleChosen(
-                                new SubtitleChangedEventArgs(subMessage.FileName, message.SelectedSubtitle));
-                            IsSubtitleChosen = true;
-                        }
-                        else
-                        {
+                            OnSubtitleChosen(new SubtitleChangedEventArgs(string.Empty, message.SelectedSubtitle));
+                            OnResumedMedia(new EventArgs());
                             IsSubtitleChosen = false;
                         }
-
-                        OnResumedMedia(new EventArgs());
+                        else
+                        {
+                            OnResumedMedia(new EventArgs());
+                            IsSubtitleChosen = previousSubtitleChosen;
+                        }
                     }
-                    else if (message.SelectedSubtitle != null && message.SelectedSubtitle.LanguageName ==
-                             LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"))
+                    catch (Exception ex)
                     {
-                        OnSubtitleChosen(new SubtitleChangedEventArgs(string.Empty, message.SelectedSubtitle));
-                        OnResumedMedia(new EventArgs());
-                        IsSubtitleChosen = false;
-                    }
-                    else
-                    {
-                        OnResumedMedia(new EventArgs());
                         IsSubtitleChosen = previousSubtitleChosen;
+                        OnResumedMedia(new EventArgs());
+                        Logger.Trace(ex);
                     }
-                }
-                catch (Exception ex)
-                {
-                    IsSubtitleChosen = previousSubtitleChosen;
-                    OnResumedMedia(new EventArgs());
-                    Logger.Trace(ex);
                 }
             });
 

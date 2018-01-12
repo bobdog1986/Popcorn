@@ -1,4 +1,11 @@
-﻿# 3.5.5 - 10/01/2018 #
+﻿# 3.5.6 - 12/01/2018 #
+***
+Fixed issues
+
+### Details ###
+* Fixed issue [#97](https://github.com/bbougot/Popcorn/issues/97).
+
+# 3.5.5 - 10/01/2018 #
 ***
 Improved performances
 

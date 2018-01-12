@@ -107,10 +107,7 @@ namespace Popcorn.ViewModels.Dialogs
 
         public async Task Download(int uploadLimit, int downloadLimit, Action buffered, Action cancelled)
         {
-            TorrentType torrentType;
-            torrentType = File.ReadLines(TorrentPath).Any(line => line.Contains("magnet"))
-                ? TorrentType.Magnet
-                : TorrentType.File;
+            var torrentType = TorrentPath.Contains("magnet:?") ? TorrentType.Magnet : TorrentType.File;
 
             var media = new MediaFile();
             var downloadProgress = new Progress<double>(e =>
