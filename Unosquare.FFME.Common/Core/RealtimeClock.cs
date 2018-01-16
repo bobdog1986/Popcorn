@@ -1,5 +1,6 @@
 ﻿namespace Unosquare.FFME.Core
 {
+    using Primitives;
     using Shared;
     using System;
     using System.Diagnostics;
@@ -7,12 +8,13 @@
     /// <summary>
     /// A time measurement artifact.
     /// </summary>
-    internal sealed class RealTimeClock
+    internal sealed class RealTimeClock : IDisposable
     {
-        private readonly object SyncLock = new object();
         private readonly Stopwatch Chrono = new Stopwatch();
+        private ISyncLocker Locker = SyncLockerFactory.CreateSlim();
         private double OffsetMilliseconds = 0;
         private double m_SpeedRatio = Defaults.DefaultSpeedRatio;
+        private bool IsDisposed = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RealTimeClock"/> class.
@@ -30,13 +32,15 @@
         {
             get
             {
-                lock (SyncLock)
+                using (Locker.AcquireReaderLock())
+                {
                     return TimeSpan.FromTicks((long)Math.Round(
                         (OffsetMilliseconds + (Chrono.ElapsedMilliseconds * SpeedRatio)) * TimeSpan.TicksPerMillisecond, 0));
+                }
             }
             set
             {
-                lock (SyncLock)
+                using (Locker.AcquireWriterLock())
                 {
                     var resume = Chrono.IsRunning;
                     Chrono.Reset();
@@ -51,7 +55,13 @@
         /// </summary>
         public bool IsRunning
         {
-            get { lock (SyncLock) return Chrono.IsRunning; }
+            get
+            {
+                using (Locker.AcquireReaderLock())
+                {
+                    return Chrono.IsRunning;
+                }
+            }
         }
 
         /// <summary>
@@ -61,11 +71,14 @@
         {
             get
             {
-                lock (SyncLock) return m_SpeedRatio;
+                using (Locker.AcquireReaderLock())
+                {
+                    return m_SpeedRatio;
+                }
             }
             set
             {
-                lock (SyncLock)
+                using (Locker.AcquireWriterLock())
                 {
                     if (value < 0d) value = 0d;
 
@@ -83,7 +96,7 @@
         /// </summary>
         public void Play()
         {
-            lock (SyncLock)
+            using (Locker.AcquireWriterLock())
             {
                 if (Chrono.IsRunning) return;
                 Chrono.Start();
@@ -95,7 +108,10 @@
         /// </summary>
         public void Pause()
         {
-            Chrono.Stop();
+            using (Locker.AcquireWriterLock())
+            {
+                Chrono.Stop();
+            }
         }
 
         /// <summary>
@@ -104,10 +120,36 @@
         /// </summary>
         public void Reset()
         {
-            lock (SyncLock)
+            using (Locker.AcquireWriterLock())
             {
                 OffsetMilliseconds = 0;
                 Chrono.Reset();
+            }
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
+        /// <param name="alsoManaged"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        private void Dispose(bool alsoManaged)
+        {
+            if (!IsDisposed)
+            {
+                if (alsoManaged)
+                {
+                    Locker?.Dispose();
+                }
+
+                Locker = null;
+                IsDisposed = true;
             }
         }
     }

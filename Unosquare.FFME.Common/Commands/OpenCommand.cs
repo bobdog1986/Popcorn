@@ -56,6 +56,7 @@
                 m.IsOpening = true;
                 m.MediaState = MediaEngineState.Manual;
 
+                // Convert the URI object to something the Media Container understands
                 var mediaUrl = Source.IsFile ? Source.LocalPath : Source.ToString();
 
                 // Create the stream container
@@ -64,16 +65,17 @@
                 m.SendOnMediaOpening();
                 m.Log(MediaLogMessageType.Debug, $"{nameof(OpenCommand)}: Entered");
                 m.Container.Open();
+                m.ResetBufferingProperties();
 
                 // Set the state to stopped
                 m.MediaState = MediaEngineState.Stop;
 
-                // Fire up the worker threads!
-                m.StartWorkers();
-
                 // Signal we are no longer in the opening state 
                 // so we can enqueue commands in the event handler
                 m.IsOpening = false;
+
+                // Charge! Fire up the worker threads!
+                m.StartWorkers();
 
                 // Raise the opened event
                 m.SendOnMediaOpened();

@@ -1,18 +1,18 @@
 ﻿namespace Unosquare.FFME.Decoding
 {
     using Core;
-    using Shared;
     using FFmpeg.AutoGen;
+    using Shared;
     using System;
     using System.Collections.Generic;
     using System.Globalization;
 
     /// <summary>
-    /// Represents a media component of a given media type within a 
+    /// Represents a media component of a given media type within a
     /// media container. Derived classes must implement frame handling
     /// logic.
     /// </summary>
-    /// <seealso cref="System.IDisposable" />
+    /// <seealso cref="IDisposable" />
     internal abstract unsafe class MediaComponent : IDisposable
     {
         #region Private Declarations
@@ -53,9 +53,9 @@
         private bool IsDisposed = false;
 
         /// <summary>
-        /// The m total bytes read
+        /// Holds total bytes read in the lifetime of this object
         /// </summary>
-        private ulong m_TotalBytesRead = 0;
+        private ulong m_LifetimeBytesRead = 0;
 
         #endregion
 
@@ -127,7 +127,7 @@
 
             // Enable Hardware acceleration if requested
             if (this is VideoComponent && container.MediaOptions.EnableHardwareAcceleration)
-                HardwareAccelerator.Dxva2.AttachDevice(this as VideoComponent);
+                HardwareAccelerator.Cuda.AttachDevice(this as VideoComponent);
 
             // Open the CodecContext. This requires exclusive FFmpeg access
             var codecOpenResult = 0;
@@ -199,7 +199,7 @@
         public int StreamIndex { get; }
 
         /// <summary>
-        /// Returns the component's stream start timestamp as reported 
+        /// Gets the component's stream start timestamp as reported
         /// by the start time of the stream.
         /// </summary>
         public TimeSpan StartTimeOffset { get; }
@@ -211,7 +211,7 @@
         public TimeSpan Duration { get; }
 
         /// <summary>
-        /// Gets the current length in bytes of the 
+        /// Gets the current length in bytes of the
         /// packet buffer. Limit your Reads to something reasonable before
         /// this becomes too large.
         /// </summary>
@@ -224,12 +224,12 @@
         public int PacketBufferCount => Packets.Count;
 
         /// <summary>
-        /// Gets the total amount of bytes read by this component.
+        /// Gets the total amount of bytes read by this component in the lifetime of this component.
         /// </summary>
-        public ulong TotalBytesRead
+        public ulong LifetimeBytesRead
         {
-            get => m_TotalBytesRead;
-            private set => m_TotalBytesRead = value;
+            get => m_LifetimeBytesRead;
+            private set => m_LifetimeBytesRead = value;
         }
 
         /// <summary>
@@ -243,7 +243,7 @@
         public string CodecName { get; }
 
         /// <summary>
-        /// Gets the bitrate of this component as reported by the codec context. 
+        /// Gets the bitrate of this component as reported by the codec context.
         /// Returns 0 for unknown.
         /// </summary>
         public int Bitrate { get; }
@@ -287,8 +287,7 @@
         /// <summary>
         /// Pushes a packet into the decoding Packet Queue
         /// and processes the packet in order to try to decode
-        /// 1 or more frames. The packet has to be within the range of
-        /// the start time and end time of 
+        /// 1 or more frames.
         /// </summary>
         /// <param name="packet">The packet.</param>
         public void SendPacket(AVPacket* packet)
@@ -296,7 +295,7 @@
             if (packet == null) return;
             Packets.Push(packet);
             if (packet->size > 0)
-                TotalBytesRead += (ulong)packet->size;
+                LifetimeBytesRead += (ulong)packet->size;
         }
 
         /// <summary>
@@ -440,7 +439,7 @@
                 MediaFrame managedFrame = null;
                 while (receiveFrameResult == 0)
                 {
-                    // Allocate a frame in unmanaged memory and 
+                    // Allocate a frame in unmanaged memory and
                     // Try to receive the decompressed frame data
                     var outputFrame = ffmpeg.av_frame_alloc();
                     RC.Current.Add(outputFrame, $"327: {nameof(MediaComponent)}[{MediaType}].{nameof(DecodeNextPacketInternal)}()");

@@ -16,7 +16,7 @@
         /// <summary>
         /// The locking object to perform synchronization.
         /// </summary>
-        private readonly object SyncLock = new object();
+        private ISyncLocker Locker = SyncLockerFactory.CreateSlim();
 
         /// <summary>
         /// To detect redundant calls
@@ -24,9 +24,16 @@
         private bool IsDisposed = false;
 
         /// <summary>
-        /// The unbmanaged buffer
+        /// The unmanaged buffer
         /// </summary>
         private IntPtr Buffer = IntPtr.Zero;
+
+        // Property backing
+        private int m_ReadableCount = default(int);
+        private TimeSpan m_WriteTag = TimeSpan.MinValue;
+        private int m_WriteIndex = default(int);
+        private int m_ReadIndex = default(int);
+        private int m_Length = default(int);
 
         #endregion
 
@@ -38,9 +45,9 @@
         /// <param name="bufferLength">Length of the buffer.</param>
         public CircularBuffer(int bufferLength)
         {
-            Length = bufferLength;
-            Buffer = Marshal.AllocHGlobal(Length);
-            MediaEngine.Platform.NativeMethods.FillMemory(Buffer, (uint)Length, 0);
+            m_Length = bufferLength;
+            Buffer = Marshal.AllocHGlobal(m_Length);
+            MediaEngine.Platform.NativeMethods.FillMemory(Buffer, (uint)m_Length, 0);
         }
 
         /// <summary>
@@ -58,12 +65,30 @@
         /// <summary>
         /// Gets the capacity of this buffer.
         /// </summary>
-        public int Length { get; private set; }
+        public int Length
+        {
+            get
+            {
+                using (Locker.AcquireReaderLock())
+                {
+                    return m_Length;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets the current, 0-based read index
         /// </summary>
-        public int ReadIndex { get; private set; }
+        public int ReadIndex
+        {
+            get
+            {
+                using (Locker.AcquireReaderLock())
+                {
+                    return m_ReadIndex;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets the maximum rewindable amount of bytes.
@@ -72,12 +97,12 @@
         {
             get
             {
-                lock (SyncLock)
+                using (Locker.AcquireReaderLock())
                 {
-                    if (WriteIndex < ReadIndex)
-                        return ReadIndex - WriteIndex;
+                    if (m_WriteIndex < m_ReadIndex)
+                        return m_ReadIndex - m_WriteIndex;
 
-                    return ReadIndex;
+                    return m_ReadIndex;
                 }
             }
         }
@@ -85,27 +110,72 @@
         /// <summary>
         /// Gets the current, 0-based write index.
         /// </summary>
-        public int WriteIndex { get; private set; }
+        public int WriteIndex
+        {
+            get
+            {
+                using (Locker.AcquireReaderLock())
+                {
+                    return m_WriteIndex;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets an the object associated with the last write
         /// </summary>
-        public TimeSpan WriteTag { get; private set; } = TimeSpan.MinValue;
+        public TimeSpan WriteTag
+        {
+            get
+            {
+                using (Locker.AcquireReaderLock())
+                {
+                    return m_WriteTag;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets the available bytes to read.
         /// </summary>
-        public int ReadableCount { get; private set; }
+        public int ReadableCount
+        {
+            get
+            {
+                using (Locker.AcquireReaderLock())
+                {
+                    return m_ReadableCount;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets the number of bytes that can be written.
         /// </summary>
-        public int WritableCount => Length - ReadableCount;
+        public int WritableCount
+        {
+            get
+            {
+                using (Locker.AcquireReaderLock())
+                {
+                    return m_Length - m_ReadableCount;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets percentage of used bytes (readbale/available, from 0.0 to 1.0).
         /// </summary>
-        public double CapacityPercent => 1.0 * ReadableCount / Length;
+        public double CapacityPercent
+        {
+            get
+            {
+                using (Locker.AcquireReaderLock())
+                {
+                    return 1.0 * m_ReadableCount / m_Length;
+                }
+            }
+        }
 
         #endregion
 
@@ -118,19 +188,19 @@
         /// <exception cref="System.InvalidOperationException">When requested bytes GT readable count</exception>
         public void Skip(int requestedBytes)
         {
-            lock (SyncLock)
+            using (Locker.AcquireWriterLock())
             {
-                if (requestedBytes > ReadableCount)
+                if (requestedBytes > m_ReadableCount)
                 {
                     throw new InvalidOperationException(
-                        $"Unable to skip {requestedBytes} bytes. Only {ReadableCount} bytes are available for skipping");
+                        $"Unable to skip {requestedBytes} bytes. Only {m_ReadableCount} bytes are available for skipping");
                 }
 
-                ReadIndex += requestedBytes;
-                ReadableCount -= requestedBytes;
+                m_ReadIndex += requestedBytes;
+                m_ReadableCount -= requestedBytes;
 
-                if (ReadIndex >= Length)
-                    ReadIndex = 0;
+                if (m_ReadIndex >= m_Length)
+                    m_ReadIndex = 0;
             }
         }
 
@@ -141,7 +211,7 @@
         /// <exception cref="InvalidOperationException">When requested GT rewindable</exception>
         public void Rewind(int requestedBytes)
         {
-            lock (SyncLock)
+            using (Locker.AcquireWriterLock())
             {
                 if (requestedBytes > RewindableCount)
                 {
@@ -149,11 +219,11 @@
                         $"Unable to rewind {requestedBytes} bytes. Only {RewindableCount} bytes are available for rewinding");
                 }
 
-                ReadIndex -= requestedBytes;
-                ReadableCount += requestedBytes;
+                m_ReadIndex -= requestedBytes;
+                m_ReadableCount += requestedBytes;
 
-                if (ReadIndex < 0)
-                    ReadIndex = 0;
+                if (m_ReadIndex < 0)
+                    m_ReadIndex = 0;
             }
         }
 
@@ -166,27 +236,27 @@
         /// <exception cref="System.InvalidOperationException">When requested GT readble</exception>
         public void Read(int requestedBytes, byte[] target, int targetOffset)
         {
-            lock (SyncLock)
+            using (Locker.AcquireWriterLock())
             {
-                if (requestedBytes > ReadableCount)
+                if (requestedBytes > m_ReadableCount)
                 {
                     throw new InvalidOperationException(
-                        $"Unable to read {requestedBytes} bytes. Only {ReadableCount} bytes are available");
+                        $"Unable to read {requestedBytes} bytes. Only {m_ReadableCount} bytes are available");
                 }
 
                 var readCount = 0;
                 while (readCount < requestedBytes)
                 {
-                    var copyLength = Math.Min(Length - ReadIndex, requestedBytes - readCount);
-                    var sourcePtr = Buffer + ReadIndex;
+                    var copyLength = Math.Min(m_Length - m_ReadIndex, requestedBytes - readCount);
+                    var sourcePtr = Buffer + m_ReadIndex;
                     Marshal.Copy(sourcePtr, target, targetOffset + readCount, copyLength);
 
                     readCount += copyLength;
-                    ReadIndex += copyLength;
-                    ReadableCount -= copyLength;
+                    m_ReadIndex += copyLength;
+                    m_ReadableCount -= copyLength;
 
-                    if (ReadIndex >= Length)
-                        ReadIndex = 0;
+                    if (m_ReadIndex >= m_Length)
+                        m_ReadIndex = 0;
                 }
             }
         }
@@ -203,7 +273,7 @@
         /// <exception cref="System.InvalidOperationException">When read needs to be called more!</exception>
         public void Write(IntPtr source, int length, TimeSpan writeTag, bool overwrite)
         {
-            lock (SyncLock)
+            using (Locker.AcquireWriterLock())
             {
                 if (overwrite == false && length > WritableCount)
                 {
@@ -214,20 +284,20 @@
                 var writeCount = 0;
                 while (writeCount < length)
                 {
-                    var copyLength = Math.Min(Length - WriteIndex, length - writeCount);
+                    var copyLength = Math.Min(m_Length - m_WriteIndex, length - writeCount);
                     var sourcePtr = source + writeCount;
-                    var targetPtr = Buffer + WriteIndex;
+                    var targetPtr = Buffer + m_WriteIndex;
                     MediaEngine.Platform.NativeMethods.CopyMemory(targetPtr, sourcePtr, (uint)copyLength);
 
                     writeCount += copyLength;
-                    WriteIndex += copyLength;
-                    ReadableCount += copyLength;
+                    m_WriteIndex += copyLength;
+                    m_ReadableCount += copyLength;
 
-                    if (WriteIndex >= Length)
-                        WriteIndex = 0;
+                    if (m_WriteIndex >= m_Length)
+                        m_WriteIndex = 0;
                 }
 
-                WriteTag = writeTag;
+                m_WriteTag = writeTag;
             }
         }
 
@@ -236,12 +306,12 @@
         /// </summary>
         public void Clear()
         {
-            lock (SyncLock)
+            using (Locker.AcquireWriterLock())
             {
-                WriteIndex = 0;
-                ReadIndex = 0;
-                WriteTag = TimeSpan.MinValue;
-                ReadableCount = 0;
+                m_WriteIndex = 0;
+                m_ReadIndex = 0;
+                m_WriteTag = TimeSpan.MinValue;
+                m_ReadableCount = 0;
             }
         }
 
@@ -264,19 +334,20 @@
         /// <param name="alsoManaged"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         private void Dispose(bool alsoManaged)
         {
-            lock (SyncLock)
+            if (IsDisposed) return;
+
+            if (alsoManaged)
             {
-                if (IsDisposed) return;
-
-                if (alsoManaged)
-                    Clear();
-
-                Marshal.FreeHGlobal(Buffer);
-                Buffer = IntPtr.Zero;
-                Length = 0;
-
-                IsDisposed = true;
+                Clear();
+                Locker?.Dispose();
             }
+
+            Marshal.FreeHGlobal(Buffer);
+            Buffer = IntPtr.Zero;
+            m_Length = 0;
+            Locker = null;
+
+            IsDisposed = true;
         }
 
         #endregion

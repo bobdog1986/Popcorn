@@ -39,9 +39,7 @@
 
             WasPlaying = m.IsPlaying;
 
-            var pause = new PauseCommand(Manager);
-            pause.ExecuteInternal();
-
+            m.Clock.Pause();
             var initialPosition = m.Clock.Position;
             m.SeekingDone.Reset();
             var startTime = DateTime.UtcNow;
@@ -59,7 +57,7 @@
                     return;
                 }
 
-                // Signal to wait one more frame dcoding cycle before 
+                // Signal to wait one more frame decoding cycle before 
                 // sending blocks to the renderer.
                 m.HasDecoderSeeked = true;
 
@@ -168,8 +166,7 @@
 
                 if (WasPlaying)
                 {
-                    var play = new PlayCommand(Manager);
-                    play.ExecuteInternal();
+                    var playTask = m.Commands.PlayAsync();
                 }
             }
         }

@@ -2,6 +2,7 @@
 {
     using Core;
     using FFmpeg.AutoGen;
+    using Primitives;
     using System;
     using System.Collections.Generic;
 
@@ -16,8 +17,10 @@
         #region Private Declarations
 
         private readonly List<IntPtr> PacketPointers = new List<IntPtr>();
-        private readonly object SyncRoot = new object();
+        private ISyncLocker Locker = SyncLockerFactory.CreateSlim();
         private bool IsDisposed = false; // To detect redundant calls
+        private int m_BufferLength = default(int);
+        private long m_Duration = default(long);
 
         #endregion
 
@@ -30,8 +33,10 @@
         {
             get
             {
-                lock (SyncRoot)
+                using (Locker.AcquireReaderLock())
+                {
                     return PacketPointers.Count;
+                }
             }
         }
 
@@ -39,12 +44,30 @@
         /// Gets the sum of all the packet sizes contained
         /// by this queue.
         /// </summary>
-        public int BufferLength { get; private set; }
+        public int BufferLength
+        {
+            get
+            {
+                using (Locker.AcquireReaderLock())
+                {
+                    return m_BufferLength;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets the total duration in stream TimeBase units.
         /// </summary>
-        public long Duration { get; private set; }
+        public long Duration
+        {
+            get
+            {
+                using (Locker.AcquireReaderLock())
+                {
+                    return m_Duration;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets or sets the <see cref="AVPacket"/> at the specified index.
@@ -58,13 +81,17 @@
         {
             get
             {
-                lock (SyncRoot)
+                using (Locker.AcquireReaderLock())
+                {
                     return (AVPacket*)PacketPointers[index];
+                }
             }
             set
             {
-                lock (SyncRoot)
+                using (Locker.AcquireWriterLock())
+                {
                     PacketPointers[index] = (IntPtr)value;
+                }
             }
         }
 
@@ -79,7 +106,7 @@
         /// <returns>The packet</returns>
         public AVPacket* Peek()
         {
-            lock (SyncRoot)
+            using (Locker.AcquireReaderLock())
             {
                 if (PacketPointers.Count <= 0) return null;
                 return (AVPacket*)PacketPointers[0];
@@ -93,14 +120,14 @@
         /// <param name="packet">The packet.</param>
         public void Push(AVPacket* packet)
         {
-            // avoid puching null packets
+            // avoid pushing null packets
             if (packet == null) return;
 
-            lock (SyncRoot)
+            using (Locker.AcquireWriterLock())
             {
                 PacketPointers.Add((IntPtr)packet);
-                BufferLength += packet->size;
-                Duration += packet->duration;
+                m_BufferLength += packet->size;
+                m_Duration += packet->duration;
             }
         }
 
@@ -110,15 +137,15 @@
         /// <returns>The dequeued packet</returns>
         public AVPacket* Dequeue()
         {
-            lock (SyncRoot)
+            using (Locker.AcquireWriterLock())
             {
                 if (PacketPointers.Count <= 0) return null;
                 var result = PacketPointers[0];
                 PacketPointers.RemoveAt(0);
 
                 var packet = (AVPacket*)result;
-                BufferLength -= packet->size;
-                Duration -= packet->duration;
+                m_BufferLength -= packet->size;
+                m_Duration -= packet->duration;
                 return packet;
             }
         }
@@ -128,7 +155,7 @@
         /// </summary>
         public void Clear()
         {
-            lock (SyncRoot)
+            using (Locker.AcquireWriterLock())
             {
                 while (PacketPointers.Count > 0)
                 {
@@ -137,8 +164,8 @@
                     ffmpeg.av_packet_free(&packet);
                 }
 
-                BufferLength = 0;
-                Duration = 0;
+                m_BufferLength = 0;
+                m_Duration = 0;
             }
         }
 
@@ -164,7 +191,12 @@
             {
                 IsDisposed = true;
                 if (alsoManaged)
+                {
                     Clear();
+                    Locker.Dispose();
+                }
+
+                Locker = null;
             }
         }
 

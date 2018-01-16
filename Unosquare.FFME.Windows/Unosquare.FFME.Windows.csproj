@@ -9,23 +9,28 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Unosquare.FFME</RootNamespace>
     <AssemblyName>ffme.win</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>
-    </ApplicationIcon>
+    <CodeAnalysisRuleSet>..\StyleCop.Analyzers.ruleset</CodeAnalysisRuleSet>
+    <ApplicationIcon />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <PlatformTarget>x86</PlatformTarget>
     <OutputPath>bin\x86\Debug\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <PlatformTarget>x86</PlatformTarget>
     <OutputPath>bin\x86\Release\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FFmpeg.AutoGen, Version=3.4.0.2, Culture=neutral, processorArchitecture=MSIL">
@@ -36,13 +41,13 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Windows" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Events\BitmapDataBuffer.cs" />
     <Compile Include="Events\RenderingAudioEventArgs.cs" />
     <Compile Include="Events\RenderingEventArgs.cs" />
     <Compile Include="Events\RenderingSubtitlesEventArgs.cs" />
@@ -56,8 +61,7 @@
     <Compile Include="Platform\WinFormsGuiContext.cs" />
     <Compile Include="Platform\WpfGuiContext.cs" />
     <Compile Include="Events\PositionChangedRoutedEventArgs.cs" />
-    <Compile Include="Rendering\SharedMemoryBitmap.cs" />
-    <Compile Include="Rendering\SoundTouch.cs" />
+    <Compile Include="Platform\SoundTouch.cs" />
     <Compile Include="Rendering\Wave\IWaveProvider.cs" />
     <Compile Include="Rendering\Wave\MmResult.cs" />
     <Compile Include="Rendering\Wave\MmTime.cs" />

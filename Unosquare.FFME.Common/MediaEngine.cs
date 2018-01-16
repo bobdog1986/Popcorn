@@ -6,14 +6,13 @@
     using Shared;
     using System;
     using System.Runtime.CompilerServices;
-    using System.Threading;
 
     /// <summary>
     /// Represents a Media Engine that contains underlying streams of audio and/or video.
     /// It uses the fantastic FFmpeg library to perform reading and decoding of media streams.
     /// </summary>
-    /// <seealso cref="Unosquare.FFME.Shared.IMediaLogger" />
-    /// <seealso cref="System.IDisposable" />
+    /// <seealso cref="IMediaLogger" />
+    /// <seealso cref="IDisposable" />
     public partial class MediaEngine : IDisposable, IMediaLogger
     {
         #region Fields and Property Backing
@@ -22,11 +21,6 @@
         /// To detect redundant calls
         /// </summary>
         private bool m_IsDisposed = default(bool);
-
-        /// <summary>
-        /// The position update timer
-        /// </summary>
-        private Timer PropertyUpdateTimer = null;
 
         /// <summary>
         /// When position is being set from within this control, this field will
@@ -52,6 +46,12 @@
         /// <exception cref="InvalidOperationException">Thrown when the static Initialize method has not been called.</exception>
         public MediaEngine(object parent, IMediaConnector connector)
         {
+            // var props = typeof(MediaEngine).GetProperties(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
+            // foreach (var p in props)
+            // {
+            //     Console.WriteLine(p);
+            // }
+
             // Assiciate the parent as the media connector that implements the callbacks
             Parent = parent;
             Connector = connector;
@@ -69,58 +69,6 @@
                         $"{nameof(MediaEngine)} not initialized. Call the static method {nameof(Initialize)}");
                 }
             }
-
-            var isRunningPropertyUpdates = new AtomicBoolean();
-
-            // The UI Property update timer is responsible for timely updates to properties outside of the worker threads
-            // We use the loaded priority because it is the priority right below the Render one.
-            PropertyUpdateTimer = new Timer((s) =>
-            {
-                if (isRunningPropertyUpdates.Value || m_IsDisposing.Value)
-                    return;
-                else
-                    isRunningPropertyUpdates.Value = true;
-
-                try
-                {
-                    UpdatePosition(IsOpen ? Clock?.Position ?? TimeSpan.Zero : TimeSpan.Zero);
-
-                    if (HasMediaEnded == false && CanReadMorePackets && (IsOpening || IsOpen))
-                    {
-                        var bufferedLength = Container?.Components?.PacketBufferLength ?? 0d;
-                        BufferingProgress = Math.Min(1d, bufferedLength / BufferCacheLength);
-                        var oldIsBugffering = IsBuffering;
-                        var newIsBuffering = bufferedLength < BufferCacheLength;
-
-                        if (oldIsBugffering == false && newIsBuffering)
-                            SendOnBufferingStarted();
-                        else if (oldIsBugffering && newIsBuffering == false)
-                            SendOnBufferingEnded();
-
-                        IsBuffering = HasMediaEnded == false && newIsBuffering;
-                    }
-                    else
-                    {
-                        BufferingProgress = 0;
-                        IsBuffering = false;
-                    }
-
-                    var downloadProgress = Math.Min(1d, Math.Round((Container?.Components.PacketBufferLength ?? 0d) / DownloadCacheLength, 3));
-                    if (double.IsNaN(downloadProgress)) downloadProgress = 0;
-                    DownloadProgress = downloadProgress;
-                }
-                catch (Exception ex)
-                {
-                    Log(MediaLogMessageType.Error, $"{nameof(PropertyUpdateTimer)} callabck failed. {ex.GetType()}: {ex.Message}");
-                }
-                finally
-                {
-                    isRunningPropertyUpdates.Value = false;
-                }
-            },
-            this, // the state argument passed on to the ticker
-            (int)Defaults.TimerMediumPriorityInterval.TotalMilliseconds,
-            (int)Defaults.TimerMediumPriorityInterval.TotalMilliseconds);
         }
 
         #endregion
@@ -174,12 +122,13 @@
         /// </summary>
         public void Dispose()
         {
+            // TODO: Looks like MediaElement is not calling this when closing the container?
             Dispose(true);
         }
 
         /// <summary>
         /// Updates the position property signaling the update is
-        /// coming internally. This is to distinguish between user/binding 
+        /// coming internally. This is to distinguish between user/binding
         /// written value to the Position Porperty and value set by this control's
         /// internal clock.
         /// </summary>
@@ -199,6 +148,118 @@
             finally
             {
                 IsPositionUpdating = false;
+            }
+        }
+
+        /// <summary>
+        /// Resets all the buffering properties to their defaults.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal void ResetBufferingProperties()
+        {
+            const int MinimumValidBitrate = 512 * 1024; // 524kbps
+            const int StartingCacheLength = 512 * 1024; // Half a megabyte
+
+            GuessedByteRate = default(ulong?);
+
+            if (Container == null)
+            {
+                IsBuffering = false;
+                BufferCacheLength = 0;
+                DownloadCacheLength = 0;
+                BufferingProgress = 0;
+                DownloadProgress = 0;
+                return;
+            }
+
+            if (Container.MediaBitrate > MinimumValidBitrate)
+            {
+                BufferCacheLength = (int)Container.MediaBitrate / 8;
+                GuessedByteRate = (ulong)BufferCacheLength;
+            }
+            else
+            {
+                BufferCacheLength = StartingCacheLength;
+            }
+
+            DownloadCacheLength = BufferCacheLength * (IsLiveStream ? 30 : 4);
+            IsBuffering = false;
+            BufferingProgress = 0;
+            DownloadProgress = 0;
+        }
+
+        /// <summary>
+        /// Updates the buffering properties: IsBuffering, BufferingProgress, DownloadProgress.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal void UpdateBufferingProperties()
+        {
+            var packetBufferLength = Container?.Components?.PacketBufferLength ?? 0d;
+
+            // Update the buffering progress
+            var bufferingProgress = Math.Min(
+                1d, Math.Round(packetBufferLength / BufferCacheLength, 3));
+            BufferingProgress = double.IsNaN(bufferingProgress) ? 0 : bufferingProgress;
+
+            // Update the download progress
+            var downloadProgress = Math.Min(
+                1d, Math.Round(packetBufferLength / DownloadCacheLength, 3));
+            DownloadProgress = double.IsNaN(downloadProgress) ? 0 : downloadProgress;
+
+            // IsBuffering and BufferingProgress
+            if (HasMediaEnded == false && CanReadMorePackets && (IsOpening || IsOpen))
+            {
+                var wasBuffering = IsBuffering;
+                var isNowBuffering = packetBufferLength < BufferCacheLength;
+                IsBuffering = isNowBuffering;
+
+                if (wasBuffering == false && isNowBuffering)
+                    SendOnBufferingStarted();
+                else if (wasBuffering && isNowBuffering == false)
+                    SendOnBufferingEnded();
+            }
+            else
+            {
+                IsBuffering = false;
+            }
+        }
+
+        /// <summary>
+        /// Guesses the bitrate of the input stream.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal void GuessBufferingProperties()
+        {
+            if (GuessedByteRate != null || Container == null || Container.Components == null)
+                return;
+
+            // Capture the read bytes of a 1-second buffer
+            var bytesReadSoFar = Container.Components.LifetimeBytesRead;
+            var shortestDuration = TimeSpan.MaxValue;
+            var currentDuration = TimeSpan.Zero;
+
+            foreach (var t in Container.Components.MediaTypes)
+            {
+                if (t != MediaType.Audio && t != MediaType.Video)
+                    continue;
+
+                currentDuration = Blocks[t].LifetimeBlockDuration;
+
+                if (currentDuration.TotalSeconds < 1)
+                {
+                    shortestDuration = TimeSpan.Zero;
+                    break;
+                }
+
+                if (currentDuration < shortestDuration)
+                    shortestDuration = currentDuration;
+            }
+
+            if (shortestDuration.TotalSeconds >= 1 && shortestDuration != TimeSpan.MaxValue)
+            {
+                GuessedByteRate = (ulong)(1.5 * bytesReadSoFar / shortestDuration.TotalSeconds);
+                BufferCacheLength = Convert.ToInt32(GuessedByteRate);
+                DownloadCacheLength = BufferCacheLength * (IsLiveStream ? 30 : 4);
             }
         }
 
@@ -248,17 +309,12 @@
                 // free managed resources -- This is done asynchronously
                 await Commands.CloseAsync().ContinueWith(d =>
                 {
-                    if (Container != null)
-                    {
-                        Container.Dispose();
-                        Container = null;
-                    }
+                    // Dispose the container
+                    Container?.Dispose();
+                    Container = null;
 
-                    if (PropertyUpdateTimer != null)
-                    {
-                        PropertyUpdateTimer.Dispose();
-                        PropertyUpdateTimer = null;
-                    }
+                    // Dispose the RTC
+                    Clock?.Dispose();
 
                     // Dispose the ManualResetEvent objects as they are
                     // backed by unmanaged code

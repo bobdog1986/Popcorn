@@ -273,7 +273,7 @@
             var element = dependencyObject as MediaElement;
             if (element == null) return;
 
-            element.ViewBox.Stretch = (Stretch)e.NewValue;
+            element.VideoView.Stretch = (Stretch)e.NewValue;
         }
 
         private static void OnStretchDirectionPropertyChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
@@ -281,7 +281,7 @@
             var element = dependencyObject as MediaElement;
             if (element == null) return;
 
-            element.ViewBox.StretchDirection = (StretchDirection)e.NewValue;
+            element.VideoView.StretchDirection = (StretchDirection)e.NewValue;
         }
 
         private static object CoerceVolumeProperty(DependencyObject d, object value)
@@ -371,7 +371,7 @@
             var element = d as MediaElement;
             if (element == null) return;
 
-            element.MediaCore.UnloadedBehavior = (MediaEngineState)(MediaState)e.NewValue;
+            element.MediaCore.UnloadedBehavior = (MediaEngineState)e.NewValue;
         }
 
         private static void LoadedBehaviorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -379,7 +379,7 @@
             var element = d as MediaElement;
             if (element == null) return;
 
-            element.MediaCore.LoadedBehavior = (MediaEngineState)(MediaState)e.NewValue;
+            element.MediaCore.LoadedBehavior = (MediaEngineState)e.NewValue;
         }
 
         private static void PositionPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -399,7 +399,13 @@
             if (element.MediaCore.IsDisposed) return TimeSpan.Zero;
             if (element.MediaCore.IsSeekable == false) return element.MediaCore.Position;
 
-            return (TimeSpan)value;
+            var minPosition = element.MediaCore?.MediaInfo?.StartTime ?? TimeSpan.Zero;
+            var maxPosition = minPosition + (element.MediaCore?.MediaInfo?.Duration ?? TimeSpan.Zero);
+            var val = (TimeSpan)value;
+
+            if (val < minPosition) return minPosition;
+            if (val > maxPosition) return maxPosition;
+            return val;
         }
 
         private static object CoerceSpeedRatioProperty(DependencyObject d, object value)
