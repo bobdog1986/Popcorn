@@ -3,14 +3,13 @@
     using FFmpeg.AutoGen;
     using Shared;
     using System;
-    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Runtime.InteropServices;
     using System.Text;
 
     /// <summary>
-    /// Provides a set of utilities to perfrom logging, text formatting, 
+    /// Provides a set of utilities to perfrom logging, text formatting,
     /// conversion and other handy calculations.
     /// </summary>
     internal static class FFInterop
@@ -21,6 +20,8 @@
         private static bool m_IsInitialized = false;
         private static string m_LibrariesPath = string.Empty;
         private static int m_LibraryIdentifiers = 0;
+        private static byte[] TempStringBuffer = new byte[512 * 1024]; // a temp buffer of 512kB
+        private static int TempByteLength = 0;
 
         #endregion
 
@@ -63,39 +64,34 @@
         /// <param name="overridePath">The override path.</param>
         /// <param name="libIdentifiers">The bitwaise flag identifiers corresponding to the libraries.</param>
         /// <returns>
-        /// Returns the path that FFmpeg was registered from.
+        /// Returns true if it was a new initialization and it succeeded. False if there was no need to initialize
+        /// as there is already a valid initialization.
         /// </returns>
         /// <exception cref="FileNotFoundException">When ffmpeg libraries are not found</exception>
-        /// <exception cref="System.IO.FileNotFoundException">When the folder is not found</exception>
         public static unsafe bool Initialize(string overridePath, int libIdentifiers)
         {
             lock (SyncLock)
             {
                 if (m_IsInitialized)
-                    return m_IsInitialized;
+                    return false;
 
                 try
                 {
                     // Get the temporary path where FFmpeg binaries are located
                     var ffmpegPath = string.IsNullOrWhiteSpace(overridePath) == false ?
-                        Path.GetFullPath(overridePath) : Defaults.FFmpegSearchPath;
+                        Path.GetFullPath(overridePath) : Constants.FFmpegSearchPath;
 
                     var registrationIds = 0;
 
                     // Sometimes we need to set the DLL directory even if we try to load the
-                    // library from the full path. In some Windows systems we get error 126
+                    // library from the full path. In some Windows systems we get error 126 if we don't
                     MediaEngine.Platform.NativeMethods.SetDllDirectory(ffmpegPath);
 
-                    // Load the minimum set of FFmpeg binaries
+                    // Load FFmpeg binaries by Library ID
                     foreach (var lib in FFLibrary.All)
                     {
-                        if ((lib.FlagId & libIdentifiers) != 0)
-                        {
-                            if (lib.Load(ffmpegPath))
-                            {
-                                registrationIds |= lib.FlagId;
-                            }
-                        }
+                        if ((lib.FlagId & libIdentifiers) != 0 && lib.Load(ffmpegPath))
+                            registrationIds |= lib.FlagId;
                     }
 
                     // Check if libraries were loaded correctly
@@ -119,22 +115,23 @@
                     LoggingWorker.ConnectToFFmpeg();
                     FFLockManager.Register();
 
-                    m_IsInitialized = true;
+                    // set the static environment properties
                     m_LibrariesPath = ffmpegPath;
                     m_LibraryIdentifiers = registrationIds;
+                    m_IsInitialized = true;
                 }
                 catch
                 {
-                    m_IsInitialized = true;
                     m_LibrariesPath = string.Empty;
                     m_LibraryIdentifiers = 0;
+                    m_IsInitialized = false;
 
                     // rethrow the exception with the original stack trace.
                     throw;
                 }
                 finally
                 {
-                    // Reset the search path
+                    // Reset the search path after registration
                     MediaEngine.Platform.NativeMethods.SetDllDirectory(null);
                 }
 
@@ -156,44 +153,38 @@
             var bufferSize = 1024;
             var buffer = stackalloc byte[bufferSize];
             ffmpeg.av_strerror(errorCode, buffer, (ulong)bufferSize);
-            var message = Marshal.PtrToStringAnsi((IntPtr)buffer);
+            var message = PtrToStringUTF8(buffer);
             return message;
-        }
-
-        /// <summary>
-        /// Converts a byte pointer to a string
-        /// </summary>
-        /// <param name="bytePtr">The byte PTR.</param>
-        /// <returns>The string</returns>
-        public static unsafe string PtrToString(byte* bytePtr)
-        {
-            return Marshal.PtrToStringAnsi(new IntPtr(bytePtr));
         }
 
         /// <summary>
         /// Converts a byte pointer to a UTF8 encoded string.
         /// </summary>
-        /// <param name="bytePtr">The byte PTR.</param>
+        /// <param name="stringAddress">The pointer to the starting character</param>
         /// <returns>The string</returns>
-        public static unsafe string PtrToStringUTF8(byte* bytePtr)
+        public static unsafe string PtrToStringUTF8(byte* stringAddress)
         {
-            if (bytePtr == null) return null;
-            if (*bytePtr == 0) return string.Empty;
-
-            var byteBuffer = new List<byte>(1024);
-            var currentByte = default(byte);
-
-            while (true)
+            lock (SyncLock)
             {
-                currentByte = *bytePtr;
-                if (currentByte == 0)
-                    break;
+                if (stringAddress == null) return null;
+                if (*stringAddress == 0) return string.Empty;
+                var stringPointer = (IntPtr)stringAddress;
 
-                byteBuffer.Add(currentByte);
-                bytePtr++;
+                TempByteLength = 0;
+                while (true)
+                {
+                    if (Marshal.ReadByte(stringPointer, TempByteLength) == 0)
+                        break;
+
+                    TempByteLength += 1;
+                }
+
+                if (TempStringBuffer == null || TempStringBuffer.Length < TempByteLength)
+                    TempStringBuffer = new byte[TempByteLength];
+
+                Marshal.Copy(stringPointer, TempStringBuffer, 0, TempByteLength);
+                return Encoding.UTF8.GetString(TempStringBuffer, 0, TempByteLength);
             }
-
-            return Encoding.UTF8.GetString(byteBuffer.ToArray());
         }
 
         #endregion

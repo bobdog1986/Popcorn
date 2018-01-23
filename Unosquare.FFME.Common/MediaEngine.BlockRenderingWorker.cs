@@ -122,7 +122,7 @@
                     #region 2. Handle Block Rendering
 
                     // Wait for the seek op to finish before we capture blocks
-                    if (IsSeeking)
+                    if (HasDecoderSeeked)
                         SeekingDone.WaitOne();
 
                     // Capture the blocks to render
@@ -176,7 +176,7 @@
             },
             this, // the state argument passed on to the ticker
             0,
-            (int)Defaults.TimerHighPriorityInterval.TotalMilliseconds);
+            (int)Constants.Interval.HighPriority.TotalMilliseconds);
         }
 
         /// <summary>

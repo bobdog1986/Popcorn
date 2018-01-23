@@ -3,13 +3,13 @@
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProjectGuid>{A6EB99A6-AAE2-4E6E-AB9E-93992CE5B84D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Unosquare.FFME</RootNamespace>
     <AssemblyName>ffme.win</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>
@@ -22,15 +22,15 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <PlatformTarget>x86</PlatformTarget>
     <OutputPath>bin\x86\Debug\</OutputPath>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <PlatformTarget>x86</PlatformTarget>
     <OutputPath>bin\x86\Release\</OutputPath>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Optimize>true</Optimize>
     <DefineConstants>TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FFmpeg.AutoGen, Version=3.4.0.2, Culture=neutral, processorArchitecture=MSIL">
@@ -52,6 +52,7 @@
     <Compile Include="Events\RenderingEventArgs.cs" />
     <Compile Include="Events\RenderingSubtitlesEventArgs.cs" />
     <Compile Include="Events\RenderingVideoEventArgs.cs" />
+    <Compile Include="Subtitles.cs" />
     <Compile Include="Platform\IGuiContext.cs" />
     <Compile Include="Platform\WindowsMediaConnector.cs" />
     <Compile Include="Platform\WindowsNativeMethods.cs" />
@@ -62,6 +63,7 @@
     <Compile Include="Platform\WpfGuiContext.cs" />
     <Compile Include="Events\PositionChangedRoutedEventArgs.cs" />
     <Compile Include="Platform\SoundTouch.cs" />
+    <Compile Include="Rendering\SubtitlesControl.cs" />
     <Compile Include="Rendering\Wave\IWaveProvider.cs" />
     <Compile Include="Rendering\Wave\MmResult.cs" />
     <Compile Include="Rendering\Wave\MmTime.cs" />

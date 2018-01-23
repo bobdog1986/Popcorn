@@ -126,7 +126,7 @@
         /// Gets a value indicating whether more frames can be decoded from the packet queue.
         /// That is, if we have packets in the packet buffer or if we are not at the end of the stream.
         /// </summary>
-        internal bool CanReadMoreFrames => CanReadMorePackets || Container.Components.PacketBufferLength > 0;
+        internal bool CanReadMoreFrames => CanReadMorePackets || (Container?.Components?.PacketBufferLength ?? 0) > 0;
 
         #endregion
 
@@ -443,9 +443,12 @@
                         {
                             // Rendered all and nothing else to read
                             Clock.Pause();
-                            Clock.Position = NaturalDuration ?? Blocks[main].RangeEndTime;
-                            wallClock = Clock.Position;
+                            if (NaturalDuration != null && NaturalDuration != TimeSpan.MinValue)
+                                Clock.Position = NaturalDuration.Value;
+                            else
+                                Clock.Position = Blocks[main].RangeEndTime;
 
+                            wallClock = Clock.Position;
                             HasMediaEnded = true;
                             MediaState = MediaEngineState.Pause;
                             SendOnMediaEnded();
@@ -524,7 +527,7 @@
                 Renderers[t] = Platform.CreateRenderer(t, this);
             }
 
-            Clock.SpeedRatio = Defaults.DefaultSpeedRatio;
+            Clock.SpeedRatio = Constants.Controller.DefaultSpeedRatio;
             IsTaskCancellationPending = false;
 
             // Set the initial state of the task cycles.

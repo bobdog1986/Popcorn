@@ -126,7 +126,7 @@
                 NormalizePixelFormat(source.Pointer),
                 source.Pointer->width,
                 source.Pointer->height,
-                Defaults.VideoPixelFormat,
+                Constants.Video.VideoPixelFormat,
                 ScalerFlags,
                 null,
                 null,
@@ -149,10 +149,10 @@
 
             // Perform scaling and save the data to our unmanaged buffer pointer
             var targetBufferStride = ffmpeg.av_image_get_linesize(
-                Defaults.VideoPixelFormat, source.Pointer->width, 0);
+                Constants.Video.VideoPixelFormat, source.Pointer->width, 0);
             var targetStride = new int[] { targetBufferStride };
             var targetLength = ffmpeg.av_image_get_buffer_size(
-                Defaults.VideoPixelFormat, source.Pointer->width, source.Pointer->height, 1);
+                Constants.Video.VideoPixelFormat, source.Pointer->width, source.Pointer->height, 1);
 
             // Ensure proper allocation of the buffer
             // If there is a size mismatch between the wanted buffer length and the existing one,
@@ -198,7 +198,7 @@
             target.SmtpeTimecode = source.SmtpeTimecode;
             target.DisplayPictureNumber = source.DisplayPictureNumber;
             target.CodedPictureNumber = source.DisplayPictureNumber;
-            target.ClosedCaptions = source.ClosedCaptions;
+            target.ClosedCaptions = new ClosedCaptions.ClosedCaptionCollection(source.ClosedCaptions);
             target.BufferStride = targetStride[0];
 
             target.PixelHeight = source.Pointer->height;

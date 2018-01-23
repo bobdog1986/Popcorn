@@ -2,6 +2,7 @@
 {
     using System;
     using System.Runtime.InteropServices;
+    using System.Threading.Tasks;
     using Shared;
 
     /// <summary>
@@ -26,6 +27,27 @@
         }
 
         /// <summary>
+        /// Enumerates memory copy methods
+        /// </summary>
+        private enum MemoryCopyStartegy
+        {
+            /// <summary>
+            /// The native
+            /// </summary>
+            Native,
+
+            /// <summary>
+            /// The parallel native
+            /// </summary>
+            ParallelNative,
+
+            /// <summary>
+            /// The buffer
+            /// </summary>
+            Buffer
+        }
+
+        /// <summary>
         /// Gets the instance.
         /// </summary>
         /// <value>
@@ -34,16 +56,9 @@
         public static WindowsNativeMethods Instance { get; }
 
         /// <summary>
-        /// Fast pointer memory block copy function
+        /// Gets or sets a value indicating whether Parallel Copy is enabled.
         /// </summary>
-        /// <param name="targetAddress">The target address.</param>
-        /// <param name="sourceAddress">The source address.</param>
-        /// <param name="copyLength">Length of the copy.</param>
-        public unsafe void CopyMemory(IntPtr targetAddress, IntPtr sourceAddress, uint copyLength)
-        {
-            // Buffer.MemoryCopy(sourceAddress.ToPointer(), targetAddress.ToPointer(), copyLength, copyLength);
-            NativeMethods.CopyMemory(targetAddress, sourceAddress, copyLength);
-        }
+        private MemoryCopyStartegy CopyStrategy { get; set; } = MemoryCopyStartegy.Native;
 
         /// <summary>
         /// Fills the memory with the specified value repeated.
@@ -66,6 +81,68 @@
         public bool SetDllDirectory(string path)
         {
             return NativeMethods.SetDllDirectory(path);
+        }
+
+        /// <summary>
+        /// Fast pointer memory block copy function
+        /// </summary>
+        /// <param name="targetAddress">The target address.</param>
+        /// <param name="sourceAddress">The source address.</param>
+        /// <param name="copyLength">Length of the copy.</param>
+        public unsafe void CopyMemory(IntPtr targetAddress, IntPtr sourceAddress, uint copyLength)
+        {
+            switch (CopyStrategy)
+            {
+                case MemoryCopyStartegy.Native:
+                    {
+                        NativeMethods.CopyMemory(targetAddress, sourceAddress, copyLength);
+                        break;
+                    }
+
+                case MemoryCopyStartegy.ParallelNative:
+                    {
+                        CopyMemoryParallel(targetAddress, sourceAddress, copyLength);
+                        break;
+                    }
+
+                case MemoryCopyStartegy.Buffer:
+                    {
+                        Buffer.MemoryCopy(sourceAddress.ToPointer(), targetAddress.ToPointer(), copyLength, copyLength);
+                        break;
+                    }
+            }
+        }
+
+        /// <summary>
+        /// An experimetal method of copying large chunks of memory in parallel.
+        /// Does not seem to have any advantages of the native CopyMemory direct call.
+        /// </summary>
+        /// <param name="targetAddress">The target address.</param>
+        /// <param name="sourceAddress">The source address.</param>
+        /// <param name="copyLength">Length of the copy.</param>
+        private unsafe void CopyMemoryParallel(IntPtr targetAddress, IntPtr sourceAddress, uint copyLength)
+        {
+            const int optimalBlockSize = 2048;
+            if (copyLength <= optimalBlockSize)
+            {
+                NativeMethods.CopyMemory(targetAddress, sourceAddress, copyLength);
+                return;
+            }
+
+            var chunkSize = (int)copyLength / 4; // optimalBlockSize;
+            var blockCount = (int)(copyLength / chunkSize);
+
+            Parallel.For(0, blockCount, (blockIndex) =>
+            {
+                var offset = blockIndex * chunkSize;
+                NativeMethods.CopyMemory(targetAddress + offset, sourceAddress + offset, (uint)chunkSize);
+            });
+
+            var lastOffset = blockCount * chunkSize;
+            if (lastOffset < copyLength)
+            {
+                NativeMethods.CopyMemory(targetAddress + lastOffset, sourceAddress + lastOffset, copyLength - (uint)lastOffset);
+            }
         }
 
         /// <summary>

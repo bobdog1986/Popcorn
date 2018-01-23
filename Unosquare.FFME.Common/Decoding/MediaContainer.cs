@@ -679,7 +679,7 @@
                     }
 
                     // Set some general properties
-                    MediaFormatName = FFInterop.PtrToString(InputContext->iformat->name);
+                    MediaFormatName = FFInterop.PtrToStringUTF8(InputContext->iformat->name);
 
                     // If there are any optins left in the dictionary, it means they did not get used (invalid options).
                     inputOptions.Remove(MediaInputOptions.Names.ScanAllPmts);
@@ -739,6 +739,14 @@
                     else if (s.Key == AVMediaType.AVMEDIA_TYPE_SUBTITLE)
                         MediaOptions.SubtitleStream = s.Value;
                 }
+
+                // Set disabled audio or video if scaling libs not found
+                // This prevents the creation of unavailable audio or video components.
+                if (FFLibrary.LibSWScale.IsLoaded == false)
+                    MediaOptions.IsVideoDisabled = true;
+
+                if (FFLibrary.LibSWResample.IsLoaded == false)
+                    MediaOptions.IsAudioDisabled = true;
             }
             catch (Exception ex)
             {

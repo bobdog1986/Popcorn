@@ -1,4 +1,11 @@
-﻿# 3.5.6 - 12/01/2018 #
+﻿# 3.5.6 - 23/01/2018 #
+***
+Improve performances
+
+### Details ###
+* Improve player performances
+
+# 3.5.6 - 12/01/2018 #
 ***
 Fixed issues
 

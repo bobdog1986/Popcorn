@@ -2,7 +2,6 @@
 {
     using ClosedCaptions;
     using System;
-    using System.Collections.Generic;
     using System.Runtime.InteropServices;
 
     /// <summary>
@@ -47,7 +46,7 @@
         public int BufferLength => PictureBufferLength;
 
         /// <summary>
-        /// The picture buffer stride. 
+        /// The picture buffer stride.
         /// Pixel Width * 32-bit color (4 byes) + alignment (typically 0 for modern hw).
         /// </summary>
         public int BufferStride { get; internal set; }
@@ -79,7 +78,7 @@
 
         /// <summary>
         /// Gets the display picture number (frame number).
-        /// If not set by the decoder, this attempts to obtain it by dividing the start time by the 
+        /// If not set by the decoder, this attempts to obtain it by dividing the start time by the
         /// frame duration
         /// </summary>
         public int DisplayPictureNumber { get; internal set; }
@@ -92,7 +91,7 @@
         /// <summary>
         /// Gets the closed caption packets for this video block.
         /// </summary>
-        public List<ClosedCaptionPacket> ClosedCaptions { get; internal set; }
+        public ClosedCaptionCollection ClosedCaptions { get; internal set; }
 
         /// <summary>
         /// The picture buffer length of the last allocated buffer
