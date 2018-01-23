@@ -169,6 +169,8 @@ namespace Popcorn
                             tcs.TrySetResult(true);
                         }
                     }
+
+                    tcs.TrySetResult(false);
                 }
                 catch (Exception ex)
                 {
