@@ -1,9 +1,16 @@
-﻿# 3.5.6 - 23/01/2018 #
+﻿# 3.5.8 - 23/01/2018 #
+***
+Fixed issue
+
+### Details ###
+* Fixed issue.
+
+# 3.5.7 - 23/01/2018 #
 ***
 Improve performances
 
 ### Details ###
-* Improve player performances
+* Improve player performances.
 
 # 3.5.6 - 12/01/2018 #
 ***

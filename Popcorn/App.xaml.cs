@@ -127,27 +127,30 @@ namespace Popcorn
 
         private static void RestartAsAdmin()
         {
-            var args = string.Empty;
-            var cmd = Environment.GetCommandLineArgs();
-            if (cmd.Any())
+            DispatcherHelper.CheckBeginInvokeOnUI(() =>
             {
-                args = string.Join(" ", cmd);
-            }
+                var args = string.Empty;
+                var cmd = Environment.GetCommandLineArgs();
+                if (cmd.Any())
+                {
+                    args = string.Join(" ", cmd);
+                }
 
-            var info = new ProcessStartInfo(
-                Assembly.GetEntryAssembly().Location)
-            {
-                Verb = "runas",
-                Arguments = args
-            };
+                var info = new ProcessStartInfo(
+                    Assembly.GetEntryAssembly().Location)
+                {
+                    Verb = "runas",
+                    Arguments = args
+                };
 
-            var process = new Process
-            {
-                StartInfo = info
-            };
+                var process = new Process
+                {
+                    StartInfo = info
+                };
 
-            process.Start();
-            Current.Shutdown();
+                process.Start();
+                Current.Shutdown();
+            });
         }
 
         private async Task<bool> FirewallRuleExists(string ruleName)
