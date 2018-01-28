@@ -3,7 +3,6 @@
     using Commands;
     using Core;
     using Decoding;
-    using Shared;
     using System;
     using System.Threading.Tasks;
 
@@ -58,24 +57,17 @@
         /// <exception cref="InvalidOperationException">Source</exception>
         public async Task Open(Uri uri)
         {
-            Source = uri;
-
             // TODO: Calling this multiple times while an operation is in progress breaks the control :(
             // for now let's throw an exception but ideally we want the user NOT to be able to change the value in the first place.
-            if (IsOpening)
-                throw new InvalidOperationException($"Unable to change {nameof(Source)} to '{uri}' because {nameof(IsOpening)} is currently set to true.");
+            if (State.IsOpening)
+                throw new InvalidOperationException($"Unable to change {nameof(State.Source)} to '{uri}' because {nameof(State.IsOpening)} is currently set to true.");
 
             if (uri != null)
             {
                 await Commands.CloseAsync()
                     .ContinueWith(async (c) =>
                     {
-                        await Commands.OpenAsync(uri)
-                            .ContinueWith(async p =>
-                            {
-                                if (LoadedBehavior == MediaEngineState.Play || CanPause == false)
-                                    await Commands.PlayAsync();
-                            });
+                        await Commands.OpenAsync(uri);
                     });
             }
             else

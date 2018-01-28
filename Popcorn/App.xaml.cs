@@ -81,7 +81,7 @@ namespace Popcorn
             WatchStart = Stopwatch.StartNew();
             Logger.Info(
                 "Popcorn starting...");
-            AsyncSynchronizationContext.Register();
+            //AsyncSynchronizationContext.Register();
             Unosquare.FFME.MediaElement.FFmpegDirectory = Constants.FFmpegPath;
 
             try

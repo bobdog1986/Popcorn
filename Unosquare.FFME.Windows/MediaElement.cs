@@ -29,9 +29,15 @@
     {
         #region Fields and Property Backing
 
+        /// <summary>
+        /// The affects measure and render metadata options
+        /// </summary>
         internal const FrameworkPropertyMetadataOptions AffectsMeasureAndRender
             = FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender;
 
+        /// <summary>
+        /// The allow content change flag
+        /// </summary>
         private bool AllowContentChange = false;
 
         /// <summary>
@@ -43,6 +49,11 @@
         /// Holds the Media Engine
         /// </summary>
         private MediaEngine m_MediaCore;
+
+        /// <summary>
+        /// TO detect redundant calls
+        /// </summary>
+        private bool IsDisposed = false;
 
         #endregion
 
@@ -130,22 +141,22 @@
         }
 
         /// <summary>
-        /// Provides access to the underlying media engine driving this control.
-        /// This property is intender for advance usages only.
-        /// </summary>
-        public MediaEngine MediaCore
-        {
-            get { return m_MediaCore; }
-            private set { m_MediaCore = value; }
-        }
-
-        /// <summary>
         /// Gets or sets the base URI of the current application context.
         /// </summary>
         Uri IUriContext.BaseUri
         {
             get => m_BaseUri;
             set => m_BaseUri = value;
+        }
+
+        /// <summary>
+        /// Provides access to the underlying media engine driving this control.
+        /// This property is intender for advance usages only.
+        /// </summary>
+        internal MediaEngine MediaCore
+        {
+            get { return m_MediaCore; }
+            private set { m_MediaCore = value; }
         }
 
         /// <summary>
@@ -162,13 +173,6 @@
         /// Gets the grid control holding the rest of the controls.
         /// </summary>
         internal Grid ContentGrid { get; } = new Grid { Name = nameof(ContentGrid) };
-
-    /// <summary>
-    /// When position is being set from within this control, this field will
-    /// be set to true. This is useful to detect if the user is setting the position
-    /// or if the Position property is being driven from within
-    /// </summary>
-    internal bool IsPositionUpdating => MediaCore.IsPositionUpdating;
 
         #endregion
 
@@ -213,7 +217,11 @@
         /// <returns>The awaitable command</returns>
         public async Task Close()
         {
-            try { await MediaCore.Close(); }
+            try
+            {
+                await MediaCore.Close();
+                Source = null;
+            }
             catch (TaskCanceledException) { }
             catch (Exception ex) { RaiseMediaFailedEvent(ex); }
         }
@@ -227,7 +235,19 @@
         /// </summary>
         public void Dispose()
         {
+            // TODO: Verify Dispose and nullables
+            if (IsDisposed) return;
+            IsDisposed = true;
             m_MediaCore.Dispose();
+
+            // TODO: Get a reset
+            PropertyUpdatesDone.Set();
+            PropertyUpdatesWorker.Dispose();
+            if (PropertyUpdatesDone != null)
+            {
+                PropertyUpdatesDone.Dispose();
+                PropertyUpdatesDone = null;
+            }
         }
 
         /// <summary>
@@ -343,12 +363,12 @@
             }
             else
             {
-                // Setup the media engine
+                // Setup the media engine and associated property updates worker
                 MediaCore = new MediaEngine(this, new WindowsMediaConnector(this));
+                StartPropertyUpdatesWorker();
             }
         }
 
         #endregion
-
     }
 }

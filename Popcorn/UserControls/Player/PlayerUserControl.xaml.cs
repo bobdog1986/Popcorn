@@ -83,6 +83,15 @@ namespace Popcorn.UserControls.Player
 
             Loaded += OnLoaded;
             Media.MediaOpened += OnMediaOpened;
+            Media.MessageLogged += Media_MessageLogged;
+        }
+
+        private void Media_MessageLogged(object sender, MediaLogMessageEventArgs e)
+        {
+            if (e.Message.Contains("BLK"))
+                return;
+
+            Console.WriteLine(e.Message);
         }
 
         private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
