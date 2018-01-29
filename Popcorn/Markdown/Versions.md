@@ -1,4 +1,11 @@
-﻿# 3.5.10 - 28/01/2018 #
+﻿# 3.5.11 - 29/01/2018 #
+***
+Fix issue
+
+### Details ###
+* Fix player logger issue.
+
+# 3.5.10 - 28/01/2018 #
 ***
 Add logging
 
