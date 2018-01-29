@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Popcorn.Models.Subtitles;
 using Popcorn.Models.Torrent;
 using Popcorn.Models.Torrent.Show;
+using Popcorn.Utils;
 
 namespace Popcorn.Models.Media
 {
@@ -29,5 +30,7 @@ namespace Popcorn.Models.Media
         int? Season { get; set; }
 
         int? EpisodeNumber { get; set; }
+
+        MediaType Type { get; }
     }
 }

@@ -13,6 +13,7 @@ using Popcorn.Models.Torrent.Movie;
 using RestSharp.Deserializers;
 using Popcorn.Models.Media;
 using Popcorn.Models.Torrent;
+using Popcorn.Utils;
 
 namespace Popcorn.Models.Movie
 {
@@ -316,5 +317,7 @@ namespace Popcorn.Models.Movie
         public int? Season { get; set; }
 
         public int? EpisodeNumber { get; set; }
+
+        public MediaType Type { get; } = MediaType.Movie;
     }
 }

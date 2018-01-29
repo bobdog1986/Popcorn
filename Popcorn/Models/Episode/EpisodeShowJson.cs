@@ -9,6 +9,7 @@ using Popcorn.Models.Subtitles;
 using Popcorn.Models.Torrent.Show;
 using Popcorn.Models.Media;
 using Popcorn.Models.Torrent;
+using Popcorn.Utils;
 
 namespace Popcorn.Models.Episode
 {
@@ -180,6 +181,8 @@ namespace Popcorn.Models.Episode
             get => _episodeNumber;
             set => Set(ref _episodeNumber, value);
         }
+
+        public MediaType Type { get; } = MediaType.Show;
 
         [DataMember(Name = "season")]
         public int? Season

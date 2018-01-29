@@ -53,7 +53,7 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="40" />
-                <ColumnDefinition Width="80" />
+                <ColumnDefinition Width="90" />
                 <ColumnDefinition Width="40" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
@@ -105,9 +105,9 @@
                     Foreground="White"
                     IsChecked="{Binding Media.WatchInFullHdQuality}"
                     IsEnabled="{Binding Media.FullHdAvailable}"
-                    OffLabel="720"
+                    OffLabel="{Binding SdLabel}"
                     OffSwitchBrush="GhostWhite"
-                    OnLabel="1080"
+                    OnLabel="{Binding HdLabel}"
                     Style="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}" />
             </StackPanel>
             <StackPanel Grid.Column="5" Orientation="Vertical">

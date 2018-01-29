@@ -19,6 +19,7 @@ using Popcorn.Models.Movie;
 using Popcorn.Models.Subtitles;
 using Popcorn.Models.Torrent;
 using Popcorn.Services.Subtitles;
+using Popcorn.Utils;
 using Popcorn.ViewModels.Windows.Settings;
 
 namespace Popcorn.ViewModels.Dialogs
@@ -69,6 +70,16 @@ namespace Popcorn.ViewModels.Dialogs
             get => _media;
             set { Set(() => Media, ref _media, value); }
         }
+
+        /// <summary>
+        /// The SD label
+        /// </summary>
+        public string SdLabel { get; set; }
+
+        /// <summary>
+        /// The HD label
+        /// </summary>
+        public string HdLabel { get; set; }
 
         /// <summary>
         /// Torrent health, from 0 to 10
@@ -128,6 +139,9 @@ namespace Popcorn.ViewModels.Dialogs
             {
                 await LoadSubtitles(Media);
             });
+
+            SdLabel = media.Type == MediaType.Movie ? "720p" : "480p";
+            HdLabel = media.Type == MediaType.Movie ? "1080p" : "720p";
 
             Messenger.Default.Register<PropertyChangedMessage<bool>>(this, async e =>
             {
@@ -216,9 +230,9 @@ namespace Popcorn.ViewModels.Dialogs
 
             var applicationSettings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
             Media.WatchInFullHdQuality =
-                Media.AvailableTorrents.Any(torrent => torrent.Quality == "1080p") &&
+                Media.AvailableTorrents.Any(torrent => (Media.Type == MediaType.Movie && torrent.Quality == "1080p") || (Media.Type == MediaType.Show && torrent.Quality == "720p")) &&
                 Media.AvailableTorrents.Count == 1 ||
-                Media.AvailableTorrents.Any(torrent => torrent.Quality == "1080p") &&
+                Media.AvailableTorrents.Any(torrent => (Media.Type == MediaType.Movie && torrent.Quality == "1080p") || (Media.Type == MediaType.Show && torrent.Quality == "720p")) &&
                 applicationSettings.DefaultHdQuality;
         }
 
@@ -230,10 +244,10 @@ namespace Popcorn.ViewModels.Dialogs
             if (Media.AvailableTorrents == null) return;
 
             Media.FullHdAvailable = Media.AvailableTorrents.Count > 1 &&
-                                    Media.AvailableTorrents.Any(torrent => torrent.Quality == "1080p");
+                                    Media.AvailableTorrents.Any(torrent => (Media.Type == MediaType.Movie && torrent.Quality == "1080p") || (Media.Type == MediaType.Show && torrent.Quality == "720p"));
             SelectedTorrent = Media.WatchInFullHdQuality
-                ? Media.AvailableTorrents.FirstOrDefault(a => a.Quality == "1080p")
-                : Media.AvailableTorrents.FirstOrDefault(a => a.Quality == "720p");
+                ? Media.AvailableTorrents.FirstOrDefault(torrent => (Media.Type == MediaType.Movie && torrent.Quality == "1080p") || (Media.Type == MediaType.Show && torrent.Quality == "720p"))
+                : Media.AvailableTorrents.FirstOrDefault(torrent => (Media.Type == MediaType.Movie && torrent.Quality == "720p") || (Media.Type == MediaType.Show && torrent.Quality == "480p"));
             if (SelectedTorrent == null)
                 SelectedTorrent = Media.AvailableTorrents.Where(torrent => !string.IsNullOrWhiteSpace(torrent.Url))
                     .Aggregate((torrent1, torrent2) => torrent1.Seeds > torrent2.Seeds ? torrent1 : torrent2);

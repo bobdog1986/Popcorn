@@ -1,4 +1,11 @@
-﻿# 3.5.11 - 29/01/2018 #
+﻿# 3.5.12 - 29/01/2018 #
+***
+Fix issue
+
+### Details ###
+* Fixed issue [#179](https://github.com/bbougot/Popcorn/issues/179).
+
+# 3.5.11 - 29/01/2018 #
 ***
 Fix issue
 

@@ -66,17 +66,15 @@ namespace Popcorn.Controls.Show
             InitializeComponent();
             PlayCommand = new RelayCommand(async () =>
             {
+                var torrent480P = Episode.Torrents.Torrent_480p;
+                torrent480P.Quality = "480p";
+
                 var torrent720P = Episode.Torrents.Torrent_720p;
                 torrent720P.Quality = "720p";
-
-                var torrent1080P = Episode.Torrents.Torrent_1080p;
-                torrent1080P.Quality = "1080p";
                 Episode.AvailableTorrents = new ObservableCollection<ITorrent>(new List<ITorrent>(new List<ITorrent>
                 {
-                    Episode.Torrents.Torrent_0,
-                    Episode.Torrents.Torrent_480p,
-                    torrent720P,
-                    torrent1080P
+                    torrent480P,
+                    torrent720P
                 }).Where(torrent => !string.IsNullOrWhiteSpace(torrent.Url)));
 
                 var message = new ShowDownloadSettingsDialogMessage(Episode);
