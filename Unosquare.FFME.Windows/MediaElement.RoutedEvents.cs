@@ -9,6 +9,7 @@
     using System.Reflection;
     using System.Runtime.CompilerServices;
     using System.Windows;
+    using System.Windows.Controls;
 
     public partial class MediaElement
     {
@@ -112,6 +113,16 @@
                             nameof(PositionChanged),
                             RoutingStrategy.Bubble,
                             typeof(EventHandler<PositionChangedRoutedEventArgs>),
+                            typeof(MediaElement));
+
+        /// <summary>
+        /// MediaStateChanged is a routed event
+        /// </summary>
+        public static readonly RoutedEvent MediaStateChangedEvent =
+            EventManager.RegisterRoutedEvent(
+                            nameof(MediaStateChanged),
+                            RoutingStrategy.Bubble,
+                            typeof(EventHandler<MediaStateChangedRoutedEventArgs>),
                             typeof(MediaElement));
 
         /// <summary>
@@ -227,6 +238,15 @@
         {
             add { AddHandler(PositionChangedEvent, value); }
             remove { RemoveHandler(PositionChangedEvent, value); }
+        }
+
+        /// <summary>
+        /// Occurs when media state is changed
+        /// </summary>
+        public event EventHandler<MediaStateChangedRoutedEventArgs> MediaStateChanged
+        {
+            add { AddHandler(MediaStateChangedEvent, value); }
+            remove { RemoveHandler(MediaStateChangedEvent, value); }
         }
 
         #endregion
@@ -364,16 +384,29 @@
         /// <summary>
         /// Raises the position changed event.
         /// </summary>
-        /// <param name="position">The position.</param>
+        /// <param name="oldValue">The old value.</param>
+        /// <param name="newValue">The new value.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void RaisePositionChangedEvent(TimeSpan position)
+        internal void RaisePositionChangedEvent(TimeSpan oldValue, TimeSpan newValue)
         {
             GuiContext.Current.EnqueueInvoke(() =>
             {
-                RaiseEvent(new PositionChangedRoutedEventArgs(
-                    PositionChangedEvent,
-                    this,
-                    position));
+                RaiseEvent(new PositionChangedRoutedEventArgs(PositionChangedEvent, this, oldValue, newValue));
+            });
+        }
+
+        /// <summary>
+        /// Raises the media state changed event.
+        /// </summary>
+        /// <param name="oldValue">The old value.</param>
+        /// <param name="newValue">The new value.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal void RaiseMediaStateChangedEvent(MediaState oldValue, MediaState newValue)
+        {
+            GuiContext.Current.EnqueueInvoke(() =>
+            {
+                RaiseEvent(new MediaStateChangedRoutedEventArgs(
+                    MediaStateChangedEvent, this, oldValue, newValue));
             });
         }
 

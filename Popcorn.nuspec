@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>Popcorn</id>
-        <version>3.5.12</version>
+        <version>3.5.13</version>
         <title>Popcorn</title>
         <authors>Benjamin Bougot</authors>
         <projectUrl>https://github.com/bbougot/Popcorn</projectUrl>
@@ -249,6 +249,7 @@
         <file src="FFmpeg\postproc-54.dll" target="lib\net45\FFmpeg\postproc-54.dll" />
         <file src="FFmpeg\swresample-2.dll" target="lib\net45\FFmpeg\swresample-2.dll" />
         <file src="FFmpeg\swscale-4.dll" target="lib\net45\FFmpeg\swscale-4.dll" />
+        <file src="FFmpeg\SoundTouch.dll" target="lib\net45\FFmpeg\SoundTouch.dll" />
         <file src="ffme.common.dll" target="lib\net45\ffme.common.dll" />
         <file src="ffme.win.dll" target="lib\net45\ffme.win.dll" />
         <file src="FFmpeg.AutoGen.dll" target="lib\net45\FFmpeg.AutoGen.dll" />

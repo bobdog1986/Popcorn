@@ -39,19 +39,26 @@
             foreach (var t in all)
                 LastRenderTime[t] = TimeSpan.MinValue;
 
-            // Ensure the other workers are running
+            // Ensure packet reading is running
             PacketReadingCycle.WaitOne();
-            FrameDecodingCycle.WaitOne();
+
+            // wait for main component blocks or EOF or cancellation pending
+            while (CanReadMoreFramesOf(main) && Blocks[main].Count <= 0)
+                FrameDecodingCycle.WaitOne();
 
             // Set the initial clock position
-            Clock.Position = Blocks[main].RangeStartTime;
-            var wallClock = Clock.Position;
+            // TODO: maybe update media start time offset to this Minimum, initial Start Time intead of relying on contained meta?
+            Clock.Update(Blocks[main].RangeStartTime); // .GetMinStartTime()
+
+            // Capture the wall clock and set the initial position
+            var wallClock = WallClock;
+            State.UpdatePosition(wallClock);
 
             // Wait for renderers to be ready
             foreach (var t in all)
                 Renderers[t]?.WaitForReadyState();
 
-            // The Property update timer is responsible for timely updates to properties outside of the worker threads
+            // The Render timer is responsible for sending frames to renders
             BlockRenderingWorker = new Timer((s) =>
             {
                 #region Detect a Timer Stop
@@ -72,7 +79,7 @@
                 // Don't run the cycle if it's already running
                 if (isRunningRenderingCycle)
                 {
-                    // TODO: Log a frame skip
+                    // TODO: Maybe Log a frame skip here?
                     return;
                 }
 
@@ -99,11 +106,11 @@
                         SeekingDone.WaitOne();
 
                     // capture the wall clock for this cycle
-                    wallClock = Clock.Position;
+                    wallClock = WallClock;
 
                     // Update the position property after all seeking is done
                     if (State.IsSeeking == false)
-                        State.Position = wallClock;
+                        State.UpdatePosition(wallClock);
 
                     // Capture the blocks to render
                     foreach (var t in all)

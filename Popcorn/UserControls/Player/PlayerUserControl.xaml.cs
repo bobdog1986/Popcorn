@@ -91,7 +91,7 @@ namespace Popcorn.UserControls.Player
             if (e.Message.Contains("BLK"))
                 return;
 
-            Logger.Trace(e.Message);
+            Logger.Info(e.Message);
         }
 
         private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)

@@ -14,6 +14,9 @@
     {
         #region Property Backing and Private State
 
+        private const int NetworkStreamCacheFactor = 30;
+        private const int StandardStreamCacheFactor = 4;
+
         private static PropertyInfo[] Properties = null;
         private readonly MediaEngine Parent = null;
         private readonly ReadOnlyDictionary<string, string> EmptyDictionary
@@ -63,7 +66,7 @@
         public TimeSpan Position
         {
             get;
-            internal set;
+            private set;
         }
 
         #endregion
@@ -119,7 +122,7 @@
                 if (IsOpen == false) { return TimeSpan.Zero; }
 
                 if (HasVideo && VideoFrameLength > 0)
-                    return TimeSpan.FromMilliseconds(VideoFrameLength * 1000);
+                    return TimeSpan.FromSeconds(VideoFrameLength);
 
                 return TimeSpan.FromSeconds(0.1d);
             }
@@ -217,10 +220,16 @@
         public bool CanPause => IsOpen ? !IsLiveStream : false;
 
         /// <summary>
-        /// Returns whether the currently loaded media is live or realtime and does not have a set duration
+        /// Returns whether the currently loaded media is live or real-time and does not have a set duration
         /// This is only valid after the MediaOpened event has fired.
         /// </summary>
         public bool IsLiveStream => IsOpen ? Parent.Container.IsLiveStream : false;
+
+        /// <summary>
+        /// Returns whether the currently loaded media is a network stream.
+        /// This is only valid after the MediaOpened event has fired.
+        /// </summary>
+        public bool IsNetowrkStream => IsOpen ? Parent.Container.IsNetworkStream : false;
 
         /// <summary>
         /// Gets a value indicating whether the currently loaded media can be seeked.
@@ -231,6 +240,11 @@
         /// Gets a value indicating whether the media is playing.
         /// </summary>
         public bool IsPlaying => MediaState == PlaybackStatus.Play;
+
+        /// <summary>
+        /// Gets a value indicating whether the media is paused.
+        /// </summary>
+        public bool IsPaused => MediaState == PlaybackStatus.Pause;
 
         /// <summary>
         /// Gets a value indicating whether this media element
@@ -245,7 +259,7 @@
         /// <summary>
         /// Gets the current playback state.
         /// </summary>
-        public PlaybackStatus MediaState { get; internal set; } = PlaybackStatus.Manual;
+        public PlaybackStatus MediaState { get; private set; } = PlaybackStatus.Manual;
 
         /// <summary>
         /// Gets a value indicating whether the media has reached its end.
@@ -314,13 +328,45 @@
         #endregion
 
         /// <summary>
+        /// Updates the position.
+        /// </summary>
+        /// <param name="position">The position.</param>
+        internal void UpdatePosition(TimeSpan position)
+        {
+            var oldValue = Position;
+            var newValue = position.Normalize();
+            if (oldValue.Ticks == newValue.Ticks)
+                return;
+
+            Position = newValue;
+            Parent.SendOnPositionChanged(oldValue, newValue);
+        }
+
+        /// <summary>
+        /// Updates the MediaState property.
+        /// </summary>
+        /// <param name="mediaState">State of the media.</param>
+        /// <param name="position">The new position value for this state.</param>
+        internal void UpdateMediaState(PlaybackStatus mediaState, TimeSpan position)
+        {
+            UpdatePosition(position);
+            var oldValue = MediaState;
+            var newValue = mediaState;
+            if (oldValue != newValue)
+            {
+                MediaState = newValue;
+                Parent.SendOnMediaStateChanged(oldValue, newValue);
+            }
+        }
+
+        /// <summary>
         /// Resets the controller properies.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void ResetMediaProperties()
         {
             // Reset Media Settable Properties
-            MediaState = default(PlaybackStatus);
+            UpdateMediaState(default(PlaybackStatus), TimeSpan.Zero);
             HasMediaEnded = default(bool);
             IsBuffering = default(bool);
             IsSeeking = default(bool);
@@ -334,7 +380,6 @@
 
             // Reset volatile controller poperties
             SpeedRatio = Constants.Controller.DefaultSpeedRatio;
-            Position = TimeSpan.Zero;
         }
 
         /// <summary>
@@ -368,7 +413,7 @@
                 BufferCacheLength = StartingCacheLength;
             }
 
-            DownloadCacheLength = BufferCacheLength * (IsLiveStream ? 30 : 4);
+            DownloadCacheLength = BufferCacheLength * (IsNetowrkStream ? NetworkStreamCacheFactor : StandardStreamCacheFactor);
             IsBuffering = false;
             BufferingProgress = 0;
             DownloadProgress = 0;
@@ -445,7 +490,7 @@
             {
                 GuessedByteRate = (ulong)(1.2 * bytesReadSoFar / shortestDuration.TotalSeconds);
                 BufferCacheLength = Convert.ToInt32(GuessedByteRate);
-                DownloadCacheLength = BufferCacheLength * (IsLiveStream ? 30 : 4);
+                DownloadCacheLength = BufferCacheLength * (IsNetowrkStream ? NetworkStreamCacheFactor : StandardStreamCacheFactor);
             }
         }
     }

@@ -5,6 +5,7 @@
     using System;
     using System.Collections.Generic;
     using System.Runtime.CompilerServices;
+    using System.Runtime.InteropServices;
     using System.Threading;
 
     /// <summary>
@@ -12,6 +13,71 @@
     /// </summary>
     public static class Extensions
     {
+        #region Audio Processing Extensions
+
+        /// <summary>
+        /// Puts a short value in the target buffer as bytes
+        /// </summary>
+        /// <param name="buffer">The target.</param>
+        /// <param name="offset">The offset.</param>
+        /// <param name="value">The value.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void PutAudioSample(this byte[] buffer, int offset, short value)
+        {
+            if (BitConverter.IsLittleEndian)
+            {
+                buffer[offset] = (byte)(value & 0x00ff); // set the LSB
+                buffer[offset + 1] = (byte)(value >> 8); // set the MSB
+                return;
+            }
+
+            buffer[offset] = (byte)(value >> 8); // set the MSB
+            buffer[offset + 1] = (byte)(value & 0x00ff); // set the LSB
+        }
+
+        /// <summary>
+        /// Gets the a signed 16 bit integer at the guven offset.
+        /// </summary>
+        /// <param name="buffer">The buffer.</param>
+        /// <param name="offset">The offset.</param>
+        /// <returns>The signed integer.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static short GetAudioSample(this byte[] buffer, int offset)
+        {
+            // return (short)(buffer[offset] | (buffer[offset + 1] << 8));
+            return BitConverter.ToInt16(buffer, offset);
+        }
+
+        /// <summary>
+        /// Gets the audio sample amplitude (absolute value of the sample).
+        /// </summary>
+        /// <param name="buffer">The buffer.</param>
+        /// <param name="offset">The offset.</param>
+        /// <returns>The sample amplitude</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static short GetAudioSampleAmplitude(this byte[] buffer, int offset)
+        {
+            var value = buffer.GetAudioSample(offset);
+            if (value == short.MinValue)
+                return short.MaxValue;
+
+            return Math.Abs(value);
+        }
+
+        /// <summary>
+        /// Gets the audio sample level for 0 to 1.
+        /// </summary>
+        /// <param name="buffer">The buffer.</param>
+        /// <param name="offset">The offset.</param>
+        /// <returns>The amplitude level</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static double GetAudioSampleLevel(this byte[] buffer, int offset)
+        {
+            return buffer.GetAudioSampleAmplitude(offset) / (double)short.MaxValue;
+        }
+
+        #endregion
+
         #region Output Debugging
 
         /// <summary>
@@ -23,9 +89,9 @@
         public static string Format(this TimeSpan ts)
         {
             if (ts == TimeSpan.MinValue)
-                return $"{"N/A", 10}";
+                return $"{"N/A",10}";
             else
-                return $"{ts.TotalSeconds, 10:0.000}";
+                return $"{ts.TotalSeconds,10:0.000}";
         }
 
         /// <summary>
@@ -37,7 +103,7 @@
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string FormatElapsed(this DateTime dt)
         {
-            return $"{DateTime.UtcNow.Subtract(dt).TotalMilliseconds, 6:0}";
+            return $"{DateTime.UtcNow.Subtract(dt).TotalMilliseconds,6:0}";
         }
 
         /// <summary>
@@ -50,7 +116,7 @@
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string Format(this long ts, double divideBy = 1)
         {
-            return divideBy == 1 ? $"{ts, 10:#,##0}" : $"{ts / divideBy, 10:#,##0.000}";
+            return divideBy == 1 ? $"{ts,10:#,##0}" : $"{ts / divideBy,10:#,##0.000}";
         }
 
         #endregion
@@ -161,6 +227,17 @@
         }
 
         /// <summary>
+        /// Normalizes precision of the TimeSpan to the nearest whole millisecond.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <returns>The normalized, whole-milliscond timespan</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static TimeSpan Normalize(this TimeSpan source)
+        {
+            return TimeSpan.FromSeconds(source.TotalSeconds);
+        }
+
+        /// <summary>
         /// Clamps the specified value between the minimum and the maximum
         /// </summary>
         /// <typeparam name="T">The type of value to clamp</typeparam>
@@ -188,6 +265,7 @@
         /// <returns>
         ///   <c>true</c> if the specified m is set; otherwise, <c>false</c>.
         /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsSet(this ManualResetEvent m)
         {
             return m?.WaitOne(0) ?? true;
@@ -199,6 +277,7 @@
         /// <param name="all">All.</param>
         /// <param name="main">The main.</param>
         /// <returns>The non-main audio or video media types</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static MediaType[] FundamentalAuxsFor(this MediaType[] all, MediaType main)
         {
             var result = new List<MediaType>(16);
@@ -219,6 +298,7 @@
         /// <param name="all">All.</param>
         /// <param name="main">The main.</param>
         /// <returns>An array without the media type</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static MediaType[] ExcludeMediaType(this MediaType[] all, MediaType main)
         {
             var result = new List<MediaType>(16);
@@ -239,6 +319,7 @@
         /// <param name="main">The main.</param>
         /// <param name="with">The with.</param>
         /// <returns>An array of the media types</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static MediaType[] JoinMediaTypes(this MediaType main, MediaType[] with)
         {
             var result = new List<MediaType>(16) { main };
@@ -252,6 +333,7 @@
         /// <param name="all">All.</param>
         /// <param name="t">The t.</param>
         /// <returns>True if it exists in the array</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static bool HasMediaType(this MediaType[] all, MediaType t)
         {
             for (var i = 0; i < all.Length; i++)
@@ -267,6 +349,7 @@
         /// </summary>
         /// <param name="all">All.</param>
         /// <returns>The copy of the array</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static MediaType[] DeepCopy(this MediaType[] all)
         {
             var result = new List<MediaType>(16);
@@ -286,6 +369,7 @@
         /// <returns>
         /// True if all components are greater than the value
         /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static bool FundamentalsGreaterThan(this MediaTypeDictionary<int> all, int value)
         {
             var hasFundamentals = false;
@@ -307,11 +391,92 @@
         /// </summary>
         /// <param name="all">All.</param>
         /// <returns>The sum of all values.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static int GetSum(this MediaTypeDictionary<int> all)
         {
             var result = default(int);
             foreach (var kvp in all)
                 result += kvp.Value;
+
+            return result;
+        }
+
+        /// <summary>
+        /// Gets the block count.
+        /// </summary>
+        /// <param name="blocks">The blocks.</param>
+        /// <returns>The block count for all components.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static int GetBlockCount(this MediaTypeDictionary<MediaBlockBuffer> blocks)
+        {
+            var result = 0;
+            foreach (var buffer in blocks.Values)
+                result += buffer.Count;
+
+            return result;
+        }
+
+        /// <summary>
+        /// Gets the minimum start time.
+        /// </summary>
+        /// <param name="blocks">The blocks.</param>
+        /// <returns>The minimum Range Start Time</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static TimeSpan GetMinStartTime(this MediaTypeDictionary<MediaBlockBuffer> blocks)
+        {
+            var minimum = TimeSpan.Zero;
+            foreach (var buffer in blocks.Values)
+            {
+                if (buffer.RangeStartTime.Ticks < minimum.Ticks)
+                    minimum = buffer.RangeStartTime;
+            }
+
+            return minimum;
+        }
+
+        /// <summary>
+        /// Computes the picture number.
+        /// </summary>
+        /// <param name="startTime">The start time.</param>
+        /// <param name="duration">The duration.</param>
+        /// <param name="startNumber">The start number.</param>
+        /// <returns>
+        /// The serial picture number
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static int ComputePictureNumber(TimeSpan startTime, TimeSpan duration, int startNumber)
+        {
+            return startNumber + (int)Math.Round((double)startTime.Ticks / duration.Ticks, 0);
+        }
+
+        /// <summary>
+        /// Computes the smtpe time code.
+        /// </summary>
+        /// <param name="streamStartTime">The start time offset.</param>
+        /// <param name="frameDuration">The duration.</param>
+        /// <param name="frameTimeBase">The time base.</param>
+        /// <param name="frameNumber">The display picture number.</param>
+        /// <returns>The FFmpeg computed SMTPE Timecode</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static unsafe string ComputeSmtpeTimeCode(TimeSpan streamStartTime, TimeSpan frameDuration, AVRational frameTimeBase, int frameNumber)
+        {
+            frameNumber--; // tun picture number into picture index.
+            var timeCodeInfo = (AVTimecode*)ffmpeg.av_malloc((ulong)Marshal.SizeOf(typeof(AVTimecode)));
+            var startFrameNumber = ComputePictureNumber(streamStartTime, frameDuration, 0);
+            ffmpeg.av_timecode_init(timeCodeInfo, frameTimeBase, 0, startFrameNumber, null);
+            var isNtsc = frameTimeBase.num == 30000 && frameTimeBase.den == 1001;
+            var adjustedFrameNumber = isNtsc ?
+                ffmpeg.av_timecode_adjust_ntsc_framenum2(frameNumber, (int)timeCodeInfo->fps) :
+                frameNumber;
+
+            var timeCode = ffmpeg.av_timecode_get_smpte_from_framenum(timeCodeInfo, adjustedFrameNumber);
+            var timeCodeBuffer = (byte*)ffmpeg.av_malloc(ffmpeg.AV_TIMECODE_STR_SIZE);
+
+            ffmpeg.av_timecode_make_smpte_tc_string(timeCodeBuffer, timeCode, 1);
+            var result = Marshal.PtrToStringAnsi(new IntPtr(timeCodeBuffer));
+
+            ffmpeg.av_free(timeCodeInfo);
+            ffmpeg.av_free(timeCodeBuffer);
 
             return result;
         }

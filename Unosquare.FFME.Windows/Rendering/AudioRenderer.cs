@@ -35,8 +35,7 @@
         private bool IsDisposed = false;
 
         private byte[] ReadBuffer = null;
-        private WaveFormat m_Format = null;
-        private int BytesPerSample = 2;
+        private WaveFormat m_WaveFormat = null;
         private int SampleBlockSize = 0;
 
         #endregion
@@ -51,7 +50,7 @@
         {
             MediaCore = mediaEngine;
 
-            m_Format = new WaveFormat(
+            m_WaveFormat = new WaveFormat(
                 Constants.Audio.SampleRate,
                 Constants.Audio.BitsPerSample,
                 Constants.Audio.ChannelCount);
@@ -59,7 +58,7 @@
             if (WaveFormat.BitsPerSample != 16 || WaveFormat.Channels != 2)
                 throw new NotSupportedException("Wave Format has to be 16-bit and 2-channel.");
 
-            if (MediaElement.HasAudio)
+            if (MediaCore.State.HasAudio)
                 Initialize();
 
             if (Application.Current != null)
@@ -88,7 +87,7 @@
         /// <summary>
         /// Gets the output format of the audio
         /// </summary>
-        public WaveFormat WaveFormat => m_Format;
+        public WaveFormat WaveFormat => m_WaveFormat;
 
         /// <summary>
         /// Gets the realtime latency of the audio relative to the internal wall clock.
@@ -143,7 +142,7 @@
         public void Render(MediaBlock mediaBlock, TimeSpan clockPosition)
         {
             // We don't need to render anything while we are seeking. Simply drop the blocks.
-            if (MediaElement.IsSeeking) return;
+            if (MediaCore.State.IsSeeking) return;
             if (AudioBuffer == null) return;
 
             // Capture Media Block Reference
@@ -270,7 +269,7 @@
                     var speedRatio = MediaCore?.State.SpeedRatio ?? 0;
 
                     // Render silence if we don't need to output samples
-                    if (MediaElement.IsPlaying == false || speedRatio <= 0d || MediaElement.HasAudio == false || AudioBuffer.ReadableCount <= 0)
+                    if (MediaCore.State.IsPlaying == false || speedRatio <= 0d || MediaCore.State.HasAudio == false || AudioBuffer.ReadableCount <= 0)
                     {
                         Array.Clear(targetBuffer, targetBufferOffset, requestedBytes);
                         return requestedBytes;
@@ -281,7 +280,7 @@
                         ReadBuffer = new byte[(int)(requestedBytes * Constants.Controller.MaxSpeedRatio)];
 
                     // First part of DSP: Perform AV Synchronization if needed
-                    if (MediaElement.HasVideo && Synchronize(targetBuffer, targetBufferOffset, requestedBytes, speedRatio) == false)
+                    if (MediaCore.State.HasVideo && Synchronize(targetBuffer, targetBufferOffset, requestedBytes, speedRatio) == false)
                         return requestedBytes;
 
                     // Perform DSP
@@ -314,7 +313,7 @@
                 }
                 catch (Exception ex)
                 {
-                    MediaElement?.MediaCore?.Log(MediaLogMessageType.Error, $"{ex.GetType()} in {nameof(AudioRenderer)}.{nameof(Read)}: {ex.Message}. Stack Trace:\r\n{ex.StackTrace}");
+                    MediaCore?.Log(MediaLogMessageType.Error, $"{ex.GetType()} in {nameof(AudioRenderer)}.{nameof(Read)}: {ex.Message}. Stack Trace:\r\n{ex.StackTrace}");
                     Array.Clear(targetBuffer, targetBufferOffset, requestedBytes);
                 }
 
@@ -366,9 +365,7 @@
                 NumberOfBuffers = 2,
             };
 
-            BytesPerSample = WaveFormat.BitsPerSample / 8;
-            SampleBlockSize = BytesPerSample * WaveFormat.Channels;
-
+            SampleBlockSize = Constants.Audio.BytesPerSample * Constants.Audio.ChannelCount;
             var bufferLength = WaveFormat.ConvertLatencyToByteSize(AudioDevice.DesiredLatency) * MediaCore.Blocks[MediaType.Audio].Capacity / 2;
             AudioBuffer = new CircularBuffer(bufferLength);
             AudioDevice.Init(this);
@@ -590,9 +587,11 @@
 
                 if (computeAverage)
                 {
-                    for (var i = sourceOffset; i < sourceOffset + (currentGroupSizeW * SampleBlockSize); i += BytesPerSample)
+                    for (var i = sourceOffset;
+                        i < sourceOffset + (currentGroupSizeW * SampleBlockSize);
+                        i += Constants.Audio.BytesPerSample)
                     {
-                        sample = (short)(ReadBuffer[i] | (ReadBuffer[i + 1] << 8));
+                        sample = ReadBuffer.GetAudioSample(i);
                         if (isLeftSample)
                         {
                             leftSamples += sample;
@@ -615,15 +614,13 @@
                     // If I set samples to average to 1 here, it does not change the pitch but
                     // audio gaps are noticeable
                     samplesToAverage = 1; //  currentGroupSizeW * SampleBlockSize / BytesPerSample / 2;
-                    leftSamples = (short)(ReadBuffer[sourceOffset] | (ReadBuffer[sourceOffset + 1] << 8));
-                    rightSamples = (short)(ReadBuffer[sourceOffset + 2] | (ReadBuffer[sourceOffset + 3] << 8));
+                    leftSamples = ReadBuffer.GetAudioSample(sourceOffset);
+                    rightSamples = ReadBuffer.GetAudioSample(sourceOffset + Constants.Audio.BytesPerSample);
                 }
 
                 // Write the samples
-                ReadBuffer[targetOffset + 0] = (byte)((short)leftSamples & 0xff);
-                ReadBuffer[targetOffset + 1] = (byte)((short)leftSamples >> 8);
-                ReadBuffer[targetOffset + 2] = (byte)((short)rightSamples & 0xff);
-                ReadBuffer[targetOffset + 3] = (byte)((short)rightSamples >> 8);
+                ReadBuffer.PutAudioSample(targetOffset, Convert.ToInt16(leftSamples));
+                ReadBuffer.PutAudioSample(targetOffset + Constants.Audio.BytesPerSample, Convert.ToInt16(rightSamples));
 
                 // advance the base source offset
                 currentGroupSizeW = (int)(groupSize + currentGroupSizeF);
@@ -645,7 +642,7 @@
         private void ReadAndUseAudioProcessor(int requestedBytes, double speedRatio)
         {
             if (AudioProcessorBuffer == null || AudioProcessorBuffer.Length < (int)(requestedBytes * Constants.Controller.MaxSpeedRatio))
-                AudioProcessorBuffer = new short[(int)(requestedBytes * Constants.Controller.MaxSpeedRatio / BytesPerSample)];
+                AudioProcessorBuffer = new short[(int)(requestedBytes * Constants.Controller.MaxSpeedRatio / Constants.Audio.BytesPerSample)];
 
             var bytesToRead = (int)(requestedBytes * speedRatio).ToMultipleOf(SampleBlockSize);
             var samplesToRead = bytesToRead / SampleBlockSize;
@@ -707,13 +704,13 @@
             var isLeftSample = true;
             short currentSample = 0;
 
-            for (var sourceBufferOffset = 0; sourceBufferOffset < requestedBytes; sourceBufferOffset += BytesPerSample)
+            for (var sourceBufferOffset = 0;
+                sourceBufferOffset < requestedBytes;
+                sourceBufferOffset += Constants.Audio.BytesPerSample)
             {
-                // TODO: Make architecture-agnostic sound processing
-                // The sample has 2 bytes: at the base index is the LSB and at the baseIndex + 1 is the MSB
-                // this obviously only holds true for Little Endian architectures, and thus, the current code might not be portable.
-                // This replaces BitConverter.ToInt16(ReadBuffer, baseIndex); which is obviously much slower.
-                currentSample = (short)(ReadBuffer[sourceBufferOffset] | (ReadBuffer[sourceBufferOffset + 1] << 8));
+                // The sample has 2 bytes: at the base index is the LSB and at the baseIndex + 1 is the MSB.
+                // This holds true for little endian architecture
+                currentSample = ReadBuffer.GetAudioSample(sourceBufferOffset);
 
                 if (isMuted)
                 {
@@ -727,8 +724,7 @@
                         currentSample = (short)(currentSample * rightVolume);
                 }
 
-                targetBuffer[targetBufferOffset + sourceBufferOffset] = (byte)(currentSample & 0x00ff); // set the LSB
-                targetBuffer[targetBufferOffset + sourceBufferOffset + 1] = (byte)(currentSample >> 8); // set the MSB
+                targetBuffer.PutAudioSample(targetBufferOffset + sourceBufferOffset, currentSample);
                 isLeftSample = !isLeftSample;
             }
         }
