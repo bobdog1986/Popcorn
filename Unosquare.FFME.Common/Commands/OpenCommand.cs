@@ -64,8 +64,10 @@
 
                 // Create the stream container
                 // the async protocol prefix allows for increased performance for local files.
-                var streamOptions = new StreamOptions();
-                streamOptions.ProtocolPrefix = Source.IsFile ? "async" : null;
+                var streamOptions = new StreamOptions
+                {
+                    ProtocolPrefix = Source.IsFile ? "async" : null
+                };
 
                 m.SendOnMediaInitializing(streamOptions, mediaUrl);
                 m.Container = new MediaContainer(mediaUrl, streamOptions, m);
@@ -74,26 +76,25 @@
                 m.Container.Open();
                 m.State.InitializeBufferingProperties();
 
-                // Set the state to stopped
-                m.State.UpdateMediaState(PlaybackStatus.Stop, TimeSpan.Zero);
-
-                // Signal we are no longer in the opening state
-                // so we can enqueue commands in the event handler
-                m.State.IsOpening = false;
-
                 // Charge! Fire up the worker threads!
                 m.StartWorkers();
+
+                // Set the state to stopped and exit the IsOpening state
+                m.State.IsOpening = false;
+                m.State.UpdateMediaState(PlaybackStatus.Stop);
 
                 // Raise the opened event
                 m.SendOnMediaOpened();
             }
             catch (Exception ex)
             {
-                m.State.UpdateMediaState(PlaybackStatus.Close, TimeSpan.Zero);
+                m.State.UpdateMediaState(PlaybackStatus.Close);
                 m.SendOnMediaFailed(ex);
             }
             finally
             {
+                // Signal we are no longer in the opening state
+                // so we can enqueue commands in the command handler
                 m.State.IsOpening = false;
                 m.Log(MediaLogMessageType.Debug, $"{nameof(OpenCommand)}: Completed");
             }
