@@ -1,4 +1,11 @@
-﻿# 3.5.15 - 01/02/2018 #
+﻿# 3.5.16 - 01/02/2018 #
+***
+Fixed issue
+
+### Details ###
+* Fixed issue with trailers.
+
+# 3.5.15 - 01/02/2018 #
 ***
 Fixed issue
 

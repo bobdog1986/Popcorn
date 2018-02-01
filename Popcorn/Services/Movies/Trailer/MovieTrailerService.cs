@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Net;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight.Messaging;
@@ -67,6 +69,53 @@ namespace Popcorn.Services.Movies.Trailer
 
                         if (!cancellation.IsCancellationRequested)
                         {
+                            Uri uriResult;
+                            bool result = Uri.TryCreate(trailer, UriKind.Absolute, out uriResult)
+                                          && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+                            if (result)
+                            {
+                                var client = new HttpClient();
+                                try
+                                {
+                                    using (var response = await client.GetAsync(uriResult, ct))
+                                    {
+                                        if (response == null || response.StatusCode != HttpStatusCode.OK)
+                                        {
+                                            Logger.Error(
+                                                $"Failed loading movie's trailer: {movie.Title}");
+                                            Messenger.Default.Send(
+                                                new ManageExceptionMessage(
+                                                    new TrailerNotAvailableException(
+                                                        LocalizationProviderHelper.GetLocalizedValue<string>("TrailerNotAvailable"))));
+                                            Messenger.Default.Send(new StopPlayingTrailerMessage(Utils.MediaType.Movie));
+                                            return;
+                                        }
+                                    }
+                                }
+                                catch (WebException)
+                                {
+                                    Logger.Error(
+                                        $"Failed loading movie's trailer: {movie.Title}");
+                                    Messenger.Default.Send(
+                                        new ManageExceptionMessage(
+                                            new TrailerNotAvailableException(
+                                                LocalizationProviderHelper.GetLocalizedValue<string>("TrailerNotAvailable"))));
+                                    Messenger.Default.Send(new StopPlayingTrailerMessage(Utils.MediaType.Movie));
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                Logger.Error(
+                                    $"Failed loading movie's trailer: {movie.Title}");
+                                Messenger.Default.Send(
+                                    new ManageExceptionMessage(
+                                        new TrailerNotAvailableException(
+                                            LocalizationProviderHelper.GetLocalizedValue<string>("TrailerNotAvailable"))));
+                                Messenger.Default.Send(new StopPlayingTrailerMessage(Utils.MediaType.Movie));
+                                return;
+                            }
+
                             Logger.Info(
                                 $"Movie's trailer loaded: {movie.Title}");
                             Messenger.Default.Send(new PlayTrailerMessage(trailer, movie.Title, () =>
