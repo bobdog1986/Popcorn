@@ -520,7 +520,6 @@ namespace Popcorn.UserControls.Player
             try
             {
                 _applicationService.SwitchConstantDisplayAndPower(true);
-                await Media.Play();
                 MediaPlayerStatusBarItemPlay.Visibility = Visibility.Collapsed;
                 MediaPlayerStatusBarItemPause.Visibility = Visibility.Visible;
                 CastButton.Visibility = Visibility.Visible;
@@ -530,6 +529,7 @@ namespace Popcorn.UserControls.Player
                     if (vm.IsCasting)
                         vm.PlayCastCommand.Execute(null);
                 }
+                await Media.Play();
             }
             catch (Exception ex)
             {

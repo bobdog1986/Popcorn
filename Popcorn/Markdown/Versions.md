@@ -1,4 +1,11 @@
-﻿# 3.5.14 - 01/02/2018 #
+﻿# 3.5.15 - 01/02/2018 #
+***
+Fixed issue
+
+### Details ###
+* Fixed issue with player buttons.
+
+# 3.5.14 - 01/02/2018 #
 ***
 Improved player
 
