@@ -117,13 +117,12 @@
 
                 case GuiContextType.WinForms:
                     {
-                        // TODO: Testing required
                         var doneEvent = new ManualResetEventSlim(false);
                         Context.Post((args) =>
                         {
                             try
                             {
-                                callback.DynamicInvoke(args);
+                                callback.DynamicInvoke(args as object[]);
                             }
                             catch { throw; }
                             finally { doneEvent.Set(); }
@@ -171,6 +170,17 @@
         public void Invoke(Action callback)
         {
             InvokeAsync(DispatcherPriority.Normal, callback).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
+        /// Invokes a task on the GUI thread
+        /// </summary>
+        /// <param name="priority">The priority.</param>
+        /// <param name="callback">The callback.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Invoke(DispatcherPriority priority, Action callback)
+        {
+            InvokeAsync(priority, callback).GetAwaiter().GetResult();
         }
 
         /// <summary>

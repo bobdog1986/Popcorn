@@ -4,11 +4,18 @@
     using Core;
     using Decoding;
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
 
     public partial class MediaEngine
     {
         #region Internal Members
+
+        /// <summary>
+        /// The open or close command done signalling object.
+        /// Open and close are synchronous commands.
+        /// </summary>
+        private readonly ManualResetEvent SynchronousCommandDone = new ManualResetEvent(true);
 
         /// <summary>
         /// The command queue to be executed in the order they were sent.
@@ -39,22 +46,27 @@
         /// <exception cref="InvalidOperationException">Source</exception>
         public async Task Open(Uri uri)
         {
-            // TODO: Calling this multiple times while an operation is in progress breaks the control :(
-            // for now let's throw an exception but ideally we want the user NOT to be able to change the value in the first place.
-            if (State.IsOpening)
-                throw new InvalidOperationException($"Unable to change {nameof(State.Source)} to '{uri}' because {nameof(State.IsOpening)} is currently set to true.");
+            if (BeginSynchronousCommand() == false) return;
 
-            if (uri != null)
+            try
             {
-                await Close()
-                    .ContinueWith(async (c) =>
-                    {
-                        await Commands.OpenAsync(uri);
-                    });
+                if (uri != null)
+                {
+                    await Commands.CloseAsync();
+                    await Commands.OpenAsync(uri);
+                }
+                else
+                {
+                    await Commands.CloseAsync();
+                }
             }
-            else
+            catch
             {
-                await Commands.CloseAsync();
+                throw;
+            }
+            finally
+            {
+                EndSynchronousCommand();
             }
         }
 
@@ -64,9 +76,16 @@
         /// <returns>The awaitable task</returns>
         public async Task Close()
         {
-            try { await Commands.CloseAsync(); }
+            if (BeginSynchronousCommand() == false) return;
+
+            try
+            { await Commands.CloseAsync(); }
             catch (OperationCanceledException) { }
             catch { throw; }
+            finally
+            {
+                EndSynchronousCommand();
+            }
         }
 
         /// <summary>
@@ -113,6 +132,52 @@
         /// </summary>
         /// <param name="targetSpeedRatio">New playback speed ratio.</param>
         public void RequestSpeedRatio(double targetSpeedRatio) => Commands.EnqueueSpeedRatio(targetSpeedRatio);
+
+        #endregion
+
+        #region Synchronous Command Management
+
+        /// <summary>
+        /// Begins a synchronous command by locking the internal wait handle.
+        /// </summary>
+        /// <returns>True if successful, false if unsuccessful</returns>
+        private bool BeginSynchronousCommand()
+        {
+            if (IsDisposed) return false;
+
+            var waitHandle = SynchronousCommandDone;
+            if (waitHandle == null) return false;
+            if (waitHandle.SafeWaitHandle == null) return false;
+            if (waitHandle.SafeWaitHandle.IsClosed) return false;
+            if (waitHandle.SafeWaitHandle.IsInvalid) return false;
+
+            try
+            {
+                waitHandle.WaitOne();
+                waitHandle.Reset();
+                return true;
+            }
+            catch { }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Ends a synchronous command by releasing the internal wait handle.
+        /// </summary>
+        private void EndSynchronousCommand()
+        {
+            if (IsDisposed) return;
+
+            var waitHandle = SynchronousCommandDone;
+            if (waitHandle == null) return;
+            if (waitHandle.SafeWaitHandle == null) return;
+            if (waitHandle.SafeWaitHandle.IsClosed) return;
+            if (waitHandle.SafeWaitHandle.IsInvalid) return;
+
+            try { waitHandle.Set(); }
+            catch { }
+        }
 
         #endregion
     }

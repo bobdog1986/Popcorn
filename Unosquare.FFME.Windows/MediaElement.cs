@@ -232,19 +232,9 @@
         /// </summary>
         public void Dispose()
         {
-            // TODO: Verify Dispose and nullables
             if (IsDisposed) return;
             IsDisposed = true;
-            m_MediaCore.Dispose();
-
-            // TODO: Get a reset
-            PropertyUpdatesDone.Set();
             PropertyUpdatesWorker.Dispose();
-            if (PropertyUpdatesDone != null)
-            {
-                PropertyUpdatesDone.Dispose();
-                PropertyUpdatesDone = null;
-            }
         }
 
         /// <summary>

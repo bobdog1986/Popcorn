@@ -1,9 +1,16 @@
-﻿# 3.5.13 - 29/01/2018 #
+﻿# 3.5.14 - 01/02/2018 #
+***
+Improved player
+
+### Details ###
+* Improved player stability and performances.
+
+# 3.5.13 - 30/01/2018 #
 ***
 Fix issue
 
 ### Details ###
-* Fix update issue
+* Fix update issue.
 
 # 3.5.12 - 29/01/2018 #
 ***
