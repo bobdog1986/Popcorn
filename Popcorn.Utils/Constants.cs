@@ -14,7 +14,7 @@ namespace Popcorn.Utils
         /// <summary>
         /// App version
         /// </summary>
-        public const string AppVersion = "3.6.0";
+        public const string AppVersion = "3.6.1";
 
         /// <summary>
         /// Endpoint to API
@@ -45,7 +45,7 @@ namespace Popcorn.Utils
         /// Path to the FFmpeg shared libs
         /// </summary>
         public static string FFmpegPath => $@"{new Uri(Assembly.GetExecutingAssembly().GetPath())
-            .AbsolutePath}\FFmpeg";
+            .OriginalString}\FFmpeg";
 
         /// <summary>
         /// In percentage, the minimum of buffering before we can actually start playing the movie
