@@ -45,7 +45,7 @@
             DpiY = dpiY;
 
             UpdateRect = new Int32Rect(0, 0, pixelWidth, pixelHeight);
-            BufferLength = (uint)(Stride * PixelHeight);
+            BufferLength = Convert.ToUInt32(Stride * PixelHeight);
             Palette = palette;
             PixelFormat = pixelFormat;
         }
@@ -115,6 +115,22 @@
         public PixelFormat PixelFormat { get; }
 
         #endregion
+
+        /// <summary>
+        /// Creates a Drawing Bitmap from this data buffer.
+        /// </summary>
+        /// <returns>The bitmap</returns>
+        public System.Drawing.Bitmap CreateDrawingBitmap()
+        {
+            var result = new System.Drawing.Bitmap(
+                PixelWidth,
+                PixelHeight,
+                Stride,
+                System.Drawing.Imaging.PixelFormat.Format32bppRgb,
+                Scan0);
+
+            return result;
+        }
 
         #region Factory Methods
 

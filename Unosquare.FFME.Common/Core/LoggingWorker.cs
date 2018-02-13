@@ -49,12 +49,16 @@
                 IsOutputingLog = true;
                 try
                 {
-                    while (LogQueue.TryDequeue(out MediaLogMessage eventArgs))
+                    const int MaxMessagesPerCycle = 10;
+                    var messageCount = 0;
+                    while (messageCount <= MaxMessagesPerCycle && LogQueue.TryDequeue(out MediaLogMessage message))
                     {
-                        if (eventArgs.Source != null)
-                            eventArgs.Source.SendOnMessageLogged(eventArgs);
+                        if (message.Source != null)
+                            message.Source.SendOnMessageLogged(message);
                         else
-                            MediaEngine.Platform?.HandleFFmpegLogMessage(eventArgs);
+                            MediaEngine.Platform?.HandleFFmpegLogMessage(message);
+
+                        messageCount += 1;
                     }
                 }
                 catch
@@ -67,8 +71,8 @@
                 }
             },
             LogQueue, // the state argument passed on to the ticker
-            (int)Constants.Interval.LowPriority.TotalMilliseconds,
-            (int)Constants.Interval.LowPriority.TotalMilliseconds);
+            Convert.ToInt32(Constants.Interval.LowPriority.TotalMilliseconds),
+            Convert.ToInt32(Constants.Interval.LowPriority.TotalMilliseconds));
         }
 
         #endregion

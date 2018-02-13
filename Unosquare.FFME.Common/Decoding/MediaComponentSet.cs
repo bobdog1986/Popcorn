@@ -112,6 +112,21 @@
         }
 
         /// <summary>
+        /// Gets the first packet DTS.
+        /// </summary>
+        public long? FirstPacketDts { get; private set; } = default(long?);
+
+        /// <summary>
+        /// Gets the stream index of the first packet received.
+        /// </summary>
+        public int? FisrtPacketStreamIndex { get; private set; } = default(int?);
+
+        /// <summary>
+        /// Gets the first packet byte position.
+        /// </summary>
+        public long? FirstPacketPosition { get; private set; } = default(long?);
+
+        /// <summary>
         /// Gets the current length in bytes of the packet buffer.
         /// These packets are the ones that have not been yet deecoded.
         /// </summary>
@@ -194,6 +209,7 @@
                         throw new ArgumentException($"A component for '{mediaType}' is already registered.");
                     Items[mediaType] = value ?? throw new ArgumentNullException($"{nameof(MediaComponent)} {nameof(value)} must not be null.");
 
+                    // Try for the main component to be the video (if it's not stuff like audio album art, that is)
                     if (HasVideo && HasAudio &&
                         (Video.StreamInfo.Disposition & ffmpeg.AV_DISPOSITION_ATTACHED_PIC) != ffmpeg.AV_DISPOSITION_ATTACHED_PIC)
                     {
@@ -201,7 +217,30 @@
                         return;
                     }
 
-                    Main = HasAudio ? Audio as MediaComponent : Video as MediaComponent;
+                    // If it was not vide, then it has to be audio (if it has audio)
+                    if (HasAudio)
+                    {
+                        Main = Audio;
+                        return;
+                    }
+
+                    // Set it to video even if it's attached pic stuff
+                    if (HasVideo)
+                    {
+                        Main = Video;
+                        return;
+                    }
+
+                    // As a last resort, set the main component to be the subtitles
+                    if (HasSubtitles)
+                    {
+                        Main = Subtitles;
+                        return;
+                    }
+
+                    // We whould never really hit this line
+                    if (Items.Count > 0)
+                        Main = Items.First().Value;
                 }
             }
         }
@@ -231,6 +270,13 @@
             {
                 if (packet == null)
                     return MediaType.None;
+
+                if (FirstPacketDts == null && packet->dts != ffmpeg.AV_NOPTS_VALUE)
+                {
+                    FirstPacketDts = packet->dts;
+                    FisrtPacketStreamIndex = packet->stream_index;
+                    FirstPacketPosition = packet->pos;
+                }
 
                 foreach (var component in All)
                 {

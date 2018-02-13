@@ -3,6 +3,7 @@
     using Primitives;
     using Shared;
     using System;
+    using System.Linq;
     using System.Threading;
 
     public partial class MediaEngine
@@ -12,10 +13,10 @@
         /// </summary>
         private void StartBlockRenderingWorker()
         {
-            if (HasBlockRenderingWorkerExited != null)
+            if (BlockRenderingWorkerExit != null)
                 return;
 
-            HasBlockRenderingWorkerExited = new ManualResetEvent(false);
+            BlockRenderingWorkerExit = WaitEventFactory.Create(isCompleted: false, useSlim: true);
 
             // Synchronized access to parts of the run cycle
             var isRunningRenderingCycle = false;
@@ -23,11 +24,8 @@
             // Holds the main media type
             var main = Container.Components.Main.MediaType;
 
-            // Holds the auxiliary media types
-            var auxs = Container.Components.MediaTypes.ExcludeMediaType(main);
-
             // Holds all components
-            var all = Container.Components.MediaTypes.DeepCopy();
+            var all = Renderers.Keys.ToArray();
 
             // Holds a snapshot of the current block to render
             var currentBlock = new MediaTypeDictionary<MediaBlock>();
@@ -40,15 +38,14 @@
                 LastRenderTime[t] = TimeSpan.MinValue;
 
             // Ensure packet reading is running
-            PacketReadingCycle.WaitOne();
+            PacketReadingCycle.Wait();
 
             // wait for main component blocks or EOF or cancellation pending
             while (CanReadMoreFramesOf(main) && Blocks[main].Count <= 0)
-                FrameDecodingCycle.WaitOne();
+                FrameDecodingCycle.Wait();
 
             // Set the initial clock position
-            // TODO: maybe update media start time offset to this Minimum, initial Start Time intead of relying on contained meta?
-            Clock.Update(Blocks[main].RangeStartTime); // .GetMinStartTime()
+            Clock.Update(Blocks[main].RangeStartTime);
             var wallClock = WallClock;
 
             // Wait for renderers to be ready
@@ -60,9 +57,9 @@
             {
                 #region Detect a Timer Stop
 
-                if (IsTaskCancellationPending || HasBlockRenderingWorkerExited.IsSet() || IsDisposed)
+                if (IsTaskCancellationPending || BlockRenderingWorkerExit.IsCompleted || IsDisposed)
                 {
-                    HasBlockRenderingWorkerExited.Set();
+                    BlockRenderingWorkerExit.Complete();
                     return;
                 }
 
@@ -76,7 +73,7 @@
                 // Don't run the cycle if it's already running
                 if (isRunningRenderingCycle)
                 {
-                    // TODO: Maybe Log a frame skip here?
+                    Log(MediaLogMessageType.Trace, $"SKIP: {nameof(BlockRenderingWorker)} alredy in a cycle. {WallClock}");
                     return;
                 }
 
@@ -92,7 +89,7 @@
                         renderedBlockCount[t] = 0;
 
                     // Capture current clock position for the rest of this cycle
-                    BlockRenderingCycle.Reset();
+                    BlockRenderingCycle.Begin();
 
                     #endregion
 
@@ -100,14 +97,25 @@
 
                     // Wait for the seek op to finish before we capture blocks
                     if (HasDecoderSeeked)
-                        SeekingDone.WaitOne();
+                        SeekingDone.Wait();
 
                     // capture the wall clock for this cycle
                     wallClock = WallClock;
 
                     // Capture the blocks to render
                     foreach (var t in all)
-                        currentBlock[t] = Blocks[t][wallClock];
+                    {
+                        if (t == MediaType.Subtitle && PreloadedSubtitles != null)
+                        {
+                            // Get the preloaded, cached subtitle block
+                            currentBlock[t] = PreloadedSubtitles[wallClock];
+                        }
+                        else
+                        {
+                            // Get the regular audio, video, or sub block
+                            currentBlock[t] = Blocks[t][wallClock];
+                        }
+                    }
 
                     // Render each of the Media Types if it is time to do so.
                     foreach (var t in all)
@@ -116,15 +124,8 @@
                         if (currentBlock[t] == null)
                             continue;
 
-                        // Render by forced signal (TimeSpan.MinValue)
-                        if (LastRenderTime[t] == TimeSpan.MinValue)
-                        {
-                            renderedBlockCount[t] += SendBlockToRenderer(currentBlock[t], wallClock);
-                            continue;
-                        }
-
-                        // Render because we simply have not rendered
-                        if (currentBlock[t].StartTime != LastRenderTime[t])
+                        // Render by forced signal (TimeSpan.MinValue) or because simply it is time to do so
+                        if (LastRenderTime[t] == TimeSpan.MinValue || currentBlock[t].StartTime != LastRenderTime[t])
                         {
                             renderedBlockCount[t] += SendBlockToRenderer(currentBlock[t], wallClock);
                             continue;
@@ -147,7 +148,7 @@
                 finally
                 {
                     // Always exit notifying the cycle is done.
-                    BlockRenderingCycle.Set();
+                    BlockRenderingCycle.Complete();
                     isRunningRenderingCycle = false;
                 }
 
@@ -156,7 +157,7 @@
             },
             this, // the state argument passed on to the ticker
             0,
-            (int)Constants.Interval.HighPriority.TotalMilliseconds);
+            Convert.ToInt32(Constants.Interval.HighPriority.TotalMilliseconds));
         }
 
         /// <summary>
@@ -164,14 +165,14 @@
         /// </summary>
         private void StopBlockRenderingWorker()
         {
-            if (HasBlockRenderingWorkerExited == null)
+            if (BlockRenderingWorkerExit == null)
                 return;
 
-            HasBlockRenderingWorkerExited.WaitOne();
+            BlockRenderingWorkerExit.Wait();
             BlockRenderingWorker?.Dispose();
             BlockRenderingWorker = null;
-            HasBlockRenderingWorkerExited.Dispose();
-            HasBlockRenderingWorkerExited = null;
+            BlockRenderingWorkerExit.Dispose();
+            BlockRenderingWorkerExit = null;
         }
     }
 }

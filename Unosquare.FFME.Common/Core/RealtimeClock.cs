@@ -11,14 +11,14 @@
     internal sealed class RealTimeClock : IDisposable
     {
         private readonly Stopwatch Chrono = new Stopwatch();
-        private ISyncLocker Locker = SyncLockerFactory.CreateSlim();
+        private ISyncLocker Locker = SyncLockerFactory.Create(useSlim: true);
         private long OffsetTicks = 0;
         private double m_SpeedRatio = Constants.Controller.DefaultSpeedRatio;
         private bool IsDisposed = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RealTimeClock"/> class.
-        /// The clock starts poaused and at the 0 position.
+        /// The clock starts paused and at the 0 position.
         /// </summary>
         public RealTimeClock()
         {
@@ -35,7 +35,7 @@
                 using (Locker.AcquireReaderLock())
                 {
                     return TimeSpan.FromTicks(
-                        OffsetTicks + (long)Math.Round(Chrono.Elapsed.Ticks * SpeedRatio, 0));
+                        OffsetTicks + Convert.ToInt64(Chrono.Elapsed.Ticks * SpeedRatio));
                 }
             }
         }
@@ -135,10 +135,7 @@
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-        }
+        public void Dispose() => Dispose(true);
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
@@ -146,16 +143,10 @@
         /// <param name="alsoManaged"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         private void Dispose(bool alsoManaged)
         {
-            if (!IsDisposed)
-            {
-                if (alsoManaged)
-                {
-                    Locker?.Dispose();
-                }
-
-                Locker = null;
-                IsDisposed = true;
-            }
+            if (IsDisposed) return;
+            IsDisposed = true;
+            Locker?.Dispose();
+            Locker = null;
         }
     }
 }

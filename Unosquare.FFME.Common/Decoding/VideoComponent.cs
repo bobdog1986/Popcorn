@@ -68,8 +68,10 @@
 
         /// <summary>
         /// Gets the video scaler flags used to perfom colorspace conversion (if needed).
+        /// Point / nearest-neighbor is the default and it is the cheapest. This is by design as
+        /// we don't change the dimensions  of the image. We only do color conversion.
         /// </summary>
-        public static int ScalerFlags { get; internal set; } = ffmpeg.SWS_BICUBIC;
+        public static int ScalerFlags { get; internal set; } = ffmpeg.SWS_POINT;
 
         /// <summary>
         /// Gets the base frame rate as reported by the stream component.
@@ -241,7 +243,7 @@
 
             AVFrame* outputFrame;
 
-            // TODO: Support real-time changes in Video Filtergraph by checking if MediaOptions.VideoFilterGraph has changed
+            // TODO: (Floyd) Support real-time changes in Video Filtergraph by checking if MediaOptions.VideoFilterGraph has changed
             // Maybe expose the VideoFilterGraph string as a MediaElement Control Property
             if (FilterGraph != null)
             {

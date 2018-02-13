@@ -42,7 +42,7 @@
 
             HasValidStartTime = frame->pts != ffmpeg.AV_NOPTS_VALUE;
             StartTime = frame->pts == ffmpeg.AV_NOPTS_VALUE ?
-                TimeSpan.FromTicks(component.Container.MediaStartTimeOffset.Ticks) :
+                TimeSpan.FromTicks(0) :
                 TimeSpan.FromTicks(frame->pts.ToTimeSpan(StreamTimeBase).Ticks - component.Container.MediaStartTimeOffset.Ticks);
 
             EndTime = TimeSpan.FromTicks(StartTime.Ticks + Duration.Ticks);
@@ -106,12 +106,12 @@
         /// If not set by the decoder, this attempts to obtain it by dividing the start time by the
         /// frame duration
         /// </summary>
-        public int DisplayPictureNumber { get; }
+        public long DisplayPictureNumber { get; }
 
         /// <summary>
         /// Gets the coded picture number set by the decoder.
         /// </summary>
-        public int CodedPictureNumber { get; }
+        public long CodedPictureNumber { get; }
 
         /// <summary>
         /// Gets the SMTPE time code.

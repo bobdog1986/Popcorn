@@ -30,7 +30,7 @@
         /// <summary>
         /// Controls multiple reads and exclusive writes
         /// </summary>
-        private ISyncLocker Locker = SyncLockerFactory.CreateSlim();
+        private ISyncLocker Locker = SyncLockerFactory.Create(useSlim: true);
 
         #endregion
 
@@ -114,7 +114,7 @@
                 using (Locker.AcquireReaderLock())
                 {
                     if (PlaybackBlocks.Count <= 0) return TimeSpan.Zero;
-                    return TimeSpan.FromTicks((long)PlaybackBlocks.Average(b => Convert.ToDouble(b.Duration.Ticks)));
+                    return TimeSpan.FromTicks(Convert.ToInt64(PlaybackBlocks.Average(b => Convert.ToDouble(b.Duration.Ticks))));
                 }
             }
         }
@@ -128,13 +128,11 @@
             {
                 using (Locker.AcquireReaderLock())
                 {
-                    if (PlaybackBlocks.Count > 1)
-                    {
-                        var firstBlockDuration = PlaybackBlocks[0].Duration;
-                        return PlaybackBlocks.All(b => b.Duration == firstBlockDuration);
-                    }
+                    if (PlaybackBlocks.Count <= 0)
+                        return false;
 
-                    return false;
+                    var firstBlockDuration = PlaybackBlocks[0].Duration;
+                    return PlaybackBlocks.All(b => b.Duration == firstBlockDuration);
                 }
             }
         }
@@ -167,7 +165,7 @@
             {
                 using (Locker.AcquireReaderLock())
                 {
-                    return (double)Count / Capacity;
+                    return Convert.ToDouble(Count) / Capacity;
                 }
             }
         }
@@ -244,7 +242,7 @@
             using (Locker.AcquireReaderLock())
             {
                 return RangeDuration.Ticks != 0 ?
-                    ((double)position.Ticks - RangeStartTime.Ticks) / RangeDuration.Ticks : 0d;
+                    Convert.ToDouble(position.Ticks - RangeStartTime.Ticks) / RangeDuration.Ticks : 0d;
             }
         }
 
@@ -442,8 +440,8 @@
         {
             using (Locker.AcquireReaderLock())
             {
-                return $"{MediaType, -12} - CAP: {Capacity, 10} | FRE: {PoolBlocks.Count, 7} | " +
-                    $"USD: {PlaybackBlocks.Count, 4} |  RNG: {RangeStartTime.Format(), 8} to {RangeEndTime.Format().Trim()}";
+                return $"{MediaType,-12} - CAP: {Capacity,10} | FRE: {PoolBlocks.Count,7} | " +
+                    $"USD: {PlaybackBlocks.Count,4} |  RNG: {RangeStartTime.Format(),8} to {RangeEndTime.Format().Trim()}";
             }
         }
 

@@ -170,7 +170,7 @@
 
             CodecId = Stream->codec->codec_id;
             CodecName = ffmpeg.avcodec_get_name(CodecId);
-            Bitrate = (int)Stream->codec->bit_rate;
+            Bitrate = Stream->codec->bit_rate;
             Container.Parent?.Log(MediaLogMessageType.Debug,
                 $"COMP {MediaType.ToString().ToUpperInvariant()}: Start Offset: {StartTimeOffset.Format()}; Duration: {Duration.Format()}");
         }
@@ -207,6 +207,11 @@
         /// by the start time of the stream.
         /// </summary>
         public TimeSpan StartTimeOffset { get; }
+
+        /// <summary>
+        /// Gets the first packet DTS.
+        /// </summary>
+        public long? FirstPacketDts { get; private set; } = default(long?);
 
         /// <summary>
         /// Gets the duration of this stream component.
@@ -250,7 +255,7 @@
         /// Gets the bitrate of this component as reported by the codec context.
         /// Returns 0 for unknown.
         /// </summary>
-        public int Bitrate { get; }
+        public long Bitrate { get; }
 
         /// <summary>
         /// Gets the stream information.
@@ -297,9 +302,15 @@
         public void SendPacket(AVPacket* packet)
         {
             if (packet == null) return;
-            Packets.Push(packet);
+
             if (packet->size > 0)
+            {
                 LifetimeBytesRead += (ulong)packet->size;
+                if (FirstPacketDts == null && packet->dts != ffmpeg.AV_NOPTS_VALUE)
+                    FirstPacketDts = packet->dts;
+            }
+
+            Packets.Push(packet);
         }
 
         /// <summary>

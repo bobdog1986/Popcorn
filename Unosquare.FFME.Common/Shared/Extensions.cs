@@ -6,7 +6,6 @@
     using System.Collections.Generic;
     using System.Runtime.CompilerServices;
     using System.Runtime.InteropServices;
-    using System.Threading;
 
     /// <summary>
     /// Provides various helpers and extension methods.
@@ -73,7 +72,7 @@
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double GetAudioSampleLevel(this byte[] buffer, int offset)
         {
-            return buffer.GetAudioSampleAmplitude(offset) / (double)short.MaxValue;
+            return buffer.GetAudioSampleAmplitude(offset) / Convert.ToDouble(short.MaxValue);
         }
 
         #endregion
@@ -132,7 +131,7 @@
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double ToMultipleOf(this double value, double multiple)
         {
-            var factor = (int)(value / multiple);
+            var factor = Convert.ToInt32(value / multiple);
             return factor * multiple;
         }
 
@@ -149,9 +148,23 @@
                 return TimeSpan.MinValue;
 
             if (timeBase.den == 0)
-                return TimeSpan.FromTicks((long)Math.Round(TimeSpan.TicksPerMillisecond * 1000 * pts / ffmpeg.AV_TIME_BASE, 0));
+                return TimeSpan.FromTicks(Convert.ToInt64(TimeSpan.TicksPerMillisecond * 1000 * pts / ffmpeg.AV_TIME_BASE));
 
-            return TimeSpan.FromTicks((long)Math.Round(TimeSpan.TicksPerMillisecond * 1000 * pts * timeBase.num / timeBase.den, 0));
+            return TimeSpan.FromTicks(Convert.ToInt64(TimeSpan.TicksPerMillisecond * 1000 * pts * timeBase.num / timeBase.den));
+        }
+
+        /// <summary>
+        /// Converts a timespan to an AV_TIME_BASE compatible timestamp
+        /// </summary>
+        /// <param name="ts">The ts.</param>
+        /// <param name="timeBase">The time base.</param>
+        /// <returns>
+        /// A long, ffmpeg compatible timestamp
+        /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static long ToLong(this TimeSpan ts, AVRational timeBase)
+        {
+            return Convert.ToInt64(ts.TotalSeconds * timeBase.den / timeBase.num); // (secs) * (units) / (secs) = (units)
         }
 
         /// <summary>
@@ -163,7 +176,7 @@
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TimeSpan ToTimeSpan(this long pts, AVRational timeBase)
         {
-            return ((double)pts).ToTimeSpan(timeBase);
+            return Convert.ToDouble(pts).ToTimeSpan(timeBase);
         }
 
         /// <summary>
@@ -178,7 +191,7 @@
             if (double.IsNaN(pts) || pts == ffmpeg.AV_NOPTS_VALUE)
                 return TimeSpan.MinValue;
 
-            return TimeSpan.FromTicks((long)Math.Round(TimeSpan.TicksPerMillisecond * 1000 * pts / timeBase, 0));
+            return TimeSpan.FromTicks(Convert.ToInt64(TimeSpan.TicksPerMillisecond * 1000 * pts / timeBase));
         }
 
         /// <summary>
@@ -190,7 +203,7 @@
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TimeSpan ToTimeSpan(this long pts, double timeBase)
         {
-            return ((double)pts).ToTimeSpan(timeBase);
+            return Convert.ToDouble(pts).ToTimeSpan(timeBase);
         }
 
         /// <summary>
@@ -212,7 +225,7 @@
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TimeSpan ToTimeSpan(this long pts)
         {
-            return ((double)pts).ToTimeSpan();
+            return Convert.ToDouble(pts).ToTimeSpan();
         }
 
         /// <summary>
@@ -223,7 +236,7 @@
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double ToDouble(this AVRational rational)
         {
-            return (double)rational.num / rational.den;
+            return Convert.ToDouble(rational.num) / Convert.ToDouble(rational.den);
         }
 
         /// <summary>
@@ -257,20 +270,6 @@
         #endregion
 
         #region Faster-than-Linq replacements
-
-        /// <summary>
-        /// Determines whether the event is in its set state.
-        /// </summary>
-        /// <param name="m">The event.</param>
-        /// <returns>
-        ///   <c>true</c> if the specified m is set; otherwise, <c>false</c>.
-        /// </returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsSet(this ManualResetEvent m)
-        {
-            if (m?.SafeWaitHandle.IsClosed ?? true) return true;
-            return m?.WaitOne(0) ?? true;
-        }
 
         /// <summary>
         /// Gets the fundamental (audio or video only) auxiliary media types.
@@ -445,9 +444,9 @@
         /// The serial picture number
         /// </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int ComputePictureNumber(TimeSpan startTime, TimeSpan duration, int startNumber)
+        internal static long ComputePictureNumber(TimeSpan startTime, TimeSpan duration, long startNumber)
         {
-            return startNumber + (int)Math.Round((double)startTime.Ticks / duration.Ticks, 0);
+            return startNumber + Convert.ToInt64(Convert.ToDouble(startTime.Ticks) / duration.Ticks);
         }
 
         /// <summary>
@@ -459,16 +458,29 @@
         /// <param name="frameNumber">The display picture number.</param>
         /// <returns>The FFmpeg computed SMTPE Timecode</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static unsafe string ComputeSmtpeTimeCode(TimeSpan streamStartTime, TimeSpan frameDuration, AVRational frameTimeBase, int frameNumber)
+        internal static unsafe string ComputeSmtpeTimeCode(TimeSpan streamStartTime, TimeSpan frameDuration, AVRational frameTimeBase, long frameNumber)
         {
+            // Drop the days in the stream start time
+            if (streamStartTime.Days > 0)
+                streamStartTime = streamStartTime.Subtract(TimeSpan.FromDays(streamStartTime.Days));
+
+            // Adjust to int value
+            if (frameNumber > int.MaxValue)
+                frameNumber = frameNumber % int.MaxValue;
+
             frameNumber--; // tun picture number into picture index.
             var timeCodeInfo = (AVTimecode*)ffmpeg.av_malloc((ulong)Marshal.SizeOf(typeof(AVTimecode)));
             var startFrameNumber = ComputePictureNumber(streamStartTime, frameDuration, 0);
-            ffmpeg.av_timecode_init(timeCodeInfo, frameTimeBase, 0, startFrameNumber, null);
+
+            // Adjust to int value
+            if (startFrameNumber > int.MaxValue)
+                startFrameNumber = startFrameNumber % int.MaxValue;
+
+            ffmpeg.av_timecode_init(timeCodeInfo, frameTimeBase, 0, Convert.ToInt32(startFrameNumber), null);
             var isNtsc = frameTimeBase.num == 30000 && frameTimeBase.den == 1001;
             var adjustedFrameNumber = isNtsc ?
-                ffmpeg.av_timecode_adjust_ntsc_framenum2(frameNumber, (int)timeCodeInfo->fps) :
-                frameNumber;
+                ffmpeg.av_timecode_adjust_ntsc_framenum2(Convert.ToInt32(frameNumber), Convert.ToInt32(timeCodeInfo->fps)) :
+                Convert.ToInt32(frameNumber);
 
             var timeCode = ffmpeg.av_timecode_get_smpte_from_framenum(timeCodeInfo, adjustedFrameNumber);
             var timeCodeBuffer = (byte*)ffmpeg.av_malloc(ffmpeg.AV_TIMECODE_STR_SIZE);

@@ -117,6 +117,15 @@
         #region IDisposable Implementation
 
         /// <summary>
+        /// Disposes the preloaded subtitles.
+        /// </summary>
+        internal void DisposePreloadedSubtitles()
+        {
+            m_PreloadedSubtitles?.Dispose();
+            m_PreloadedSubtitles = null;
+        }
+
+        /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
         /// Please not that this call is non-blocking/asynchronous.
         /// </summary>
@@ -143,12 +152,13 @@
             }
 
             // Dispose the container
-            Container.Dispose();
+            Container?.Dispose();
+            Container = null;
 
             // Dispose the RTC
             Clock.Dispose();
 
-            // Dispose the ManualResetEvent objects as they are
+            // Dispose the Wait Event objects as they are
             // backed by unmanaged code
             m_PacketReadingCycle.Dispose();
             m_FrameDecodingCycle.Dispose();

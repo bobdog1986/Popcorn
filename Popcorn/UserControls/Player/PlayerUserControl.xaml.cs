@@ -557,9 +557,9 @@ namespace Popcorn.UserControls.Player
                 }
 
                 _applicationService.SwitchConstantDisplayAndPower(false);
-                await Media.Pause();
                 MediaPlayerStatusBarItemPlay.Visibility = Visibility.Visible;
                 MediaPlayerStatusBarItemPause.Visibility = Visibility.Collapsed;
+                await Media.Pause();
             }
             catch (Exception ex)
             {

@@ -57,6 +57,12 @@
         public bool HasVideo => MediaCore?.State.HasVideo ?? false;
 
         /// <summary>
+        /// Returns whether the given media has subtitles. Only valid after the
+        /// MediaOpened event has fired.
+        /// </summary>
+        public bool HasSubtitles => MediaCore?.State.HasSubtitles ?? false;
+
+        /// <summary>
         /// Gets the video codec.
         /// Only valid after the MediaOpened event has fired.
         /// </summary>
@@ -66,7 +72,7 @@
         /// Gets the video bitrate.
         /// Only valid after the MediaOpened event has fired.
         /// </summary>
-        public int VideoBitrate => MediaCore?.State.VideoBitrate ?? 0;
+        public long VideoBitrate => MediaCore?.State.VideoBitrate ?? 0;
 
         /// <summary>
         /// Returns the natural width of the media in the video.
@@ -110,7 +116,7 @@
         /// Gets the audio bitrate.
         /// Only valid after the MediaOpened event has fired.
         /// </summary>
-        public int AudioBitrate => MediaCore?.State.AudioBitrate ?? 0;
+        public long AudioBitrate => MediaCore?.State.AudioBitrate ?? 0;
 
         /// <summary>
         /// Gets the audio channels count.

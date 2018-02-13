@@ -18,10 +18,10 @@
 
         #region State Management
 
-        private readonly ManualResetEvent m_PacketReadingCycle = new ManualResetEvent(false);
-        private readonly ManualResetEvent m_FrameDecodingCycle = new ManualResetEvent(false);
-        private readonly ManualResetEvent m_BlockRenderingCycle = new ManualResetEvent(false);
-        private readonly ManualResetEvent m_SeekingDone = new ManualResetEvent(true);
+        private readonly IWaitEvent m_PacketReadingCycle = WaitEventFactory.Create(isCompleted: false, useSlim: false);
+        private readonly IWaitEvent m_FrameDecodingCycle = WaitEventFactory.Create(isCompleted: false, useSlim: false);
+        private readonly IWaitEvent m_BlockRenderingCycle = WaitEventFactory.Create(isCompleted: false, useSlim: false);
+        private readonly IWaitEvent m_SeekingDone = WaitEventFactory.Create(isCompleted: true, useSlim: true);
 
         private Thread PacketReadingTask = null;
         private Thread FrameDecodingTask = null;
@@ -29,7 +29,8 @@
 
         private AtomicBoolean m_IsTaskCancellationPending = new AtomicBoolean(false);
         private AtomicBoolean m_HasDecoderSeeked = new AtomicBoolean(false);
-        private ManualResetEvent HasBlockRenderingWorkerExited = null;
+        private MediaBlockBuffer m_PreloadedSubtitles = null;
+        private IWaitEvent BlockRenderingWorkerExit = null;
 
         /// <summary>
         /// Holds the materialized block cache for each media type.
@@ -37,24 +38,29 @@
         public MediaTypeDictionary<MediaBlockBuffer> Blocks { get; } = new MediaTypeDictionary<MediaBlockBuffer>();
 
         /// <summary>
+        /// Gets the preloaded subtitle blocks.
+        /// </summary>
+        public MediaBlockBuffer PreloadedSubtitles => m_PreloadedSubtitles;
+
+        /// <summary>
         /// Gets the packet reading cycle control evenet.
         /// </summary>
-        internal ManualResetEvent PacketReadingCycle => m_PacketReadingCycle;
+        internal IWaitEvent PacketReadingCycle => m_PacketReadingCycle;
 
         /// <summary>
         /// Gets the frame decoding cycle control event.
         /// </summary>
-        internal ManualResetEvent FrameDecodingCycle => m_FrameDecodingCycle;
+        internal IWaitEvent FrameDecodingCycle => m_FrameDecodingCycle;
 
         /// <summary>
         /// Gets the block rendering cycle control event.
         /// </summary>
-        internal ManualResetEvent BlockRenderingCycle => m_BlockRenderingCycle;
+        internal IWaitEvent BlockRenderingCycle => m_BlockRenderingCycle;
 
         /// <summary>
         /// Gets the seeking done control event.
         /// </summary>
-        internal ManualResetEvent SeekingDone => m_SeekingDone;
+        internal IWaitEvent SeekingDone => m_SeekingDone;
 
         /// <summary>
         /// Gets or sets a value indicating whether the workedrs have been requested
@@ -114,7 +120,7 @@
         /// Gets a value indicating whether more frames can be decoded from the packet queue.
         /// That is, if we have packets in the packet buffer or if we are not at the end of the stream.
         /// </summary>
-        internal bool CanReadMoreFrames => CanReadMorePackets || (Container?.Components?.PacketBufferLength ?? 0) > 0;
+        internal bool CanReadMoreFrames => CanReadMorePackets || (Container?.Components.PacketBufferLength ?? 0) > 0;
 
         #endregion
 
@@ -134,14 +140,21 @@
                 Renderers[t] = Platform.CreateRenderer(t, this);
             }
 
+            // Create the renderer for the preloaded subs
+            if (PreloadedSubtitles != null)
+            {
+                LastRenderTime[PreloadedSubtitles.MediaType] = TimeSpan.MinValue;
+                Renderers[PreloadedSubtitles.MediaType] = Platform.CreateRenderer(PreloadedSubtitles.MediaType, this);
+            }
+
             Clock.SpeedRatio = Constants.Controller.DefaultSpeedRatio;
             IsTaskCancellationPending = false;
 
             // Set the initial state of the task cycles.
-            SeekingDone.Set();
-            BlockRenderingCycle.Reset();
-            FrameDecodingCycle.Reset();
-            PacketReadingCycle.Reset();
+            SeekingDone.Complete();
+            BlockRenderingCycle.Begin();
+            FrameDecodingCycle.Begin();
+            PacketReadingCycle.Begin();
 
             // Create the thread runners
             PacketReadingTask = new Thread(RunPacketReadingWorker)
@@ -199,6 +212,29 @@
         }
 
         /// <summary>
+        /// Preloads the subtitles from the MediaOptions.SubtitlesUrl.
+        /// </summary>
+        internal void PreloadSubtitles()
+        {
+            DisposePreloadedSubtitles();
+            var subtitlesUrl = Container.MediaOptions.SubtitlesUrl;
+            if (string.IsNullOrWhiteSpace(subtitlesUrl) == false)
+            {
+                try
+                {
+                    m_PreloadedSubtitles = LoadBlocks(subtitlesUrl, MediaType.Subtitle, this);
+                    Container.MediaOptions.IsSubtitleDisabled = true;
+                }
+                catch (MediaContainerException mex)
+                {
+                    DisposePreloadedSubtitles();
+                    Log(MediaLogMessageType.Warning,
+                        $"No subtitles to side-load found in media '{subtitlesUrl}'. {mex.Message}");
+                }
+            }
+        }
+
+        /// <summary>
         /// Returns the value of a discrete video position if possible
         /// </summary>
         /// <param name="position">The position.</param>
@@ -250,8 +286,8 @@
                 if (block is VideoBlock videoBlock)
                 {
                     State.VideoSmtpeTimecode = videoBlock.SmtpeTimecode;
-                    State.VideoHardwareDecoder = (Container?.Components?.Video?.IsUsingHardwareDecoding ?? false) ?
-                        Container?.Components?.Video?.HardwareAccelerator?.Name ?? string.Empty : string.Empty;
+                    State.VideoHardwareDecoder = (Container?.Components.Video?.IsUsingHardwareDecoding ?? false) ?
+                        Container?.Components.Video?.HardwareAccelerator?.Name ?? string.Empty : string.Empty;
                 }
             }
 
@@ -259,7 +295,8 @@
             Renderers[block.MediaType]?.Render(block, clockPosition);
 
             // Extension method for logging
-            this.LogRenderBlock(block, clockPosition, Blocks[block.MediaType].IndexOf(clockPosition));
+            var blockIndex = Blocks.ContainsKey(block.MediaType) ? Blocks[block.MediaType].IndexOf(clockPosition) : 0;
+            this.LogRenderBlock(block, clockPosition, blockIndex);
             LastRenderTime[block.MediaType] = block.StartTime;
             return 1;
         }
