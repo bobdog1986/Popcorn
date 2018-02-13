@@ -18,7 +18,7 @@
   <a target="_blank" href="https://github.com/bbougot/Popcorn/pulls">
     <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome" />
   </a>
-[![Analytics](https://ga-beacon.appspot.com/UA-114120087-1?pixel&useReferer)](https://github.com/bbougot/Popcorn)
+[![Analytics](https://bbougot-popcorn.appspot.com/UA-114120087-1?pixel&useReferer)](https://github.com/bbougot/Popcorn)
 </div>
 
 ## Features
