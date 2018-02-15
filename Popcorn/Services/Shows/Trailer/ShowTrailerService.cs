@@ -74,7 +74,7 @@ namespace Popcorn.Services.Shows.Trailer
                                 var client = new HttpClient();
                                 try
                                 {
-                                    using (var response = await client.GetAsync(uriResult, ct))
+                                    using (var response = await client.GetAsync(uriResult, HttpCompletionOption.ResponseHeadersRead,ct))
                                     {
                                         if (response == null || response.StatusCode != HttpStatusCode.OK)
                                         {
