@@ -97,6 +97,11 @@ namespace Popcorn.ViewModels.Windows
         private bool _isSettingsFlyoutOpen;
 
         /// <summary>
+        /// Specify if about dialog is open
+        /// </summary>
+        private bool _isAboutDialogOpen;
+
+        /// <summary>
         /// If an update is available
         /// </summary>
         private bool _updateAvailable;
@@ -201,6 +206,15 @@ namespace Popcorn.ViewModels.Windows
         {
             get => _isSettingsFlyoutOpen;
             set { Set(() => IsSettingsFlyoutOpen, ref _isSettingsFlyoutOpen, value); }
+        }
+        
+        /// <summary>
+        /// Specify if the about dialog is open
+        /// </summary>
+        public bool IsAboutDialogOpen
+        {
+            get => _isAboutDialogOpen;
+            set { Set(() => IsAboutDialogOpen, ref _isAboutDialogOpen, value); }
         }
 
         /// <summary>
@@ -895,6 +909,8 @@ namespace Popcorn.ViewModels.Windows
 
             OpenAboutCommand = new RelayCommand(async () =>
             {
+                IsAboutDialogOpen = true;
+
                 var aboutDialog = new AboutDialog();
                 var vm = new AboutDialogViewModel(async () =>
                 {
@@ -904,6 +920,8 @@ namespace Popcorn.ViewModels.Windows
                             this);
                         if (dialog != null)
                             await _dialogCoordinator.HideMetroDialogAsync(this, dialog);
+
+                        IsAboutDialogOpen = false;
                     }
                     catch (Exception ex)
                     {
@@ -913,7 +931,7 @@ namespace Popcorn.ViewModels.Windows
 
                 aboutDialog.DataContext = vm;
                 await _dialogCoordinator.ShowMetroDialogAsync(this, aboutDialog);
-            });
+            }, () => !IsAboutDialogOpen);
 
             GoToGitHubCommand = new RelayCommand(() =>
             {
