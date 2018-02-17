@@ -99,7 +99,7 @@ namespace Popcorn.ViewModels.Windows
         /// <summary>
         /// Specify if about dialog is open
         /// </summary>
-        private bool _isAboutDialogOpen;
+        private bool _canOpenAboutDialog = true;
 
         /// <summary>
         /// If an update is available
@@ -208,15 +208,6 @@ namespace Popcorn.ViewModels.Windows
             set { Set(() => IsSettingsFlyoutOpen, ref _isSettingsFlyoutOpen, value); }
         }
         
-        /// <summary>
-        /// Specify if the about dialog is open
-        /// </summary>
-        public bool IsAboutDialogOpen
-        {
-            get => _isAboutDialogOpen;
-            set { Set(() => IsAboutDialogOpen, ref _isAboutDialogOpen, value); }
-        }
-
         /// <summary>
         /// Specify if movie flyout is open
         /// </summary>
@@ -909,19 +900,19 @@ namespace Popcorn.ViewModels.Windows
 
             OpenAboutCommand = new RelayCommand(async () =>
             {
-                IsAboutDialogOpen = true;
+                _canOpenAboutDialog = false;
 
                 var aboutDialog = new AboutDialog();
                 var vm = new AboutDialogViewModel(async () =>
                 {
                     try
                     {
+                        _canOpenAboutDialog = true;
+
                         var dialog = await _dialogCoordinator.GetCurrentDialogAsync<AboutDialog>(
                             this);
                         if (dialog != null)
                             await _dialogCoordinator.HideMetroDialogAsync(this, dialog);
-
-                        IsAboutDialogOpen = false;
                     }
                     catch (Exception ex)
                     {
@@ -931,7 +922,7 @@ namespace Popcorn.ViewModels.Windows
 
                 aboutDialog.DataContext = vm;
                 await _dialogCoordinator.ShowMetroDialogAsync(this, aboutDialog);
-            }, () => !IsAboutDialogOpen);
+            }, () => _canOpenAboutDialog);
 
             GoToGitHubCommand = new RelayCommand(() =>
             {
