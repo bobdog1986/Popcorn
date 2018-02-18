@@ -97,6 +97,11 @@ namespace Popcorn.ViewModels.Windows
         private bool _isSettingsFlyoutOpen;
 
         /// <summary>
+        /// Specify if about dialog is open
+        /// </summary>
+        private bool _canOpenAboutDialog = true;
+
+        /// <summary>
         /// If an update is available
         /// </summary>
         private bool _updateAvailable;
@@ -202,7 +207,7 @@ namespace Popcorn.ViewModels.Windows
             get => _isSettingsFlyoutOpen;
             set { Set(() => IsSettingsFlyoutOpen, ref _isSettingsFlyoutOpen, value); }
         }
-
+        
         /// <summary>
         /// Specify if movie flyout is open
         /// </summary>
@@ -895,11 +900,15 @@ namespace Popcorn.ViewModels.Windows
 
             OpenAboutCommand = new RelayCommand(async () =>
             {
+                _canOpenAboutDialog = false;
+
                 var aboutDialog = new AboutDialog();
                 var vm = new AboutDialogViewModel(async () =>
                 {
                     try
                     {
+                        _canOpenAboutDialog = true;
+
                         var dialog = await _dialogCoordinator.GetCurrentDialogAsync<AboutDialog>(
                             this);
                         if (dialog != null)
@@ -913,7 +922,7 @@ namespace Popcorn.ViewModels.Windows
 
                 aboutDialog.DataContext = vm;
                 await _dialogCoordinator.ShowMetroDialogAsync(this, aboutDialog);
-            });
+            }, () => _canOpenAboutDialog);
 
             GoToGitHubCommand = new RelayCommand(() =>
             {
