@@ -226,7 +226,10 @@
                 </StackPanel>
             </Grid>
         </Grid>
-        <StatusBar x:Name="PlayerStatusBar" VerticalAlignment="Bottom">
+        <StatusBar
+            x:Name="PlayerStatusBar"
+            VerticalAlignment="Bottom"
+            Focusable="False">
             <StatusBar.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Grid>
@@ -249,7 +252,10 @@
                 Grid.Column="0"
                 Background="#FF2F2F2F"
                 Visibility="Visible">
-                <Button attachedProperties:MouseCommandBehavior.MouseUpCommand="MediaCommands.Pause" Style="{DynamicResource ModernButtonStyle}">
+                <Button
+                    attachedProperties:MouseCommandBehavior.MouseUpCommand="MediaCommands.Pause"
+                    Focusable="False"
+                    Style="{DynamicResource ModernButtonStyle}">
                     <Canvas Width="15" Height="15">
                         <Path
                             Width="15"
@@ -265,7 +271,10 @@
                 Grid.Column="0"
                 Background="#FF2F2F2F"
                 Visibility="Collapsed">
-                <Button attachedProperties:MouseCommandBehavior.MouseUpCommand="MediaCommands.Play" Style="{DynamicResource ModernButtonStyle}">
+                <Button
+                    attachedProperties:MouseCommandBehavior.MouseUpCommand="MediaCommands.Play"
+                    Focusable="False"
+                    Style="{DynamicResource ModernButtonStyle}">
                     <Canvas Width="15" Height="15">
                         <Path
                             Width="15"
