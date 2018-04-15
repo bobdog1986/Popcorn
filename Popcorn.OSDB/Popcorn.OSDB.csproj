@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="AnonymousClient.cs" />
     <Compile Include="Backend\SimpleObjectMapper.cs" />
+    <Compile Include="CharsetDetectionObserver.cs" />
     <Compile Include="Comment.cs" />
     <Compile Include="HashHelper.cs" />
     <Compile Include="Language.cs" />
@@ -66,6 +67,9 @@
   <ItemGroup>
     <Reference Include="CookComputing.XmlRpcV2, Version=3.0.0.0, Culture=neutral, PublicKeyToken=a7d6e17aa302004d, processorArchitecture=MSIL">
       <HintPath>..\packages\xmlrpcnet.3.0.0.266\lib\net20\CookComputing.XmlRpcV2.dll</HintPath>
+    </Reference>
+    <Reference Include="NChardet, Version=1.0.1.32331, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NChardet.1.0.1.6\lib\net35\NChardet.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Net.Http, Version=4.1.1.2, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">

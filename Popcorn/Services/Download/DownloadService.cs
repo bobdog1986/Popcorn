@@ -65,7 +65,7 @@ namespace Popcorn.Services.Download
             return Task.Run(async () =>
             {
                 Logger.Info(
-                $"Start downloading : {torrentPath}");
+                    $"Start downloading : {torrentPath}");
                 using (var session = new session())
                 {
                     downloadProgress.Report(0d);
@@ -302,7 +302,7 @@ namespace Popcorn.Services.Download
                     {
                         await Task.Delay(1000, cts.Token);
                     }
-                    catch (TaskCanceledException)
+                    catch (Exception ex) when (ex is TaskCanceledException || ex is ObjectDisposedException)
                     {
                         cancelled.Invoke();
                         sw.Stop();

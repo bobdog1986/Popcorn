@@ -1,8 +1,0 @@
-Go to http://opus.nlpl.eu/OpenSubtitles2018.php
-Download http://opus.nlpl.eu/download.php?f=OpenSubtitles2018/[LANG].tar.gz WITH [LANG] is ISO639 LANG from Language Table Popcorn
-Extract each then browse /[LANG].tar/[LANG]/OpenSubtitles2018/xml/[LANG]
-Flatten all files [OpenSubtitleId].xml.gz
-Match OpenSubtitle request for a movie/show and get corresponding [OpenSubtitleId].xml.gz
-Extract file to [OpenSubtitleId].xml
-Convert [OpenSubtitleId].xml to [OpenSubtitleId].srt
-Upload [OpenSubtitleId].srt to azure and update Subtitle table

@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using CookComputing.XmlRpc;
+using NChardet;
 using Popcorn.OSDB.Backend;
 using Popcorn.OSDB.Utils;
 
@@ -405,7 +406,7 @@ namespace Popcorn.OSDB
                         {
                             var bytes = await content.ReadAsByteArrayAsync().ConfigureAwait(false);
                             var decompressed = await UnZipSubtitleFileToFile(bytes).ConfigureAwait(false);
-                            await DecodeAndWriteFile(subtitle.ISO639.ToLower(), destinationfile, decompressed)
+                            await DecodeAndWriteFile(destinationfile, decompressed)
                                 .ConfigureAwait(false);
                         }
                     }
@@ -413,7 +414,7 @@ namespace Popcorn.OSDB
             }
             else
             {
-                await DecodeAndWriteFile(string.Empty, destinationfile,
+                await DecodeAndWriteFile(destinationfile,
                     File.ReadAllBytes(subtitle.SubTitleDownloadLink.AbsolutePath)).ConfigureAwait(false);
             }
 
@@ -588,14 +589,19 @@ namespace Popcorn.OSDB
         }
 
 
-        private async Task DecodeAndWriteFile(string strLang, string destinationfile, byte[] decompressed)
+        private async Task DecodeAndWriteFile(string destinationfile, byte[] decompressed)
         {
             using (var subFile = new StreamWriter(destinationfile, false, Encoding.UTF8))
             {
-                var enc = Encoding.UTF8;
-                if (strLang == "he") enc = Encoding.GetEncoding("windows-1255");
-                if (strLang == "el") enc = Encoding.GetEncoding("windows-1253");
-                if (strLang == "ar") enc = Encoding.GetEncoding("windows-1256");
+                var cdo = new CharsetDetectionObserver();
+                var detector = new Detector(6);
+                detector.Init(cdo);
+                detector.DoIt(decompressed, decompressed.Length, false);
+                detector.Done();
+                var enc = Encoding.GetEncoding(!string.IsNullOrEmpty(cdo.Charset)
+                    ? cdo.Charset
+                    : detector.getProbableCharsets().First());
+
                 var str = Encoding.Convert(enc, Encoding.UTF8, decompressed);
                 await subFile.WriteAsync(WebUtility.HtmlDecode(Encoding.UTF8.GetString(str))).ConfigureAwait(false);
             }

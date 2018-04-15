@@ -546,16 +546,23 @@ namespace Popcorn.ViewModels.Pages.Player
             {
                 ContentId = isRemote ? MediaPath : mediaPath,
                 ContentType = "video/mp4",
+                
                 Metadata = new MovieMetadata
                 {
-                    Title = MediaName,
-                    SubTitle = !string.IsNullOrEmpty(subtitle) ? subtitle : null
+                    Title = MediaName
                 }
             };
 
+            if (!string.IsNullOrEmpty(subtitle))
+            {
+                media.Tracks = new[]
+                {
+                    new Track {TrackId = 1, Language = "en-US", Name = "English", TrackContentId = subtitle}
+                };
+            }
             try
             {
-                await _chromecastService.LoadAsync(media);
+                await _chromecastService.LoadAsync(media, (!string.IsNullOrEmpty(subtitle), 1));
                 closeCastDialog.Invoke();
                 OnCastStarted(new EventArgs());
             }

@@ -29,8 +29,11 @@ namespace Popcorn.Services.Server
                 response.OnSendingHeaders(state =>
                 {
                     var resp = (OwinResponse)state;
-                    resp.Headers.Add("Access-Control-Allow-Origin", new[] {"*"});
-                    resp.Headers.Add("Access-Control-Allow-Methods", new[] { "GET, POST, OPTIONS, PUT, DELETE" });
+                    if(!resp.Headers.ContainsKey("Access-Control-Allow-Origin"))
+                        resp.Headers.Add("Access-Control-Allow-Origin", new[] {"*"});
+
+                    if(!resp.Headers.ContainsKey("Access-Control-Allow-Methods"))
+                        resp.Headers.Add("Access-Control-Allow-Methods", new[] { "GET, POST, OPTIONS, PUT, DELETE" });
                 }, response);
 
                 await next();
