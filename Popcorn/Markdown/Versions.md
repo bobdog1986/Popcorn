@@ -1,4 +1,11 @@
-﻿# 3.6.2 - 15/04/2018 #
+﻿# 3.6.39- 15/04/2018 #
+***
+Fixed issue.
+
+### Details ###
+* Fixed issue [#195](https://github.com/bbougot/Popcorn/issues/195).
+
+# 3.6.2 - 15/04/2018 #
 ***
 Fixed issues with subtitles
 

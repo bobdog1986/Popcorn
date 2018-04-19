@@ -598,9 +598,10 @@ namespace Popcorn.OSDB
                 detector.Init(cdo);
                 detector.DoIt(decompressed, decompressed.Length, false);
                 detector.Done();
+                var probable = detector.getProbableCharsets().FirstOrDefault();
                 var enc = Encoding.GetEncoding(!string.IsNullOrEmpty(cdo.Charset)
                     ? cdo.Charset
-                    : detector.getProbableCharsets().First());
+                    : (string.IsNullOrEmpty(probable) ? "UTF-8" : probable));
 
                 var str = Encoding.Convert(enc, Encoding.UTF8, decompressed);
                 await subFile.WriteAsync(WebUtility.HtmlDecode(Encoding.UTF8.GetString(str))).ConfigureAwait(false);

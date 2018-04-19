@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>Popcorn</id>
-        <version>3.6.2</version>
+        <version>3.6.3</version>
         <title>Popcorn</title>
         <authors>Benjamin Bougot</authors>
         <projectUrl>https://github.com/bbougot/Popcorn</projectUrl>
@@ -296,5 +296,6 @@
         <file src="sl\Humanizer.resources.dll" target="lib\net45\sl\Humanizer.resources.dll" />
         <file src="uk\Humanizer.resources.dll" target="lib\net45\uk\Humanizer.resources.dll" />
         <file src="Ignite.SharpNetSH.dll" target="lib\net45\Ignite.SharpNetSH.dll" />
+        <file src="NChardet.dll" target="lib\net45\NChardet.dll" />
     </files>
 </package>
