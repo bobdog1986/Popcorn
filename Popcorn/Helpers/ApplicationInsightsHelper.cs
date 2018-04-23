@@ -35,7 +35,7 @@ namespace Popcorn.Helpers
             try
             {
                 TelemetryClient =
-                    new TelemetryClient(new TelemetryConfiguration("647b7610-bfc7-4b78-962d-822f7e59eda3"));
+                    new TelemetryClient(TelemetryConfiguration.Active);
                 UserName = Environment.UserName;
                 OperatingSystem = Environment.OSVersion.ToString();
                 Type = "PC";

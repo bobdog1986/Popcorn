@@ -1,9 +1,16 @@
-﻿# 3.6.6 23/04/2018 #
+﻿# 3.6.7 23/04/2018 #
 ***
 Fixed issue
 
 ### Details ###
-* Hanging at launch
+* Fixed issue with logging.
+
+# 3.6.6 23/04/2018 #
+***
+Fixed issue
+
+### Details ###
+* Hanging at launch.
 
 # 3.6.5  23/04/2018 #
 ***

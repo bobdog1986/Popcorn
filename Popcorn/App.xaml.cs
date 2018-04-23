@@ -83,7 +83,8 @@ namespace Popcorn
         {
             TelemetryConfiguration.Active.TelemetryInitializers.Add(new PopcornApplicationInsightsInitializer());
             var builder = TelemetryConfiguration.Active.TelemetryProcessorChainBuilder;
-            builder.UseAdaptiveSampling(maxTelemetryItemsPerSecond: 5);
+            builder.UseAdaptiveSampling(1);
+            builder.Build();
             await ApplicationInsightsHelper.Initialize();
             base.OnStartup(e);
             WatchStart = Stopwatch.StartNew();
