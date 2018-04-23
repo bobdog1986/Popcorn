@@ -1,4 +1,7 @@
-﻿namespace Popcorn.UserControls.Home.Movie.Download
+﻿using System.Windows;
+using Popcorn.Helpers;
+
+namespace Popcorn.UserControls.Home.Movie.Download
 {
     /// <summary>
     /// Interaction logic for DownloadMovie.xaml
@@ -11,6 +14,11 @@
         public DownloadMovieUserControl()
         {
             InitializeComponent();
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            ApplicationInsightsHelper.TelemetryClient.TrackPageView("Movie Download");
         }
     }
 }

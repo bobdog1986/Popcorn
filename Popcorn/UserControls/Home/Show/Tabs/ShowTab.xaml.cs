@@ -1,6 +1,9 @@
-﻿using System.Threading;
+﻿using System;
+using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using Popcorn.Helpers;
 using Popcorn.ViewModels.Pages.Home.Show.Tabs;
 
 namespace Popcorn.UserControls.Home.Show.Tabs
@@ -22,6 +25,11 @@ namespace Popcorn.UserControls.Home.Show.Tabs
         {
             var vm = DataContext as ShowTabsViewModel;
             if (vm == null) return;
+            var split = "ShowTabViewModel";
+            ApplicationInsightsHelper.TelemetryClient.TrackPageView(
+                $"Show Tab {vm.GetType().Name.Split(new[] { split }, StringSplitOptions.None).First()}");
+
+
             if (vm is PopularShowTabViewModel || vm is GreatestShowTabViewModel || vm is RecentShowTabViewModel ||
                 vm is UpdatedShowTabViewModel ||
                 vm is FavoritesShowTabViewModel)

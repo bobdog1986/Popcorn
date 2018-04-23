@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Popcorn.Events;
+using Popcorn.Helpers;
 using Popcorn.Models.Episode;
 using Popcorn.ViewModels.Pages.Home.Show.Details;
 
@@ -36,6 +37,11 @@ namespace Popcorn.UserControls.Home.Show.Details
 
             var episodes = vm.Show.Episodes.Where(a => a.Season == e.SelectedSeasonNumber);
             EpisodesDetails.ItemsSource = new ObservableCollection<EpisodeShowJson>(episodes.OrderBy(a => a.EpisodeNumber));
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            ApplicationInsightsHelper.TelemetryClient.TrackPageView("Show Details");
         }
     }
 }

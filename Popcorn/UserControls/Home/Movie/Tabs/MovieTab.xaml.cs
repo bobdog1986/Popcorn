@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Popcorn.Helpers;
 using Popcorn.ViewModels.Pages.Home.Movie.Tabs;
 
 namespace Popcorn.UserControls.Home.Movie.Tabs
@@ -26,8 +28,13 @@ namespace Popcorn.UserControls.Home.Movie.Tabs
         private async void OnLoaded(object sender, RoutedEventArgs e)
         {
             if (!(DataContext is MovieTabsViewModel vm)) return;
+            var split = "MovieTabViewModel";
+            ApplicationInsightsHelper.TelemetryClient.TrackPageView(
+                $"Movie Tab {vm.GetType().Name.Split(new[] {split}, StringSplitOptions.None).First()}");
+
             if (vm is PopularMovieTabViewModel || vm is GreatestMovieTabViewModel || vm is RecentMovieTabViewModel ||
-                vm is FavoritesMovieTabViewModel || vm is SeenMovieTabViewModel || vm is RecommendationsMovieTabViewModel)
+                vm is FavoritesMovieTabViewModel || vm is SeenMovieTabViewModel ||
+                vm is RecommendationsMovieTabViewModel)
             {
                 if (!vm.IsLoadingMovies && vm.NeedSync)
                 {
@@ -72,7 +79,8 @@ namespace Popcorn.UserControls.Home.Movie.Tabs
             }
 
             if (vm is PopularMovieTabViewModel || vm is GreatestMovieTabViewModel || vm is RecentMovieTabViewModel ||
-                vm is FavoritesMovieTabViewModel || vm is SeenMovieTabViewModel || vm is RecommendationsMovieTabViewModel)
+                vm is FavoritesMovieTabViewModel || vm is SeenMovieTabViewModel ||
+                vm is RecommendationsMovieTabViewModel)
             {
                 if (!vm.IsLoadingMovies)
                     await vm.LoadMoviesAsync();

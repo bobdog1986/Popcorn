@@ -1,4 +1,7 @@
-﻿namespace Popcorn.UserControls.Home.Movie.Trailer
+﻿using System.Windows;
+using Popcorn.Helpers;
+
+namespace Popcorn.UserControls.Home.Movie.Trailer
 {
     /// <summary>
     /// Interaction logic for Trailer.xaml
@@ -11,6 +14,11 @@
         public Trailer()
         {
             InitializeComponent();
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            ApplicationInsightsHelper.TelemetryClient.TrackPageView("Trailer");
         }
     }
 }

@@ -9,6 +9,7 @@ using System.Windows.Media.Imaging;
 using MahApps.Metro.IconPacks;
 using Popcorn.Controls;
 using Popcorn.Converters;
+using Popcorn.Helpers;
 
 namespace Popcorn.UserControls.Home.Movie.Details
 {
@@ -49,6 +50,11 @@ namespace Popcorn.UserControls.Home.Movie.Details
             var bitmapImage = converter.Convert(image, typeof(Image), new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                 CultureInfo.InvariantCulture);
             ((Image) sender).Source = (DrawingImage)bitmapImage;
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            ApplicationInsightsHelper.TelemetryClient.TrackPageView("Movie Details");
         }
     }
 }

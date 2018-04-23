@@ -9,6 +9,7 @@ using System.Windows.Media.Animation;
 using GalaSoft.MvvmLight.Messaging;
 using Popcorn.Controls;
 using Popcorn.Extensions;
+using Popcorn.Helpers;
 using Popcorn.Messaging;
 using Popcorn.Utils;
 using Popcorn.ViewModels.Windows;
@@ -138,6 +139,11 @@ namespace Popcorn.Windows
                 window.Topmost = false;
                 window.Focus();
             }
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            ApplicationInsightsHelper.TelemetryClient.TrackPageView("Home");
         }
     }
 }

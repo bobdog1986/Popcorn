@@ -10,10 +10,14 @@ using Akavache;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Threading;
 using Ignite.SharpNetSH;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel.Implementation;
 using Microsoft.Owin.Hosting;
 using NetFwTypeLib;
 using NLog;
 using Popcorn.Helpers;
+using Popcorn.Initializers;
 using Popcorn.Services.Server;
 using Popcorn.Services.User;
 using Popcorn.Utils;
@@ -77,6 +81,10 @@ namespace Popcorn
         /// <param name="e"></param>
         protected override async void OnStartup(StartupEventArgs e)
         {
+            TelemetryConfiguration.Active.TelemetryInitializers.Add(new PopcornApplicationInsightsInitializer());
+            var builder = TelemetryConfiguration.Active.TelemetryProcessorChainBuilder;
+            builder.UseAdaptiveSampling(maxTelemetryItemsPerSecond: 5);
+            await ApplicationInsightsHelper.Initialize();
             base.OnStartup(e);
             WatchStart = Stopwatch.StartNew();
             Logger.Info(

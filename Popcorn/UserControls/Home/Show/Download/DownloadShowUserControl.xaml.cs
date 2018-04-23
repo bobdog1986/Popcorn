@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Popcorn.Helpers;
 
 namespace Popcorn.UserControls.Home.Show.Download
 {
@@ -23,6 +24,11 @@ namespace Popcorn.UserControls.Home.Show.Download
         public DownloadShowUserControl()
         {
             InitializeComponent();
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            ApplicationInsightsHelper.TelemetryClient.TrackPageView("Show Download");
         }
     }
 }

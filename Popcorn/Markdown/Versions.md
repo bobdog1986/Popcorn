@@ -1,4 +1,11 @@
-﻿# 3.6.39- 15/04/2018 #
+﻿# 3.6.4- 23/04/2018 #
+***
+Improved logging.
+
+### Details ###
+* Add page views.
+
+# 3.6.3- 15/04/2018 #
 ***
 Fixed issue.
 

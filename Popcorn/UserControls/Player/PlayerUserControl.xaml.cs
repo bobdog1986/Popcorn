@@ -26,6 +26,7 @@ using System.Linq;
 using System.Windows.Controls;
 using GalaSoft.MvvmLight.CommandWpf;
 using Popcorn.Converters;
+using Popcorn.Helpers;
 using Popcorn.Models.Chromecast;
 using Popcorn.Models.Download;
 using Unosquare.FFME.Events;
@@ -87,6 +88,8 @@ namespace Popcorn.UserControls.Player
 
         private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
+            ApplicationInsightsHelper.TelemetryClient.TrackPageView("Player");
+
             var window = System.Windows.Window.GetWindow(this);
             if (window != null)
             {

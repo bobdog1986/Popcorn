@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Popcorn.Controls;
+using Popcorn.Helpers;
 
 namespace Popcorn.UserControls.Home.Movie.Cast
 {
@@ -41,6 +42,11 @@ namespace Popcorn.UserControls.Home.Movie.Cast
             {
                 scv.TargetHorizontalOffset -= e.Delta;
             }
+        }
+        
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            ApplicationInsightsHelper.TelemetryClient.TrackPageView("Movie Cast");
         }
     }
 }
