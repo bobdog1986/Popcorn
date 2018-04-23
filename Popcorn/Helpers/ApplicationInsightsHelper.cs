@@ -60,7 +60,7 @@ namespace Popcorn.Helpers
                     }
                 }
 
-                await Task.Run(async () =>
+                Task.Run(async () =>
                 {
                     using (var client = new HttpClient())
                     {
