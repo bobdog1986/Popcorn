@@ -140,10 +140,5 @@ namespace Popcorn.Windows
                 window.Focus();
             }
         }
-
-        private void OnLoaded(object sender, RoutedEventArgs e)
-        {
-            ApplicationInsightsHelper.TelemetryClient.TrackPageView("Home");
-        }
     }
 }

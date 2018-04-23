@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Popcorn.Helpers;
 
 namespace Popcorn.Pages
 {
@@ -23,6 +24,11 @@ namespace Popcorn.Pages
         public HomePage()
         {
             InitializeComponent();
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            ApplicationInsightsHelper.TelemetryClient.TrackPageView("Home");
         }
     }
 }

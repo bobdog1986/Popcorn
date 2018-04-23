@@ -1033,7 +1033,7 @@
       <Revision Include="$(Version.Split('.')[3])" />
     </ItemGroup>
     <Exec Command="$(SolutionDir)\.nuget\NuGet.exe pack $(SolutionDir)\Popcorn.nuspec -Version @(Major).@(Minor).@(Build) -Properties Configuration=Release -OutputDirectory $(OutDir) -BasePath $(OutDir)" />
-    <Exec Command="$(SolutionDir)\packages\squirrel.windows.1.7.9\tools\Squirrel.exe --framework-version net462 --releasify $(OutDir)Popcorn.@(Major).@(Minor).@(Build).nupkg -g $(SolutionDir)\Popcorn\InstallLoader.gif --no-msi --setupIcon $(SolutionDir)\Popcorn\icon.ico" />
+    <Exec Command="$(SolutionDir)\packages\squirrel.windows.1.8.0\tools\Squirrel.exe --framework-version net462 --releasify $(OutDir)Popcorn.@(Major).@(Minor).@(Build).nupkg -g $(SolutionDir)\Popcorn\InstallLoader.gif --no-msi --setupIcon $(SolutionDir)\Popcorn\icon.ico" />
     <Move SourceFiles="$(SolutionDir)\Popcorn\Releases\Setup.exe" DestinationFiles="$(SolutionDir)\Popcorn\Releases\PopcornInstaller.exe" />
   </Target>
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />

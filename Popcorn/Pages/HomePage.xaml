@@ -16,6 +16,7 @@
     d:DesignWidth="300"
     AllowDrop="True"
     KeepAlive="True"
+    Loaded="OnLoaded"
     mc:Ignorable="d">
 
     <Grid>

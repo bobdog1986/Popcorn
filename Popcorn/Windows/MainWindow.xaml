@@ -36,7 +36,6 @@
     IconEdgeMode="Aliased"
     IgnoreTaskbarOnMaximize="{Binding IgnoreTaskbarOnMaximize}"
     KeyDown="OnKeyDown"
-    Loaded="OnLoaded"
     NonActiveBorderBrush="{StaticResource AccentColorBrush}"
     NonActiveGlowBrush="{StaticResource AccentColorBrush}"
     ShowIconOnTitleBar="True"

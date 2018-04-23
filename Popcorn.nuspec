@@ -297,5 +297,12 @@
         <file src="uk\Humanizer.resources.dll" target="lib\net45\uk\Humanizer.resources.dll" />
         <file src="Ignite.SharpNetSH.dll" target="lib\net45\Ignite.SharpNetSH.dll" />
         <file src="NChardet.dll" target="lib\net45\NChardet.dll" />
+        <file src="Microsoft.AspNet.TelemetryCorrelation.dll" target="lib\net45\Microsoft.AspNet.TelemetryCorrelation.dll" />
+        <file src="Microsoft.AI.WindowsServer.dll" target="lib\net45\Microsoft.AI.WindowsServer.dll" />
+        <file src="Microsoft.AI.Web.dll" target="lib\net45\Microsoft.AI.Web.dll" />
+        <file src="Microsoft.AI.ServerTelemetryChannel.dll" target="lib\net45\Microsoft.AI.ServerTelemetryChannel.dll" />
+        <file src="Microsoft.AI.PerfCounterCollector.dll" target="lib\net45\Microsoft.AI.PerfCounterCollector.dll" />
+        <file src="Microsoft.AI.DependencyCollector.dll" target="lib\net45\Microsoft.AI.DependencyCollector.dll" />
+        <file src="Microsoft.AI.Agent.Intercept.dll" target="lib\net45\Microsoft.AI.Agent.Intercept.dll" />
     </files>
 </package>

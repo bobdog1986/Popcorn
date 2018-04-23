@@ -88,8 +88,6 @@ namespace Popcorn.UserControls.Player
 
         private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
-            ApplicationInsightsHelper.TelemetryClient.TrackPageView("Player");
-
             var window = System.Windows.Window.GetWindow(this);
             if (window != null)
             {
