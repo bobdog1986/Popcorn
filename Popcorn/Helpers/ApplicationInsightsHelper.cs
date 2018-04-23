@@ -28,6 +28,7 @@ namespace Popcorn.Helpers
         public static string UserAgent;
         public static string OemName;
         public static string Model;
+        public static string Version;
 
         public static async Task Initialize()
         {
@@ -40,6 +41,7 @@ namespace Popcorn.Helpers
                 Type = "PC";
                 System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
                 var fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
+                Version = fvi.FileVersion;
                 UserAgent = $"Popcorn/{fvi.FileVersion}";
                 SessionId = Guid.NewGuid().ToString();
                 foreach (var item in new System.Management.ManagementObjectSearcher(

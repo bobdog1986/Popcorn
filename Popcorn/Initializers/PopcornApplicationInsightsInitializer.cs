@@ -23,6 +23,7 @@ namespace Popcorn.Initializers
             telemetry.Context.Device.OemName = ApplicationInsightsHelper.OemName;
             telemetry.Context.Device.Type = ApplicationInsightsHelper.Type;
             telemetry.Context.Device.OperatingSystem = ApplicationInsightsHelper.OperatingSystem;
+            telemetry.Context.Component.Version = ApplicationInsightsHelper.Version;
         }
     }
 }

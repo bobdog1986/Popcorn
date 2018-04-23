@@ -1,4 +1,11 @@
-﻿# 3.6.4- 23/04/2018 #
+﻿# 3.6.5  23/04/2018 #
+***
+Added logging field.
+
+### Details ###
+* Add page views.
+
+# 3.6.4- 23/04/2018 #
 ***
 Improved logging.
 
