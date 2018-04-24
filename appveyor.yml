@@ -14,7 +14,7 @@ test_script:
 - ps: >-
     .\packages\opencover\4.6.519\tools\OpenCover.Console.exe -register:user -target:nunit3-console.exe "-targetargs:""Popcorn.Tests\bin\x86\$env:CONFIGURATION\net471\Popcorn.Tests.dll""" -filter:"+[Popcorn*]*" -output:opencoverCoverage.xml
 
-    $coveralls = (Resolve-Path "packages/coveralls.net.*/tools/csmacnz.coveralls.exe").ToString()
+    $coveralls = (Resolve-Path "packages/coveralls.net/0.7.0/tools/csmacnz.coveralls.exe").ToString()
     
     $env:APPVEYOR_BUILD_NUMBER
     
