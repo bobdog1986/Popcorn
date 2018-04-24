@@ -152,6 +152,7 @@
         <file src="Microsoft.Owin.Host.HttpListener.dll" target="lib\net45\Microsoft.Owin.Host.HttpListener.dll" />
         <file src="Microsoft.Owin.Hosting.dll" target="lib\net45\Microsoft.Owin.Hosting.dll" />
         <file src="Microsoft.Owin.StaticFiles.dll" target="lib\net45\Microsoft.Owin.StaticFiles.dll" />
+        <file src="Microsoft.Web.XmlTransform.dll" target="lib\net45\Microsoft.Web.XmlTransform.dll" />
         <file src="Microsoft.WindowsAPICodePack.dll" target="lib\net45\Microsoft.WindowsAPICodePack.dll" />
         <file src="Microsoft.WindowsAPICodePack.Shell.dll" target="lib\net45\Microsoft.WindowsAPICodePack.Shell.dll" />
         <file src="Microsoft.WindowsAPICodePack.ShellExtensions.dll" target="lib\net45\Microsoft.WindowsAPICodePack.ShellExtensions.dll" />
