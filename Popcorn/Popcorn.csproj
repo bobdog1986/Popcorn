@@ -59,9 +59,9 @@
       <Build Include="$(Version.Split('.')[2])" />
       <Revision Include="$(Version.Split('.')[3])" />
     </ItemGroup>
-    <Exec Command="$(SolutionDir)\NuGet.exe pack $(SolutionDir)\Popcorn.nuspec -Version @(Major).@(Minor).@(Build) -Properties Configuration=Release -OutputDirectory $(OutDir) -BasePath $(OutDir)" />
-    <Exec Command="$(SolutionDir)\packages\squirrel.windows\1.8.0\tools\Squirrel.exe --framework-version net471 --releasify $(OutDir)Popcorn.@(Major).@(Minor).@(Build).nupkg -g $(SolutionDir)\Popcorn\InstallLoader.gif --no-msi --setupIcon $(SolutionDir)\Popcorn\icon.ico" />
-    <Move SourceFiles="$(SolutionDir)\Popcorn\Releases\Setup.exe" DestinationFiles="$(SolutionDir)\Popcorn\Releases\PopcornInstaller.exe" />
+    <Exec Condition="'$(Configuration)' == 'Release'" Command="$(SolutionDir)\NuGet.exe pack $(SolutionDir)\Popcorn.nuspec -Version @(Major).@(Minor).@(Build) -Properties Configuration=Release -OutputDirectory $(OutDir) -BasePath $(OutDir)" />
+    <Exec Condition="'$(Configuration)' == 'Release'" Command="$(SolutionDir)\packages\squirrel.windows\1.8.0\tools\Squirrel.exe --framework-version net471 --releasify $(OutDir)Popcorn.@(Major).@(Minor).@(Build).nupkg -g $(SolutionDir)\Popcorn\InstallLoader.gif --no-msi --setupIcon $(SolutionDir)\Popcorn\icon.ico" />
+    <Move Condition="'$(Configuration)' == 'Release'" SourceFiles="$(SolutionDir)\Popcorn\Releases\Setup.exe" DestinationFiles="$(SolutionDir)\Popcorn\Releases\PopcornInstaller.exe" />
   </Target>
   <ItemGroup>
     <ProjectReference Include="..\Popcorn.ColorPickerControls\Popcorn.ColorPickerControls.csproj" />
@@ -130,7 +130,7 @@
     <PackageReference Include="Humanizer.Core.zh-Hant" Version="2.2.0" />
     <PackageReference Include="libtorrent-net" Version="4.0.0" />
     <PackageReference Include="LoadingIndicators.WPF" Version="0.0.1" />
-    <PackageReference Include="MahApps.Metro" Version="1.6.1" />
+    <PackageReference Include="MahApps.Metro" Version="1.5.0" />
     <PackageReference Include="MahApps.Metro.IconPacks" Version="2.2.0" />
     <PackageReference Include="MahApps.Metro.Resources" Version="0.6.1.0" />
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.6.0-beta3" />
@@ -155,10 +155,11 @@
     <PackageReference Include="Microsoft.Owin.Hosting" Version="4.0.0" />
     <PackageReference Include="Microsoft.Owin.StaticFiles" Version="4.0.0" />
     <PackageReference Include="Microsoft.VC120.CRT.JetBrains" Version="12.0.21005.2" />
+    <PackageReference Include="Microsoft.Web.Xdt" Version="2.1.1" />
     <PackageReference Include="Microsoft.Win32.Primitives" Version="4.3.0" />
     <PackageReference Include="Microsoft.WindowsAPICodePack-Core" Version="1.1.0.2" />
     <PackageReference Include="Microsoft.WindowsAPICodePack-Shell" Version="1.1.0.0" />
-    <PackageReference Include="Mono.Cecil" Version="0.10.0" />
+    <PackageReference Include="Mono.Cecil" Version="0.9.6.1" />
     <PackageReference Include="MvvmLight" Version="5.4.1" />
     <PackageReference Include="NETStandard.Library" Version="2.0.2" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
@@ -173,7 +174,7 @@
     <PackageReference Include="Rx-Main" Version="2.2.5" />
     <PackageReference Include="Rx-PlatformServices" Version="2.2.5" />
     <PackageReference Include="Rx-XAML" Version="2.2.5" />
-    <PackageReference Include="SharpCompress" Version="0.20.0" />
+    <PackageReference Include="SharpCompress" Version="0.17.1" />
     <PackageReference Include="SharpNetSH" Version="2.0.5" />
     <PackageReference Include="Splat" Version="3.0.0" />
     <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="1.1.10" />
