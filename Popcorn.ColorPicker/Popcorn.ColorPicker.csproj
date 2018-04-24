@@ -1,23 +1,14 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{059DC6C7-59C6-4ADF-8960-976A02E7498E}</ProjectGuid>
-    <OutputType>library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Popcorn.ColorPicker</RootNamespace>
-    <AssemblyName>Popcorn.ColorPicker</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <WarningLevel>4</WarningLevel>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <TargetFramework>net471</TargetFramework>
+    <Configurations>Debug;Release;Debug;Release</Configurations>
+    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -40,9 +31,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationIcon>icon.ico</ApplicationIcon>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <PlatformTarget>x86</PlatformTarget>
     <OutputPath>bin\x86\Debug\</OutputPath>
@@ -54,101 +42,71 @@
     <OutputPath>bin\x86\Release\</OutputPath>
     <CodeAnalysisRuleSet />
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AlphaDisplay.xaml.cs">
+    <ProjectReference Include="..\Popcorn.Utils\Popcorn.Utils.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="AlphaDisplay.xaml.cs">
       <DependentUpon>AlphaDisplay.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ColorDisplay.xaml.cs">
+    <Compile Update="ColorDisplay.xaml.cs">
       <DependentUpon>ColorDisplay.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ColorModels\CMYK\Black.cs" />
-    <Compile Include="ColorModels\CMYK\CMYKDisplay.xaml.cs">
+    <Compile Update="ColorModels\CMYK\CMYKDisplay.xaml.cs">
       <DependentUpon>CMYKDisplay.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ColorModels\CMYK\CMYKModel.cs" />
-    <Compile Include="ColorModels\CMYK\Cyan.cs" />
-    <Compile Include="ColorModels\CMYK\Magenta.cs" />
-    <Compile Include="ColorModels\CMYK\Yellow.cs" />
-    <Compile Include="ColorModels\CMY\CMYDisplay.xaml.cs">
+    <Compile Update="ColorModels\CMY\CMYDisplay.xaml.cs">
       <DependentUpon>CMYDisplay.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ColorModels\CMY\CMYModel.cs" />
-    <Compile Include="ColorModels\CMY\Cyan.cs" />
-    <Compile Include="ColorModels\CMY\Magenta.cs" />
-    <Compile Include="ColorModels\HSB\Yellow.cs" />
-    <Compile Include="ColorModels\ColorComponent.cs" />
-    <Compile Include="ColorModels\NormalComponent.cs" />
-    <Compile Include="ColorModels\ColorModel.cs" />
-    <Compile Include="ColorModels\HSB\Brightness.cs" />
-    <Compile Include="ColorModels\HSB\HsbDisplay.xaml.cs">
+    <Compile Update="ColorModels\HSB\HsbDisplay.xaml.cs">
       <DependentUpon>HsbDisplay.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ColorModels\HSB\HSBModel.cs" />
-    <Compile Include="ColorModels\HSB\Hue.cs" />
-    <Compile Include="ColorModels\HSB\Saturation.cs" />
-    <Compile Include="ColorModels\Lab\A.cs" />
-    <Compile Include="ColorModels\Lab\B.cs" />
-    <Compile Include="ColorModels\Lab\LabDisplay.xaml.cs">
+    <Compile Update="ColorModels\Lab\LabDisplay.xaml.cs">
       <DependentUpon>LabDisplay.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ColorModels\Lab\LabModel.cs" />
-    <Compile Include="ColorModels\Lab\Lightness.cs" />
-    <Compile Include="ColorModels\RGB\Blue.cs" />
-    <Compile Include="ColorModels\RGB\Green.cs" />
-    <Compile Include="ColorModels\RGB\Red.cs" />
-    <Compile Include="ColorModels\RGB\RgbDisplay.xaml.cs">
+    <Compile Update="ColorModels\RGB\RgbDisplay.xaml.cs">
       <DependentUpon>RgbDisplay.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ColorModels\RGB\RGBModel.cs" />
-    <Compile Include="ColorSelector.xaml.cs">
+    <Compile Update="ColorSelector.xaml.cs">
       <DependentUpon>ColorSelector.xaml</DependentUpon>
     </Compile>
-    <Compile Include="EventArgs.cs" />
-    <Compile Include="ExtensionMethods\ByteExtensionMethods.cs" />
-    <Compile Include="ExtensionMethods\ColorExtensionMethods.cs" />
-    <Compile Include="ExtensionMethods\DoubleExtensionMethods.cs" />
-    <Compile Include="HexDisplay.xaml.cs">
+    <Compile Update="HexDisplay.xaml.cs">
       <DependentUpon>HexDisplay.xaml</DependentUpon>
     </Compile>
-    <Compile Include="NewCurrent.xaml.cs">
+    <Compile Update="NewCurrent.xaml.cs">
       <DependentUpon>NewCurrent.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs">
+    <Compile Update="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
+    <Compile Update="Properties\Resources.Designer.cs">
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
+    <Compile Update="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Resource.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
+    <Compile Update="Resource.Designer.cs">
       <DependentUpon>Resource.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resource.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <None Include="app.config" />
-    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <AppDesigner Include="Properties\" />
-  </ItemGroup>
-  <ItemGroup>
     <Page Include="AlphaDisplay.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -197,37 +155,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="icon.ico" />
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="System" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="WindowsBase" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Popcorn.Utils\Popcorn.Utils.csproj">
-      <Project>{094a69ce-c69e-4ef0-9321-ba16f7a89080}</Project>
-      <Name>Popcorn.Utils</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>Ce projet fait référence à des packages NuGet qui sont manquants sur cet ordinateur. Utilisez l'option de restauration des packages NuGet pour les télécharger. Pour plus d'informations, consultez http://go.microsoft.com/fwlink/?LinkID=322105. Le fichier manquant est : {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />
-  </Target>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

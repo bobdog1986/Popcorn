@@ -31,5 +31,5 @@ using Popcorn.Utils;
 //      Revision
 //
 [assembly: AssemblyVersion(Constants.AppVersion)]
-[assembly: AssemblyFileVersion(Constants.AppVersion)]
+
 [assembly: NeutralResourcesLanguage("en")]

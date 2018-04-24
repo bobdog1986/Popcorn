@@ -33,7 +33,7 @@
 
 ### Frontend
 #### Framework
-The app is a .NET 4.6.2 application using WPF framework. 
+The app is a .NET 4.7.1 application using WPF framework. 
 
 #### Basics
 It communicates with its own [API](https://github.com/bbougot/PopcornAPI) to query movies, shows, trailers, cast, assets and torrents.
@@ -54,7 +54,7 @@ The assets (images and torrent files) are stored on Azure Blob Storage.
 Windows 7+ is supported (Windows 7, 8, 8.1, 10).
 
 ## Installation
-Download installer [here](https://github.com/bbougot/Popcorn/releases/download/v3.6.7/PopcornInstaller.exe) 
+Download installer [here](https://github.com/bbougot/Popcorn/releases/download/v3.7.0/PopcornInstaller.exe) 
 
 ## Todos
 See the [roadmap](https://github.com/bbougot/Popcorn/projects/1) for the full list.

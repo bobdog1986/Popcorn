@@ -1,0 +1,25 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Popcorn.ColorPickerControls.Controls
+{
+    /// <summary>
+    ///     Determines the order in which visual states are set.
+    /// </summary>
+    /// <QualityBand>Preview</QualityBand>
+    public enum SelectionSequence
+    {
+        /// <summary>
+        ///     Collapses are set before expansions.
+        /// </summary>
+        CollapseBeforeExpand,
+
+        /// <summary>
+        ///     No delays, all states are set immediately.
+        /// </summary>
+        Simultaneous
+    }
+}

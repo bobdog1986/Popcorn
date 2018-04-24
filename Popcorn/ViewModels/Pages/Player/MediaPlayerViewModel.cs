@@ -396,7 +396,7 @@ namespace Popcorn.ViewModels.Pages.Player
                         else if (message.SelectedSubtitle != null &&
                                  message.SelectedSubtitle.LanguageName !=
                                  LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel") &&
-                                 message.SelectedSubtitle.SubtitleId == "custom" || !string.IsNullOrEmpty(sub))
+                                 message.SelectedSubtitle.SubtitleId == "custom")
                         {
                             var subMessage = new ShowCustomSubtitleMessage();
                             await Messenger.Default.SendAsync(subMessage);

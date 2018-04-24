@@ -5,17 +5,17 @@ VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Popcorn", "Popcorn\Popcorn.csproj", "{5BFADF51-CE11-45CF-8E36-DC9DC061C274}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Popcorn.Tests", "Popcorn.Tests\Popcorn.Tests.csproj", "{A482F82D-8500-42C8-B433-2E21AF9B89F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Popcorn.Tests", "Popcorn.Tests\Popcorn.Tests.csproj", "{A482F82D-8500-42C8-B433-2E21AF9B89F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Popcorn.Utils", "Popcorn.Utils\Popcorn.Utils.csproj", "{094A69CE-C69E-4EF0-9321-BA16F7A89080}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Popcorn.Utils", "Popcorn.Utils\Popcorn.Utils.csproj", "{094A69CE-C69E-4EF0-9321-BA16F7A89080}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Popcorn.OSDB", "Popcorn.OSDB\Popcorn.OSDB.csproj", "{49C78F88-912B-49A2-935D-B9AEBE07011A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Popcorn.OSDB", "Popcorn.OSDB\Popcorn.OSDB.csproj", "{49C78F88-912B-49A2-935D-B9AEBE07011A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Popcorn.Markdown", "Popcorn.Markdown\Popcorn.Markdown.csproj", "{34186C3B-C308-4CAE-B462-DB7B5F5E378C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Popcorn.Markdown", "Popcorn.Markdown\Popcorn.Markdown.csproj", "{34186C3B-C308-4CAE-B462-DB7B5F5E378C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Popcorn.ColorPicker", "Popcorn.ColorPicker\Popcorn.ColorPicker.csproj", "{059DC6C7-59C6-4ADF-8960-976A02E7498E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Popcorn.ColorPicker", "Popcorn.ColorPicker\Popcorn.ColorPicker.csproj", "{059DC6C7-59C6-4ADF-8960-976A02E7498E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Popcorn.ColorPickerControls", "Popcorn.ColorPickerControls\Popcorn.ColorPickerControls.csproj", "{02E6C16F-757F-44AC-BE66-C0D79C0EBE0B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Popcorn.ColorPickerControls", "Popcorn.ColorPickerControls\Popcorn.ColorPickerControls.csproj", "{02E6C16F-757F-44AC-BE66-C0D79C0EBE0B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,34 +23,34 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5BFADF51-CE11-45CF-8E36-DC9DC061C274}.Debug|x86.ActiveCfg = Debug|x86
-		{5BFADF51-CE11-45CF-8E36-DC9DC061C274}.Debug|x86.Build.0 = Debug|x86
-		{5BFADF51-CE11-45CF-8E36-DC9DC061C274}.Release|x86.ActiveCfg = Release|x86
-		{5BFADF51-CE11-45CF-8E36-DC9DC061C274}.Release|x86.Build.0 = Release|x86
-		{A482F82D-8500-42C8-B433-2E21AF9B89F3}.Debug|x86.ActiveCfg = Debug|x86
-		{A482F82D-8500-42C8-B433-2E21AF9B89F3}.Debug|x86.Build.0 = Debug|x86
-		{A482F82D-8500-42C8-B433-2E21AF9B89F3}.Release|x86.ActiveCfg = Release|x86
-		{A482F82D-8500-42C8-B433-2E21AF9B89F3}.Release|x86.Build.0 = Release|x86
-		{094A69CE-C69E-4EF0-9321-BA16F7A89080}.Debug|x86.ActiveCfg = Debug|x86
-		{094A69CE-C69E-4EF0-9321-BA16F7A89080}.Debug|x86.Build.0 = Debug|x86
-		{094A69CE-C69E-4EF0-9321-BA16F7A89080}.Release|x86.ActiveCfg = Release|x86
-		{094A69CE-C69E-4EF0-9321-BA16F7A89080}.Release|x86.Build.0 = Release|x86
-		{49C78F88-912B-49A2-935D-B9AEBE07011A}.Debug|x86.ActiveCfg = Debug|x86
-		{49C78F88-912B-49A2-935D-B9AEBE07011A}.Debug|x86.Build.0 = Debug|x86
-		{49C78F88-912B-49A2-935D-B9AEBE07011A}.Release|x86.ActiveCfg = Release|x86
-		{49C78F88-912B-49A2-935D-B9AEBE07011A}.Release|x86.Build.0 = Release|x86
-		{34186C3B-C308-4CAE-B462-DB7B5F5E378C}.Debug|x86.ActiveCfg = Debug|x86
-		{34186C3B-C308-4CAE-B462-DB7B5F5E378C}.Debug|x86.Build.0 = Debug|x86
-		{34186C3B-C308-4CAE-B462-DB7B5F5E378C}.Release|x86.ActiveCfg = Release|x86
-		{34186C3B-C308-4CAE-B462-DB7B5F5E378C}.Release|x86.Build.0 = Release|x86
-		{059DC6C7-59C6-4ADF-8960-976A02E7498E}.Debug|x86.ActiveCfg = Debug|x86
-		{059DC6C7-59C6-4ADF-8960-976A02E7498E}.Debug|x86.Build.0 = Debug|x86
-		{059DC6C7-59C6-4ADF-8960-976A02E7498E}.Release|x86.ActiveCfg = Release|x86
-		{059DC6C7-59C6-4ADF-8960-976A02E7498E}.Release|x86.Build.0 = Release|x86
-		{02E6C16F-757F-44AC-BE66-C0D79C0EBE0B}.Debug|x86.ActiveCfg = Debug|x86
-		{02E6C16F-757F-44AC-BE66-C0D79C0EBE0B}.Debug|x86.Build.0 = Debug|x86
-		{02E6C16F-757F-44AC-BE66-C0D79C0EBE0B}.Release|x86.ActiveCfg = Release|x86
-		{02E6C16F-757F-44AC-BE66-C0D79C0EBE0B}.Release|x86.Build.0 = Release|x86
+		{5BFADF51-CE11-45CF-8E36-DC9DC061C274}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5BFADF51-CE11-45CF-8E36-DC9DC061C274}.Debug|x86.Build.0 = Debug|Any CPU
+		{5BFADF51-CE11-45CF-8E36-DC9DC061C274}.Release|x86.ActiveCfg = Release|Any CPU
+		{5BFADF51-CE11-45CF-8E36-DC9DC061C274}.Release|x86.Build.0 = Release|Any CPU
+		{A482F82D-8500-42C8-B433-2E21AF9B89F3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A482F82D-8500-42C8-B433-2E21AF9B89F3}.Debug|x86.Build.0 = Debug|Any CPU
+		{A482F82D-8500-42C8-B433-2E21AF9B89F3}.Release|x86.ActiveCfg = Release|Any CPU
+		{A482F82D-8500-42C8-B433-2E21AF9B89F3}.Release|x86.Build.0 = Release|Any CPU
+		{094A69CE-C69E-4EF0-9321-BA16F7A89080}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{094A69CE-C69E-4EF0-9321-BA16F7A89080}.Debug|x86.Build.0 = Debug|Any CPU
+		{094A69CE-C69E-4EF0-9321-BA16F7A89080}.Release|x86.ActiveCfg = Release|Any CPU
+		{094A69CE-C69E-4EF0-9321-BA16F7A89080}.Release|x86.Build.0 = Release|Any CPU
+		{49C78F88-912B-49A2-935D-B9AEBE07011A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{49C78F88-912B-49A2-935D-B9AEBE07011A}.Debug|x86.Build.0 = Debug|Any CPU
+		{49C78F88-912B-49A2-935D-B9AEBE07011A}.Release|x86.ActiveCfg = Release|Any CPU
+		{49C78F88-912B-49A2-935D-B9AEBE07011A}.Release|x86.Build.0 = Release|Any CPU
+		{34186C3B-C308-4CAE-B462-DB7B5F5E378C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{34186C3B-C308-4CAE-B462-DB7B5F5E378C}.Debug|x86.Build.0 = Debug|Any CPU
+		{34186C3B-C308-4CAE-B462-DB7B5F5E378C}.Release|x86.ActiveCfg = Release|Any CPU
+		{34186C3B-C308-4CAE-B462-DB7B5F5E378C}.Release|x86.Build.0 = Release|Any CPU
+		{059DC6C7-59C6-4ADF-8960-976A02E7498E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{059DC6C7-59C6-4ADF-8960-976A02E7498E}.Debug|x86.Build.0 = Debug|Any CPU
+		{059DC6C7-59C6-4ADF-8960-976A02E7498E}.Release|x86.ActiveCfg = Release|Any CPU
+		{059DC6C7-59C6-4ADF-8960-976A02E7498E}.Release|x86.Build.0 = Release|Any CPU
+		{02E6C16F-757F-44AC-BE66-C0D79C0EBE0B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{02E6C16F-757F-44AC-BE66-C0D79C0EBE0B}.Debug|x86.Build.0 = Debug|Any CPU
+		{02E6C16F-757F-44AC-BE66-C0D79C0EBE0B}.Release|x86.ActiveCfg = Release|Any CPU
+		{02E6C16F-757F-44AC-BE66-C0D79C0EBE0B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

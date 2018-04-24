@@ -10,7 +10,7 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
-using lt;
+using ltnet;
 using NLog;
 using Popcorn.Helpers;
 using Popcorn.Models.Episode;

@@ -34,6 +34,6 @@ using Popcorn.Utils;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion(Constants.AppVersion)]
-[assembly: AssemblyFileVersion(Constants.AppVersion)]
+
 
 [assembly: CLSCompliant(true)]

@@ -1,4 +1,11 @@
-﻿# 3.6.7 23/04/2018 #
+﻿# 3.7.0 24/04/2018 #
+***
+Updated .NET Framework.
+
+### Details ###
+* Updated .NET to 4.7.1
+
+# 3.6.7 23/04/2018 #
 ***
 Fixed issue
 
