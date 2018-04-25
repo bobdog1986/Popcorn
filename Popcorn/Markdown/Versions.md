@@ -1,4 +1,11 @@
-﻿# 4.0.0 25/04/2018 #
+﻿# 4.0.1 25/04/2018 #
+***
+Fixed issue.
+
+### Details ###
+* Fixed issue with player commands.
+
+# 4.0.0 25/04/2018 #
 ***
 Updated .NET Framework.
 

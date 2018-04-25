@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:attachedProperties="clr-namespace:Popcorn.AttachedProperties"
     xmlns:behaviors="clr-namespace:Popcorn.Behaviors"
+    xmlns:command="http://www.galasoft.ch/mvvmlight"
     xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:converters="clr-namespace:Popcorn.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -28,17 +29,6 @@
             </LinearGradientBrush>
         </ResourceDictionary>
     </UserControl.Resources>
-    <UserControl.CommandBindings>
-        <CommandBinding
-            CanExecute="MediaPlayerPlayCanExecute"
-            Command="MediaCommands.Play"
-            Executed="MediaPlayerPlayExecuted" />
-        <CommandBinding
-            CanExecute="MediaPlayerPauseCanExecute"
-            Command="MediaCommands.Pause"
-            Executed="MediaPlayerPauseExecuted" />
-    </UserControl.CommandBindings>
-
     <Grid
         x:Name="Container"
         Background="Black"
@@ -252,10 +242,12 @@
                 Grid.Column="0"
                 Background="#FF2F2F2F"
                 Visibility="Visible">
-                <Button
-                    attachedProperties:MouseCommandBehavior.MouseUpCommand="MediaCommands.Pause"
-                    Focusable="False"
-                    Style="{DynamicResource ModernButtonStyle}">
+                <Button Focusable="False" Style="{DynamicResource ModernButtonStyle}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseUp">
+                            <command:EventToCommand Command="{Binding ElementName=PlayerUc, Path=PauseCommand}" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                     <Canvas Width="15" Height="15">
                         <Path
                             Width="15"
@@ -271,10 +263,12 @@
                 Grid.Column="0"
                 Background="#FF2F2F2F"
                 Visibility="Collapsed">
-                <Button
-                    attachedProperties:MouseCommandBehavior.MouseUpCommand="MediaCommands.Play"
-                    Focusable="False"
-                    Style="{DynamicResource ModernButtonStyle}">
+                <Button Focusable="False" Style="{DynamicResource ModernButtonStyle}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewMouseUp">
+                            <command:EventToCommand Command="{Binding ElementName=PlayerUc, Path=PlayCommand}" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                     <Canvas Width="15" Height="15">
                         <Path
                             Width="15"

@@ -62,6 +62,10 @@ namespace Popcorn.UserControls.Player
 
         private ICommand _setHigherSubtitleSizeCommand;
 
+        private ICommand _pauseCommand;
+
+        private ICommand _playCommand;
+
         /// <summary>
         /// Application service
         /// </summary>
@@ -84,6 +88,15 @@ namespace Popcorn.UserControls.Player
 
             Loaded += OnLoaded;
             Media.MediaOpened += OnMediaOpened;
+            PauseCommand = new RelayCommand(async () =>
+            {
+                await PauseMedia();
+            }, MediaPlayerPauseCanExecute);
+
+            PlayCommand = new RelayCommand(async () =>
+            {
+                await PlayMedia();
+            }, MediaPlayerPlayCanExecute);
         }
 
         private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
@@ -569,11 +582,8 @@ namespace Popcorn.UserControls.Player
         /// <summary>
         /// Each time the CanExecute play command change, update the visibility of Play/Pause buttons in the player
         /// </summary>
-        /// <param name="sender">Sender object</param>
-        /// <param name="e">CanExecuteRoutedEventArgs</param>
-        private void MediaPlayerPlayCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        private bool MediaPlayerPlayCanExecute()
         {
-            e.CanExecute = !Media.IsPlaying && !_isPausedForBuffering;
             if (Media.IsPlaying)
             {
                 MediaPlayerStatusBarItemPlay.Visibility = Visibility.Collapsed;
@@ -584,16 +594,15 @@ namespace Popcorn.UserControls.Player
                 MediaPlayerStatusBarItemPlay.Visibility = Visibility.Visible;
                 MediaPlayerStatusBarItemPause.Visibility = Visibility.Collapsed;
             }
+
+            return !Media.IsPlaying && !_isPausedForBuffering;
         }
 
         /// <summary>
         /// Each time the CanExecute play command change, update the visibility of Play/Pause buttons in the media player
         /// </summary>
-        /// <param name="sender">Sender object</param>
-        /// <param name="e">CanExecuteRoutedEventArgs</param>
-        private void MediaPlayerPauseCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        private bool MediaPlayerPauseCanExecute()
         {
-            e.CanExecute = Media.CanPause;
             if (Media.IsPlaying)
             {
                 MediaPlayerStatusBarItemPlay.Visibility = Visibility.Collapsed;
@@ -604,21 +613,9 @@ namespace Popcorn.UserControls.Player
                 MediaPlayerStatusBarItemPlay.Visibility = Visibility.Visible;
                 MediaPlayerStatusBarItemPause.Visibility = Visibility.Collapsed;
             }
+
+            return Media.CanPause;
         }
-
-        /// <summary>
-        /// Play media
-        /// </summary>
-        /// <param name="sender">Sender object</param>
-        /// <param name="e">ExecutedRoutedEventArgs</param>
-        private async void MediaPlayerPlayExecuted(object sender, ExecutedRoutedEventArgs e) => await PlayMedia();
-
-        /// <summary>
-        /// Pause media
-        /// </summary>
-        /// <param name="sender">Sender object</param>
-        /// <param name="e">CanExecuteRoutedEventArgs</param>
-        private async void MediaPlayerPauseExecuted(object sender, ExecutedRoutedEventArgs e) => await PauseMedia();
 
         /// <summary>
         /// Hide the PlayerStatusBar on mouse inactivity
@@ -734,6 +731,32 @@ namespace Popcorn.UserControls.Player
             set
             {
                 _setHigherSubtitleSizeCommand = value;
+                OnPropertyChanged();
+            }
+        }
+        
+        /// <summary>
+        /// Command used to pause media
+        /// </summary>
+        public ICommand PauseCommand
+        {
+            get => _pauseCommand;
+            set
+            {
+                _pauseCommand = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Command used to play media
+        /// </summary>
+        public ICommand PlayCommand
+        {
+            get => _playCommand;
+            set
+            {
+                _playCommand = value;
                 OnPropertyChanged();
             }
         }
