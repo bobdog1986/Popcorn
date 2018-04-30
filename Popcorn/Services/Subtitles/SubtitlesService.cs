@@ -105,13 +105,46 @@ namespace Popcorn.Services.Subtitles
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns></returns>
-        public IEnumerable<SubtitleItem> LoadCaptions(string filePath)
+        public string LoadCaptions(string filePath)
         {
-            if (string.IsNullOrEmpty(filePath)) return new List<SubtitleItem>();
-            var parser = new SubtitlesParser.Classes.Parsers.SubParser();
-            using (var fileStream = File.OpenRead(filePath))
+            if (string.IsNullOrEmpty(filePath)) return string.Empty;
+            try
             {
-                return parser.ParseStream(fileStream, Encoding.UTF8);
+                var parser = new SubtitlesParser.Classes.Parsers.SubParser();
+                using (var fileStream = File.OpenRead(filePath))
+                {
+                    var lines = parser.ParseStream(fileStream, Encoding.UTF8);
+                    var file = $@"{Path.GetDirectoryName(filePath)}\{Guid.NewGuid()}.srt";
+                    using (var srtFile = new StreamWriter(file, false, Encoding.UTF8))
+                    {
+                        var count = 1;
+                        foreach (var line in lines)
+                        {
+                            if (line.StartTime <= 0 || line.EndTime <= 0)
+                            {
+                                continue;
+                            }
+
+                            srtFile.WriteLine(count);
+                            srtFile.WriteLine(
+                                $"{TimeSpan.FromMilliseconds(line.StartTime).ToString("hh\\:mm\\:ss\\,fff")} --> {TimeSpan.FromMilliseconds(line.EndTime).ToString("hh\\:mm\\:ss\\,fff")}");
+                            foreach (var item in line.Lines)
+                            {
+                                srtFile.WriteLine(item);
+                            }
+
+                            srtFile.WriteLine();
+                            count++;
+                        }
+                    }
+
+                    return file;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+                return string.Empty;
             }
         }
 

@@ -47,6 +47,6 @@ namespace Popcorn.Services.Subtitles
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns></returns>
-        IEnumerable<SubtitleItem> LoadCaptions(string filePath);
+        string LoadCaptions(string filePath);
     }
 }

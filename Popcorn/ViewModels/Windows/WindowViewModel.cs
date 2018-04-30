@@ -339,7 +339,6 @@ namespace Popcorn.ViewModels.Windows
                     },
                     message.PlayingProgress,
                     message.BufferProgress,
-                    message.PieceAvailability,
                     message.BandwidthRate,
                     message.Episode.SelectedSubtitle,
                     message.Episode.AvailableSubtitles);
@@ -378,7 +377,6 @@ namespace Popcorn.ViewModels.Windows
                     },
                     message.PlayingProgress,
                     message.BufferProgress,
-                    message.PieceAvailability,
                     message.BandwidthRate, subtitles: new List<Subtitle>
                     {
                         new Subtitle
@@ -437,7 +435,6 @@ namespace Popcorn.ViewModels.Windows
                     },
                     message.PlayingProgress,
                     message.BufferProgress,
-                    message.PieceAvailability,
                     message.BandwidthRate,
                     message.Movie.SelectedSubtitle,
                     message.Movie.AvailableSubtitles);

@@ -81,7 +81,7 @@ namespace Popcorn.Services.Chromecast
             }
         }
 
-        public async Task LoadAsync(Media media, (bool hasSubtitle, int trackId) subtitle)
+        public async Task LoadAsync(MediaInformation media, (bool hasSubtitle, int trackId) subtitle)
         {
             await SendChannelCommandAsync<IMediaChannel>(!IsInitialized || IsStopped,
                 async c =>

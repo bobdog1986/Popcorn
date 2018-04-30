@@ -22,13 +22,16 @@ using Popcorn.Utils.Exceptions;
 using Popcorn.ViewModels.Windows.Settings;
 using System.Runtime.CompilerServices;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows.Controls;
+using System.Windows.Data;
 using GalaSoft.MvvmLight.CommandWpf;
 using Popcorn.Converters;
+using Popcorn.Extensions;
 using Popcorn.Helpers;
 using Popcorn.Models.Chromecast;
-using Popcorn.Models.Download;
+using Unosquare.FFME;
 using Unosquare.FFME.Events;
 
 namespace Popcorn.UserControls.Player
@@ -66,6 +69,18 @@ namespace Popcorn.UserControls.Player
 
         private ICommand _playCommand;
 
+        private double _progress;
+
+        /// <summary>
+        /// Semaphore used to update mouse activity
+        /// </summary>
+        private static readonly SemaphoreSlim MouseActivitySemaphore = new SemaphoreSlim(1, 1);
+
+        /// <summary>
+        /// Semaphore used to update subtitle delay
+        /// </summary>
+        private static readonly SemaphoreSlim SubtitleDelaySemaphore = new SemaphoreSlim(1, 1);
+
         /// <summary>
         /// Application service
         /// </summary>
@@ -79,24 +94,10 @@ namespace Popcorn.UserControls.Player
             _applicationService = SimpleIoc.Default.GetInstance<IApplicationService>();
             InitializeComponent();
             AddHandler(Keyboard.PreviewKeyDownEvent, new KeyEventHandler(OnPreviewKeyDownEvent));
-            PositionSlider.AddHandler
-            (
-                Slider.PreviewMouseLeftButtonDownEvent,
-                new MouseButtonEventHandler(OnSliderMouseLeftButtonDown),
-                true
-            );
-
             Loaded += OnLoaded;
             Media.MediaOpened += OnMediaOpened;
-            PauseCommand = new RelayCommand(async () =>
-            {
-                await PauseMedia();
-            }, MediaPlayerPauseCanExecute);
-
-            PlayCommand = new RelayCommand(async () =>
-            {
-                await PlayMedia();
-            }, MediaPlayerPlayCanExecute);
+            PauseCommand = new RelayCommand(async () => { await PauseMedia(); }, MediaPlayerPauseCanExecute);
+            PlayCommand = new RelayCommand(async () => { await PlayMedia(); }, MediaPlayerPlayCanExecute);
         }
 
         private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
@@ -104,7 +105,6 @@ namespace Popcorn.UserControls.Player
             var window = System.Windows.Window.GetWindow(this);
             if (window != null)
             {
-                window.KeyDown += OnKeyDown;
                 window.Closing += async (s1, e1) => await Unload();
             }
 
@@ -113,10 +113,12 @@ namespace Popcorn.UserControls.Player
                 return;
 
             var applicationSettings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
-            Subtitles.FontSize = applicationSettings.SelectedSubtitleSize?.Size ?? 22;
-            Subtitles.Foreground = new SolidColorBrush(applicationSettings.SubtitlesColor);
+            Subtitles.SetFontSize(Media, applicationSettings.SelectedSubtitleSize?.Size ?? 22);
+            Subtitles.SetForeground(Media, new SolidColorBrush(applicationSettings.SubtitlesColor));
+
             // start the activity timer used to manage visibility of the PlayerStatusBar
-            ActivityTimer = new DispatcherTimer(DispatcherPriority.Background) {Interval = TimeSpan.FromSeconds(2)};
+            ActivityTimer =
+                new DispatcherTimer(DispatcherPriority.Background) {Interval = TimeSpan.FromSeconds(2)};
             ActivityTimer.Tick += OnInactivity;
             ActivityTimer.Start();
 
@@ -124,23 +126,28 @@ namespace Popcorn.UserControls.Player
 
             SetLowerSubtitleSizeCommand = new RelayCommand(() =>
             {
-                Subtitles.FontSize--;
+                var currentSize = Subtitles.GetFontSize(Media);
+                Subtitles.SetFontSize(Media, --currentSize);
             });
 
             SetHigherSubtitleSizeCommand = new RelayCommand(() =>
             {
-                Subtitles.FontSize++;
+                var currentSize = Subtitles.GetFontSize(Media);
+                Subtitles.SetFontSize(Media, ++currentSize);
             });
 
+            Subtitles.SetFontFamily(Media, new FontFamily("Verdana"));
+            Subtitles.SetFontWeight(Media, FontWeights.Bold);
+            Subtitles.SetOutlineWidth(Media, new Thickness(0, 0, 0, 0));
             vm.StoppedMedia += OnStoppedMedia;
             vm.PausedMedia += OnPausedMedia;
             vm.ResumedMedia += OnResumedMedia;
             vm.CastStarted += OnCastStarted;
             vm.CastStopped += OnCastStopped;
             vm.CastStatusChanged += OnCastStatusChanged;
-            if (vm.PieceAvailability != null)
+            if (vm.BufferProgress != null)
             {
-                vm.PieceAvailability.ProgressChanged += PieceAvailabilityOnProgressChanged;
+                vm.BufferProgress.ProgressChanged += OnProgressChanged;
             }
 
             if (vm.BandwidthRate != null)
@@ -155,6 +162,17 @@ namespace Popcorn.UserControls.Player
 
             Title.Text = vm.MediaName;
             Media.Source = new Uri(vm.MediaPath);
+            Media.MediaOpening += OnMediaOpening;
+        }
+
+        public double Progress
+        {
+            get => _progress;
+            set
+            {
+                _progress = value;
+                OnPropertyChanged();
+            }
         }
 
         /// <summary>
@@ -165,6 +183,9 @@ namespace Popcorn.UserControls.Player
         private async void OnPreviewKeyDownEvent(object sender,
             RoutedEventArgs e)
         {
+            FocusManager.SetIsFocusScope(this, true);
+            FocusManager.SetFocusedElement(this, this);
+
             if (e is KeyEventArgs ke)
             {
                 ke.Handled = true;
@@ -185,22 +206,89 @@ namespace Popcorn.UserControls.Player
                 {
                     Media.Volume -= 0.05;
                 }
+
+                if (ke.Key == Key.F)
+                {
+                    _applicationService.IsFullScreen = !_applicationService.IsFullScreen;
+                }
+
+                if (!Media.HasSubtitles)
+                    return;
+
+                switch (ke.Key)
+                {
+                    case Key.H:
+                        if ((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
+                        {
+                            SubtitleDelay += 1000;
+                        }
+                        else
+                        {
+                            SubtitleDelay += 1000;
+                        }
+
+                        break;
+                    case Key.G:
+                        if ((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
+                        {
+                            SubtitleDelay -= 1000;
+                        }
+                        else
+                        {
+                            SubtitleDelay -= 1000;
+                        }
+
+                        break;
+                    default:
+                        return;
+                }
+
+                Delay.Text = $"Subtitle delay: {SubtitleDelay} ms";
+                if (SubtitleDelaySemaphore.CurrentCount == 0) return;
+                await SubtitleDelaySemaphore.WaitAsync();
+                var increasedPanelOpacityAnimation = new DoubleAnimationUsingKeyFrames
+                {
+                    Duration = new Duration(TimeSpan.FromSeconds(0.1)),
+                    KeyFrames = new DoubleKeyFrameCollection
+                    {
+                        new EasingDoubleKeyFrame(0.6, KeyTime.FromPercent(1.0), new PowerEase
+                        {
+                            EasingMode = EasingMode.EaseInOut
+                        })
+                    }
+                };
+                var increasedSubtitleDelayOpacityAnimation = new DoubleAnimationUsingKeyFrames
+                {
+                    Duration = new Duration(TimeSpan.FromSeconds(0.1)),
+                    KeyFrames = new DoubleKeyFrameCollection
+                    {
+                        new EasingDoubleKeyFrame(1.0, KeyTime.FromPercent(1.0), new PowerEase
+                        {
+                            EasingMode = EasingMode.EaseInOut
+                        })
+                    }
+                };
+
+                SubtitleDelayPanel.BeginAnimation(OpacityProperty, increasedPanelOpacityAnimation);
+                Delay.BeginAnimation(OpacityProperty, increasedSubtitleDelayOpacityAnimation);
+                await Task.Delay(2000);
+                var decreasedOpacityAnimation = new DoubleAnimationUsingKeyFrames
+                {
+                    Duration = new Duration(TimeSpan.FromSeconds(0.1)),
+                    KeyFrames = new DoubleKeyFrameCollection
+                    {
+                        new EasingDoubleKeyFrame(0.0, KeyTime.FromPercent(1.0), new PowerEase
+                        {
+                            EasingMode = EasingMode.EaseInOut
+                        })
+                    }
+                };
+
+                SubtitleDelayPanel.BeginAnimation(OpacityProperty, decreasedOpacityAnimation);
+                Delay.BeginAnimation(OpacityProperty, decreasedOpacityAnimation);
+                SubtitleDelaySemaphore.Release();
             }
         }
-
-        /// <summary>
-        /// Semaphore used to update mouse activity
-        /// </summary>
-        private static readonly SemaphoreSlim MouseActivitySemaphore = new SemaphoreSlim(1, 1);
-
-        /// <summary>
-        /// Semaphore used to update subtitle delay
-        /// </summary>
-        private static readonly SemaphoreSlim SubtitleDelaySemaphore = new SemaphoreSlim(1, 1);
-
-        private PieceAvailability _pieceAvailability;
-
-        private bool _isPausedForBuffering;
 
         /// <summary>
         /// Subscribe to events and play the movie when control has been loaded
@@ -209,97 +297,55 @@ namespace Popcorn.UserControls.Player
         /// <param name="e">EventArgs</param>
         private async void OnMediaOpened(object sender, RoutedEventArgs e)
         {
-            Media.RenderingVideo += OnRenderingVideo;
             Media.MediaEnded += MediaPlayerEndReached;
             Media.MediaFailed += EncounteredError;
+            Media.SeekingStarted += OnBufferingStarted;
+            Media.SeekingEnded += OnBufferingEnded;
             await PlayMedia();
         }
 
-        private void PieceAvailabilityOnProgressChanged(object sender, PieceAvailability pieceAvailability)
+        private void OnMediaOpening(object sender, MediaOpeningRoutedEventArgs e)
         {
-            DispatcherHelper.CheckBeginInvokeOnUI(async () =>
+            try
             {
-                if (!Media.NaturalDuration.HasTimeSpan)
+                if (!(DataContext is MediaPlayerViewModel vm) || string.IsNullOrEmpty(vm.SubtitleFilePath))
                     return;
 
-                if (!(DataContext is MediaPlayerViewModel vm))
-                    return;
-
-                double minBuffer;
-                switch (vm.MediaType)
+                var url = new Uri(vm.SubtitleFilePath);
+                if (url.IsFile || url.IsUnc)
                 {
-                    case MediaType.Movie:
-                        minBuffer = Constants.MinimumMovieBuffering / 100d;
-                        break;
-                    case MediaType.Show:
-                        minBuffer = Constants.MinimumShowBuffering / 100d;
-                        break;
-                    default:
-                        minBuffer = 0.03d;
-                        break;
+                    if (System.IO.File.Exists(vm.SubtitleFilePath))
+                        e.Options.SubtitlesUrl = vm.SubtitleFilePath;
                 }
-
-                vm.MediaLength = Media.NaturalDuration.TimeSpan.TotalSeconds;
-                vm.PlayerTime = PositionSlider.Value;
-                _pieceAvailability = pieceAvailability;
-                var startPieceAvailabilityPercentage =
-                    (double) _pieceAvailability.StartAvailablePiece / (double) _pieceAvailability.TotalPieces;
-                var endPieceAvailabilityPercentage =
-                    (double) _pieceAvailability.EndAvailablePiece / (double) _pieceAvailability.TotalPieces;
-                var playPercentage = PositionSlider.Value / Media.NaturalDuration.TimeSpan.TotalSeconds;
-                var end = 1 - endPieceAvailabilityPercentage <= minBuffer
-                    ? endPieceAvailabilityPercentage == 1d
-                    : playPercentage + minBuffer < endPieceAvailabilityPercentage;
-                if (_isPausedForBuffering && playPercentage > startPieceAvailabilityPercentage && end)
-                {
-                    _isPausedForBuffering = false;
-                    Buffering.Visibility = Visibility.Collapsed;
-                    Media.Position = TimeSpan.FromSeconds(PositionSlider.Value);
-                    await PlayMedia();
-                }
-                else if (!_isPausedForBuffering)
-                {
-                    PositionSlider.Value = Media.Position.TotalSeconds;
-                }
-            });
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
         }
 
-        private void OnRenderingVideo(object sender, RenderingVideoEventArgs e)
+        private void OnBufferingEnded(object sender, RoutedEventArgs e)
         {
-            if (!(DataContext is MediaPlayerViewModel vm))
-                return;
+            Buffering.Visibility = Visibility.Collapsed;
+        }
 
-            if (vm.MediaType == MediaType.Trailer)
-            {
-                PositionSlider.Value = Media.Position.TotalSeconds;
-            }
+        private void OnBufferingStarted(object sender, RoutedEventArgs e)
+        {
+            Buffering.Visibility = Visibility.Visible;
+        }
 
-            if (vm.SubtitleItems.Any())
+        private void OnProgressChanged(object sender, double progress)
+        {
+            DispatcherHelper.CheckBeginInvokeOnUI(() =>
             {
-                var subtitle = vm.SubtitleItems.FirstOrDefault(a =>
-                    a.StartTime <= Media.Position.TotalMilliseconds + SubtitleDelay &&
-                    a.EndTime > Media.Position.TotalMilliseconds + SubtitleDelay);
-                if (subtitle == null)
-                {
-                    Subtitles.Text = string.Empty;
+                if (!(DataContext is MediaPlayerViewModel vm) || !Media.NaturalDuration.HasTimeSpan)
                     return;
-                }
 
-                var lines = subtitle.Lines;
-                var formattedLines = new List<string>();
-                foreach (var line in lines)
-                {
-                    formattedLines.Add(line.Replace("<b>", "").Replace("</b>", "")
-                        .Replace("<i>", "").Replace("</i>", "").Replace("<u>", "")
-                        .Replace("</u>", ""));
-                }
-
-                Subtitles.Text = string.Join(Environment.NewLine, formattedLines);
-            }
-            else
-            {
-                Subtitles.Text = string.Empty;
-            }
+                Progress = progress;
+                vm.MediaLength = Media.NaturalDuration.TimeSpan.TotalSeconds;
+                vm.PlayerTime = PositionSlider.Value;
+                BufferingSlider.Value = progress / 100d;
+            });
         }
 
         /// <summary>
@@ -358,100 +404,6 @@ namespace Popcorn.UserControls.Player
         private void OnPausedMedia(object sender, EventArgs e)
         {
             DispatcherHelper.CheckBeginInvokeOnUI(async () => await PauseMedia());
-        }
-
-        /// <summary>
-        /// On key down
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private async void OnKeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.F)
-            {
-                _applicationService.IsFullScreen = !_applicationService.IsFullScreen;
-            }
-
-            if (e.Key == Key.Space)
-            {
-                if (Media.IsPlaying)
-                    await PauseMedia();
-                else
-                    await PlayMedia();
-            }
-
-            if (!(DataContext is MediaPlayerViewModel vm) || !vm.SubtitleItems.Any())
-                return;
-            switch (e.Key)
-            {
-                case Key.H:
-                    if ((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
-                    {
-                        SubtitleDelay += 1000;
-                    }
-                    else
-                    {
-                        SubtitleDelay += 1000;
-                    }
-                    break;
-                case Key.G:
-                    if ((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
-                    {
-                        SubtitleDelay -= 1000;
-                    }
-                    else
-                    {
-                        SubtitleDelay -= 1000;
-                    }
-                    break;
-                default:
-                    return;
-            }
-
-            Delay.Text = $"Subtitle delay: {SubtitleDelay} ms";
-            if (SubtitleDelaySemaphore.CurrentCount == 0) return;
-            await SubtitleDelaySemaphore.WaitAsync();
-            var increasedPanelOpacityAnimation = new DoubleAnimationUsingKeyFrames
-            {
-                Duration = new Duration(TimeSpan.FromSeconds(0.1)),
-                KeyFrames = new DoubleKeyFrameCollection
-                {
-                    new EasingDoubleKeyFrame(0.6, KeyTime.FromPercent(1.0), new PowerEase
-                    {
-                        EasingMode = EasingMode.EaseInOut
-                    })
-                }
-            };
-            var increasedSubtitleDelayOpacityAnimation = new DoubleAnimationUsingKeyFrames
-            {
-                Duration = new Duration(TimeSpan.FromSeconds(0.1)),
-                KeyFrames = new DoubleKeyFrameCollection
-                {
-                    new EasingDoubleKeyFrame(1.0, KeyTime.FromPercent(1.0), new PowerEase
-                    {
-                        EasingMode = EasingMode.EaseInOut
-                    })
-                }
-            };
-
-            SubtitleDelayPanel.BeginAnimation(OpacityProperty, increasedPanelOpacityAnimation);
-            Delay.BeginAnimation(OpacityProperty, increasedSubtitleDelayOpacityAnimation);
-            await Task.Delay(2000);
-            var decreasedOpacityAnimation = new DoubleAnimationUsingKeyFrames
-            {
-                Duration = new Duration(TimeSpan.FromSeconds(0.1)),
-                KeyFrames = new DoubleKeyFrameCollection
-                {
-                    new EasingDoubleKeyFrame(0.0, KeyTime.FromPercent(1.0), new PowerEase
-                    {
-                        EasingMode = EasingMode.EaseInOut
-                    })
-                }
-            };
-
-            SubtitleDelayPanel.BeginAnimation(OpacityProperty, decreasedOpacityAnimation);
-            Delay.BeginAnimation(OpacityProperty, decreasedOpacityAnimation);
-            SubtitleDelaySemaphore.Release();
         }
 
         /// <summary>
@@ -519,9 +471,6 @@ namespace Popcorn.UserControls.Player
         /// </summary>
         private async Task PlayMedia()
         {
-            if (_isPausedForBuffering)
-                return;
-
             try
             {
                 _applicationService.SwitchConstantDisplayAndPower(true);
@@ -534,6 +483,7 @@ namespace Popcorn.UserControls.Player
                     if (vm.IsCasting)
                         vm.PlayCastCommand.Execute(null);
                 }
+
                 await Media.Play();
             }
             catch (Exception ex)
@@ -595,7 +545,7 @@ namespace Popcorn.UserControls.Player
                 MediaPlayerStatusBarItemPause.Visibility = Visibility.Collapsed;
             }
 
-            return !Media.IsPlaying && !_isPausedForBuffering;
+            return !Media.IsPlaying;
         }
 
         /// <summary>
@@ -671,6 +621,7 @@ namespace Popcorn.UserControls.Player
                 MouseActivitySemaphore.Release();
                 return;
             }
+
             var mouseEventArgs = e.StagingItem.Input as MouseEventArgs;
 
             // no button is pressed and the position is still the same as the application became inactive
@@ -734,7 +685,7 @@ namespace Popcorn.UserControls.Player
                 OnPropertyChanged();
             }
         }
-        
+
         /// <summary>
         /// Command used to pause media
         /// </summary>
@@ -786,7 +737,6 @@ namespace Popcorn.UserControls.Player
                 var window = System.Windows.Window.GetWindow(this);
                 if (window != null)
                 {
-                    window.KeyDown -= OnKeyDown;
                     window.Cursor = Cursors.Arrow;
                 }
 
@@ -805,8 +755,6 @@ namespace Popcorn.UserControls.Player
 
                 _applicationService.SwitchConstantDisplayAndPower(false);
                 RemoveHandler(Keyboard.PreviewKeyDownEvent, new KeyEventHandler(OnPreviewKeyDownEvent));
-                PositionSlider.RemoveHandler(Slider.PreviewMouseLeftButtonDownEvent,
-                    new MouseButtonEventHandler(OnSliderMouseLeftButtonDown));
                 await Media.Close();
             }
             catch (Exception ex)
@@ -815,14 +763,8 @@ namespace Popcorn.UserControls.Player
             }
         }
 
-        private async void OnMediaSliderDragCompleted(object sender, DragCompletedEventArgs e)
-        {
-            await SeekMedia();
-        }
-
         private async Task SeekMedia()
         {
-            if (_isPausedForBuffering) return;
             Media.Position = TimeSpan.FromSeconds(PositionSlider.Value);
             if (DataContext is MediaPlayerViewModel vm && vm.IsCasting)
             {
@@ -832,61 +774,12 @@ namespace Popcorn.UserControls.Player
             await PlayMedia();
         }
 
-        private async void OnMediaSliderDragStarted(object sender, DragStartedEventArgs e)
-        {
-            await PauseMedia();
-        }
-
-        private async void OnSliderMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            await SeekMedia();
-        }
-
         private async void OnPreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             if (Media.IsPlaying)
                 await PauseMedia();
             else
                 await PlayMedia();
-        }
-
-        private async void OnSliderValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            if (_pieceAvailability == null || !Media.NaturalDuration.HasTimeSpan)
-                return;
-
-            if (!(DataContext is MediaPlayerViewModel vm))
-                return;
-
-            double minBuffer;
-            switch (vm.MediaType)
-            {
-                case MediaType.Movie:
-                    minBuffer = Constants.MinimumMovieBuffering / 100d;
-                    break;
-                case MediaType.Show:
-                    minBuffer = Constants.MinimumShowBuffering / 100d;
-                    break;
-                default:
-                    minBuffer = 0.03d;
-                    break;
-            }
-
-            double startPieceAvailabilityPercentage =
-                (double) _pieceAvailability.StartAvailablePiece / (double) _pieceAvailability.TotalPieces;
-            double endPieceAvailabilityPercentage =
-                (double) _pieceAvailability.EndAvailablePiece / (double) _pieceAvailability.TotalPieces;
-            var playPercentage = e.NewValue / Media.NaturalDuration.TimeSpan.TotalSeconds;
-            var end = 1 - playPercentage <= minBuffer
-                ? endPieceAvailabilityPercentage < 1d
-                : playPercentage + minBuffer > endPieceAvailabilityPercentage;
-            if (playPercentage < startPieceAvailabilityPercentage ||
-                end)
-            {
-                Buffering.Visibility = Visibility.Visible;
-                _isPausedForBuffering = true;
-                await PauseMedia();
-            }
         }
     }
 }

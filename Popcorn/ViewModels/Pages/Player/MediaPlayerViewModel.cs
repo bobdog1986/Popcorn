@@ -8,6 +8,7 @@ using Popcorn.Messaging;
 using Popcorn.Models.Bandwidth;
 using Popcorn.Utils;
 using System.Collections.Generic;
+using System.Drawing;
 using Popcorn.Models.Subtitles;
 using System.Windows.Input;
 using Popcorn.Helpers;
@@ -22,7 +23,6 @@ using GoogleCast.Models.Media;
 using Popcorn.Services.Subtitles;
 using Popcorn.Events;
 using Popcorn.Models.Chromecast;
-using Popcorn.Models.Download;
 using Popcorn.Services.Cache;
 using Popcorn.Services.Chromecast;
 using Popcorn.Utils.Exceptions;
@@ -114,7 +114,7 @@ namespace Popcorn.ViewModels.Pages.Player
 
         private OSDB.Subtitle _currentSubtitle;
 
-        public IEnumerable<SubtitleItem> SubtitleItems = new List<SubtitleItem>();
+        private double _mediaLength;
 
         /// <summary>
         /// Media action to execute when media has ended
@@ -129,7 +129,7 @@ namespace Popcorn.ViewModels.Pages.Player
         /// <summary>
         /// Subtitle file path
         /// </summary>
-        public readonly string SubtitleFilePath;
+        public string SubtitleFilePath;
 
         /// <summary>
         /// The buffer progress
@@ -146,10 +146,7 @@ namespace Popcorn.ViewModels.Pages.Player
         /// </summary>
         private bool _isCasting;
 
-        /// <summary>
-        /// The media type
-        /// </summary>
-        public readonly MediaType MediaType;
+        private MediaType _mediaType;
 
         public event EventHandler<EventArgs> CastStarted;
 
@@ -185,12 +182,7 @@ namespace Popcorn.ViewModels.Pages.Player
         /// The playing progress
         /// </summary>
         private readonly IProgress<double> _playingProgress;
-
-        /// <summary>
-        /// The piece availability progress
-        /// </summary>
-        public readonly Progress<PieceAvailability> PieceAvailability;
-
+        
         /// <summary>
         /// Initializes a new instance of the MediaPlayerViewModel class.
         /// </summary>
@@ -204,7 +196,6 @@ namespace Popcorn.ViewModels.Pages.Player
         /// <param name="mediaEndedAction">Media action to execute when media has ended</param>
         /// <param name="playingProgress">Media playing progress</param>
         /// <param name="bufferProgress">The buffer progress</param>
-        /// <param name="pieceAvailability">The piece availability</param>
         /// <param name="bandwidthRate">THe bandwidth rate</param>
         /// <param name="currentSubtitle">Subtitle</param>
         /// <param name="subtitles">Subtitles</param>
@@ -213,7 +204,6 @@ namespace Popcorn.ViewModels.Pages.Player
             string mediaPath,
             string mediaName, MediaType type, Action mediaStoppedAction,
             Action mediaEndedAction, IProgress<double> playingProgress = null, Progress<double> bufferProgress = null,
-            Progress<PieceAvailability> pieceAvailability = null,
             Progress<BandwidthRate> bandwidthRate = null, Subtitle currentSubtitle = null,
             IEnumerable<Subtitle> subtitles = null)
         {
@@ -227,22 +217,19 @@ namespace Popcorn.ViewModels.Pages.Player
             MediaPath = mediaPath;
             MediaName = mediaName;
             MediaType = type;
-            PieceAvailability = pieceAvailability;
             _mediaStoppedAction = mediaStoppedAction;
             _mediaEndedAction = mediaEndedAction;
-            SubtitleFilePath = currentSubtitle?.FilePath;
             BufferProgress = bufferProgress;
             BandwidthRate = bandwidthRate;
             ShowSubtitleButton = MediaType != MediaType.Trailer;
             _subtitles = subtitles;
             _playingProgress = playingProgress;
-
             if (currentSubtitle != null && currentSubtitle.Sub.SubtitleId != "none" &&
                 !string.IsNullOrEmpty(currentSubtitle.FilePath))
             {
                 IsSubtitleChosen = true;
                 CurrentSubtitle = currentSubtitle.Sub;
-                SubtitleItems = _subtitlesService.LoadCaptions(currentSubtitle.FilePath);
+                SubtitleFilePath = _subtitlesService.LoadCaptions(currentSubtitle.FilePath);
             }
         }
 
@@ -301,6 +288,15 @@ namespace Popcorn.ViewModels.Pages.Player
         {
             get => _isCasting;
             set => Set(ref _isCasting, value);
+        }
+
+        /// <summary>
+        /// The media type
+        /// </summary>
+        public MediaType MediaType
+        {
+            get => _mediaType;
+            set => Set(ref _mediaType, value);
         }
 
         /// <summary>
@@ -542,7 +538,7 @@ namespace Popcorn.ViewModels.Pages.Player
                 }
             }
 
-            var media = new Media
+            var media = new MediaInformation
             {
                 ContentId = isRemote ? MediaPath : mediaPath,
                 ContentType = "video/mp4",
@@ -558,6 +554,12 @@ namespace Popcorn.ViewModels.Pages.Player
                 media.Tracks = new[]
                 {
                     new Track {TrackId = 1, Language = "en-US", Name = "English", TrackContentId = subtitle}
+                };
+                media.TextTrackStyle = new TextTrackStyle
+                {
+                    BackgroundColor = Color.Transparent,
+                    EdgeColor = Color.Black,
+                    EdgeType = TextTrackEdgeType.DropShadow
                 };
             }
             try
@@ -616,7 +618,11 @@ namespace Popcorn.ViewModels.Pages.Player
             set => Set(ref _isSubtitleChosen, value);
         }
 
-        public double MediaLength { get; set; }
+        public double MediaLength
+        {
+            get => _mediaLength;
+            set => Set(ref _mediaLength, value);
+        }
 
         public double PlayerTime
         {
@@ -673,7 +679,7 @@ namespace Popcorn.ViewModels.Pages.Player
                 "Subtitle chosen");
 
             CurrentSubtitle = e.Subtitle;
-            SubtitleItems = _subtitlesService.LoadCaptions(e.SubtitlePath);
+            SubtitleFilePath = _subtitlesService.LoadCaptions(e.SubtitlePath);
         }
 
         /// <summary>

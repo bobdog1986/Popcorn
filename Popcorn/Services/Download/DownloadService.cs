@@ -12,7 +12,6 @@ using Popcorn.Extensions;
 using Popcorn.Helpers;
 using Popcorn.Messaging;
 using Popcorn.Models.Bandwidth;
-using Popcorn.Models.Download;
 using Popcorn.Models.Media;
 using Popcorn.Services.Cache;
 using Popcorn.Utils.Exceptions;
@@ -44,10 +43,8 @@ namespace Popcorn.Services.Download
         /// <param name="reportDownloadProgress">Download progress</param>
         /// <param name="reportDownloadRate">The download rate</param>
         /// <param name="playingProgress">The playing progress</param>
-        /// <param name="reportPieceAvailability">Report the piece availability progress</param>
         protected virtual void BroadcastMediaBuffered(T media, Progress<double> reportDownloadProgress,
-            Progress<BandwidthRate> reportDownloadRate, IProgress<double> playingProgress,
-            Progress<PieceAvailability> reportPieceAvailability)
+            Progress<BandwidthRate> reportDownloadRate, IProgress<double> playingProgress)
         {
             throw new NotImplementedException();
         }
@@ -149,17 +146,11 @@ namespace Popcorn.Services.Download
         {
             handle.set_upload_limit(uploadLimit * 1024);
             handle.set_download_limit(downloadLimit * 1024);
+            handle.set_sequential_download(true);
             var alreadyBuffered = false;
             var bandwidth = new Progress<BandwidthRate>();
             var prog = new Progress<double>();
             var playingProgress = new Progress<double>();
-            var playingProgression = 0d;
-            playingProgress.ProgressChanged += (sender, d) =>
-            {
-                playingProgression = d;
-            };
-
-            IProgress<PieceAvailability> pieceAvailability = new Progress<PieceAvailability>();
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
@@ -206,47 +197,6 @@ namespace Popcorn.Services.Download
                             UploadRate = upRate,
                             ETA = eta
                         });
-
-                        var numPieces = handle.torrent_file().num_pieces() - 1;
-                        double minBuffer;
-                        switch (type)
-                        {
-                            case MediaType.Movie:
-                                minBuffer = Constants.MinimumMovieBuffering / 100d;
-                                break;
-                            case MediaType.Show:
-                                minBuffer = Constants.MinimumShowBuffering / 100d;
-                                break;
-                            default:
-                                minBuffer = 0.03d;
-                                break;
-                        }
-                        var cursor = Math.Floor((numPieces - minBuffer * numPieces) * playingProgression);
-                        var pieces = handle.piece_priorities()
-                            .Select((piece, index) => new {Piece = piece, Index = index})
-                            .ToList();
-
-                        var lastPieceAvailableIndex = 0;
-                        foreach (var piece in pieces.Where(a => a.Index >= cursor))
-                        {
-                            if (!handle.have_piece(piece.Index))
-                            {
-                                handle.set_piece_deadline(piece.Index, 50);
-                                foreach (var otherPiece in pieces.Where(a => a.Index != piece.Index))
-                                {
-                                    handle.reset_piece_deadline(otherPiece.Index);
-                                }
-
-                                break;
-                            }
-
-                            lastPieceAvailableIndex = piece.Index;
-                            handle.reset_piece_deadline(piece.Index);
-                        }
-
-                        pieceAvailability.Report(new PieceAvailability(numPieces,
-                            pieces.First(a => a.Index >= cursor - minBuffer * numPieces).Index,
-                            lastPieceAvailableIndex));
                     }
 
                     handle.flush_cache();
@@ -271,8 +221,7 @@ namespace Popcorn.Services.Download
                         {
                             alreadyBuffered = true;
                             media.FilePath = filePath;
-                            BroadcastMediaBuffered(media, prog, bandwidth, playingProgress,
-                                (Progress<PieceAvailability>) pieceAvailability);
+                            BroadcastMediaBuffered(media, prog, bandwidth, playingProgress);
                         }
 
                         if (!alreadyBuffered)

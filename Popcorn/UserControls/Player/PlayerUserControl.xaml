@@ -21,6 +21,7 @@
             <converters:TimeSpanToSecondsConverter x:Key="TimeSpanToSecondsConverter" />
             <converters:TimeSpanFormatter x:Key="TimeSpanFormatter" />
             <converters:PercentageFormatter x:Key="PercentageFormatter" />
+            <converters:ProgressToPositionConverter x:Key="ProgressToPositionConverter" />
             <converters:BoolToInverseVisibilityConverter x:Key="BoolToInverseVisibilityConverter" />
             <LinearGradientBrush x:Key="HeaderBackgroundOpacityMask" StartPoint="0.5,0" EndPoint="0.5,1">
                 <GradientStop Offset="0" Color="#FFFFFFFF" />
@@ -127,22 +128,6 @@
                     Foreground="White"
                     Opacity="0" />
             </Grid>
-            <TextBlock
-                x:Name="Subtitles"
-                HorizontalAlignment="Center"
-                FontSize="22"
-                Foreground="White"
-                TextAlignment="Center"
-                TextWrapping="Wrap">
-                <TextBlock.Effect>
-                    <DropShadowEffect
-                        BlurRadius="6"
-                        Direction="330"
-                        Opacity="0.6"
-                        ShadowDepth="6"
-                        Color="Black" />
-                </TextBlock.Effect>
-            </TextBlock>
         </StackPanel>
         <Grid
             x:Name="UpperPanel"
@@ -289,17 +274,32 @@
                 Grid.Column="2"
                 HorizontalContentAlignment="Stretch"
                 Background="#FF2F2F2F">
-                <Slider
-                    Name="PositionSlider"
-                    Focusable="False"
-                    IsEnabled="{Binding ElementName=Media, Path=IsOpen}"
-                    LargeChange="{Binding ElementName=Media, Path=FrameStepDuration, Converter={StaticResource TimeSpanToSecondsConverter}}"
-                    Maximum="{Binding ElementName=Media, Path=NaturalDuration, Converter={StaticResource TimeSpanToSecondsConverter}}"
-                    SmallChange="{Binding ElementName=Media, Path=FrameStepDuration, Converter={StaticResource TimeSpanToSecondsConverter}}"
-                    Style="{DynamicResource PositionSliderStyle}"
-                    Thumb.DragCompleted="OnMediaSliderDragCompleted"
-                    Thumb.DragStarted="OnMediaSliderDragStarted"
-                    ValueChanged="OnSliderValueChanged" />
+                <Grid>
+                    <Slider
+                        x:Name="BufferingSlider"
+                        Focusable="False"
+                        Maximum="1"
+                        Minimum="0"
+                        Style="{DynamicResource BufferingSliderStyle}"
+                        Value="1" />
+                    <Slider
+                        x:Name="PositionSlider"
+                        Focusable="False"
+                        IsEnabled="{Binding ElementName=Media, Path=IsOpen}"
+                        LargeChange="{Binding ElementName=Media, Path=FrameStepDuration, Converter={StaticResource TimeSpanToSecondsConverter}}"
+                        Maximum="{Binding ElementName=Media, Path=NaturalDuration, Converter={StaticResource TimeSpanToSecondsConverter}}"
+                        SmallChange="{Binding ElementName=Media, Path=FrameStepDuration, Converter={StaticResource TimeSpanToSecondsConverter}}"
+                        Style="{DynamicResource PositionSliderStyle}">
+                        <Slider.Value>
+                            <MultiBinding Converter="{StaticResource ProgressToPositionConverter}">
+                                <Binding ElementName="Media" Path="Position" />
+                                <Binding Path="MediaLength" />
+                                <Binding ElementName="PlayerUc" Path="Progress" />
+                                <Binding Path="MediaType" />
+                            </MultiBinding>
+                        </Slider.Value>
+                    </Slider>
+                </Grid>
             </StatusBarItem>
             <StatusBarItem Grid.Column="3" Background="#FF2F2F2F">
                 <TextBlock

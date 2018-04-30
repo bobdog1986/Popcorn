@@ -144,6 +144,8 @@
         <file src="Microsoft.ApplicationInsights.dll" target="lib\net45\Microsoft.ApplicationInsights.dll" />
         <file src="Microsoft.ApplicationInsights.NLogTarget.dll" target="lib\net45\Microsoft.ApplicationInsights.NLogTarget.dll" />
         <file src="Microsoft.AspNet.TelemetryCorrelation.dll" target="lib\net45\Microsoft.AspNet.TelemetryCorrelation.dll" />
+        <file src="Microsoft.Data.Edm.dll" target="lib\net45\Microsoft.Data.Edm.dll" />
+        <file src="Microsoft.Data.OData.dll" target="lib\net45\Microsoft.Data.OData.dll" />
         <file src="Microsoft.Extensions.DependencyInjection.Abstractions.dll" target="lib\net45\Microsoft.Extensions.DependencyInjection.Abstractions.dll" />
         <file src="Microsoft.Extensions.DependencyInjection.dll" target="lib\net45\Microsoft.Extensions.DependencyInjection.dll" />
         <file src="Microsoft.Owin.Cors.dll" target="lib\net45\Microsoft.Owin.Cors.dll" />
@@ -208,6 +210,7 @@
         <file src="System.Runtime.Serialization.Primitives.dll" target="lib\net45\System.Runtime.Serialization.Primitives.dll" />
         <file src="System.Security.Cryptography.Algorithms.dll" target="lib\net45\System.Security.Cryptography.Algorithms.dll" />
         <file src="System.Security.SecureString.dll" target="lib\net45\System.Security.SecureString.dll" />
+        <file src="System.Spatial.dll" target="lib\net45\System.Spatial.dll" />
         <file src="System.Threading.Overlapped.dll" target="lib\net45\System.Threading.Overlapped.dll" />
         <file src="System.Threading.Tasks.Extensions.dll" target="lib\net45\System.Threading.Tasks.Extensions.dll" />
         <file src="System.ValueTuple.dll" target="lib\net45\System.ValueTuple.dll" />

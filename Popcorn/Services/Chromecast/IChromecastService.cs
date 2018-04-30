@@ -12,7 +12,7 @@ namespace Popcorn.Services.Chromecast
     public interface IChromecastService
     {
         Task<IEnumerable<IReceiver>> FindReceiversAsync();
-        Task LoadAsync(Media media, (bool hasSubtitle, int trackId) subtitle);
+        Task LoadAsync(MediaInformation media, (bool hasSubtitle, int trackId) subtitle);
         Task<bool> ConnectAsync(IReceiver receiver);
         bool IsStopped { get; }
         bool IsMuted { get; }
