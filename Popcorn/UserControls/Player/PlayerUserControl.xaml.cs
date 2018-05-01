@@ -92,8 +92,12 @@ namespace Popcorn.UserControls.Player
         public PlayerUserControl()
         {
             _applicationService = SimpleIoc.Default.GetInstance<IApplicationService>();
+            Messenger.Default.Register<KeyPressedMessage>(this, async message =>
+            {
+                await OnKeyPressed(this, message.KeyPressedArgs);
+            });
+
             InitializeComponent();
-            AddHandler(Keyboard.PreviewKeyDownEvent, new KeyEventHandler(OnPreviewKeyDownEvent));
             Loaded += OnLoaded;
             Media.MediaOpened += OnMediaOpened;
             PauseCommand = new RelayCommand(async () => { await PauseMedia(); }, MediaPlayerPauseCanExecute);
@@ -180,114 +184,110 @@ namespace Popcorn.UserControls.Player
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void OnPreviewKeyDownEvent(object sender,
-            RoutedEventArgs e)
+        private async Task OnKeyPressed(object sender,
+            KeyPressedArgs ke)
         {
             FocusManager.SetIsFocusScope(this, true);
             FocusManager.SetFocusedElement(this, this);
 
-            if (e is KeyEventArgs ke)
+            if (ke.KeyPressed == Key.Space)
             {
-                ke.Handled = true;
-                if (ke.Key == Key.Space)
-                {
-                    if (Media.IsPlaying)
-                        await PauseMedia();
-                    else
-                        await PlayMedia();
-                }
-
-                if (ke.Key == Key.Up)
-                {
-                    Media.Volume += 0.05;
-                }
-
-                if (ke.Key == Key.Down)
-                {
-                    Media.Volume -= 0.05;
-                }
-
-                if (ke.Key == Key.F)
-                {
-                    _applicationService.IsFullScreen = !_applicationService.IsFullScreen;
-                }
-
-                if (!Media.HasSubtitles)
-                    return;
-
-                switch (ke.Key)
-                {
-                    case Key.H:
-                        if ((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
-                        {
-                            SubtitleDelay += 1000;
-                        }
-                        else
-                        {
-                            SubtitleDelay += 1000;
-                        }
-
-                        break;
-                    case Key.G:
-                        if ((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
-                        {
-                            SubtitleDelay -= 1000;
-                        }
-                        else
-                        {
-                            SubtitleDelay -= 1000;
-                        }
-
-                        break;
-                    default:
-                        return;
-                }
-
-                Delay.Text = $"Subtitle delay: {SubtitleDelay} ms";
-                if (SubtitleDelaySemaphore.CurrentCount == 0) return;
-                await SubtitleDelaySemaphore.WaitAsync();
-                var increasedPanelOpacityAnimation = new DoubleAnimationUsingKeyFrames
-                {
-                    Duration = new Duration(TimeSpan.FromSeconds(0.1)),
-                    KeyFrames = new DoubleKeyFrameCollection
-                    {
-                        new EasingDoubleKeyFrame(0.6, KeyTime.FromPercent(1.0), new PowerEase
-                        {
-                            EasingMode = EasingMode.EaseInOut
-                        })
-                    }
-                };
-                var increasedSubtitleDelayOpacityAnimation = new DoubleAnimationUsingKeyFrames
-                {
-                    Duration = new Duration(TimeSpan.FromSeconds(0.1)),
-                    KeyFrames = new DoubleKeyFrameCollection
-                    {
-                        new EasingDoubleKeyFrame(1.0, KeyTime.FromPercent(1.0), new PowerEase
-                        {
-                            EasingMode = EasingMode.EaseInOut
-                        })
-                    }
-                };
-
-                SubtitleDelayPanel.BeginAnimation(OpacityProperty, increasedPanelOpacityAnimation);
-                Delay.BeginAnimation(OpacityProperty, increasedSubtitleDelayOpacityAnimation);
-                await Task.Delay(2000);
-                var decreasedOpacityAnimation = new DoubleAnimationUsingKeyFrames
-                {
-                    Duration = new Duration(TimeSpan.FromSeconds(0.1)),
-                    KeyFrames = new DoubleKeyFrameCollection
-                    {
-                        new EasingDoubleKeyFrame(0.0, KeyTime.FromPercent(1.0), new PowerEase
-                        {
-                            EasingMode = EasingMode.EaseInOut
-                        })
-                    }
-                };
-
-                SubtitleDelayPanel.BeginAnimation(OpacityProperty, decreasedOpacityAnimation);
-                Delay.BeginAnimation(OpacityProperty, decreasedOpacityAnimation);
-                SubtitleDelaySemaphore.Release();
+                if (Media.IsPlaying)
+                    await PauseMedia();
+                else
+                    await PlayMedia();
             }
+
+            if (ke.KeyPressed == Key.Up)
+            {
+                Media.Volume += 0.05;
+            }
+
+            if (ke.KeyPressed == Key.Down)
+            {
+                Media.Volume -= 0.05;
+            }
+
+            if (ke.KeyPressed == Key.F)
+            {
+                _applicationService.IsFullScreen = !_applicationService.IsFullScreen;
+            }
+
+            if (!Media.HasSubtitles)
+                return;
+
+            switch (ke.KeyPressed)
+            {
+                case Key.H:
+                    if ((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
+                    {
+                        SubtitleDelay += 1000;
+                    }
+                    else
+                    {
+                        SubtitleDelay += 1000;
+                    }
+
+                    break;
+                case Key.G:
+                    if ((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
+                    {
+                        SubtitleDelay -= 1000;
+                    }
+                    else
+                    {
+                        SubtitleDelay -= 1000;
+                    }
+
+                    break;
+                default:
+                    return;
+            }
+
+            Delay.Text = $"Subtitle delay: {SubtitleDelay} ms";
+            if (SubtitleDelaySemaphore.CurrentCount == 0) return;
+            await SubtitleDelaySemaphore.WaitAsync();
+            var increasedPanelOpacityAnimation = new DoubleAnimationUsingKeyFrames
+            {
+                Duration = new Duration(TimeSpan.FromSeconds(0.1)),
+                KeyFrames = new DoubleKeyFrameCollection
+                {
+                    new EasingDoubleKeyFrame(0.6, KeyTime.FromPercent(1.0), new PowerEase
+                    {
+                        EasingMode = EasingMode.EaseInOut
+                    })
+                }
+            };
+            var increasedSubtitleDelayOpacityAnimation = new DoubleAnimationUsingKeyFrames
+            {
+                Duration = new Duration(TimeSpan.FromSeconds(0.1)),
+                KeyFrames = new DoubleKeyFrameCollection
+                {
+                    new EasingDoubleKeyFrame(1.0, KeyTime.FromPercent(1.0), new PowerEase
+                    {
+                        EasingMode = EasingMode.EaseInOut
+                    })
+                }
+            };
+
+            SubtitleDelayPanel.BeginAnimation(OpacityProperty, increasedPanelOpacityAnimation);
+            Delay.BeginAnimation(OpacityProperty, increasedSubtitleDelayOpacityAnimation);
+            await Task.Delay(2000);
+            var decreasedOpacityAnimation = new DoubleAnimationUsingKeyFrames
+            {
+                Duration = new Duration(TimeSpan.FromSeconds(0.1)),
+                KeyFrames = new DoubleKeyFrameCollection
+                {
+                    new EasingDoubleKeyFrame(0.0, KeyTime.FromPercent(1.0), new PowerEase
+                    {
+                        EasingMode = EasingMode.EaseInOut
+                    })
+                }
+            };
+
+            SubtitleDelayPanel.BeginAnimation(OpacityProperty, decreasedOpacityAnimation);
+            Delay.BeginAnimation(OpacityProperty, decreasedOpacityAnimation);
+            SubtitleDelaySemaphore.Release();
         }
 
         /// <summary>
@@ -781,8 +781,8 @@ namespace Popcorn.UserControls.Player
                     vm.BandwidthRate.ProgressChanged -= OnBandwidthChanged;
                 }
 
+                Messenger.Default.Unregister<KeyPressedMessage>(this);
                 _applicationService.SwitchConstantDisplayAndPower(false);
-                RemoveHandler(Keyboard.PreviewKeyDownEvent, new KeyEventHandler(OnPreviewKeyDownEvent));
                 await Media.Close();
             }
             catch (Exception ex)

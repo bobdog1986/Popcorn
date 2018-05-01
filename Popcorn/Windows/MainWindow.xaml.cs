@@ -90,6 +90,7 @@ namespace Popcorn.Windows
 
         private void OnKeyPressed(object sender, KeyPressedArgs e)
         {
+            Messenger.Default.Send(new KeyPressedMessage(e));
             if (e.KeyPressed == Key.Down || e.KeyPressed == Key.Up)
             {
                 var movieScrollviewer =
