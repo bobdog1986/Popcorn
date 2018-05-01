@@ -171,7 +171,7 @@ namespace Popcorn.UserControls.Player
             set
             {
                 _progress = value;
-                OnPropertyChanged();
+                OnPropertyChanged(nameof(Progress));
             }
         }
 
