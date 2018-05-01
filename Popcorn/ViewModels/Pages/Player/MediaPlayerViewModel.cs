@@ -114,9 +114,11 @@ namespace Popcorn.ViewModels.Pages.Player
 
         private OSDB.Subtitle _currentSubtitle;
 
+        private bool _isSeeking;
+
         private double _mediaLength;
 
-        private bool _isSeeking;
+        private bool _isDragging;
 
         /// <summary>
         /// Media action to execute when media has ended
@@ -290,6 +292,12 @@ namespace Popcorn.ViewModels.Pages.Player
         {
             get => _isCasting;
             set => Set(ref _isCasting, value);
+        }
+
+        public bool IsDragging
+        {
+            get => _isDragging;
+            set => Set(ref _isDragging, value);
         }
 
         public bool IsSeeking

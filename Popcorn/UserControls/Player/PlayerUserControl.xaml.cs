@@ -342,6 +342,24 @@ namespace Popcorn.UserControls.Player
             Buffering.Visibility = Visibility.Visible;
         }
 
+        private async void OnDragCompleted(object sender, DragCompletedEventArgs e)
+        {
+            if (!(DataContext is MediaPlayerViewModel vm))
+                return;
+
+            vm.IsDragging = false;
+            await PlayMedia();
+        }
+
+        private async void OnDragStarted(object sender, DragStartedEventArgs e)
+        {
+            if (!(DataContext is MediaPlayerViewModel vm))
+                return;
+
+            vm.IsDragging = true;
+            await PauseMedia();
+        }
+
         private void OnProgressChanged(object sender, double progress)
         {
             DispatcherHelper.CheckBeginInvokeOnUI(() =>

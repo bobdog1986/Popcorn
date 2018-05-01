@@ -191,7 +191,6 @@ namespace Popcorn.Services.Download
                             }
 
                             filePath = handle.torrent_file().files().file_path(mediaIndex, savePath);
-                            handle.file_priority(mediaIndex, 9);
                         }
 
                         var fileProgressInBytes = handle.file_progress(1)[mediaIndex];

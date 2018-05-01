@@ -290,10 +290,13 @@
                         LargeChange="{Binding ElementName=Media, Path=FrameStepDuration, Converter={StaticResource TimeSpanToSecondsConverter}}"
                         Maximum="{Binding ElementName=Media, Path=NaturalDuration, Converter={StaticResource TimeSpanToSecondsConverter}}"
                         SmallChange="{Binding ElementName=Media, Path=FrameStepDuration, Converter={StaticResource TimeSpanToSecondsConverter}}"
-                        Style="{DynamicResource PositionSliderStyle}">
+                        Style="{DynamicResource PositionSliderStyle}"
+                        Thumb.DragCompleted="OnDragCompleted"
+                        Thumb.DragStarted="OnDragStarted">
                         <Slider.Value>
                             <MultiBinding Converter="{StaticResource ProgressToPositionConverter}">
                                 <Binding ElementName="Media" Path="Position" />
+                                <Binding Path="IsDragging" />
                                 <Binding Path="IsSeeking" />
                                 <Binding Path="MediaLength" />
                                 <Binding ElementName="PlayerUc" Path="Progress" />
