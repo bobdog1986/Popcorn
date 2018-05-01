@@ -45,7 +45,7 @@
   </PropertyGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="xcopy /s /i /y $(SolutionDir)packages\ffmpegzeranoe\3.4.1.1\tools\net45\*.* $(OutDir)FFmpeg" />
-    <Exec Command="xcopy /s /y $(SolutionDir)packages\libtorrent-net\4.0.0\tools\*.* $(OutDir)" />
+    <Exec Command="xcopy /s /y $(SolutionDir)packages\libtorrent-net\4.1.0\tools\*.* $(OutDir)" />
     <Exec Command="xcopy /s /y $(SolutionDir)packages\Microsoft.VC120.CRT.JetBrains\12.0.21005.2\DotFiles\*.* $(OutDir)" />
     <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
       <Output TaskParameter="Assemblies" ItemName="Popcorn" />
@@ -129,7 +129,7 @@
     <PackageReference Include="Humanizer.Core.zh-CN" Version="2.2.0" />
     <PackageReference Include="Humanizer.Core.zh-Hans" Version="2.2.0" />
     <PackageReference Include="Humanizer.Core.zh-Hant" Version="2.2.0" />
-    <PackageReference Include="libtorrent-net" Version="4.0.0" />
+    <PackageReference Include="libtorrent-net" Version="4.1.0" />
     <PackageReference Include="LoadingIndicators.WPF" Version="0.0.1" />
     <PackageReference Include="MahApps.Metro" Version="1.5.0" />
     <PackageReference Include="MahApps.Metro.IconPacks" Version="2.2.0" />

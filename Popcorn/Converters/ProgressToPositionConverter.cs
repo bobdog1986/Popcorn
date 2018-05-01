@@ -43,7 +43,7 @@ namespace Popcorn.Converters
             PositionSemaphore.Wait();
             var result = TimeSpan.FromTicks((long) Math.Round(TimeSpan.TicksPerSecond * (double) value, 0));
             if (_mediaType != MediaType.Trailer && _naturalDuration != 0d &&
-                result.TotalSeconds / _naturalDuration >= _progress + _progress * 0.05d)
+                result.TotalSeconds / _naturalDuration + _progress * 0.05d >= _progress)
             {
                 var oldResult = TimeSpan.FromTicks((long) Math.Round(TimeSpan.TicksPerSecond * (double) _oldValue, 0));
                 _oldValue = oldResult.TotalSeconds;
