@@ -18,7 +18,6 @@
   <a target="_blank" href="https://github.com/bbougot/Popcorn/pulls">
     <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome" />
   </a>
-[![Analytics](https://bbougot-popcorn.appspot.com/UA-114120087-1/popcorn/readme)](https://github.com/bbougot/Popcorn)
 </div>
 
 ## Features
@@ -54,7 +53,7 @@ The assets (images and torrent files) are stored on Azure Blob Storage.
 Windows 7+ is supported (Windows 7, 8, 8.1, 10).
 
 ## Installation
-Download installer [here](https://github.com/bbougot/Popcorn/releases/download/v4.0.1/PopcornInstaller.exe) 
+Download installer [here](https://github.com/bbougot/Popcorn/releases/download/v4.1.0/PopcornInstaller.exe) 
 
 ## Todos
 See the [roadmap](https://github.com/bbougot/Popcorn/projects/1) for the full list.

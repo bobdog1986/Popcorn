@@ -116,6 +116,8 @@ namespace Popcorn.ViewModels.Pages.Player
 
         private double _mediaLength;
 
+        private bool _isSeeking;
+
         /// <summary>
         /// Media action to execute when media has ended
         /// </summary>
@@ -288,6 +290,12 @@ namespace Popcorn.ViewModels.Pages.Player
         {
             get => _isCasting;
             set => Set(ref _isCasting, value);
+        }
+
+        public bool IsSeeking
+        {
+            get => _isSeeking;
+            set => Set(ref _isSeeking, value);
         }
 
         /// <summary>

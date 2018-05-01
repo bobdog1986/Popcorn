@@ -299,8 +299,8 @@ namespace Popcorn.UserControls.Player
         {
             Media.MediaEnded += MediaPlayerEndReached;
             Media.MediaFailed += EncounteredError;
-            Media.SeekingStarted += OnBufferingStarted;
-            Media.SeekingEnded += OnBufferingEnded;
+            Media.SeekingStarted += OnSeekingStarted;
+            Media.SeekingEnded += OnSeekingEnded;
             await PlayMedia();
         }
 
@@ -324,13 +324,21 @@ namespace Popcorn.UserControls.Player
             }
         }
 
-        private void OnBufferingEnded(object sender, RoutedEventArgs e)
+        private void OnSeekingEnded(object sender, RoutedEventArgs e)
         {
+            if (!(DataContext is MediaPlayerViewModel vm))
+                return;
+
+            vm.IsSeeking = false;
             Buffering.Visibility = Visibility.Collapsed;
         }
 
-        private void OnBufferingStarted(object sender, RoutedEventArgs e)
+        private void OnSeekingStarted(object sender, RoutedEventArgs e)
         {
+            if (!(DataContext is MediaPlayerViewModel vm))
+                return;
+
+            vm.IsSeeking = true;
             Buffering.Visibility = Visibility.Visible;
         }
 

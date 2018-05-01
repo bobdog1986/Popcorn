@@ -278,6 +278,7 @@
                     <Slider
                         x:Name="BufferingSlider"
                         Focusable="False"
+                        IsEnabled="False"
                         Maximum="1"
                         Minimum="0"
                         Style="{DynamicResource BufferingSliderStyle}"
@@ -293,6 +294,7 @@
                         <Slider.Value>
                             <MultiBinding Converter="{StaticResource ProgressToPositionConverter}">
                                 <Binding ElementName="Media" Path="Position" />
+                                <Binding Path="IsSeeking" />
                                 <Binding Path="MediaLength" />
                                 <Binding ElementName="PlayerUc" Path="Progress" />
                                 <Binding Path="MediaType" />
