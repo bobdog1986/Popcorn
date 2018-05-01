@@ -308,7 +308,11 @@ namespace Popcorn.UserControls.Player
         {
             try
             {
-                if (!(DataContext is MediaPlayerViewModel vm) || string.IsNullOrEmpty(vm.SubtitleFilePath))
+                if (!(DataContext is MediaPlayerViewModel vm))
+                    return;
+
+                vm.MediaLength = e.Info.Duration.TotalSeconds;
+                if (string.IsNullOrEmpty(vm.SubtitleFilePath))
                     return;
 
                 var url = new Uri(vm.SubtitleFilePath);
@@ -368,8 +372,6 @@ namespace Popcorn.UserControls.Player
                     return;
 
                 Progress = progress;
-                vm.MediaLength = Media.NaturalDuration.TimeSpan.TotalSeconds;
-                vm.PlayerTime = PositionSlider.Value;
                 BufferingSlider.Value = progress / 100d;
             });
         }

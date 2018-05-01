@@ -301,6 +301,7 @@
                                 <Binding Path="MediaLength" />
                                 <Binding ElementName="PlayerUc" Path="Progress" />
                                 <Binding Path="MediaType" />
+                                <Binding Path="PlayerTime" />
                             </MultiBinding>
                         </Slider.Value>
                     </Slider>
