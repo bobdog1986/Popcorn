@@ -47,6 +47,11 @@ namespace Popcorn.UserControls.Player
         private static Logger Logger { get; } = LogManager.GetCurrentClassLogger();
 
         /// <summary>
+        /// Application service
+        /// </summary>
+        private readonly IApplicationService _applicationService;
+
+        /// <summary>
         /// Used to update the activity mouse and mouse position.
         /// </summary>
         private DispatcherTimer ActivityTimer { get; set; }
@@ -61,15 +66,30 @@ namespace Popcorn.UserControls.Player
         /// </summary>
         private int SubtitleDelay { get; set; }
 
+        /// <summary>
+        /// <see cref="SetLowerSubtitleSizeCommand"/>
+        /// </summary>
         private ICommand _setLowerSubtitleSizeCommand;
 
+        /// <summary>
+        /// <see cref="SetHigherSubtitleSizeCommand"/>
+        /// </summary>
         private ICommand _setHigherSubtitleSizeCommand;
 
+        /// <summary>
+        /// <see cref="PauseCommand"/>
+        /// </summary>
         private ICommand _pauseCommand;
 
+        /// <summary>
+        /// <see cref="PlayCommand"/>
+        /// </summary>
         private ICommand _playCommand;
 
-        private double _progress;
+        /// <summary>
+        /// <see cref="BufferProgress"/>
+        /// </summary>
+        private double _bufferProgress;
 
         /// <summary>
         /// Semaphore used to update mouse activity
@@ -82,20 +102,13 @@ namespace Popcorn.UserControls.Player
         private static readonly SemaphoreSlim SubtitleDelaySemaphore = new SemaphoreSlim(1, 1);
 
         /// <summary>
-        /// Application service
-        /// </summary>
-        private readonly IApplicationService _applicationService;
-
-        /// <summary>
         /// Initializes a new instance of the MoviePlayer class.
         /// </summary>
         public PlayerUserControl()
         {
             _applicationService = SimpleIoc.Default.GetInstance<IApplicationService>();
-            Messenger.Default.Register<KeyPressedMessage>(this, async message =>
-            {
-                await OnKeyPressed(this, message.KeyPressedArgs);
-            });
+            Messenger.Default.Register<KeyPressedMessage>(this,
+                async message => { await OnKeyPressed(message.KeyPressedArgs); });
 
             InitializeComponent();
             Loaded += OnLoaded;
@@ -104,6 +117,76 @@ namespace Popcorn.UserControls.Player
             PlayCommand = new RelayCommand(async () => { await PlayMedia(); }, MediaPlayerPlayCanExecute);
         }
 
+        /// <summary>
+        /// Downloading buffer progress for movies/shows between 0 and 100
+        /// </summary>
+        public double BufferProgress
+        {
+            get => _bufferProgress;
+            set
+            {
+                _bufferProgress = value;
+                OnPropertyChanged(nameof(BufferProgress));
+            }
+        }
+
+        /// <summary>
+        /// Command used to lower subtitle size
+        /// </summary>
+        public ICommand SetLowerSubtitleSizeCommand
+        {
+            get => _setLowerSubtitleSizeCommand;
+            set
+            {
+                _setLowerSubtitleSizeCommand = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Command used to lower subtitle size
+        /// </summary>
+        public ICommand SetHigherSubtitleSizeCommand
+        {
+            get => _setHigherSubtitleSizeCommand;
+            set
+            {
+                _setHigherSubtitleSizeCommand = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Command used to pause media
+        /// </summary>
+        public ICommand PauseCommand
+        {
+            get => _pauseCommand;
+            set
+            {
+                _pauseCommand = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Command used to play media
+        /// </summary>
+        public ICommand PlayCommand
+        {
+            get => _playCommand;
+            set
+            {
+                _playCommand = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// When user control has loaded, initialize the media
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="routedEventArgs"></param>
         private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
             var window = System.Windows.Window.GetWindow(this);
@@ -119,15 +202,11 @@ namespace Popcorn.UserControls.Player
             var applicationSettings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
             Subtitles.SetFontSize(Media, applicationSettings.SelectedSubtitleSize?.Size ?? 22);
             Subtitles.SetForeground(Media, new SolidColorBrush(applicationSettings.SubtitlesColor));
-
-            // start the activity timer used to manage visibility of the PlayerStatusBar
             ActivityTimer =
                 new DispatcherTimer(DispatcherPriority.Background) {Interval = TimeSpan.FromSeconds(2)};
             ActivityTimer.Tick += OnInactivity;
             ActivityTimer.Start();
-
             InputManager.Current.PreProcessInput += OnActivity;
-
             SetLowerSubtitleSizeCommand = new RelayCommand(() =>
             {
                 var currentSize = Subtitles.GetFontSize(Media);
@@ -151,7 +230,7 @@ namespace Popcorn.UserControls.Player
             vm.CastStatusChanged += OnCastStatusChanged;
             if (vm.BufferProgress != null)
             {
-                vm.BufferProgress.ProgressChanged += OnProgressChanged;
+                vm.BufferProgress.ProgressChanged += OnBufferProgressChanged;
             }
 
             if (vm.BandwidthRate != null)
@@ -168,24 +247,12 @@ namespace Popcorn.UserControls.Player
             Media.Source = new Uri(vm.MediaPath);
             Media.MediaOpening += OnMediaOpening;
         }
-
-        public double Progress
-        {
-            get => _progress;
-            set
-            {
-                _progress = value;
-                OnPropertyChanged(nameof(Progress));
-            }
-        }
-
+        
         /// <summary>
-        /// Toggle playing media when space key is pressed
+        /// Handle keys when pressed
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private async Task OnKeyPressed(object sender,
-            KeyPressedArgs ke)
+        /// <param name="ke"></param>
+        private async Task OnKeyPressed(KeyPressedArgs ke)
         {
             FocusManager.SetIsFocusScope(this, true);
             FocusManager.SetFocusedElement(this, this);
@@ -291,6 +358,19 @@ namespace Popcorn.UserControls.Player
         }
 
         /// <summary>
+        /// On mouse left button up, play/pause the media accordingly
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void OnPreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (Media.IsPlaying)
+                await PauseMedia();
+            else
+                await PlayMedia();
+        }
+
+        /// <summary>
         /// Subscribe to events and play the movie when control has been loaded
         /// </summary>
         /// <param name="sender">Sender object</param>
@@ -304,6 +384,11 @@ namespace Popcorn.UserControls.Player
             await PlayMedia();
         }
 
+        /// <summary>
+        /// When a media is being opened, load the subtitles if any and initialize MediaLength property
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnMediaOpening(object sender, MediaOpeningRoutedEventArgs e)
         {
             try
@@ -328,15 +413,11 @@ namespace Popcorn.UserControls.Player
             }
         }
 
-        private void OnSeekingEnded(object sender, RoutedEventArgs e)
-        {
-            if (!(DataContext is MediaPlayerViewModel vm))
-                return;
-
-            vm.IsSeeking = false;
-            Buffering.Visibility = Visibility.Collapsed;
-        }
-
+        /// <summary>
+        /// When seeking has started, show buffering panel
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnSeekingStarted(object sender, RoutedEventArgs e)
         {
             if (!(DataContext is MediaPlayerViewModel vm))
@@ -346,15 +427,25 @@ namespace Popcorn.UserControls.Player
             Buffering.Visibility = Visibility.Visible;
         }
 
-        private async void OnDragCompleted(object sender, DragCompletedEventArgs e)
+        /// <summary>
+        /// When seeking has ended, hide buffering panel
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnSeekingEnded(object sender, RoutedEventArgs e)
         {
             if (!(DataContext is MediaPlayerViewModel vm))
                 return;
 
-            vm.IsDragging = false;
-            await PlayMedia();
+            vm.IsSeeking = false;
+            Buffering.Visibility = Visibility.Collapsed;
         }
 
+        /// <summary>
+        /// When user has started dragging the media player slider, pause the media
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void OnDragStarted(object sender, DragStartedEventArgs e)
         {
             if (!(DataContext is MediaPlayerViewModel vm))
@@ -364,20 +455,36 @@ namespace Popcorn.UserControls.Player
             await PauseMedia();
         }
 
-        private void OnProgressChanged(object sender, double progress)
+        /// <summary>
+        /// When user has stopped dragging the media player slider, play the media
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void OnDragCompleted(object sender, DragCompletedEventArgs e)
+        {
+            if (!(DataContext is MediaPlayerViewModel vm))
+                return;
+
+            vm.IsDragging = false;
+            await PlayMedia();
+        }
+
+        /// <summary>
+        /// When downloading buffer progress has changed, report it
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="bufferProgress"></param>
+        private void OnBufferProgressChanged(object sender, double bufferProgress)
         {
             DispatcherHelper.CheckBeginInvokeOnUI(() =>
             {
-                if (!(DataContext is MediaPlayerViewModel vm) || !Media.NaturalDuration.HasTimeSpan)
-                    return;
-
-                Progress = progress;
-                BufferingSlider.Value = progress / 100d;
+                BufferProgress = bufferProgress;
+                BufferingSlider.Value = bufferProgress / 100d;
             });
         }
 
         /// <summary>
-        /// When cast is being played
+        /// When cast is being played, update the media position
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -415,7 +522,7 @@ namespace Popcorn.UserControls.Player
         }
 
         /// <summary>
-        /// On player resumed
+        /// When media should be played, play it
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -425,7 +532,7 @@ namespace Popcorn.UserControls.Player
         }
 
         /// <summary>
-        /// On pause player
+        /// When media should be paused, pause it
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -435,7 +542,7 @@ namespace Popcorn.UserControls.Player
         }
 
         /// <summary>
-        /// When bandwidth rate has changed
+        /// When bandwidth rate has changed, report it
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -450,7 +557,7 @@ namespace Popcorn.UserControls.Player
         }
 
         /// <summary>
-        /// Vlc encounters an error. Warn the user of this
+        /// When the player has encountered an error, inform the user
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -689,62 +796,18 @@ namespace Popcorn.UserControls.Player
         }
 
         /// <summary>
-        /// Command used to lower subtitle size
+        /// Seek the media for Chromecast
         /// </summary>
-        public ICommand SetLowerSubtitleSizeCommand
+        /// <returns></returns>
+        private async Task SeekMedia()
         {
-            get => _setLowerSubtitleSizeCommand;
-            set
+            Media.Position = TimeSpan.FromSeconds(PositionSlider.Value);
+            if (DataContext is MediaPlayerViewModel vm && vm.IsCasting)
             {
-                _setLowerSubtitleSizeCommand = value;
-                OnPropertyChanged();
+                vm.SeekCastCommand.Execute(Media.Position.TotalSeconds);
             }
-        }
 
-        /// <summary>
-        /// Command used to lower subtitle size
-        /// </summary>
-        public ICommand SetHigherSubtitleSizeCommand
-        {
-            get => _setHigherSubtitleSizeCommand;
-            set
-            {
-                _setHigherSubtitleSizeCommand = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Command used to pause media
-        /// </summary>
-        public ICommand PauseCommand
-        {
-            get => _pauseCommand;
-            set
-            {
-                _pauseCommand = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Command used to play media
-        /// </summary>
-        public ICommand PlayCommand
-        {
-            get => _playCommand;
-            set
-            {
-                _playCommand = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            await PlayMedia();
         }
 
         /// <summary>
@@ -759,7 +822,7 @@ namespace Popcorn.UserControls.Player
                 ActivityTimer.Stop();
 
                 InputManager.Current.PreProcessInput -= OnActivity;
-
+                Media.MediaOpening -= OnMediaOpening;
                 Media.MediaFailed -= EncounteredError;
                 Media.MediaEnded -= MediaPlayerEndReached;
                 var window = System.Windows.Window.GetWindow(this);
@@ -774,11 +837,19 @@ namespace Popcorn.UserControls.Player
                     vm.StoppedMedia -= OnStoppedMedia;
                     vm.ResumedMedia -= OnResumedMedia;
                     vm.PausedMedia -= OnPausedMedia;
+                    vm.CastStarted -= OnCastStarted;
+                    vm.CastStopped -= OnCastStopped;
+                    vm.CastStatusChanged -= OnCastStatusChanged;
                 }
 
                 if (vm?.BandwidthRate != null)
                 {
                     vm.BandwidthRate.ProgressChanged -= OnBandwidthChanged;
+                }
+
+                if (vm?.BufferProgress != null)
+                {
+                    vm.BufferProgress.ProgressChanged -= OnBufferProgressChanged;
                 }
 
                 Messenger.Default.Unregister<KeyPressedMessage>(this);
@@ -790,24 +861,16 @@ namespace Popcorn.UserControls.Player
                 Logger.Error(ex);
             }
         }
+        
+        #region Implementation of INotifyPropertyChanged
 
-        private async Task SeekMedia()
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            Media.Position = TimeSpan.FromSeconds(PositionSlider.Value);
-            if (DataContext is MediaPlayerViewModel vm && vm.IsCasting)
-            {
-                vm.SeekCastCommand.Execute(Media.Position.TotalSeconds);
-            }
-
-            await PlayMedia();
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private async void OnPreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            if (Media.IsPlaying)
-                await PauseMedia();
-            else
-                await PlayMedia();
-        }
+        #endregion
     }
 }

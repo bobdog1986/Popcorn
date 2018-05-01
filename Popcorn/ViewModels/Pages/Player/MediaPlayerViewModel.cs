@@ -42,82 +42,73 @@ namespace Popcorn.ViewModels.Pages.Player
         private static Logger Logger { get; } = LogManager.GetCurrentClassLogger();
 
         /// <summary>
-        /// Show subtitle button
+        /// The Chromecast service
+        /// </summary>
+        private readonly IChromecastService _chromecastService;
+
+        /// <summary>
+        /// <see cref="ShowSubtitleButton"/>
         /// </summary>
         private bool _showSubtitleButton;
 
         /// <summary>
-        /// Command used to stop playing the media
-        /// </summary>
-        public ICommand StopPlayingMediaCommand { get; set; }
-
-        /// <summary>
-        /// Command used to cast media
-        /// </summary>
-        public ICommand CastCommand { get; set; }
-
-        /// <summary>
-        /// Command used to select subtitles
-        /// </summary>
-        public ICommand SelectSubtitlesCommand { get; set; }
-
-        /// <summary>
-        /// Event fired on stopped playing the media
-        /// </summary>
-        public event EventHandler<EventArgs> StoppedMedia;
-
-        /// <summary>
-        /// Event fired on stopped playing the media
-        /// </summary>
-        public event EventHandler<EventArgs> PausedMedia;
-
-        /// <summary>
-        /// Event fired on resume playing the media
-        /// </summary>
-        public event EventHandler<EventArgs> ResumedMedia;
-
-        /// <summary>
-        /// The media path
-        /// </summary>
-        public readonly string MediaPath;
-
-        /// <summary>
-        /// The media name
-        /// </summary>
-        public readonly string MediaName;
-
-        /// <summary>
-        /// The media volume from 0 to 1
+        /// <see cref="Volume"/>
         /// </summary>
         private double _volume;
 
         /// <summary>
-        /// The media duration in seconds
+        /// <see cref="ChromecastReceiver"/>
         /// </summary>
-        public double MediaDuration { get; set; }
-
         private IReceiver _chromecastReceiver;
 
+        /// <summary>
+        /// <see cref="PlayCastCommand"/>
+        /// </summary>
         private ICommand _playCastCommand;
 
+        /// <summary>
+        /// <see cref="PauseCastCommand"/>
+        /// </summary>
         private ICommand _pauseCastCommand;
 
+        /// <summary>
+        /// <see cref="SeekCastCommand"/>
+        /// </summary>
         private ICommand _seekCastCommand;
 
+        /// <summary>
+        /// <see cref="StopCastCommand"/>
+        /// </summary>
         private ICommand _stopCastCommand;
 
-        private readonly IChromecastService _chromecastService;
-
+        /// <summary>
+        /// <see cref="PlayerTime"/>
+        /// </summary>
         private double _playerTime;
 
+        /// <summary>
+        /// <see cref="IsSubtitleChosen"/>
+        /// </summary>
         private bool _isSubtitleChosen;
 
+        /// <summary>
+        /// <see cref="CurrentSubtitle"/>
+        /// </summary>
         private OSDB.Subtitle _currentSubtitle;
 
+        /// <summary>
+        /// <see cref="IsSeeking"/>
+        /// </summary>
         private bool _isSeeking;
 
+        /// <summary>
+        /// <see cref="MediaLength"/>
+        /// </summary>
         private double _mediaLength;
 
+        /// <summary>
+        /// <see cref="IsDragging"/>
+        /// </summary>
         private bool _isDragging;
 
         /// <summary>
@@ -131,46 +122,34 @@ namespace Popcorn.ViewModels.Pages.Player
         private readonly Action _mediaStoppedAction;
 
         /// <summary>
-        /// Subtitle file path
-        /// </summary>
-        public string SubtitleFilePath;
-
-        /// <summary>
-        /// The buffer progress
-        /// </summary>
-        public readonly Progress<double> BufferProgress;
-
-        /// <summary>
-        /// The download rate
-        /// </summary>
-        public readonly Progress<BandwidthRate> BandwidthRate;
-
-        /// <summary>
-        /// Is casting
+        /// <see cref="IsCasting"/>
         /// </summary>
         private bool _isCasting;
 
+        /// <summary>
+        /// <see cref="MediaType"/>
+        /// </summary>
         private MediaType _mediaType;
 
+        /// <summary>
+        /// Event raised when Chromecast broadcast has started
+        /// </summary>
         public event EventHandler<EventArgs> CastStarted;
 
+        /// <summary>
+        /// Event raised when Chromecast broadcast has stopped
+        /// </summary>
         public event EventHandler<EventArgs> CastStopped;
 
+        /// <summary>
+        /// Event raised when <see cref="MediaStatus"/> has changed
+        /// </summary>
         public event EventHandler<MediaStatusEventArgs> CastStatusChanged;
 
         /// <summary>
         /// The cache service
         /// </summary>
         private readonly ICacheService _cacheService;
-
-        /// <summary>
-        /// Show subtitle button
-        /// </summary>
-        public bool ShowSubtitleButton
-        {
-            get { return _showSubtitleButton; }
-            set { Set(ref _showSubtitleButton, value); }
-        }
 
         /// <summary>
         /// Subtitle service
@@ -186,7 +165,7 @@ namespace Popcorn.ViewModels.Pages.Player
         /// The playing progress
         /// </summary>
         private readonly IProgress<double> _playingProgress;
-        
+
         /// <summary>
         /// Initializes a new instance of the MediaPlayerViewModel class.
         /// </summary>
@@ -238,68 +217,86 @@ namespace Popcorn.ViewModels.Pages.Player
         }
 
         /// <summary>
-        /// Occurs when cast media status has changed
+        /// The media path
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnCastMediaStatusChanged(object sender, MediaStatusEventArgs e)
-        {
-            CastStatusChanged?.Invoke(this, e);
-        }
+        public readonly string MediaPath;
 
         /// <summary>
-        /// Fire CastStopped event
+        /// The media name
         /// </summary>
-        /// <param name="e">Event args</param>
-        private void OnCastStopped(EventArgs e)
-        {
-            var handler = CastStopped;
-            handler?.Invoke(this, e);
-        }
+        public readonly string MediaName;
 
         /// <summary>
-        /// Fire CastStarted event
+        /// The buffer progress
         /// </summary>
-        /// <param name="e">Event args</param>
-        private void OnCastStarted(EventArgs e)
-        {
-            var handler = CastStarted;
-            handler?.Invoke(this, e);
-        }
+        public readonly Progress<double> BufferProgress;
 
         /// <summary>
-        /// When a media has been ended, invoke the <see cref="_mediaEndedAction"/>
+        /// The download rate
         /// </summary>
-        public void MediaEnded()
-        {
-            if (MediaType == MediaType.Movie)
-            {
-                try
-                {
-                    var movieDetails = SimpleIoc.Default.GetInstance<MovieDetailsViewModel>();
-                    movieDetails.SetWatchedMovieCommand.Execute(true);
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error(ex);
-                }
-            }
+        public readonly Progress<BandwidthRate> BandwidthRate;
 
-            StopPlayingMediaCommand.Execute(null);
-        }
+        /// <summary>
+        /// Event fired on stopped playing the media
+        /// </summary>
+        public event EventHandler<EventArgs> StoppedMedia;
 
+        /// <summary>
+        /// Event fired on stopped playing the media
+        /// </summary>
+        public event EventHandler<EventArgs> PausedMedia;
+
+        /// <summary>
+        /// Event fired on resume playing the media
+        /// </summary>
+        public event EventHandler<EventArgs> ResumedMedia;
+
+        /// <summary>
+        /// Subtitle file path
+        /// </summary>
+        public string SubtitleFilePath { get; set; }
+
+        /// <summary>
+        /// Command used to stop playing the media
+        /// </summary>
+        public ICommand StopPlayingMediaCommand { get; set; }
+
+        /// <summary>
+        /// Command used to cast media
+        /// </summary>
+        public ICommand CastCommand { get; set; }
+
+        /// <summary>
+        /// Command used to select subtitles
+        /// </summary>
+        public ICommand SelectSubtitlesCommand { get; set; }
+
+        /// <summary>
+        /// The media duration in seconds
+        /// </summary>
+        public double MediaDuration { get; set; }
+
+        /// <summary>
+        /// True if currently broadcasting the media through Chromecast
+        /// </summary>
         public bool IsCasting
         {
             get => _isCasting;
             set => Set(ref _isCasting, value);
         }
 
+        /// <summary>
+        /// True if user is dragging the media player slider
+        /// </summary>
         public bool IsDragging
         {
             get => _isDragging;
             set => Set(ref _isDragging, value);
         }
 
+        /// <summary>
+        /// True if media is seeking
+        /// </summary>
         public bool IsSeeking
         {
             get => _isSeeking;
@@ -313,6 +310,116 @@ namespace Popcorn.ViewModels.Pages.Player
         {
             get => _mediaType;
             set => Set(ref _mediaType, value);
+        }
+
+        /// <summary>
+        /// Show subtitle button
+        /// </summary>
+        public bool ShowSubtitleButton
+        {
+            get { return _showSubtitleButton; }
+            set { Set(ref _showSubtitleButton, value); }
+        }
+
+        /// <summary>
+        /// Command used to play a media in Chromecast
+        /// </summary>
+        public ICommand PlayCastCommand
+        {
+            get => _playCastCommand;
+            private set => Set(ref _playCastCommand, value);
+        }
+
+        /// <summary>
+        /// Command used to pause the Chromecast broadcasting
+        /// </summary>
+        public ICommand PauseCastCommand
+        {
+            get => _pauseCastCommand;
+            private set => Set(ref _pauseCastCommand, value);
+        }
+
+        /// <summary>
+        /// Command which seeks the media in Chromecast
+        /// </summary>
+        public ICommand SeekCastCommand
+        {
+            get => _seekCastCommand;
+            private set => Set(ref _seekCastCommand, value);
+        }
+
+        /// <summary>
+        /// Command which stops the media
+        /// </summary>
+        public ICommand StopCastCommand
+        {
+            get => _stopCastCommand;
+            private set => Set(ref _stopCastCommand, value);
+        }
+
+        /// <summary>
+        /// Current subtitle for the media
+        /// </summary>
+        public OSDB.Subtitle CurrentSubtitle
+        {
+            get => _currentSubtitle;
+            set => Set(ref _currentSubtitle, value);
+        }
+
+        /// <summary>
+        /// True if a subtitle has been chosen
+        /// </summary>
+        public bool IsSubtitleChosen
+        {
+            get => _isSubtitleChosen;
+            set => Set(ref _isSubtitleChosen, value);
+        }
+
+        /// <summary>
+        /// The media length in seconds
+        /// </summary>
+        public double MediaLength
+        {
+            get => _mediaLength;
+            set => Set(ref _mediaLength, value);
+        }
+
+        /// <summary>
+        /// The media player progress in seconds
+        /// </summary>
+        public double PlayerTime
+        {
+            get => _playerTime;
+            set
+            {
+                Set(ref _playerTime, value);
+                _playingProgress?.Report(value / MediaLength);
+            }
+        }
+
+        /// <summary>
+        /// Get or set the Chromecast receiver
+        /// </summary>
+        public IReceiver ChromecastReceiver
+        {
+            get => _chromecastReceiver;
+            set => Set(ref _chromecastReceiver, value);
+        }
+
+        /// <summary>
+        /// Get or set the media volume between 0 and 1
+        /// </summary>
+        public double Volume
+        {
+            get => _volume;
+            set
+            {
+                Set(ref _volume, value);
+                if (IsCasting)
+                {
+                    Task.Run(async () => { await SetVolume(Convert.ToSingle(value)); });
+                }
+            }
         }
 
         /// <summary>
@@ -506,6 +613,42 @@ namespace Popcorn.ViewModels.Pages.Player
             });
         }
 
+        /// <summary>
+        /// Occurs when cast media status has changed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnCastMediaStatusChanged(object sender, MediaStatusEventArgs e)
+        {
+            CastStatusChanged?.Invoke(this, e);
+        }
+
+        /// <summary>
+        /// When a media has been ended, invoke the <see cref="StopPlayingMediaCommand"/>
+        /// </summary>
+        public void MediaEnded()
+        {
+            if (MediaType == MediaType.Movie)
+            {
+                try
+                {
+                    var movieDetails = SimpleIoc.Default.GetInstance<MovieDetailsViewModel>();
+                    movieDetails.SetWatchedMovieCommand.Execute(true);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                }
+            }
+
+            StopPlayingMediaCommand.Execute(null);
+        }
+
+        /// <summary>
+        /// Stop Chromecast broadcasting
+        /// </summary>
+        /// <param name="resume">If should resume media player in PlayerUserControl</param>
+        /// <returns><see cref="Task"/></returns>
         private async Task StopCastPlayer(bool resume = true)
         {
             try
@@ -522,6 +665,11 @@ namespace Popcorn.ViewModels.Pages.Player
             }
         }
 
+        /// <summary>
+        /// Set Chromecast volume
+        /// </summary>
+        /// <param name="volume">Volume to set</param>
+        /// <returns><see cref="Task"/></returns>
         private async Task SetVolume(float volume)
         {
             try
@@ -534,6 +682,11 @@ namespace Popcorn.ViewModels.Pages.Player
             }
         }
 
+        /// <summary>
+        /// Load cast dialog
+        /// </summary>
+        /// <param name="closeCastDialog">Close the dialog when invoked</param>
+        /// <returns><see cref="Task"/></returns>
         private async Task LoadCastAsync(Action closeCastDialog)
         {
             var isRemote = Uri.TryCreate(MediaPath, UriKind.Absolute, out var uriResult)
@@ -558,7 +711,7 @@ namespace Popcorn.ViewModels.Pages.Player
             {
                 ContentId = isRemote ? MediaPath : mediaPath,
                 ContentType = "video/mp4",
-                
+
                 Metadata = new MovieMetadata
                 {
                     Title = MediaName
@@ -578,6 +731,7 @@ namespace Popcorn.ViewModels.Pages.Player
                     EdgeType = TextTrackEdgeType.DropShadow
                 };
             }
+
             try
             {
                 await _chromecastService.LoadAsync(media, (!string.IsNullOrEmpty(subtitle), 1));
@@ -598,80 +752,6 @@ namespace Popcorn.ViewModels.Pages.Player
             }
         }
 
-        public ICommand PlayCastCommand
-        {
-            get => _playCastCommand;
-            private set => Set(ref _playCastCommand, value);
-        }
-
-        public ICommand PauseCastCommand
-        {
-            get => _pauseCastCommand;
-            private set => Set(ref _pauseCastCommand, value);
-        }
-
-        public ICommand SeekCastCommand
-        {
-            get => _seekCastCommand;
-            private set => Set(ref _seekCastCommand, value);
-        }
-
-        public ICommand StopCastCommand
-        {
-            get => _stopCastCommand;
-            private set => Set(ref _stopCastCommand, value);
-        }
-
-        public OSDB.Subtitle CurrentSubtitle
-        {
-            get => _currentSubtitle;
-            set => Set(ref _currentSubtitle, value);
-        }
-
-        public bool IsSubtitleChosen
-        {
-            get => _isSubtitleChosen;
-            set => Set(ref _isSubtitleChosen, value);
-        }
-
-        public double MediaLength
-        {
-            get => _mediaLength;
-            set => Set(ref _mediaLength, value);
-        }
-
-        public double PlayerTime
-        {
-            get => _playerTime;
-            set
-            {
-                Set(ref _playerTime, value);
-                _playingProgress?.Report(value / MediaLength);
-            }
-        }
-
-        public IReceiver ChromecastReceiver
-        {
-            get => _chromecastReceiver;
-            set => Set(ref _chromecastReceiver, value);
-        }
-
-        public double Volume
-        {
-            get => _volume;
-            set
-            {
-                Set(ref _volume, value);
-                if (IsCasting)
-                {
-                    Task.Run(async () =>
-                    {
-                        await SetVolume(Convert.ToSingle(value));
-                    });
-                }
-            }
-        }
-
         /// <summary>
         /// Fire ResumedMedia event
         /// </summary>
@@ -682,6 +762,26 @@ namespace Popcorn.ViewModels.Pages.Player
                 "Resumed playing a media");
 
             var handler = ResumedMedia;
+            handler?.Invoke(this, e);
+        }
+
+        /// <summary>
+        /// Fire CastStopped event
+        /// </summary>
+        /// <param name="e">Event args</param>
+        private void OnCastStopped(EventArgs e)
+        {
+            var handler = CastStopped;
+            handler?.Invoke(this, e);
+        }
+
+        /// <summary>
+        /// Fire CastStarted event
+        /// </summary>
+        /// <param name="e">Event args</param>
+        private void OnCastStarted(EventArgs e)
+        {
+            var handler = CastStarted;
             handler?.Invoke(this, e);
         }
 

@@ -299,7 +299,7 @@
                                 <Binding Path="IsDragging" />
                                 <Binding Path="IsSeeking" />
                                 <Binding Path="MediaLength" />
-                                <Binding ElementName="PlayerUc" Path="Progress" />
+                                <Binding ElementName="PlayerUc" Path="BufferProgress" />
                                 <Binding Path="MediaType" />
                                 <Binding Path="PlayerTime" />
                             </MultiBinding>
