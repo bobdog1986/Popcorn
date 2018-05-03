@@ -33,6 +33,7 @@ using Popcorn.Helpers;
 using Popcorn.Models.Chromecast;
 using Unosquare.FFME;
 using Unosquare.FFME.Events;
+using Unosquare.FFME.Shared;
 
 namespace Popcorn.UserControls.Player
 {
@@ -113,6 +114,7 @@ namespace Popcorn.UserControls.Player
             InitializeComponent();
             Loaded += OnLoaded;
             Media.MediaOpened += OnMediaOpened;
+            Unosquare.FFME.MediaElement.FFmpegMessageLogged += OnMediaFFmpegMessageLogged;
             PauseCommand = new RelayCommand(async () => { await PauseMedia(); }, MediaPlayerPauseCanExecute);
             PlayCommand = new RelayCommand(async () => { await PlayMedia(); }, MediaPlayerPlayCanExecute);
         }
@@ -238,7 +240,7 @@ namespace Popcorn.UserControls.Player
                 vm.BandwidthRate.ProgressChanged += OnBandwidthChanged;
             }
 
-            if (vm.MediaType == MediaType.Trailer)
+            if (vm.MediaType == Popcorn.Utils.MediaType.Trailer)
             {
                 DownloadProgress.Visibility = Visibility.Collapsed;
             }
@@ -811,20 +813,39 @@ namespace Popcorn.UserControls.Player
         }
 
         /// <summary>
+        /// Handles the FFmpegMessageLogged event of the MediaElement control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MediaLogMessageEventArgs"/> instance containing the event data.</param>
+        private void OnMediaFFmpegMessageLogged(object sender, MediaLogMessageEventArgs e)
+        {
+            if (e.MessageType != MediaLogMessageType.Warning && e.MessageType != MediaLogMessageType.Error)
+                return;
+
+            if (string.IsNullOrWhiteSpace(e.Message) == false && e.Message.Contains("Invalid data found when processing input"))
+            {
+                Media.Position = TimeSpan.FromSeconds(0);
+            }
+        }
+
+        /// <summary>
         /// Dispose the control
         /// </summary>
         private async Task Unload()
         {
             try
             {
-                Loaded -= OnMediaOpened;
+                Loaded -= OnLoaded;
                 ActivityTimer.Tick -= OnInactivity;
                 ActivityTimer.Stop();
 
                 InputManager.Current.PreProcessInput -= OnActivity;
+                Media.MediaOpened -= OnMediaOpened;
                 Media.MediaOpening -= OnMediaOpening;
                 Media.MediaFailed -= EncounteredError;
                 Media.MediaEnded -= MediaPlayerEndReached;
+                Media.SeekingStarted -= OnSeekingStarted;
+                Media.SeekingEnded -= OnSeekingEnded;
                 var window = System.Windows.Window.GetWindow(this);
                 if (window != null)
                 {
@@ -852,6 +873,7 @@ namespace Popcorn.UserControls.Player
                     vm.BufferProgress.ProgressChanged -= OnBufferProgressChanged;
                 }
 
+                Unosquare.FFME.MediaElement.FFmpegMessageLogged -= OnMediaFFmpegMessageLogged;
                 Messenger.Default.Unregister<KeyPressedMessage>(this);
                 _applicationService.SwitchConstantDisplayAndPower(false);
                 await Media.Close();

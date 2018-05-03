@@ -30,7 +30,7 @@
     <ProjectReference Include="..\Popcorn\Popcorn.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="AutoFixture" Version="4.2.1" />
+    <PackageReference Include="AutoFixture" Version="4.3.0" />
     <PackageReference Include="coveralls.net" Version="0.7.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
