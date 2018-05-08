@@ -1,13 +1,15 @@
-﻿using System.Resources;
-using System.Reflection;
+﻿using System.Reflection;
+using System.Resources;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Windows;
 using Popcorn.Utils;
 
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
+// Les informations générales relatives à un assembly dépendent de
+// l'ensemble d'attributs suivant. Changez les valeurs de ces attributs pour modifier les informations
+// associées à un assembly.
 [assembly: AssemblyTitle("Popcorn")]
-[assembly: AssemblyDescription("A Powerful and Fast Popcorn Time Client ")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Popcorn")]
@@ -15,21 +17,40 @@ using Popcorn.Utils;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
-// Setting ComVisible to false makes the types in this assembly not visible 
-// to COM components.  If you need to access a type in this assembly from 
-// COM, set the ComVisible attribute to true on that type.
+// L'affectation de la valeur false à ComVisible rend les types invisibles dans cet assembly
+// aux composants COM. Si vous devez accéder à un type dans cet assembly à partir de
+// COM, affectez la valeur true à l'attribut ComVisible sur ce type.
 [assembly: ComVisible(false)]
 
-// The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("178e7980-bce7-49ef-9a9d-063aef4fa254")]
+//Pour commencer à générer des applications localisables, définissez
+//<UICulture>CultureUtiliséePourCoder</UICulture> dans votre fichier .csproj
+//dans <PropertyGroup>.  Par exemple, si vous utilisez le français
+//dans vos fichiers sources, définissez <UICulture> à fr-FR. Puis, supprimez les marques de commentaire de
+//l'attribut NeutralResourceLanguage ci-dessous. Mettez à jour "fr-FR" dans
+//la ligne ci-après pour qu'elle corresponde au paramètre UICulture du fichier projet.
 
-// Version information for an assembly consists of the following four values:
+//[assembly: NeutralResourcesLanguage("en-US", UltimateResourceFallbackLocation.Satellite)]
+
+
+[assembly: ThemeInfo(
+    ResourceDictionaryLocation.None, //où se trouvent les dictionnaires de ressources spécifiques à un thème
+                                     //(utilisé si une ressource est introuvable dans la page,
+                                     // ou dictionnaires de ressources de l'application)
+    ResourceDictionaryLocation.SourceAssembly //où se trouve le dictionnaire de ressources générique
+                                              //(utilisé si une ressource est introuvable dans la page,
+                                              // dans l'application ou dans l'un des dictionnaires de ressources spécifiques à un thème)
+)]
+
+
+// Les informations de version pour un assembly se composent des quatre valeurs suivantes :
 //
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
+//      Version principale
+//      Version secondaire
+//      Numéro de build
+//      Révision
 //
+// Vous pouvez spécifier toutes les valeurs ou indiquer les numéros de build et de révision par défaut
+// en utilisant '*', comme indiqué ci-dessous :
+// [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion(Constants.AppVersion)]
-
-[assembly: NeutralResourcesLanguage("en")]
+[assembly: AssemblyFileVersion(Constants.AppVersion)]

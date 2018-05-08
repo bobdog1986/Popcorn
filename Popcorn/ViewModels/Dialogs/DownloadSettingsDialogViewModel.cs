@@ -329,14 +329,14 @@ namespace Popcorn.ViewModels.Dialogs
                                 (k, g) =>
                                     g.Aggregate(
                                         (a, x) =>
-                                            (Convert.ToDouble(x.Sub.Rating, CultureInfo.InvariantCulture) >=
-                                             Convert.ToDouble(a.Sub.Rating, CultureInfo.InvariantCulture))
+                                            (Convert.ToDouble(x.Sub.Score, CultureInfo.InvariantCulture) >=
+                                             Convert.ToDouble(a.Sub.Score, CultureInfo.InvariantCulture))
                                                 ? x
                                                 : a)));
 
                     media.AvailableSubtitles.Insert(0, new Subtitle
                     {
-                        Sub = new OSDB.Subtitle
+                        Sub = new OSDB.Models.Subtitle
                         {
                             LanguageId = LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"),
                             LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"),
@@ -346,7 +346,7 @@ namespace Popcorn.ViewModels.Dialogs
 
                     media.AvailableSubtitles.Insert(1, new Subtitle
                     {
-                        Sub = new OSDB.Subtitle
+                        Sub = new OSDB.Models.Subtitle
                         {
                             LanguageId = LocalizationProviderHelper.GetLocalizedValue<string>("CustomLabel"),
                             LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("CustomLabel"),
@@ -378,7 +378,7 @@ namespace Popcorn.ViewModels.Dialogs
                 LoadingSubtitles = false;
                 media.AvailableSubtitles.Insert(0, new Subtitle
                 {
-                    Sub = new OSDB.Subtitle
+                    Sub = new OSDB.Models.Subtitle
                     {
                         LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"),
                         SubtitleId = "none"

@@ -2,7 +2,7 @@
     x:Class="Popcorn.UserControls.Window.Settings.WindowSettingsUserControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:chips="clr-namespace:Popcorn.ColorPickerControls.Chips;assembly=Popcorn.ColorPickerControls"
+    xmlns:chips="clr-namespace:ColorPickerControls.Chips;assembly=ColorPickerControls"
     xmlns:command="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Platform"
     xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:converters="clr-namespace:Popcorn.Converters"

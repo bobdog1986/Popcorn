@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Ignite.SharpNetSH;
+using Popcorn.Utils.Interfaces;
 
 namespace Popcorn.Utils
 {

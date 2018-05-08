@@ -8,7 +8,7 @@
     xmlns:lex="http://wpflocalizeextension.codeplex.com"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:system="clr-namespace:System;assembly=mscorlib"
-    xmlns:xaml="clr-namespace:Popcorn.Markdown;assembly=Popcorn.Markdown"
+    xmlns:xaml="clr-namespace:Markdown;assembly=Markdown"
     d:DesignHeight="300"
     d:DesignWidth="300"
     Background="Transparent"

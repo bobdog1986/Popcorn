@@ -8,11 +8,11 @@ namespace Popcorn.Messaging
     {
         public readonly IEnumerable<Subtitle> Subtitles;
 
-        public OSDB.Subtitle SelectedSubtitle { get; set; }
+        public OSDB.Models.Subtitle SelectedSubtitle { get; set; }
 
-        public OSDB.Subtitle CurrentSubtitle { get; set; }
+        public OSDB.Models.Subtitle CurrentSubtitle { get; set; }
 
-        public ShowSubtitleDialogMessage(IEnumerable<Subtitle> subtitles, OSDB.Subtitle currentSubtitle)
+        public ShowSubtitleDialogMessage(IEnumerable<Subtitle> subtitles, OSDB.Models.Subtitle currentSubtitle)
         {
             Subtitles = subtitles;
             CurrentSubtitle = currentSubtitle;

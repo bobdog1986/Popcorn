@@ -169,6 +169,7 @@ namespace Popcorn.Services.Download
                     var progress = 0d;
                     if (status.has_metadata)
                     {
+                        handle.flush_cache();
                         if (mediaIndex == -1 || string.IsNullOrEmpty(filePath))
                         {
                             for (var i = 0; i < numFiles; i++)

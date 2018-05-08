@@ -216,9 +216,8 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Download
                         if (message.Movie.SelectedSubtitle.Sub.SubtitleId == "custom")
                         {
                             isRemote = false;
-                            message.Movie.SelectedSubtitle.Sub.SubtitleFileName = "custom";
-                            message.Movie.SelectedSubtitle.Sub.SubTitleDownloadLink =
-                                new Uri(message.Movie.SelectedSubtitle.FilePath);
+                            message.Movie.SelectedSubtitle.Sub.SubFileName = "custom";
+                            message.Movie.SelectedSubtitle.Sub.SubDownloadLink = message.Movie.SelectedSubtitle.FilePath;
                         }
 
                         var subtitlePath = await

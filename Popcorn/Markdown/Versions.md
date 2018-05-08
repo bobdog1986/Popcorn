@@ -1,4 +1,11 @@
-﻿# 4.0.1 25/04/2018 #
+﻿# 4.1.0 08/05/2018 #
+***
+Improve stability
+
+### Details ###
+* Fixed stability for media player.
+
+# 4.0.1 25/04/2018 #
 ***
 Fixed issue.
 

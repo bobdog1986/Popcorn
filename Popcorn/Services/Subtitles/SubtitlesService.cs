@@ -4,10 +4,9 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using CookComputing.XmlRpc;
 using NLog;
 using Polly;
-using Popcorn.OSDB;
+using OSDB;
 using Popcorn.Utils;
 using SubtitlesParser.Classes;
 
@@ -18,6 +17,13 @@ namespace Popcorn.Services.Subtitles
     /// </summary>
     public class SubtitlesService : ISubtitlesService
     {
+        private readonly IOsdbClient _client;
+
+        public SubtitlesService()
+        {
+            _client = new OsdbClient();
+        }
+
         /// <summary>
         /// Logger of the class
         /// </summary>
@@ -27,10 +33,10 @@ namespace Popcorn.Services.Subtitles
         /// Get subtitles languages
         /// </summary>
         /// <returns>Languages</returns>
-        public async Task<IEnumerable<Language>> GetSubLanguages()
+        public async Task<IEnumerable<OSDB.Models.Language>> GetSubLanguages()
         {
             var retryGetSubLanguagesPolicy = Policy
-                .Handle<XmlRpcServerException>()
+                .Handle<Exception>()
                 .WaitAndRetryAsync(5, retryAttempt =>
                     TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))
                 );
@@ -39,15 +45,13 @@ namespace Popcorn.Services.Subtitles
             {
                 return await retryGetSubLanguagesPolicy.ExecuteAsync(async () =>
                 {
-                    using (var osdb = await new Osdb().Login(Constants.OsdbUa))
-                    {
-                        return await osdb.GetSubLanguages();
-                    }
+                    var osdb = new OsdbClient();
+                    return await osdb.GetSubLanguages();
                 });
             }
             catch (Exception)
             {
-                return new List<Language>();
+                return new List<OSDB.Models.Language>();
             }
         }
 
@@ -59,21 +63,15 @@ namespace Popcorn.Services.Subtitles
         /// <param name="season">Season number</param>
         /// <param name="episode">Episode number</param>
         /// <returns>Subtitles</returns>
-        public async Task<IList<Subtitle>> SearchSubtitlesFromImdb(string languages, string imdbId, int? season, int? episode)
+        public async Task<IList<OSDB.Models.Subtitle>> SearchSubtitlesFromImdb(string languages, string imdbId, int? season, int? episode)
         {
             var retrySearchSubtitlesFromImdbPolicy = Policy
-                .Handle<XmlRpcServerException>()
+                .Handle<Exception>()
                 .WaitAndRetryAsync(5, retryAttempt =>
                     TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))
                 );
 
-            return await retrySearchSubtitlesFromImdbPolicy.ExecuteAsync(async () =>
-            {
-                using (var osdb = await new Osdb().Login(Constants.OsdbUa))
-                {
-                    return await osdb.SearchSubtitlesFromImdb(languages, imdbId, season, episode);
-                }
-            });
+            return await retrySearchSubtitlesFromImdbPolicy.ExecuteAsync(async () => await _client.SearchSubtitlesFromImdb(languages, imdbId, season, episode));
         }
 
         /// <summary>
@@ -83,21 +81,15 @@ namespace Popcorn.Services.Subtitles
         /// <param name="subtitle">Subtitle to download</param>
         /// <param name="remote">Is remote download path</param>
         /// <returns>Downloaded subtitle path</returns>
-        public async Task<string> DownloadSubtitleToPath(string path, Subtitle subtitle, bool remote = true)
+        public async Task<string> DownloadSubtitleToPath(string path, OSDB.Models.Subtitle subtitle, bool remote = true)
         {
             var retryDownloadSubtitleToPathPolicy = Policy
-                .Handle<XmlRpcServerException>()
+                .Handle<Exception>()
                 .WaitAndRetryAsync(5, retryAttempt =>
                     TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))
                 );
 
-            return await retryDownloadSubtitleToPathPolicy.ExecuteAsync(async () =>
-            {
-                using (var osdb = await new Osdb().Login(Constants.OsdbUa))
-                {
-                    return await osdb.DownloadSubtitleToPath(path, subtitle, remote);
-                }
-            });
+            return await retryDownloadSubtitleToPathPolicy.ExecuteAsync(async () => await _client.DownloadSubtitleToPath(path, subtitle, remote));
         }
 
         /// <summary>

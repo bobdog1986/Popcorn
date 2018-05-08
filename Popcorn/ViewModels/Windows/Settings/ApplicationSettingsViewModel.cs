@@ -17,7 +17,7 @@ using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using NLog;
-using Popcorn.ColorPicker;
+using ColorPicker;
 using Popcorn.Extensions;
 using Popcorn.Helpers;
 using Popcorn.Messaging;

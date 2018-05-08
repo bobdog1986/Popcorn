@@ -5,12 +5,12 @@ namespace Popcorn.Models.Subtitles
     public class Subtitle : ObservableObject
     {
         private string _filePath;
-        private OSDB.Subtitle _subtitle;
+        private OSDB.Models.Subtitle _subtitle;
 
         /// <summary>
         /// Subtitle
         /// </summary>
-        public OSDB.Subtitle Sub
+        public OSDB.Models.Subtitle Sub
         {
             get => _subtitle;
             set { Set(() => Sub, ref _subtitle, value); }

@@ -6,11 +6,11 @@ using Popcorn.Utils;
 // Les informations générales relatives à un assembly dépendent de
 // l'ensemble d'attributs suivant. Changez les valeurs de ces attributs pour modifier les informations
 // associées à un assembly.
-[assembly: AssemblyTitle("Popcorn.Constants")]
-[assembly: AssemblyDescription("A Powerful and Fast Popcorn Time Client")]
+[assembly: AssemblyTitle("Popcorn.Utils")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Popcorn")]
+[assembly: AssemblyProduct("Popcorn.Utils")]
 [assembly: AssemblyCopyright("Copyright ©  2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -21,7 +21,7 @@ using Popcorn.Utils;
 [assembly: ComVisible(false)]
 
 // Le GUID suivant est pour l'ID de la typelib si ce projet est exposé à COM
-[assembly: Guid("094a69ce-c69e-4ef0-9321-ba16f7a89080")]
+[assembly: Guid("5ca8b099-3924-46fa-829f-53250e4d6c56")]
 
 // Les informations de version pour un assembly se composent des quatre valeurs suivantes :
 //
@@ -34,3 +34,4 @@ using Popcorn.Utils;
 // en utilisant '*', comme indiqué ci-dessous :
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion(Constants.AppVersion)]
+[assembly: AssemblyFileVersion(Constants.AppVersion)]

@@ -381,7 +381,7 @@ namespace Popcorn.ViewModels.Windows
                     {
                         new Subtitle
                         {
-                            Sub = new OSDB.Subtitle
+                            Sub = new OSDB.Models.Subtitle
                             {
                                 LanguageId = LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"),
                                 LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"),
@@ -390,7 +390,7 @@ namespace Popcorn.ViewModels.Windows
                         },
                         new Subtitle
                         {
-                            Sub = new OSDB.Subtitle
+                            Sub = new OSDB.Models.Subtitle
                             {
                                 LanguageId = LocalizationProviderHelper.GetLocalizedValue<string>("CustomLabel"),
                                 LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("CustomLabel"),

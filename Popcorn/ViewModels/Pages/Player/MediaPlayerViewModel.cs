@@ -94,7 +94,7 @@ namespace Popcorn.ViewModels.Pages.Player
         /// <summary>
         /// <see cref="CurrentSubtitle"/>
         /// </summary>
-        private OSDB.Subtitle _currentSubtitle;
+        private OSDB.Models.Subtitle _currentSubtitle;
 
         /// <summary>
         /// <see cref="IsSeeking"/>
@@ -360,7 +360,7 @@ namespace Popcorn.ViewModels.Pages.Player
         /// <summary>
         /// Current subtitle for the media
         /// </summary>
-        public OSDB.Subtitle CurrentSubtitle
+        public OSDB.Models.Subtitle CurrentSubtitle
         {
             get => _currentSubtitle;
             set => Set(ref _currentSubtitle, value);
@@ -470,12 +470,12 @@ namespace Popcorn.ViewModels.Pages.Player
                 if (!string.IsNullOrEmpty(sub))
                 {
                     OnSubtitleChosen(
-                        new SubtitleChangedEventArgs(sub, new OSDB.Subtitle
+                        new SubtitleChangedEventArgs(sub, new OSDB.Models.Subtitle
                         {
                             LanguageId = LocalizationProviderHelper.GetLocalizedValue<string>("CustomLabel"),
                             LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("CustomLabel"),
                             SubtitleId = "custom",
-                            SubtitleFileName = sub
+                            SubFileName = sub
                         }));
                     IsSubtitleChosen = true;
                 }
@@ -502,7 +502,7 @@ namespace Popcorn.ViewModels.Pages.Player
                             }
                             else
                             {
-                                var path = Path.Combine(_cacheService.Subtitles + message.SelectedSubtitle.ImdbId);
+                                var path = Path.Combine(_cacheService.Subtitles + message.SelectedSubtitle.IDMovieImdb);
                                 Directory.CreateDirectory(path);
                                 var subtitlePath = await
                                     _subtitlesService.DownloadSubtitleToPath(path,
