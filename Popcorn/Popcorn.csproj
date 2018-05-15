@@ -94,7 +94,7 @@
       <HintPath>..\packages\libtorrent-net.4.1.0\lib\net45\ltnet.dll</HintPath>
     </Reference>
     <Reference Include="MahApps.Metro, Version=1.6.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MahApps.Metro.1.6.3\lib\net47\MahApps.Metro.dll</HintPath>
+      <HintPath>..\packages\MahApps.Metro.1.6.4\lib\net47\MahApps.Metro.dll</HintPath>
     </Reference>
     <Reference Include="MahApps.Metro.IconPacks, Version=2.2.0.12, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.IconPacks.2.2.0\lib\net46\MahApps.Metro.IconPacks.dll</HintPath>
@@ -543,8 +543,8 @@
     <Compile Include="UserControls\Player\PlayerUserControl.xaml.cs">
       <DependentUpon>PlayerUserControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\Window\Settings\WindowSettingsUserControl.xaml.cs">
-      <DependentUpon>WindowSettingsUserControl.xaml</DependentUpon>
+    <Compile Include="UserControls\Home\Settings\SettingsUserControl.xaml.cs">
+      <DependentUpon>SettingsUserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\Dialogs\AboutDialogViewModel.cs" />
     <Compile Include="ViewModels\Dialogs\ChromecastDialogViewModel.cs" />
@@ -567,6 +567,7 @@
     <Compile Include="ViewModels\Pages\Home\Movie\Tabs\SearchMovieTabViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\Movie\Tabs\SeenMovieTabViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\PagesViewModel.cs" />
+    <Compile Include="ViewModels\Pages\Home\Settings\SettingsPageViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\Show\Details\ShowDetailsViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\Show\Download\DownloadShowViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\Show\Search\SearchShowViewModel.cs" />
@@ -580,7 +581,6 @@
     <Compile Include="ViewModels\Pages\Home\Show\Tabs\UpdatedShowTabViewModel.cs" />
     <Compile Include="ViewModels\Pages\Player\MediaPlayerViewModel.cs" />
     <Compile Include="ViewModels\ViewModelLocator.cs" />
-    <Compile Include="ViewModels\Windows\Settings\ApplicationSettingsViewModel.cs" />
     <Compile Include="ViewModels\Windows\WindowViewModel.cs" />
     <Compile Include="Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -968,7 +968,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="UserControls\Window\Settings\WindowSettingsUserControl.xaml">
+    <Page Include="UserControls\Home\Settings\SettingsUserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

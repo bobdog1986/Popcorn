@@ -18,10 +18,10 @@ using Popcorn.ViewModels.Pages.Home.Movie.Details;
 using Popcorn.ViewModels.Pages.Home.Show;
 using Popcorn.ViewModels.Pages.Home.Show.Details;
 using Popcorn.ViewModels.Windows;
-using Popcorn.ViewModels.Windows.Settings;
 using Popcorn.Services.Shows.Trailer;
 using Popcorn.Services.Tmdb;
 using Popcorn.ViewModels.Pages.Home.Cast;
+using Popcorn.ViewModels.Pages.Home.Settings;
 
 namespace Popcorn.ViewModels
 {
@@ -66,7 +66,7 @@ namespace Popcorn.ViewModels
 
             SimpleIoc.Default.Register<CastViewModel>();
 
-            SimpleIoc.Default.Register<ApplicationSettingsViewModel>();
+            SimpleIoc.Default.Register<SettingsPageViewModel>();
 
             #endregion
         }
@@ -117,8 +117,8 @@ namespace Popcorn.ViewModels
         [SuppressMessage("Microsoft.Performance",
             "CA1822:MarkMembersAsStatic",
             Justification = "This non-static member is needed for data binding purposes.")]
-        public ApplicationSettingsViewModel ApplicationSettings
-            => SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
+        public SettingsPageViewModel Settings
+            => SimpleIoc.Default.GetInstance<SettingsPageViewModel>();
 
         /// <summary>
         /// Gets the NotificationMessageManager property.

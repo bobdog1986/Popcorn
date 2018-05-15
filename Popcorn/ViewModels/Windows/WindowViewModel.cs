@@ -36,8 +36,8 @@ using Popcorn.ViewModels.Pages.Home;
 using Popcorn.ViewModels.Pages.Home.Movie;
 using Popcorn.ViewModels.Pages.Home.Show;
 using Popcorn.ViewModels.Pages.Player;
-using Popcorn.ViewModels.Windows.Settings;
 using Popcorn.Services.Subtitles;
+using Popcorn.ViewModels.Pages.Home.Settings;
 
 namespace Popcorn.ViewModels.Windows
 {
@@ -90,11 +90,6 @@ namespace Popcorn.ViewModels.Windows
         /// Specify if show flyout is open
         /// </summary>
         private bool _isShowFlyoutOpen;
-
-        /// <summary>
-        /// Specify if settings flyout is open
-        /// </summary>
-        private bool _isSettingsFlyoutOpen;
 
         /// <summary>
         /// Specify if about dialog is open
@@ -198,15 +193,6 @@ namespace Popcorn.ViewModels.Windows
             get => _ignoreTaskbarOnMaximize;
             set { Set(() => IgnoreTaskbarOnMaximize, ref _ignoreTaskbarOnMaximize, value); }
         }
-
-        /// <summary>
-        /// Specify if settings flyout is open
-        /// </summary>
-        public bool IsSettingsFlyoutOpen
-        {
-            get => _isSettingsFlyoutOpen;
-            set { Set(() => IsSettingsFlyoutOpen, ref _isSettingsFlyoutOpen, value); }
-        }
         
         /// <summary>
         /// Specify if movie flyout is open
@@ -267,11 +253,6 @@ namespace Popcorn.ViewModels.Windows
         /// Command used to close the application
         /// </summary>
         public ICommand MainWindowClosingCommand { get; private set; }
-
-        /// <summary>
-        /// Command used to open application settings
-        /// </summary>
-        public ICommand OpenSettingsCommand { get; private set; }
 
         /// <summary>
         /// Command used to open about dialog
@@ -794,8 +775,6 @@ namespace Popcorn.ViewModels.Windows
                 }
             });
 
-            OpenSettingsCommand = new RelayCommand(() => IsSettingsFlyoutOpen = !IsSettingsFlyoutOpen);
-
             DropFileCommand = new RelayCommand<DragEventArgs>(async e =>
             {
                 try
@@ -814,7 +793,7 @@ namespace Popcorn.ViewModels.Windows
 
                             Messenger.Default.Send(new DropFileMessage(DropFileMessage.DropFileEvent.Leave));
                             await _dialogCoordinator.ShowMetroDialogAsync(this, dropTorrentDialog);
-                            var settings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
+                            var settings = SimpleIoc.Default.GetInstance<SettingsPageViewModel>();
                             await vm.Download(settings.UploadLimit, settings.DownloadLimit,
                                 async () =>
                                 {
@@ -981,7 +960,7 @@ namespace Popcorn.ViewModels.Windows
             try
             {
                 await _dialogCoordinator.ShowMetroDialogAsync(this, dropTorrentDialog);
-                var settings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
+                var settings = SimpleIoc.Default.GetInstance<SettingsPageViewModel>();
                 await vm.Download(settings.UploadLimit, settings.DownloadLimit,
                     async () =>
                     {

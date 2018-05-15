@@ -177,7 +177,7 @@
   <data name="SearchTitleTab" xml:space="preserve">
     <value>Búsqueda</value>
   </data>
-  <data name="SettingsMenuTitle" xml:space="preserve">
+  <data name="SettingsLabel" xml:space="preserve">
     <value>Ajustes</value>
   </data>
   <data name="TrailerButton" xml:space="preserve">

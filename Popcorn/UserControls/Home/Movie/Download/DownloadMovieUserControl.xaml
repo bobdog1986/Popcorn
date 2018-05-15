@@ -54,83 +54,80 @@
             </Style>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid>
-        <Grid Opacity="1.0" Style="{StaticResource AnimationContentOnMovieDownloading}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="37*" />
-                <ColumnDefinition Width="36*" />
-                <ColumnDefinition Width="20*" />
-                <ColumnDefinition Width="36*" />
-                <ColumnDefinition Width="37*" />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="128*" />
-                <RowDefinition Height="114*" />
-                <RowDefinition Height="92*" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="29*" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="114*" />
-                <RowDefinition Height="128*" />
-            </Grid.RowDefinitions>
-            <StackPanel
-                Grid.Row="2"
-                Grid.Column="1"
-                Grid.ColumnSpan="3"
+    <Grid
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Center"
+        Opacity="1.0"
+        Style="{StaticResource AnimationContentOnMovieDownloading}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <StackPanel
+            Grid.Row="0"
+            Grid.Column="1"
+            Grid.ColumnSpan="3"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Bottom"
+            Orientation="Vertical">
+            <Label
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
+                FontSize="18">
+                <controls1:DownloadProgress
+                    Title="{Binding Movie.Title}"
+                    Progress="{Binding MovieDownloadProgress}"
+                    Rate="{Binding MovieDownloadRate}"
+                    Type="Movie" />
+            </Label>
+            <StackPanel
+                Margin="0,10,0,10"
+                HorizontalAlignment="Center"
                 Orientation="Vertical">
-                <Label
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    FontSize="18">
-                    <controls1:DownloadProgress
-                        Title="{Binding Movie.Title}"
-                        Progress="{Binding MovieDownloadProgress}"
-                        Rate="{Binding MovieDownloadRate}"
-                        Type="Movie" />
-                </Label>
-                <StackPanel
-                    Margin="0,10,0,10"
-                    HorizontalAlignment="Center"
-                    Orientation="Vertical">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{lex:LocText PeersLabel}" />
-                        <TextBlock Text=": " />
-                        <TextBlock Margin="5,0,0,0" Text="{Binding NbPeers}" />
-                    </StackPanel>
-                    <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
-                        <TextBlock Text="{lex:LocText SeedersLabel}" />
-                        <TextBlock Text=": " />
-                        <TextBlock Margin="5,0,0,0" Text="{Binding NbSeeders}" />
-                    </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{lex:LocText PeersLabel}" />
+                    <TextBlock Text=": " />
+                    <TextBlock Margin="5,0,0,0" Text="{Binding NbPeers}" />
+                </StackPanel>
+                <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
+                    <TextBlock Text="{lex:LocText SeedersLabel}" />
+                    <TextBlock Text=": " />
+                    <TextBlock Margin="5,0,0,0" Text="{Binding NbSeeders}" />
                 </StackPanel>
             </StackPanel>
-            <controls:MetroProgressBar
-                Grid.Row="3"
-                Grid.Column="1"
-                Grid.ColumnSpan="3"
-                Height="7"
-                Margin="0,10,0,0"
-                VerticalAlignment="Center"
-                Foreground="{StaticResource AccentColorBrush}"
-                Maximum="{Binding Source={x:Static constants:Constants.MinimumMovieBuffering}}"
-                Minimum="0.0"
-                Value="{Binding MovieDownloadProgress}" />
-            <Button
-                Grid.Row="7"
-                Grid.Column="2"
-                Width="100"
-                Height="30"
-                Margin="0"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                controls:ControlsHelper.ContentCharacterCasing="Normal"
-                Command="{Binding StopDownloadingMovieCommand}"
-                Content="{lex:LocText CancelButton}"
-                Style="{DynamicResource SquareButtonStyle}" />
-        </Grid>
+        </StackPanel>
+        <controls:MetroProgressBar
+            Grid.Row="1"
+            Grid.Column="2"
+            Height="7"
+            Margin="0,10,0,0"
+            HorizontalAlignment="Stretch"
+            HorizontalContentAlignment="Stretch"
+            VerticalAlignment="Center"
+            Foreground="{StaticResource AccentColorBrush}"
+            Maximum="{Binding Source={x:Static constants:Constants.MinimumMovieBuffering}}"
+            Minimum="0.0"
+            Value="{Binding MovieDownloadProgress}" />
+        <Button
+            Grid.Row="2"
+            Grid.Column="1"
+            Grid.ColumnSpan="3"
+            Width="100"
+            Height="30"
+            Margin="0,20,0,0"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Top"
+            controls:ControlsHelper.ContentCharacterCasing="Normal"
+            Command="{Binding StopDownloadingMovieCommand}"
+            Content="{lex:LocText CancelButton}"
+            Style="{DynamicResource SquareButtonStyle}" />
     </Grid>
 </UserControl>

@@ -8,6 +8,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:movie="clr-namespace:Popcorn.ViewModels.Pages.Home.Movie"
     xmlns:movie1="clr-namespace:Popcorn.UserControls.Home.Movie"
+    xmlns:settings="clr-namespace:Popcorn.ViewModels.Pages.Home.Settings"
+    xmlns:settings1="clr-namespace:Popcorn.UserControls.Home.Settings"
     xmlns:show="clr-namespace:Popcorn.ViewModels.Pages.Home.Show"
     xmlns:show1="clr-namespace:Popcorn.UserControls.Home.Show"
     Title="HomePage"
@@ -30,6 +32,9 @@
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type show:ShowPageViewModel}">
                     <show1:ShowUserControl />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type settings:SettingsPageViewModel}">
+                    <settings1:SettingsUserControl />
                 </DataTemplate>
             </TabControl.Resources>
         </controls:MetroAnimatedSingleRowTabControl>

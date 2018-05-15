@@ -14,11 +14,11 @@ using GalaSoft.MvvmLight.Ioc;
 using Popcorn.Models.Genres;
 using Popcorn.Models.User;
 using Popcorn.Utils.Exceptions;
-using Popcorn.ViewModels.Windows.Settings;
 using Polly;
 using Polly.Timeout;
 using Popcorn.Extensions;
 using Popcorn.Services.Tmdb;
+using Popcorn.ViewModels.Pages.Home.Settings;
 using TMDbLib.Objects.Find;
 using TMDbLib.Objects.People;
 using Utf8Json;
@@ -706,7 +706,7 @@ namespace Popcorn.Services.Movies.Movie
                     .ToList();
                 if (videos.Any())
                 {
-                    var settings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
+                    var settings = SimpleIoc.Default.GetInstance<SettingsPageViewModel>();
                     var maxRes = settings.DefaultHdQuality ? 1080 : 720;
                     return
                         videos.Where(a => !a.Is3D && a.Resolution <= maxRes &&

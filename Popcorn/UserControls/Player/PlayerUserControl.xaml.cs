@@ -19,18 +19,12 @@ using Popcorn.Models.Bandwidth;
 using Popcorn.Services.Application;
 using Popcorn.Utils;
 using Popcorn.Utils.Exceptions;
-using Popcorn.ViewModels.Windows.Settings;
 using System.Runtime.CompilerServices;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Windows.Controls;
-using System.Windows.Data;
 using GalaSoft.MvvmLight.CommandWpf;
 using Popcorn.Converters;
-using Popcorn.Extensions;
-using Popcorn.Helpers;
 using Popcorn.Models.Chromecast;
+using Popcorn.ViewModels.Pages.Home.Settings;
 using Unosquare.FFME;
 using Unosquare.FFME.Events;
 using Unosquare.FFME.Shared;
@@ -114,7 +108,7 @@ namespace Popcorn.UserControls.Player
             InitializeComponent();
             Loaded += OnLoaded;
             Media.MediaOpened += OnMediaOpened;
-            Unosquare.FFME.MediaElement.FFmpegMessageLogged += OnMediaFFmpegMessageLogged;
+            MediaElement.FFmpegMessageLogged += OnMediaFFmpegMessageLogged;
             PauseCommand = new RelayCommand(async () => { await PauseMedia(); }, MediaPlayerPauseCanExecute);
             PlayCommand = new RelayCommand(async () => { await PlayMedia(); }, MediaPlayerPlayCanExecute);
         }
@@ -201,7 +195,7 @@ namespace Popcorn.UserControls.Player
             if (vm?.MediaPath == null)
                 return;
 
-            var applicationSettings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
+            var applicationSettings = SimpleIoc.Default.GetInstance<SettingsPageViewModel>();
             Subtitles.SetFontSize(Media, applicationSettings.SelectedSubtitleSize?.Size ?? 22);
             Subtitles.SetForeground(Media, new SolidColorBrush(applicationSettings.SubtitlesColor));
             ActivityTimer =

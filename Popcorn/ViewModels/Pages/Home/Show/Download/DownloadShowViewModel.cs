@@ -11,11 +11,11 @@ using Popcorn.Messaging;
 using Popcorn.Models.Episode;
 using Popcorn.Services.Subtitles;
 using Popcorn.Utils;
-using Popcorn.ViewModels.Windows.Settings;
 using GalaSoft.MvvmLight.Ioc;
 using Popcorn.Models.Bandwidth;
 using Popcorn.Services.Cache;
 using Popcorn.Services.Download;
+using Popcorn.ViewModels.Pages.Home.Settings;
 
 namespace Popcorn.ViewModels.Pages.Home.Show.Download
 {
@@ -224,7 +224,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Download
                 {
                     try
                     {
-                        var settings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
+                        var settings = SimpleIoc.Default.GetInstance<SettingsPageViewModel>();
                         await _downloadService.Download(message.Episode, TorrentType.Magnet, MediaType.Show,
                             Episode.SelectedTorrent.Url, settings.UploadLimit, settings.DownloadLimit,
                             reportDownloadProgress,

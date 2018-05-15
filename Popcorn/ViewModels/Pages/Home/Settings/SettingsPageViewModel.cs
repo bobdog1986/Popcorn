@@ -1,24 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Threading;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Threading;
+using ColorPicker;
 using Enterwell.Clients.Wpf.Notifications;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
-using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using NLog;
-using ColorPicker;
-using Popcorn.Extensions;
 using Popcorn.Helpers;
 using Popcorn.Messaging;
 using Popcorn.Models.Localization;
@@ -29,12 +27,9 @@ using Popcorn.Services.User;
 using Popcorn.Utils;
 using Squirrel;
 
-namespace Popcorn.ViewModels.Windows.Settings
+namespace Popcorn.ViewModels.Pages.Home.Settings
 {
-    /// <summary>
-    /// Application's settings
-    /// </summary>
-    public sealed class ApplicationSettingsViewModel : ViewModelBase
+    public class SettingsPageViewModel : ObservableObject, IPageViewModel
     {
         /// <summary>
         /// Logger of the class
@@ -50,6 +45,11 @@ namespace Popcorn.ViewModels.Windows.Settings
         /// Subtitle service
         /// </summary>
         private readonly ISubtitlesService _subtitlesService;
+
+        /// <summary>
+        /// <see cref="Caption"/>
+        /// </summary>
+        private string _caption;
 
         /// <summary>
         /// The download limit
@@ -168,7 +168,7 @@ namespace Popcorn.ViewModels.Windows.Settings
         /// <param name="subtitlesService">Subtitles service</param>
         /// <param name="cacheService">Cache service</param>
         /// <param name="manager">Notification manager</param>
-        public ApplicationSettingsViewModel(IUserService userService, ISubtitlesService subtitlesService,
+        public SettingsPageViewModel(IUserService userService, ISubtitlesService subtitlesService,
             ICacheService cacheService,
             NotificationMessageManager manager)
         {
@@ -178,6 +178,15 @@ namespace Popcorn.ViewModels.Windows.Settings
             _subtitlesService = subtitlesService;
             Version = Constants.AppVersion;
             RegisterCommands();
+        }
+
+        /// <summary>
+        /// Tab caption 
+        /// </summary>
+        public string Caption
+        {
+            get => _caption;
+            set => Set(ref _caption, value);
         }
 
         /// <summary>
@@ -438,7 +447,7 @@ namespace Popcorn.ViewModels.Windows.Settings
                 DefaultHdQuality = user.DefaultHdQuality;
                 SelectedSubtitleSize = SubtitleSizes.FirstOrDefault(a => a.Size == subtitleSize.Size);
                 SubtitlesColor =
-                    (Color) ColorConverter.ConvertFromString(user.DefaultSubtitleColor);
+                    (Color)ColorConverter.ConvertFromString(user.DefaultSubtitleColor);
 
                 var tasks = new Func<Task>[]
                 {

@@ -15,12 +15,11 @@ using NLog;
 using Popcorn.Helpers;
 using Popcorn.Models.Episode;
 using Popcorn.Models.Media;
-using Popcorn.Models.Movie;
 using Popcorn.Models.Subtitles;
 using Popcorn.Models.Torrent;
 using Popcorn.Services.Subtitles;
 using Popcorn.Utils;
-using Popcorn.ViewModels.Windows.Settings;
+using Popcorn.ViewModels.Pages.Home.Settings;
 
 namespace Popcorn.ViewModels.Dialogs
 {
@@ -228,7 +227,7 @@ namespace Popcorn.ViewModels.Dialogs
                 OnCloseAction.Invoke(false);
             });
 
-            var applicationSettings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
+            var applicationSettings = SimpleIoc.Default.GetInstance<SettingsPageViewModel>();
             Media.WatchInFullHdQuality =
                 Media.AvailableTorrents.Any(torrent => (Media.Type == MediaType.Movie && torrent.Quality == "1080p") || (Media.Type == MediaType.Show && torrent.Quality == "720p")) &&
                 Media.AvailableTorrents.Count == 1 ||
@@ -354,7 +353,7 @@ namespace Popcorn.ViewModels.Dialogs
                         }
                     });
 
-                    var applicationSettings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
+                    var applicationSettings = SimpleIoc.Default.GetInstance<SettingsPageViewModel>();
                     if (!string.IsNullOrEmpty(applicationSettings.DefaultSubtitleLanguage) &&
                         media.AvailableSubtitles.Any(
                             a => a.Sub.LanguageName == applicationSettings.DefaultSubtitleLanguage))

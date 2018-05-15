@@ -2,6 +2,7 @@
 using GalaSoft.MvvmLight;
 using Popcorn.Helpers;
 using Popcorn.ViewModels.Pages.Home.Movie;
+using Popcorn.ViewModels.Pages.Home.Settings;
 using Popcorn.ViewModels.Pages.Home.Show;
 
 namespace Popcorn.ViewModels.Pages.Home
@@ -30,14 +31,17 @@ namespace Popcorn.ViewModels.Pages.Home
         /// </summary>
         /// <param name="moviePage">Movie page</param>
         /// <param name="showPage">Show page</param>
-        public PagesViewModel(MoviePageViewModel moviePage, ShowPageViewModel showPage)
+        /// <param name="settingsPageViewModel">Settings page</param>
+        public PagesViewModel(MoviePageViewModel moviePage, ShowPageViewModel showPage, SettingsPageViewModel settingsPageViewModel)
         {
             moviePage.Caption = LocalizationProviderHelper.GetLocalizedValue<string>("MoviesLabel");
             showPage.Caption = LocalizationProviderHelper.GetLocalizedValue<string>("ShowsLabel");
+            settingsPageViewModel.Caption = LocalizationProviderHelper.GetLocalizedValue<string>("SettingsLabel");
             Pages = new ObservableCollection<IPageViewModel>
             {
                 moviePage,
-                showPage
+                showPage,
+                settingsPageViewModel
             };
         }
     }

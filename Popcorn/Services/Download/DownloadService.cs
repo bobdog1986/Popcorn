@@ -157,10 +157,8 @@ namespace Popcorn.Services.Download
             var playingProgress = new Progress<double>();
             var sw = new Stopwatch();
             sw.Start();
-            var numFiles = handle.torrent_file().files().num_files();
             var mediaIndex = -1;
             long maxSize = 0;
-            var totalSizeExceptIgnoredFiles = handle.torrent_file().total_size();
             var filePath = string.Empty;
             while (!cts.IsCancellationRequested)
             {
@@ -169,6 +167,8 @@ namespace Popcorn.Services.Download
                     var progress = 0d;
                     if (status.has_metadata)
                     {
+                        var numFiles = handle.torrent_file().files().num_files();
+                        var totalSizeExceptIgnoredFiles = handle.torrent_file().total_size();
                         handle.flush_cache();
                         if (mediaIndex == -1 || string.IsNullOrEmpty(filePath))
                         {

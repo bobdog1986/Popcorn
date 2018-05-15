@@ -963,9 +963,9 @@ namespace Popcorn.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à Settings.
         /// </summary>
-        public static string SettingsMenuTitle {
+        public static string SettingsLabel {
             get {
-                return ResourceManager.GetString("SettingsMenuTitle", resourceCulture);
+                return ResourceManager.GetString("SettingsLabel", resourceCulture);
             }
         }
         
