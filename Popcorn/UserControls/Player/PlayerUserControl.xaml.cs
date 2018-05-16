@@ -25,6 +25,7 @@ using GalaSoft.MvvmLight.CommandWpf;
 using Popcorn.Converters;
 using Popcorn.Models.Chromecast;
 using Popcorn.ViewModels.Pages.Home.Settings;
+using Popcorn.ViewModels.Pages.Home.Settings.ApplicationSettings;
 using Unosquare.FFME;
 using Unosquare.FFME.Events;
 using Unosquare.FFME.Shared;
@@ -195,7 +196,7 @@ namespace Popcorn.UserControls.Player
             if (vm?.MediaPath == null)
                 return;
 
-            var applicationSettings = SimpleIoc.Default.GetInstance<SettingsPageViewModel>();
+            var applicationSettings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
             Subtitles.SetFontSize(Media, applicationSettings.SelectedSubtitleSize?.Size ?? 22);
             Subtitles.SetForeground(Media, new SolidColorBrush(applicationSettings.SubtitlesColor));
             ActivityTimer =

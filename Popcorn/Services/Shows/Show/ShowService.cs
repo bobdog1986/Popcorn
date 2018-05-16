@@ -15,6 +15,7 @@ using Polly.Timeout;
 using Popcorn.Services.Tmdb;
 using Popcorn.Utils.Exceptions;
 using Popcorn.ViewModels.Pages.Home.Settings;
+using Popcorn.ViewModels.Pages.Home.Settings.ApplicationSettings;
 using Utf8Json;
 using VideoLibrary;
 using Video = TMDbLib.Objects.General.Video;
@@ -429,7 +430,7 @@ namespace Popcorn.Services.Shows.Show
                                         .ToList();
                                     if (videos.Any())
                                     {
-                                        var settings = SimpleIoc.Default.GetInstance<SettingsPageViewModel>();
+                                        var settings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
                                         var maxRes = settings.DefaultHdQuality ? 1080 : 720;
                                         uri =
                                             await videos

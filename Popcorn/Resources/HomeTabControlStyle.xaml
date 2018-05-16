@@ -13,7 +13,7 @@
     <SolidColorBrush x:Key="TabItemSelectorBrush" Color="DarkRed" />
     <SolidColorBrush x:Key="TabControlBackgroundBrush" Color="WhiteSmoke" />
 
-    <Style x:Key="CustomTabItemStyle" TargetType="{x:Type TabItem}">
+    <Style x:Key="HomeTabItemStyle" TargetType="{x:Type TabItem}">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Margin" Value="0" />
@@ -73,13 +73,13 @@
         </Setter>
     </Style>
 
-    <Style x:Key="CustomTabControlStyle" TargetType="{x:Type controls:MetroAnimatedSingleRowTabControl}">
+    <Style x:Key="HomeTabControlStyle" TargetType="{x:Type controls:MetroAnimatedSingleRowTabControl}">
         <Setter Property="Background" Value="{StaticResource TabControlBackgroundBrush}" />
         <Setter Property="TabStripPlacement" Value="Top" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Margin" Value="0" />
         <Setter Property="Padding" Value="0" />
-        <Setter Property="ItemContainerStyle" Value="{StaticResource CustomTabItemStyle}" />
+        <Setter Property="ItemContainerStyle" Value="{StaticResource HomeTabItemStyle}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TabControl}">

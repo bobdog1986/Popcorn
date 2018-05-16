@@ -1,6 +1,6 @@
 ﻿using System;
 using GalaSoft.MvvmLight.Ioc;
-using Popcorn.ViewModels.Pages.Home.Settings;
+using Popcorn.ViewModels.Pages.Home.Settings.ApplicationSettings;
 
 namespace Popcorn.UserControls.Home.Settings
 {
@@ -15,7 +15,7 @@ namespace Popcorn.UserControls.Home.Settings
         protected override async void OnInitialized(EventArgs e)
         {
             base.OnInitialized(e);
-            var dc = SimpleIoc.Default.GetInstance<SettingsPageViewModel>();
+            var dc = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
             if (dc != null)
             {
                 await dc.InitializeAsync();

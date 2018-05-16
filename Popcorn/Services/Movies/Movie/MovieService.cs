@@ -19,6 +19,7 @@ using Polly.Timeout;
 using Popcorn.Extensions;
 using Popcorn.Services.Tmdb;
 using Popcorn.ViewModels.Pages.Home.Settings;
+using Popcorn.ViewModels.Pages.Home.Settings.ApplicationSettings;
 using TMDbLib.Objects.Find;
 using TMDbLib.Objects.People;
 using Utf8Json;
@@ -706,7 +707,7 @@ namespace Popcorn.Services.Movies.Movie
                     .ToList();
                 if (videos.Any())
                 {
-                    var settings = SimpleIoc.Default.GetInstance<SettingsPageViewModel>();
+                    var settings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
                     var maxRes = settings.DefaultHdQuality ? 1080 : 720;
                     return
                         videos.Where(a => !a.Is3D && a.Resolution <= maxRes &&

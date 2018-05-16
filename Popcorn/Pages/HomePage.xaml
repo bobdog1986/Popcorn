@@ -16,6 +16,7 @@
     d:DesignHeight="300"
     d:DesignWidth="300"
     AllowDrop="True"
+    DataContext="{Binding Pages, Source={StaticResource Locator}}"
     KeepAlive="True"
     Loaded="OnLoaded"
     mc:Ignorable="d">
@@ -24,8 +25,8 @@
             attachedProperties:TabContent.IsCached="True"
             controls:TabControlHelper.Transition="LeftReplace"
             DisplayMemberPath="Caption"
-            ItemsSource="{Binding Pages.Pages, Mode=OneWay, Source={StaticResource Locator}}"
-            Style="{StaticResource CustomTabControlStyle}">
+            ItemsSource="{Binding Pages, Mode=OneWay}"
+            Style="{StaticResource HomeTabControlStyle}">
             <TabControl.Resources>
                 <DataTemplate DataType="{x:Type movie:MoviePageViewModel}">
                     <movie1:MovieUserControl />

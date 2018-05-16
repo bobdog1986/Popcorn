@@ -8,7 +8,8 @@
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Red.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
         <ResourceDictionary Source="../Resources/Icons.xaml" />
-        <ResourceDictionary Source="../Resources/CustomTabControl.xaml" />
+        <ResourceDictionary Source="../Resources/HomeTabControlStyle.xaml" />
+        <ResourceDictionary Source="../Resources/SettingsTabControlStyle.xaml" />
         <ResourceDictionary Source="../Resources/Shadows.xaml" />
         <ResourceDictionary Source="../Resources/AnimatedScrollViewer.xaml" />
         <ResourceDictionary Source="../Resources/Ripple.xaml" />

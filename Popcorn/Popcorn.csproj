@@ -528,6 +528,15 @@
     <Compile Include="UserControls\Home\Search\SearchUserControl.xaml.cs">
       <DependentUpon>SearchUserControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\Home\Settings\About\AboutUserControl.xaml.cs">
+      <DependentUpon>AboutUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\Home\Settings\ApplicationSettings\ApplicationSettingsUserControl.xaml.cs">
+      <DependentUpon>ApplicationSettingsUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\Home\Settings\Help\HelpUserControl.xaml.cs">
+      <DependentUpon>HelpUserControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\Home\Show\Details\ShowDetailsUserControl.xaml.cs">
       <DependentUpon>ShowDetailsUserControl.xaml</DependentUpon>
     </Compile>
@@ -567,6 +576,9 @@
     <Compile Include="ViewModels\Pages\Home\Movie\Tabs\SearchMovieTabViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\Movie\Tabs\SeenMovieTabViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\PagesViewModel.cs" />
+    <Compile Include="ViewModels\Pages\Home\Settings\About\AboutViewModel.cs" />
+    <Compile Include="ViewModels\Pages\Home\Settings\ApplicationSettings\ApplicationSettingsViewModel.cs" />
+    <Compile Include="ViewModels\Pages\Home\Settings\Help\HelpViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\Settings\SettingsPageViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\Show\Details\ShowDetailsViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\Show\Download\DownloadShowViewModel.cs" />
@@ -876,7 +888,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Resources\CustomTabControl.xaml">
+    <Page Include="Resources\HomeTabControlStyle.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -907,6 +919,10 @@
     <Page Include="Resources\Ripple.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\SettingsTabControlStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Resources\Shadows.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -947,6 +963,18 @@
     <Page Include="UserControls\Home\Search\SearchUserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UserControls\Home\Settings\About\AboutUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\Home\Settings\ApplicationSettings\ApplicationSettingsUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\Home\Settings\Help\HelpUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\Home\Show\Details\ShowDetailsUserControl.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -998,6 +1026,7 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
   </ItemGroup>
+  <ItemGroup />
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="xcopy /s /i /y $(SolutionDir)packages\ffmpegzeranoe\3.4.1.1\tools\net45\*.* $(OutDir)FFmpeg" />
     <Exec Command="xcopy /s /y $(SolutionDir)packages\libtorrent-net\4.1.0\tools\*.* $(OutDir)" />

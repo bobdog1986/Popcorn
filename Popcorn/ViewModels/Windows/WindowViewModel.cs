@@ -38,6 +38,7 @@ using Popcorn.ViewModels.Pages.Home.Show;
 using Popcorn.ViewModels.Pages.Player;
 using Popcorn.Services.Subtitles;
 using Popcorn.ViewModels.Pages.Home.Settings;
+using Popcorn.ViewModels.Pages.Home.Settings.ApplicationSettings;
 
 namespace Popcorn.ViewModels.Windows
 {
@@ -563,24 +564,6 @@ namespace Popcorn.ViewModels.Windows
                     IsMovieFlyoutOpen = true;
                 });
 
-            Messenger.Default.Register<ChangeLanguageMessage>(
-                this,
-                message =>
-                {
-                    var pages = SimpleIoc.Default.GetInstance<PagesViewModel>();
-                    foreach (var page in pages.Pages)
-                    {
-                        if (page is MoviePageViewModel)
-                        {
-                            page.Caption = LocalizationProviderHelper.GetLocalizedValue<string>("MoviesLabel");
-                        }
-                        else if (page is ShowPageViewModel)
-                        {
-                            page.Caption = LocalizationProviderHelper.GetLocalizedValue<string>("ShowsLabel");
-                        }
-                    }
-                });
-
             Messenger.Default.Register<UnhandledExceptionMessage>(this, message => ManageException(message.Exception));
 
             Messenger.Default.Register<UpdateAvailableMessage>(this, message =>
@@ -793,7 +776,7 @@ namespace Popcorn.ViewModels.Windows
 
                             Messenger.Default.Send(new DropFileMessage(DropFileMessage.DropFileEvent.Leave));
                             await _dialogCoordinator.ShowMetroDialogAsync(this, dropTorrentDialog);
-                            var settings = SimpleIoc.Default.GetInstance<SettingsPageViewModel>();
+                            var settings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
                             await vm.Download(settings.UploadLimit, settings.DownloadLimit,
                                 async () =>
                                 {
@@ -935,22 +918,7 @@ namespace Popcorn.ViewModels.Windows
 
         private async Task HandleTorrentDownload(string path)
         {
-            var filePath = string.Empty;
-            //if (path.StartsWith("magnet"))
-            //{
-            //    filePath = $"{_cacheService.DropFilesDownloads}{Guid.NewGuid()}.torrent";
-            //    using (var file = File.Create(filePath))
-            //    using (var stream = new StreamWriter(file))
-            //    {
-            //        await stream.WriteLineAsync(path);
-            //    }
-            //}
-            //else if (path.EndsWith("torrent"))
-            //{
-            //    filePath = path;
-            //}
-
-            filePath = path;
+            var filePath = path;
             var vm = new DropTorrentDialogViewModel(_cacheService, filePath);
             var dropTorrentDialog = new DropTorrentDialog
             {
@@ -960,7 +928,7 @@ namespace Popcorn.ViewModels.Windows
             try
             {
                 await _dialogCoordinator.ShowMetroDialogAsync(this, dropTorrentDialog);
-                var settings = SimpleIoc.Default.GetInstance<SettingsPageViewModel>();
+                var settings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
                 await vm.Download(settings.UploadLimit, settings.DownloadLimit,
                     async () =>
                     {

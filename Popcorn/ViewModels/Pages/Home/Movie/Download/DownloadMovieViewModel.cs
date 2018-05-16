@@ -16,6 +16,7 @@ using GalaSoft.MvvmLight.Ioc;
 using Popcorn.Models.Bandwidth;
 using Popcorn.Services.Cache;
 using Popcorn.ViewModels.Pages.Home.Settings;
+using Popcorn.ViewModels.Pages.Home.Settings.ApplicationSettings;
 
 namespace Popcorn.ViewModels.Pages.Home.Movie.Download
 {
@@ -245,7 +246,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Download
                         if (result.Item3 == null && !string.IsNullOrEmpty(result.Item2))
                             torrentPath = result.Item2;
 
-                        var settings = SimpleIoc.Default.GetInstance<SettingsPageViewModel>();
+                        var settings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
                         await _downloadService.Download(Movie, TorrentType.File, MediaType.Movie, torrentPath,
                                 settings.UploadLimit, settings.DownloadLimit, reportDownloadProgress,
                                 reportDownloadRate, reportNbSeeders, reportNbPeers, () => { }, () => { },

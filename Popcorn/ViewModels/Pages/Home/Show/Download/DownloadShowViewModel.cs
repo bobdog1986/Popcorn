@@ -16,6 +16,7 @@ using Popcorn.Models.Bandwidth;
 using Popcorn.Services.Cache;
 using Popcorn.Services.Download;
 using Popcorn.ViewModels.Pages.Home.Settings;
+using Popcorn.ViewModels.Pages.Home.Settings.ApplicationSettings;
 
 namespace Popcorn.ViewModels.Pages.Home.Show.Download
 {
@@ -224,7 +225,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Download
                 {
                     try
                     {
-                        var settings = SimpleIoc.Default.GetInstance<SettingsPageViewModel>();
+                        var settings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
                         await _downloadService.Download(message.Episode, TorrentType.Magnet, MediaType.Show,
                             Episode.SelectedTorrent.Url, settings.UploadLimit, settings.DownloadLimit,
                             reportDownloadProgress,

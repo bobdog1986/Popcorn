@@ -27,6 +27,7 @@ using Popcorn.Services.Download;
 using Popcorn.Services.User;
 using Popcorn.Utils.Exceptions;
 using Popcorn.ViewModels.Pages.Home.Settings;
+using Popcorn.ViewModels.Pages.Home.Settings.ApplicationSettings;
 
 namespace Popcorn.ViewModels.Pages.Home.Movie.Details
 {
@@ -381,7 +382,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Details
                 Movie = new MovieJson {Title = movie.Title};
                 IsMovieLoading = true;
                 SimilarMovies.Clear();
-                var applicationSettings = SimpleIoc.Default.GetInstance<SettingsPageViewModel>();
+                var applicationSettings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
                 Movie = await _movieService.GetMovieAsync(movie.ImdbId, ct);
                 ct.ThrowIfCancellationRequested();
                 await _movieService.TranslateMovie(Movie);
