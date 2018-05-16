@@ -198,7 +198,7 @@
     </Style>
 
     <Style x:Key="SettingsTabControlStyle" TargetType="{x:Type controls:MetroAnimatedSingleRowTabControl}">
-        <Setter Property="Background" Value="{StaticResource TabControlBackgroundBrush}" />
+        <Setter Property="Background" Value="Black" />
         <Setter Property="TabStripPlacement" Value="Top" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Margin" Value="0" />
@@ -210,8 +210,6 @@
                     <DockPanel LastChildFill="True">
                         <Grid
                             x:Name="HeaderGrid"
-                            attachedProperties:EnableDragHelper.EnableDrag="True"
-                            attachedProperties:MaximizeDoubleClickHelper.MaximizeDoubleClick="True"
                             Background="#11171c"
                             DockPanel.Dock="Left">
                             <TabPanel
