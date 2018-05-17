@@ -29,14 +29,14 @@
                 Width="48"
                 Height="48"
                 HorizontalAlignment="Center"
-                Foreground="#11171c"
+                Foreground="{DynamicResource AccentColorBrush}"
                 IsActive="True" />
             <TextBlock
                 Margin="0,15,0,0"
                 HorizontalAlignment="Center"
                 FontSize="24"
                 FontWeight="Light"
-                Foreground="#11171c"
+                Foreground="White"
                 Text="{lex:LocText LoadingChromecastsLabel}" />
             <Button
                 Width="100"
@@ -62,7 +62,7 @@
                 HorizontalAlignment="Center"
                 FontSize="24"
                 FontWeight="Light"
-                Foreground="#11171c"
+                Foreground="White"
                 Text="{lex:LocText NoChromecastLabel}" />
             <StackPanel
                 HorizontalAlignment="Center"
@@ -98,14 +98,14 @@
                     Width="48"
                     Height="48"
                     HorizontalAlignment="Center"
-                    Foreground="#11171c"
+                    Foreground="{DynamicResource AccentColorBrush}"
                     IsActive="True" />
                 <TextBlock
                     Margin="0,15,0,0"
                     HorizontalAlignment="Center"
                     FontSize="24"
                     FontWeight="Light"
-                    Foreground="#11171c"
+                    Foreground="White"
                     Text="{lex:LocText ConnectingToChomecastLabel}" />
                 <Button
                     Width="100"
@@ -139,7 +139,7 @@
                 HorizontalAlignment="Center"
                 FontSize="24"
                 FontWeight="Light"
-                Foreground="#11171c"
+                Foreground="White"
                 Text="{lex:LocText ChooseChromecastLabel}"
                 TextTrimming="CharacterEllipsis" />
             <ItemsControl

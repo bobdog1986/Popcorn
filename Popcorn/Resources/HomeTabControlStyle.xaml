@@ -11,7 +11,7 @@
     <SolidColorBrush x:Key="TabItemBackgroundIsMouseOverBrush" Color="{StaticResource Gray5}" />
     <SolidColorBrush x:Key="TabItemForegroundIsSelectedBrush" Color="{StaticResource IdealForegroundColor}" />
     <SolidColorBrush x:Key="TabItemSelectorBrush" Color="DarkRed" />
-    <SolidColorBrush x:Key="TabControlBackgroundBrush" Color="WhiteSmoke" />
+    <SolidColorBrush x:Key="TabControlBackgroundBrush" Color="Black" />
 
     <Style x:Key="HomeTabItemStyle" TargetType="{x:Type TabItem}">
         <Setter Property="Background" Value="Transparent" />

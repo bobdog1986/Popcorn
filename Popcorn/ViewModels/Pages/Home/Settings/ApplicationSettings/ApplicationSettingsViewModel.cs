@@ -21,6 +21,7 @@ using Popcorn.Helpers;
 using Popcorn.Messaging;
 using Popcorn.Models.Localization;
 using Popcorn.Models.Subtitles;
+using Popcorn.Models.User;
 using Popcorn.Services.Cache;
 using Popcorn.Services.Subtitles;
 using Popcorn.Services.User;
@@ -59,7 +60,12 @@ namespace Popcorn.ViewModels.Pages.Home.Settings.ApplicationSettings
         /// <summary>
         /// The language used through the application
         /// </summary>
-        private Language _language;
+        private ObservableCollection<Language> _availableLanguages;
+
+        /// <summary>
+        /// The selected language
+        /// </summary>
+        private Language _selectedLanguage;
 
         /// <summary>
         /// The upload limit
@@ -356,10 +362,23 @@ namespace Popcorn.ViewModels.Pages.Home.Settings.ApplicationSettings
         /// <summary>
         /// The language used through the application
         /// </summary>
-        public Language Language
+        public ObservableCollection<Language> AvailableLanguages
         {
-            get => _language;
-            set { Set(() => Language, ref _language, value); }
+            get => _availableLanguages;
+            set { Set(() => AvailableLanguages, ref _availableLanguages, value); }
+        }
+
+        /// <summary>
+        /// The selected language
+        /// </summary>
+        public Language SelectedLanguage
+        {
+            get => _selectedLanguage;
+            set
+            {
+                Set(() => SelectedLanguage, ref _selectedLanguage, value);
+                _userService.SetCurrentLanguage(value);
+            }
         }
 
         /// <summary>
@@ -487,8 +506,8 @@ namespace Popcorn.ViewModels.Pages.Home.Settings.ApplicationSettings
                 DefaultSubtitleLanguage = AvailableSubtitlesLanguages.FirstOrDefault();
             }
 
-            Language = new Language(_userService);
-            Language.LoadLanguages();
+            AvailableLanguages = new ObservableCollection<Language>(_userService.GetAvailableLanguages());
+            SelectedLanguage = _userService.GetCurrentLanguage();
         }
 
         /// <summary>

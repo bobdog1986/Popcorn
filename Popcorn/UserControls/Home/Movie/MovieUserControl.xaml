@@ -16,6 +16,7 @@
     xmlns:tabsViewModel="clr-namespace:Popcorn.ViewModels.Pages.Home.Movie.Tabs"
     d:DesignHeight="300"
     d:DesignWidth="300"
+    Background="White"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>

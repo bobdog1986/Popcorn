@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:chips="clr-namespace:ColorPickerControls.Chips;assembly=ColorPickerControls"
     xmlns:command="http://www.galasoft.ch/mvvmlight"
+    xmlns:controls="clr-namespace:Popcorn.Controls"
     xmlns:converters="clr-namespace:Popcorn.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
@@ -27,274 +28,338 @@
             <converters:UpdateLabelConverter x:Key="UpdateLabelConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <Grid
-            Grid.Row="0"
-            Grid.Column="0"
-            Grid.ColumnSpan="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" SharedSizeGroup="LabelCol" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <TextBlock Grid.Column="0" Text="{lex:LocText LanguageLabel}" />
-            <ComboBox
-                Grid.Column="1"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Center"
-                DisplayMemberPath="Name"
-                ItemsSource="{Binding Language.Languages}"
-                SelectedItem="{Binding Language.CurrentLanguage}" />
-        </Grid>
-        <Grid
-            Grid.Row="1"
-            Grid.Column="0"
-            Grid.ColumnSpan="2"
-            Margin="0,10,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" SharedSizeGroup="LabelCol" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <TextBlock
-                Grid.Column="0"
-                VerticalAlignment="Center"
-                Text="{lex:LocText DownloadLimitLabel}" />
-            <mah:NumericUpDown
-                Grid.Column="1"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Top"
-                Interval="50"
-                Maximum="100000"
-                Minimum="0"
-                Value="{Binding DownloadLimit}" />
-        </Grid>
-        <Grid
-            Grid.Row="2"
-            Grid.Column="0"
-            Grid.ColumnSpan="2"
-            Margin="0,10,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" SharedSizeGroup="LabelCol" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <TextBlock
-                Grid.Column="0"
-                VerticalAlignment="Center"
-                Text="{lex:LocText UploadLimitLabel}" />
-            <mah:NumericUpDown
-                Grid.Column="1"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Top"
-                Interval="50"
-                Maximum="10000"
-                Minimum="0"
-                Value="{Binding UploadLimit}" />
-        </Grid>
-        <Grid
-            Grid.Row="3"
-            Grid.Column="0"
-            Grid.ColumnSpan="2"
-            Margin="0,10,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" SharedSizeGroup="LabelCol" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <TextBlock
-                Grid.Column="0"
-                VerticalAlignment="Center"
-                Text="{lex:LocText DefaultQualityLabel}" />
-            <mah:ToggleSwitch
-                Grid.Column="2"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Center"
-                IsChecked="{Binding DefaultHdQuality}"
-                OffLabel="SD"
-                OnLabel="HD"
-                Style="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}" />
-        </Grid>
-        <Grid
-            Grid.Row="4"
-            Grid.Column="0"
-            Grid.ColumnSpan="2"
-            Margin="0,10,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" SharedSizeGroup="LabelCol" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <TextBlock
-                Grid.Column="0"
-                VerticalAlignment="Center"
-                Text="{lex:LocText DefaultSubtitleLanguageLabel}" />
-            <StackPanel
-                Grid.Column="2"
-                Margin="20,10,0,0"
-                Orientation="Horizontal">
-                <mah:SplitButton
-                    Width="130"
-                    Height="35"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Center"
-                    HorizontalContentAlignment="Left"
-                    ItemsSource="{Binding AvailableSubtitlesLanguages}"
-                    SelectedItem="{Binding DefaultSubtitleLanguage}">
-                    <mah:SplitButton.Icon>
-                        <iconPacks:PackIconMaterial Margin="6" Kind="Translate" />
-                    </mah:SplitButton.Icon>
-                </mah:SplitButton>
-                <mah:ProgressRing
-                    Width="20"
-                    Height="20"
-                    Margin="10,0,0,0"
-                    VerticalAlignment="Center"
-                    IsActive="True"
-                    Visibility="{Binding LoadingSubtitles, Converter={StaticResource BoolToInverseVisibilityConverter}}" />
-            </StackPanel>
-        </Grid>
-        <Grid
-            Grid.Row="5"
-            Grid.Column="0"
-            Grid.ColumnSpan="2"
-            Margin="0,10,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" SharedSizeGroup="LabelCol" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <TextBlock
-                Grid.Column="0"
-                VerticalAlignment="Center"
-                Text="{lex:LocText SubtitlesColorLabel}" />
-            <StackPanel Grid.Column="2" Orientation="Horizontal">
-                <chips:ColorChip
-                    Width="30"
-                    Height="28"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    ColorDialog="Standard"
-                    Color="{Binding SubtitlesColor, Mode=TwoWay}">
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="ColorChanged">
-                            <command:EventToCommand Command="{Binding Path=ChangeSubtitleColorCommand}" PassEventArgsToCommand="True" />
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                </chips:ColorChip>
-            </StackPanel>
-        </Grid>
-        <Grid
-            Grid.Row="6"
-            Grid.Column="0"
-            Grid.ColumnSpan="2"
-            Margin="0,10,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" SharedSizeGroup="LabelCol" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <TextBlock
-                Grid.Column="0"
-                VerticalAlignment="Center"
-                Text="{lex:LocText SubtitlesSizeLabel}" />
-            <StackPanel Grid.Column="2" Orientation="Horizontal">
-                <ComboBox
-                    Width="100"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Center"
-                    DisplayMemberPath="Label"
-                    ItemsSource="{Binding SubtitleSizes}"
-                    SelectedItem="{Binding SelectedSubtitleSize}" />
-            </StackPanel>
-        </Grid>
-        <Grid
-            Grid.Row="7"
-            Grid.Column="0"
-            Grid.ColumnSpan="2"
-            Margin="0,10,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" SharedSizeGroup="LabelCol" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <TextBlock
-                Grid.Column="0"
-                VerticalAlignment="Center"
-                Text="{lex:LocText CacheSizeLabel}" />
-            <StackPanel Grid.Column="2" Orientation="Horizontal">
+    <controls:AnimatedScrollViewer
+        Margin="15,20"
+        HorizontalScrollBarVisibility="Auto"
+        PreviewMouseWheel="OnPreviewMouseWheel"
+        VerticalScrollBarVisibility="Disabled">
+        <controls:CustomWrapPanel Orientation="Vertical">
+            <Grid Margin="20,10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="5" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="15" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
                 <TextBlock
+                    Grid.Row="0"
+                    FontSize="24"
+                    FontWeight="Light"
+                    Foreground="{DynamicResource AccentColorBrush}"
+                    Text="{lex:LocText LanguageLabel}" />
+                <TextBlock
+                    Grid.Row="2"
+                    FontSize="14"
+                    FontWeight="Light"
+                    Foreground="White"
+                    Text="Choisissez une langue" />
+                <ComboBox
+                    Grid.Row="4"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Center"
-                    Text="{Binding CacheSize}" />
-                <Button
-                    Width="100"
-                    Height="30"
-                    Margin="10,0,0,0"
-                    HorizontalAlignment="Right"
+                    ItemsSource="{Binding AvailableLanguages}"
+                    SelectedItem="{Binding SelectedLanguage}"
+                    Style="{StaticResource MetroComboBox}" />
+            </Grid>
+            <Grid Margin="20,10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="5" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="15" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock
+                    Grid.Row="0"
                     VerticalAlignment="Center"
-                    mah:ControlsHelper.ContentCharacterCasing="Normal"
-                    Command="{Binding ClearCacheCommand}"
-                    Content="{lex:LocText ClearButton}"
-                    Style="{DynamicResource SquareButtonStyle}" />
-                <Button
-                    Height="30"
-                    Margin="10,0,0,0"
-                    HorizontalAlignment="Right"
+                    FontSize="24"
+                    FontWeight="Light"
+                    Foreground="{DynamicResource AccentColorBrush}"
+                    Text="{lex:LocText DownloadLimitLabel}" />
+                <TextBlock
+                    Grid.Row="2"
+                    FontSize="14"
+                    FontWeight="Light"
+                    Foreground="White"
+                    Text="Choisissez la vitesse maximale de téléchargement" />
+                <mah:NumericUpDown
+                    Grid.Row="4"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Interval="50"
+                    Maximum="100000"
+                    Minimum="0"
+                    Value="{Binding DownloadLimit}" />
+            </Grid>
+            <Grid Margin="20,10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="5" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="15" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock
+                    Grid.Row="0"
                     VerticalAlignment="Center"
-                    mah:ControlsHelper.ContentCharacterCasing="Normal"
-                    Command="{Binding ChangeCacheLocationCommand}"
-                    Content="{lex:LocText ChangeLocation}"
-                    Style="{DynamicResource SquareButtonStyle}" />
-            </StackPanel>
-        </Grid>
-        <Grid Grid.Row="8" Grid.Column="1">
-            <StackPanel
-                HorizontalAlignment="Right"
-                VerticalAlignment="Bottom"
-                Orientation="Horizontal">
-                <TextBlock VerticalAlignment="Bottom" Text="{Binding Version}" />
+                    FontSize="24"
+                    FontWeight="Light"
+                    Foreground="{DynamicResource AccentColorBrush}"
+                    Text="{lex:LocText UploadLimitLabel}" />
+                <TextBlock
+                    Grid.Row="2"
+                    FontSize="14"
+                    FontWeight="Light"
+                    Foreground="White"
+                    Text="Choisissez la vitesse maximale de partage" />
+                <mah:NumericUpDown
+                    Grid.Row="4"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Interval="50"
+                    Maximum="10000"
+                    Minimum="0"
+                    Value="{Binding UploadLimit}" />
+            </Grid>
+            <Grid Margin="20,10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="5" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="15" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock
+                    Grid.Row="0"
+                    VerticalAlignment="Center"
+                    FontSize="24"
+                    FontWeight="Light"
+                    Foreground="{DynamicResource AccentColorBrush}"
+                    Text="{lex:LocText DefaultQualityLabel}" />
+                <TextBlock
+                    Grid.Row="2"
+                    FontSize="14"
+                    FontWeight="Light"
+                    Foreground="White"
+                    Text="Choisissez la qualité par défaut" />
+                <controls:Windows10ToggleSwitch
+                    Grid.Row="4"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Foreground="White"
+                    IsChecked="{Binding DefaultHdQuality}"
+                    OffLabel="HD"
+                    OnLabel="SD" />
+            </Grid>
+            <Grid Margin="20,10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="5" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="15" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock
+                    Grid.Row="0"
+                    VerticalAlignment="Center"
+                    FontSize="24"
+                    FontWeight="Light"
+                    Foreground="{DynamicResource AccentColorBrush}"
+                    Text="{lex:LocText DefaultSubtitleLanguageLabel}" />
+                <TextBlock
+                    Grid.Row="2"
+                    FontSize="14"
+                    FontWeight="Light"
+                    Foreground="White"
+                    Text="Choisissez la langue des sous-titre par défaut" />
                 <StackPanel
-                    Margin="15,0,0,0"
-                    Orientation="Vertical"
-                    Visibility="{Binding UpdateDownloading, Converter={StaticResource BoolToInverseVisibilityConverter}}">
-                    <TextBlock Text="{Binding UpdateDownloadProgress, Converter={StaticResource UpdateLabelConverter}, ConverterParameter=DownloadingUpdate}" />
-                    <mah:MetroProgressBar
-                        Margin="0,2.5,0,0"
-                        Foreground="{DynamicResource AccentColorBrush}"
-                        IsIndeterminate="False"
-                        Maximum="100"
-                        Minimum="0"
-                        Value="{Binding UpdateDownloadProgress}" />
+                    Grid.Row="4"
+                    Margin="0,10,0,0"
+                    Orientation="Horizontal">
+                    <mah:SplitButton
+                        Width="130"
+                        Height="35"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        HorizontalContentAlignment="Left"
+                        ItemsSource="{Binding AvailableSubtitlesLanguages}"
+                        SelectedItem="{Binding DefaultSubtitleLanguage}">
+                        <mah:SplitButton.Icon>
+                            <iconPacks:PackIconMaterial Margin="6" Kind="Translate" />
+                        </mah:SplitButton.Icon>
+                    </mah:SplitButton>
+                    <mah:ProgressRing
+                        Width="20"
+                        Height="20"
+                        Margin="10,0,0,0"
+                        VerticalAlignment="Center"
+                        IsActive="True"
+                        Visibility="{Binding LoadingSubtitles, Converter={StaticResource BoolToInverseVisibilityConverter}}" />
                 </StackPanel>
+            </Grid>
+            <Grid Margin="20,10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="5" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="15" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock
+                    Grid.Row="0"
+                    VerticalAlignment="Center"
+                    FontSize="24"
+                    FontWeight="Light"
+                    Foreground="{DynamicResource AccentColorBrush}"
+                    Text="{lex:LocText SubtitlesColorLabel}" />
+                <TextBlock
+                    Grid.Row="2"
+                    FontSize="14"
+                    FontWeight="Light"
+                    Foreground="White"
+                    Text="Choisissez la couleur des sous-titre par défaut" />
+                <StackPanel Grid.Row="4" Orientation="Horizontal">
+                    <chips:ColorChip
+                        Width="30"
+                        Height="28"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        ColorDialog="Standard"
+                        Color="{Binding SubtitlesColor, Mode=TwoWay}">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="ColorChanged">
+                                <command:EventToCommand Command="{Binding Path=ChangeSubtitleColorCommand}" PassEventArgsToCommand="True" />
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </chips:ColorChip>
+                </StackPanel>
+            </Grid>
+            <Grid Margin="20,10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="5" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="15" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock
+                    Grid.Column="0"
+                    VerticalAlignment="Center"
+                    FontSize="24"
+                    FontWeight="Light"
+                    Foreground="{DynamicResource AccentColorBrush}"
+                    Text="{lex:LocText SubtitlesSizeLabel}" />
+                <TextBlock
+                    Grid.Row="2"
+                    FontSize="14"
+                    FontWeight="Light"
+                    Foreground="White"
+                    Text="Choisissez la taille des sous-titre par défaut" />
+                <StackPanel Grid.Row="4" Orientation="Horizontal">
+                    <ComboBox
+                        Width="100"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        DisplayMemberPath="Label"
+                        ItemsSource="{Binding SubtitleSizes}"
+                        SelectedItem="{Binding SelectedSubtitleSize}" />
+                </StackPanel>
+            </Grid>
+            <Grid Margin="20,10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="5" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="15" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock
+                    Grid.Column="0"
+                    VerticalAlignment="Center"
+                    FontSize="24"
+                    FontWeight="Light"
+                    Foreground="{DynamicResource AccentColorBrush}"
+                    Text="{lex:LocText CacheSizeLabel}" />
+                <TextBlock
+                    Grid.Row="2"
+                    FontSize="14"
+                    FontWeight="Light"
+                    Foreground="White"
+                    Text="Nettoyer le cache" />
                 <StackPanel
-                    Margin="15,0,0,0"
-                    Orientation="Vertical"
-                    Visibility="{Binding UpdateApplying, Converter={StaticResource BoolToInverseVisibilityConverter}}">
-                    <TextBlock Text="{Binding UpdateApplyProgress, Converter={StaticResource UpdateLabelConverter}, ConverterParameter=ApplyingUpdate}" />
-                    <mah:MetroProgressBar
-                        Margin="0,2.5,0,0"
-                        Foreground="{DynamicResource AccentColorBrush}"
-                        IsIndeterminate="False"
-                        Maximum="100"
-                        Minimum="0"
-                        Value="{Binding UpdateApplyProgress}" />
+                    Grid.Row="4"
+                    HorizontalAlignment="Left"
+                    Orientation="Horizontal">
+                    <TextBlock
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        FontSize="14"
+                        FontWeight="Light"
+                        Foreground="White"
+                        Text="{Binding CacheSize}" />
+                    <Button
+                        Width="100"
+                        Height="30"
+                        Margin="10,0,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        mah:ControlsHelper.ContentCharacterCasing="Normal"
+                        Command="{Binding ClearCacheCommand}"
+                        Content="{lex:LocText ClearButton}"
+                        Style="{DynamicResource SquareButtonStyle}" />
+                    <Button
+                        Height="30"
+                        Margin="10,0,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        mah:ControlsHelper.ContentCharacterCasing="Normal"
+                        Command="{Binding ChangeCacheLocationCommand}"
+                        Content="{lex:LocText ChangeLocation}"
+                        Style="{DynamicResource SquareButtonStyle}" />
                 </StackPanel>
-            </StackPanel>
-        </Grid>
-    </Grid>
+            </Grid>
+            <Grid Margin="20,10">
+                <StackPanel
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal">
+                    <TextBlock
+                        VerticalAlignment="Bottom"
+                        FontSize="14"
+                        FontWeight="Light"
+                        Foreground="White"
+                        Text="{Binding Version}" />
+                    <StackPanel
+                        Margin="15,0,0,0"
+                        Orientation="Vertical"
+                        Visibility="{Binding UpdateDownloading, Converter={StaticResource BoolToInverseVisibilityConverter}}">
+                        <TextBlock Text="{Binding UpdateDownloadProgress, Converter={StaticResource UpdateLabelConverter}, ConverterParameter=DownloadingUpdate}" />
+                        <mah:MetroProgressBar
+                            Margin="0,2.5,0,0"
+                            Foreground="{DynamicResource AccentColorBrush}"
+                            IsIndeterminate="False"
+                            Maximum="100"
+                            Minimum="0"
+                            Value="{Binding UpdateDownloadProgress}" />
+                    </StackPanel>
+                    <StackPanel
+                        Margin="15,0,0,0"
+                        Orientation="Vertical"
+                        Visibility="{Binding UpdateApplying, Converter={StaticResource BoolToInverseVisibilityConverter}}">
+                        <TextBlock Text="{Binding UpdateApplyProgress, Converter={StaticResource UpdateLabelConverter}, ConverterParameter=ApplyingUpdate}" />
+                        <mah:MetroProgressBar
+                            Margin="0,2.5,0,0"
+                            Foreground="{DynamicResource AccentColorBrush}"
+                            IsIndeterminate="False"
+                            Maximum="100"
+                            Minimum="0"
+                            Value="{Binding UpdateApplyProgress}" />
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </controls:CustomWrapPanel>
+    </controls:AnimatedScrollViewer>
 
 </UserControl>
 

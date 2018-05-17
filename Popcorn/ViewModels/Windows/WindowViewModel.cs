@@ -683,7 +683,10 @@ namespace Popcorn.ViewModels.Windows
 
                     try
                     {
-                        await _dialogCoordinator.ShowMetroDialogAsync(this, subtitleDialog);
+                        await _dialogCoordinator.ShowMetroDialogAsync(this, subtitleDialog, new MetroDialogSettings
+                        {
+                            ColorScheme = MetroDialogColorScheme.Accented
+                        });
                         await cts.Task;
                     }
                     catch (Exception ex)

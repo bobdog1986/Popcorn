@@ -162,7 +162,7 @@
                         </MultiDataTrigger>
 
                         <Trigger SourceName="Border" Property="IsMouseOver" Value="True">
-                            <Setter TargetName="ContentSite" Property="TextElement.Foreground" Value="{DynamicResource WhiteBrush}" />
+                            <Setter TargetName="ContentSite" Property="TextElement.Foreground" Value="{DynamicResource BlackBrush}" />
                             <Setter TargetName="Underline" Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(controls:TabControlHelper.UnderlineMouseOverBrush), Mode=OneWay}" />
                         </Trigger>
 

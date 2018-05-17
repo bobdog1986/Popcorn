@@ -432,6 +432,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Controls\CustomWrapPanel.cs" />
+    <Compile Include="Controls\Windows10ToggleSwitch.cs" />
     <Compile Include="Models\Bandwidth\BandwidthRate.cs" />
     <Compile Include="Models\Cast\CastJson.cs" />
     <Compile Include="Models\Chromecast\MediaStatusEventArgs.cs" />
@@ -442,7 +444,6 @@
     <Compile Include="Models\Localization\EnglishLanguage.cs" />
     <Compile Include="Models\Localization\FrenchLanguage.cs" />
     <Compile Include="Models\Localization\ILanguage.cs" />
-    <Compile Include="Models\Localization\Language.cs" />
     <Compile Include="Models\Localization\SpanishLanguage.cs" />
     <Compile Include="Models\Media\IMedia.cs" />
     <Compile Include="Models\Media\IMediaFile.cs" />
@@ -912,6 +913,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Resources\MetroComboBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Resources\Player.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -931,6 +936,10 @@
     <Page Include="Resources\SplitView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\Windows10ToggleSwitch.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Skins\MainSkin.xaml">
       <Generator>MSBuild:Compile</Generator>
