@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using GalaSoft.MvvmLight.Messaging;
 using NLog;
+using Popcorn.Controls;
 using Popcorn.Messaging;
 using Popcorn.Utils.Exceptions;
 
@@ -46,15 +47,13 @@ namespace Popcorn.UserControls.Home.Settings.About
             }
         }
 
-        private void OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        private void OnPreviewMouseWheelScroller(object sender, MouseWheelEventArgs e)
         {
-            if (!e.Handled)
+            var scv = (AnimatedScrollViewer)sender;
+            if (scv.TargetHorizontalOffset - e.Delta >= -Math.Abs(e.Delta) &&
+                scv.TargetHorizontalOffset - e.Delta < scv.ScrollableWidth + Math.Abs(e.Delta))
             {
-                e.Handled = true;
-                var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
-                eventArg.RoutedEvent = UIElement.MouseWheelEvent;
-                eventArg.Source = sender;
-                Scroller.RaiseEvent(eventArg);
+                scv.TargetHorizontalOffset -= e.Delta;
             }
         }
     }

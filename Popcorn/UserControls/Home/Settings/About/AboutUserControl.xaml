@@ -39,96 +39,101 @@
             Command="NavigationCommands.GoToPage"
             Executed="PerformGoToPage" />
     </UserControl.CommandBindings>
-    <ScrollViewer
+    <controls:AnimatedScrollViewer
         x:Name="Scroller"
-        Margin="20"
-        VerticalScrollBarVisibility="Auto">
-        <StackPanel>
-            <Label
-                Content="{lex:LocText AboutLabel}"
-                FontSize="24"
-                FontWeight="Light"
-                Foreground="{DynamicResource AccentColorBrush}" />
-            <StackPanel
-                Margin="0,10,0,5"
-                VerticalAlignment="Center"
-                Orientation="Horizontal">
-                <Image Width="50">
-                    <Image.Source>
-                        <BitmapImage DecodePixelWidth="300" UriSource="/Resources/Images/Logo.png" />
-                    </Image.Source>
-                </Image>
-                <TextBlock
-                    Margin="5,0,0,0"
-                    VerticalAlignment="Center"
-                    FontSize="26"
+        Margin="15,20"
+        HorizontalScrollBarVisibility="Auto"
+        PreviewMouseWheel="OnPreviewMouseWheelScroller"
+        VerticalScrollBarVisibility="Disabled">
+        <controls:CustomWrapPanel Orientation="Vertical">
+            <StackPanel Margin="20,10">
+                <Label
+                    Content="{lex:LocText AboutLabel}"
+                    FontSize="24"
                     FontWeight="Light"
-                    Foreground="White"
-                    Text="Popcorn" />
-            </StackPanel>
-            <StackPanel Margin="0,5,0,0" Orientation="Vertical">
-                <TextBlock
-                    FontSize="14"
-                    FontWeight="Light"
-                    Foreground="White"
-                    Text="Popcorn is an application which aims to provide a simple interface to watch any movie or show. " />
-            </StackPanel>
-            <StackPanel Margin="0,15,0,0" Orientation="Horizontal">
-                <TextBlock
-                    FontWeight="Light"
-                    Foreground="White"
-                    Text="{lex:LocText VersionLabel}" />
-                <TextBlock
-                    Margin="0,0,5,0"
-                    Foreground="White"
-                    Text=":" />
-                <TextBlock
-                    Margin="0,0,5,0"
-                    FontWeight="Bold"
-                    Foreground="White"
-                    Text="{Binding Version}" />
+                    Foreground="{DynamicResource AccentColorBrush}" />
                 <StackPanel
-                    Margin="10,0"
-                    HorizontalAlignment="Left"
+                    Margin="0,10,0,5"
                     VerticalAlignment="Center"
                     Orientation="Horizontal">
-                    <StackPanel Orientation="Vertical" Visibility="{Binding UpdateDownloading, Converter={StaticResource BoolToInverseVisibilityConverter}}">
-                        <TextBlock Text="{Binding UpdateDownloadProgress, Converter={StaticResource UpdateLabelConverter}, ConverterParameter=DownloadingUpdate}" />
-                        <mah:MetroProgressBar
-                            Margin="0,2.5,0,0"
-                            Foreground="{DynamicResource AccentColorBrush}"
-                            IsIndeterminate="False"
-                            Maximum="100"
-                            Minimum="0"
-                            Value="{Binding UpdateDownloadProgress}" />
-                    </StackPanel>
-                    <StackPanel Orientation="Vertical" Visibility="{Binding UpdateApplying, Converter={StaticResource BoolToInverseVisibilityConverter}}">
-                        <TextBlock Text="{Binding UpdateApplyProgress, Converter={StaticResource UpdateLabelConverter}, ConverterParameter=ApplyingUpdate}" />
-                        <mah:MetroProgressBar
-                            Margin="0,2.5,0,0"
-                            Foreground="{DynamicResource AccentColorBrush}"
-                            IsIndeterminate="False"
-                            Maximum="100"
-                            Minimum="0"
-                            Value="{Binding UpdateApplyProgress}" />
+                    <Image Width="50">
+                        <Image.Source>
+                            <BitmapImage DecodePixelWidth="300" UriSource="/Resources/Images/Logo.png" />
+                        </Image.Source>
+                    </Image>
+                    <TextBlock
+                        Margin="5,0,0,0"
+                        VerticalAlignment="Center"
+                        FontSize="26"
+                        FontWeight="Light"
+                        Foreground="White"
+                        Text="Popcorn" />
+                </StackPanel>
+                <StackPanel Margin="5,5,0,0" Orientation="Vertical">
+                    <TextBlock
+                        FontSize="14"
+                        FontWeight="Light"
+                        Foreground="White"
+                        Text="Popcorn is an application which aims to provide a simple interface to watch any movie or show. " />
+                </StackPanel>
+                <StackPanel Margin="5,15,0,0" Orientation="Horizontal">
+                    <TextBlock
+                        FontWeight="Light"
+                        Foreground="White"
+                        Text="{lex:LocText VersionLabel}" />
+                    <TextBlock
+                        Margin="0,0,5,0"
+                        Foreground="White"
+                        Text=":" />
+                    <TextBlock
+                        Margin="0,0,5,0"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        Text="{Binding Version}" />
+                    <StackPanel
+                        Margin="10,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal">
+                        <StackPanel Orientation="Vertical" Visibility="{Binding UpdateDownloading, Converter={StaticResource BoolToInverseVisibilityConverter}}">
+                            <TextBlock Text="{Binding UpdateDownloadProgress, Converter={StaticResource UpdateLabelConverter}, ConverterParameter=DownloadingUpdate}" />
+                            <mah:MetroProgressBar
+                                Margin="0,2.5,0,0"
+                                Foreground="{DynamicResource AccentColorBrush}"
+                                IsIndeterminate="False"
+                                Maximum="100"
+                                Minimum="0"
+                                Value="{Binding UpdateDownloadProgress}" />
+                        </StackPanel>
+                        <StackPanel Orientation="Vertical" Visibility="{Binding UpdateApplying, Converter={StaticResource BoolToInverseVisibilityConverter}}">
+                            <TextBlock Text="{Binding UpdateApplyProgress, Converter={StaticResource UpdateLabelConverter}, ConverterParameter=ApplyingUpdate}" />
+                            <mah:MetroProgressBar
+                                Margin="0,2.5,0,0"
+                                Foreground="{DynamicResource AccentColorBrush}"
+                                IsIndeterminate="False"
+                                Maximum="100"
+                                Minimum="0"
+                                Value="{Binding UpdateApplyProgress}" />
+                        </StackPanel>
                     </StackPanel>
                 </StackPanel>
+                <TextBlock
+                    Margin="5,5,0,0"
+                    Foreground="White"
+                    Text="{Binding Copyright}" />
+                <TextBlock
+                    Margin="5,5,0,0"
+                    Foreground="White"
+                    Text="The use of this software is under the GNU General Public License" />
+                <Button
+                    Margin="5,15,0,0"
+                    HorizontalAlignment="Left"
+                    Command="{Binding ShowLicenseCommand}"
+                    Content="{lex:LocText ShowLicenseLabel}"
+                    Style="{DynamicResource MetroFlatButton}" />
             </StackPanel>
-            <TextBlock
-                Margin="0,5,0,0"
-                Foreground="White"
-                Text="{Binding Copyright}" />
-            <TextBlock
-                Margin="0,5,0,0"
-                Foreground="White"
-                Text="The use of this software is under the GNU General Public License" />
-            <Button
-                Margin="0,10,0,0"
-                HorizontalAlignment="Left"
-                Command="{Binding ShowLicenseCommand}"
-                Content="{lex:LocText ShowLicenseLabel}"
-                Style="{DynamicResource MetroFlatButton}" />
-            <StackPanel Margin="0,10,0,0">
+
+            <StackPanel Margin="20,10">
                 <Label
                     Content="Project"
                     FontSize="24"
@@ -139,10 +144,9 @@
                     Document="{Binding Project, Converter={StaticResource TextToFlowDocumentConverter}}"
                     FontWeight="Light"
                     Foreground="White"
-                    PreviewMouseWheel="OnPreviewMouseWheel"
                     Style="{StaticResource FlowDocumentScrollViewerCustomStyle}" />
             </StackPanel>
-            <StackPanel Orientation="Vertical">
+            <StackPanel Margin="20,10" Orientation="Vertical">
                 <Label
                     Content="Legal"
                     FontSize="24"
@@ -153,9 +157,8 @@
                     Document="{Binding Legal, Converter={StaticResource TextToFlowDocumentConverter}}"
                     FontWeight="Light"
                     Foreground="White"
-                    PreviewMouseWheel="OnPreviewMouseWheel"
                     Style="{StaticResource FlowDocumentScrollViewerCustomStyle}" />
             </StackPanel>
-        </StackPanel>
-    </ScrollViewer>
+        </controls:CustomWrapPanel>
+    </controls:AnimatedScrollViewer>
 </UserControl>

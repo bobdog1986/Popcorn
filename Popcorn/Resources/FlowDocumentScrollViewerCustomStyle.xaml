@@ -20,7 +20,7 @@
                             Margin="{TemplateBinding Padding}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}">
-                            <controls:AnimatedScrollViewer
+                            <ScrollViewer
                                 x:Name="PART_ContentHost"
                                 Uid="ScrollViewer_8"
                                 HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"

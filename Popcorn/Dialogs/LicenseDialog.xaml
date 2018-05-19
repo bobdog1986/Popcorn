@@ -55,6 +55,7 @@
         </StackPanel>
         <FlowDocumentScrollViewer
             Grid.Row="2"
+            Margin="-13,0,0,0"
             Document="{Binding License, Converter={StaticResource TextToFlowDocumentConverter}}"
             Style="{StaticResource FlowDocumentScrollViewerCustomStyle}" />
         <Button
