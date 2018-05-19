@@ -1,32 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using ColorPicker;
-using Enterwell.Clients.Wpf.Notifications;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
-using GalaSoft.MvvmLight.Messaging;
-using GalaSoft.MvvmLight.Threading;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using NLog;
 using Popcorn.Helpers;
-using Popcorn.Messaging;
-using Popcorn.Models.Localization;
 using Popcorn.Models.Subtitles;
 using Popcorn.Models.User;
 using Popcorn.Services.Cache;
 using Popcorn.Services.Subtitles;
 using Popcorn.Services.User;
-using Popcorn.Utils;
-using Squirrel;
 
 namespace Popcorn.ViewModels.Pages.Home.Settings.ApplicationSettings
 {
@@ -71,11 +60,6 @@ namespace Popcorn.ViewModels.Pages.Home.Settings.ApplicationSettings
         /// The upload limit
         /// </summary>
         private int _uploadLimit;
-
-        /// <summary>
-        /// The version of the app
-        /// </summary>
-        private string _version;
 
         /// <summary>
         /// Cache size
@@ -123,46 +107,6 @@ namespace Popcorn.ViewModels.Pages.Home.Settings.ApplicationSettings
         private ICommand _changeSubtitleColorCommand;
 
         /// <summary>
-        /// If an update is available
-        /// </summary>
-        private bool _updateAvailable;
-
-        /// <summary>
-        /// If an update is downloading
-        /// </summary>
-        private bool _updateDownloading;
-
-        /// <summary>
-        /// If an update is applying
-        /// </summary>
-        private bool _updateApplying;
-
-        /// <summary>
-        /// Update download progress
-        /// </summary>
-        private int _updateDownloadProgress;
-
-        /// <summary>
-        /// Update apply progress
-        /// </summary>
-        private int _updateApplyProgress;
-
-        /// <summary>
-        /// If an update has been applied
-        /// </summary>
-        private bool _updateApplied;
-
-        /// <summary>
-        /// File path of the installed update
-        /// </summary>
-        private string _updateFilePath;
-
-        /// <summary>
-        /// Notification manager
-        /// </summary>
-        private readonly NotificationMessageManager _manager;
-
-        /// <summary>
         /// The cache service
         /// </summary>
         private readonly ICacheService _cacheService;
@@ -173,16 +117,12 @@ namespace Popcorn.ViewModels.Pages.Home.Settings.ApplicationSettings
         /// <param name="userService">User service</param>
         /// <param name="subtitlesService">Subtitles service</param>
         /// <param name="cacheService">Cache service</param>
-        /// <param name="manager">Notification manager</param>
         public ApplicationSettingsViewModel(IUserService userService, ISubtitlesService subtitlesService,
-            ICacheService cacheService,
-            NotificationMessageManager manager)
+            ICacheService cacheService)
         {
             _cacheService = cacheService;
-            _manager = manager;
             _userService = userService;
             _subtitlesService = subtitlesService;
-            Version = Constants.AppVersion;
             RegisterCommands();
         }
 
@@ -275,15 +215,6 @@ namespace Popcorn.ViewModels.Pages.Home.Settings.ApplicationSettings
         }
 
         /// <summary>
-        /// The version of the app
-        /// </summary>
-        public string Version
-        {
-            get => _version;
-            set { Set(() => Version, ref _version, value); }
-        }
-
-        /// <summary>
         /// Cache size
         /// </summary>
         public string CacheSize
@@ -304,61 +235,7 @@ namespace Popcorn.ViewModels.Pages.Home.Settings.ApplicationSettings
                 _userService.SetUploadLimit(value);
             }
         }
-
-        /// <summary>
-        /// True if update is downloading
-        /// </summary>
-        public bool UpdateDownloading
-        {
-            get => _updateDownloading;
-            set { Set(() => UpdateDownloading, ref _updateDownloading, value); }
-        }
-
-        /// <summary>
-        /// True if update is available
-        /// </summary>
-        public bool UpdateAvailable
-        {
-            get => _updateAvailable;
-            set { Set(() => UpdateAvailable, ref _updateAvailable, value); }
-        }
-
-        /// <summary>
-        /// True if update is applying
-        /// </summary>
-        public bool UpdateApplying
-        {
-            get => _updateApplying;
-            set { Set(() => UpdateApplying, ref _updateApplying, value); }
-        }
-
-        /// <summary>
-        /// True if update has been applied
-        /// </summary>
-        public bool UpdateApplied
-        {
-            get => _updateApplied;
-            set { Set(() => UpdateApplied, ref _updateApplied, value); }
-        }
-
-        /// <summary>
-        /// The update download progress
-        /// </summary>
-        public int UpdateDownloadProgress
-        {
-            get => _updateDownloadProgress;
-            set { Set(() => UpdateDownloadProgress, ref _updateDownloadProgress, value); }
-        }
-
-        /// <summary>
-        /// The update apply progress
-        /// </summary>
-        public int UpdateApplyProgress
-        {
-            get => _updateApplyProgress;
-            set { Set(() => UpdateApplyProgress, ref _updateApplyProgress, value); }
-        }
-
+        
         /// <summary>
         /// The language used through the application
         /// </summary>
@@ -466,36 +343,22 @@ namespace Popcorn.ViewModels.Pages.Home.Settings.ApplicationSettings
                 DefaultHdQuality = user.DefaultHdQuality;
                 SelectedSubtitleSize = SubtitleSizes.FirstOrDefault(a => a.Size == subtitleSize.Size);
                 SubtitlesColor =
-                    (Color)ColorConverter.ConvertFromString(user.DefaultSubtitleColor);
+                    (Color) ColorConverter.ConvertFromString(user.DefaultSubtitleColor);
 
-                var tasks = new Func<Task>[]
-                {
-                    async () =>
-                    {
-                        LoadingSubtitles = true;
-                        AvailableSubtitlesLanguages = new ObservableRangeCollection<string>();
-                        var languages = (await _subtitlesService.GetSubLanguages())
-                            .Select(a => a.LanguageName)
-                            .OrderBy(a => a)
-                            .ToList();
-                        languages.Insert(0,
-                            LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"));
-                        AvailableSubtitlesLanguages.AddRange(
-                            new ObservableRangeCollection<string>(languages));
-                        DefaultSubtitleLanguage = AvailableSubtitlesLanguages.Any(a => a == defaultSubtitleLanguage)
-                            ? defaultSubtitleLanguage
-                            : LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel");
-                        LoadingSubtitles = false;
-                    },
-                    async () =>
-                    {
-#if !DEBUG
-                        await StartUpdateProcessAsync();
-#endif
-                    }
-                };
-
-                Task.WhenAll(tasks.Select(task => task()).ToArray());
+                LoadingSubtitles = true;
+                AvailableSubtitlesLanguages = new ObservableRangeCollection<string>();
+                var languages = (await _subtitlesService.GetSubLanguages())
+                    .Select(a => a.LanguageName)
+                    .OrderBy(a => a)
+                    .ToList();
+                languages.Insert(0,
+                    LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"));
+                AvailableSubtitlesLanguages.AddRange(
+                    new ObservableRangeCollection<string>(languages));
+                DefaultSubtitleLanguage = AvailableSubtitlesLanguages.Any(a => a == defaultSubtitleLanguage)
+                    ? defaultSubtitleLanguage
+                    : LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel");
+                LoadingSubtitles = false;
             }
             catch (Exception ex)
             {
@@ -511,92 +374,6 @@ namespace Popcorn.ViewModels.Pages.Home.Settings.ApplicationSettings
         }
 
         /// <summary>
-        /// Look for update then download and apply if any
-        /// </summary>
-        private async Task StartUpdateProcessAsync()
-        {
-            var watchStart = Stopwatch.StartNew();
-
-            Logger.Info(
-                "Looking for updates...");
-            try
-            {
-                using (var updateManager = await UpdateManager.GitHubUpdateManager(Constants.GithubRepository))
-                {
-                    var updateInfo = await updateManager.CheckForUpdate();
-                    if (updateInfo == null)
-                    {
-                        Logger.Error(
-                            "Problem while trying to check new updates.");
-                        return;
-                    }
-
-                    if (updateInfo.ReleasesToApply.Any())
-                    {
-                        Messenger.Default.Send(new UpdateAvailableMessage());
-                        UpdateAvailable = true;
-                        Logger.Info(
-                            $"A new update has been found!\n Currently installed version: {updateInfo.CurrentlyInstalledVersion?.Version?.Version.Major}.{updateInfo.CurrentlyInstalledVersion?.Version?.Version.Minor}.{updateInfo.CurrentlyInstalledVersion?.Version?.Version.Build} - New update: {updateInfo.FutureReleaseEntry?.Version?.Version.Major}.{updateInfo.FutureReleaseEntry?.Version?.Version.Minor}.{updateInfo.FutureReleaseEntry?.Version?.Version.Build}");
-
-                        UpdateDownloading = true;
-                        await updateManager.DownloadReleases(updateInfo.ReleasesToApply, progress =>
-                        {
-                            UpdateDownloadProgress = progress;
-                        });
-                        UpdateDownloading = false;
-                        UpdateApplying = true;
-                        _updateFilePath = await updateManager.ApplyReleases(updateInfo, progress =>
-                        {
-                            UpdateApplyProgress = progress;
-                        });
-                        UpdateApplying = false;
-                        UpdateApplied = true;
-                        Logger.Info(
-                            "A new update has been applied.");
-                        DispatcherHelper.CheckBeginInvokeOnUI(() =>
-                        {
-                            _manager.CreateMessage()
-                                .Accent("#1751C3")
-                                .Background("#333")
-                                .HasBadge("Info")
-                                .HasMessage(LocalizationProviderHelper.GetLocalizedValue<string>("UpdateApplied"))
-                                .Dismiss().WithButton(LocalizationProviderHelper.GetLocalizedValue<string>("Restart"),
-                                    async button =>
-                                    {
-                                        Logger.Info(
-                                            "Restarting...");
-
-                                        await UpdateManager.RestartAppWhenExited($@"{_updateFilePath}\Popcorn.exe",
-                                            "updated");
-                                        Application.Current.MainWindow.Close();
-                                    })
-                                .Dismiss().WithButton(
-                                    LocalizationProviderHelper.GetLocalizedValue<string>("LaterLabel"),
-                                    button => { })
-                                .Queue();
-                        });
-                    }
-                    else
-                    {
-                        UpdateAvailable = false;
-                        Logger.Info(
-                            "No update available.");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(
-                    $"Something went wrong when trying to update app. {ex.Message}");
-            }
-
-            watchStart.Stop();
-            var elapsedStartMs = watchStart.ElapsedMilliseconds;
-            Logger.Info(
-                $"Finished looking for updates in {elapsedStartMs}.");
-        }
-
-        /// <summary>
         /// Register commands
         /// </summary>
         private void RegisterCommands()
@@ -608,10 +385,7 @@ namespace Popcorn.ViewModels.Pages.Home.Settings.ApplicationSettings
                 RefreshCacheSize();
             });
 
-            ChangeSubtitleColorCommand = new RelayCommand<EventArgs<Color>>(args =>
-            {
-                SubtitlesColor = args.Value;
-            });
+            ChangeSubtitleColorCommand = new RelayCommand<EventArgs<Color>>(args => { SubtitlesColor = args.Value; });
 
             ChangeCacheLocationCommand = new RelayCommand(() =>
             {
@@ -660,8 +434,7 @@ namespace Popcorn.ViewModels.Pages.Home.Settings.ApplicationSettings
                         FileHelper.GetDirectorySize(_cacheService.ShowDownloads) +
                         FileHelper.GetDirectorySize(_cacheService.Subtitles);
             CacheSize =
-                (cache / 1024 / 1024)
-                .ToString(CultureInfo.InvariantCulture);
+                $"{(cache / 1024 / 1024).ToString(CultureInfo.InvariantCulture)} MB";
         }
     }
 }

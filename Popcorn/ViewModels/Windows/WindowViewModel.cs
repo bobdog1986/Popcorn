@@ -63,6 +63,11 @@ namespace Popcorn.ViewModels.Windows
         private IDisposable _showSubtitleDialogMessage;
 
         /// <summary>
+        /// Holds the async message relative to <see cref="ShowLicenseDialogMessage"/>
+        /// </summary>
+        private IDisposable _showLicenseDialogMessage;
+
+        /// <summary>
         /// Holds the async message relative to <see cref="ShowCastMediaMessage"/>
         /// </summary>
         private IDisposable _castMediaMessage;
@@ -91,11 +96,6 @@ namespace Popcorn.ViewModels.Windows
         /// Specify if show flyout is open
         /// </summary>
         private bool _isShowFlyoutOpen;
-
-        /// <summary>
-        /// Specify if about dialog is open
-        /// </summary>
-        private bool _canOpenAboutDialog = true;
 
         /// <summary>
         /// If an update is available
@@ -256,19 +256,9 @@ namespace Popcorn.ViewModels.Windows
         public ICommand MainWindowClosingCommand { get; private set; }
 
         /// <summary>
-        /// Command used to open about dialog
-        /// </summary>
-        public ICommand OpenAboutCommand { get; private set; }
-
-        /// <summary>
         /// Command used to switch fullscreen mode
         /// </summary>
         public ICommand SwitchFullScreenCommand { get; private set; }
-
-        /// <summary>
-        /// Command used to open Github
-        /// </summary>
-        public ICommand GoToGitHubCommand { get; private set; }
 
         /// <summary>
         /// Command used to load tabs
@@ -654,6 +644,45 @@ namespace Popcorn.ViewModels.Windows
                     }
                 });
 
+            _showLicenseDialogMessage = Messenger.Default.RegisterAsyncMessage<ShowLicenseDialogMessage>(async message =>
+                {
+                    var vm = new LicenseDialogViewModel();
+                    var licenseDialog = new LicenseDialog
+                    {
+                        DataContext = vm
+                    };
+
+                    var cts = new TaskCompletionSource<object>();
+                    vm.OnCloseAction = async () =>
+                    {
+                        try
+                        {
+                            var dialog = await _dialogCoordinator.GetCurrentDialogAsync<LicenseDialog>(
+                                this);
+                            if (dialog != null)
+                                await _dialogCoordinator.HideMetroDialogAsync(this, dialog);
+                            cts.TrySetResult(null);
+                        }
+                        catch (Exception ex)
+                        {
+                            cts.TrySetException(ex);
+                        }
+                    };
+
+                    try
+                    {
+                        await _dialogCoordinator.ShowMetroDialogAsync(this, licenseDialog, new MetroDialogSettings
+                        {
+                            ColorScheme = MetroDialogColorScheme.Accented
+                        });
+                        await cts.Task;
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error(ex);
+                    }
+                });
+
             _showDownloadSettingsMessage = Messenger.Default.RegisterAsyncMessage<ShowDownloadSettingsDialogMessage>(
                 async message =>
                 {
@@ -859,38 +888,7 @@ namespace Popcorn.ViewModels.Windows
                     ApplicationService.IsFullScreen = true;
                 }
             });
-
-            OpenAboutCommand = new RelayCommand(async () =>
-            {
-                _canOpenAboutDialog = false;
-
-                var aboutDialog = new AboutDialog();
-                var vm = new AboutDialogViewModel(async () =>
-                {
-                    try
-                    {
-                        _canOpenAboutDialog = true;
-
-                        var dialog = await _dialogCoordinator.GetCurrentDialogAsync<AboutDialog>(
-                            this);
-                        if (dialog != null)
-                            await _dialogCoordinator.HideMetroDialogAsync(this, dialog);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Error(ex);
-                    }
-                });
-
-                aboutDialog.DataContext = vm;
-                await _dialogCoordinator.ShowMetroDialogAsync(this, aboutDialog);
-            }, () => _canOpenAboutDialog);
-
-            GoToGitHubCommand = new RelayCommand(() =>
-            {
-                Process.Start(new ProcessStartInfo("https://github.com/bbougot/Popcorn"));
-            });
-
+            
             DragEnterFileCommand = new RelayCommand<DragEventArgs>(e =>
             {
                 Messenger.Default.Send(new DropFileMessage(DropFileMessage.DropFileEvent.Enter));
@@ -908,7 +906,7 @@ namespace Popcorn.ViewModels.Windows
                 {
                     if (cmd.Contains("updated"))
                     {
-                        OpenAboutCommand.Execute(null);
+                        // TODO: show info about new update
                     }
                     else if (cmd.Length == 2 && (cmd[1].StartsWith("magnet") || cmd[1].EndsWith("torrent")))
                     {

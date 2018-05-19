@@ -35,9 +35,9 @@ namespace Popcorn.ViewModels.Pages.Home.Settings
         /// <param name="helpViewModel">Help</param>
         public SettingsPageViewModel(ApplicationSettingsViewModel applicationSettingsViewModel, AboutViewModel aboutViewModel, HelpViewModel helpViewModel)
         {
-            applicationSettingsViewModel.Caption = LocalizationProviderHelper.GetLocalizedValue<string>("SettingsLabel").ToLowerInvariant();
-            aboutViewModel.Caption = LocalizationProviderHelper.GetLocalizedValue<string>("AboutLabel").ToLowerInvariant();
-            helpViewModel.Caption = LocalizationProviderHelper.GetLocalizedValue<string>("HelpLabel").ToLowerInvariant();
+            applicationSettingsViewModel.Caption = LocalizationProviderHelper.GetLocalizedValue<string>("OptionsLabel");
+            aboutViewModel.Caption = LocalizationProviderHelper.GetLocalizedValue<string>("AboutLabel");
+            helpViewModel.Caption = LocalizationProviderHelper.GetLocalizedValue<string>("HelpLabel");
             Pages = new ObservableCollection<IPageViewModel>
             {
                 applicationSettingsViewModel,
@@ -53,15 +53,15 @@ namespace Popcorn.ViewModels.Pages.Home.Settings
                     {
                         if (page is ApplicationSettingsViewModel)
                         {
-                            page.Caption = LocalizationProviderHelper.GetLocalizedValue<string>("SettingsLabel").ToLowerInvariant();
+                            page.Caption = LocalizationProviderHelper.GetLocalizedValue<string>("OptionsLabel");
                         }
                         else if (page is AboutViewModel)
                         {
-                            page.Caption = LocalizationProviderHelper.GetLocalizedValue<string>("AboutLabel").ToLowerInvariant();
+                            page.Caption = LocalizationProviderHelper.GetLocalizedValue<string>("AboutLabel");
                         }
                         else if (page is HelpViewModel)
                         {
-                            page.Caption = LocalizationProviderHelper.GetLocalizedValue<string>("HelpLabel").ToLowerInvariant();
+                            page.Caption = LocalizationProviderHelper.GetLocalizedValue<string>("HelpLabel");
                         }
                     }
                 });

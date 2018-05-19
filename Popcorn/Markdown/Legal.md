@@ -1,14 +1,4 @@
-# Popcorn
-***
-Popcorn is an application which aims to provide a simple interface to watch any movie or show.
-
-## Project
-***
-The project is hosted [here](https://github.com/bbougot/Popcorn).
-
-## Legal
-***
-If you distribute a copy or make a fork of the project, you have to credit this project as source.
+﻿If you distribute a copy or make a fork of the project, you have to credit this project as source.
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 

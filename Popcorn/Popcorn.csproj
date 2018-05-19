@@ -434,6 +434,11 @@
     </Compile>
     <Compile Include="Controls\CustomWrapPanel.cs" />
     <Compile Include="Controls\Windows10ToggleSwitch.cs" />
+    <Compile Include="Dialogs\LicenseDialog.xaml.cs">
+      <DependentUpon>LicenseDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Extensions\FlowDocumentScrollViewerExtensions.cs" />
+    <Compile Include="Messaging\ShowLicenseDialogMessage.cs" />
     <Compile Include="Models\Bandwidth\BandwidthRate.cs" />
     <Compile Include="Models\Cast\CastJson.cs" />
     <Compile Include="Models\Chromecast\MediaStatusEventArgs.cs" />
@@ -556,10 +561,10 @@
     <Compile Include="UserControls\Home\Settings\SettingsUserControl.xaml.cs">
       <DependentUpon>SettingsUserControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\Dialogs\AboutDialogViewModel.cs" />
     <Compile Include="ViewModels\Dialogs\ChromecastDialogViewModel.cs" />
     <Compile Include="ViewModels\Dialogs\DownloadSettingsDialogViewModel.cs" />
     <Compile Include="ViewModels\Dialogs\DropTorrentDialogViewModel.cs" />
+    <Compile Include="ViewModels\Dialogs\LicenseDialogViewModel.cs" />
     <Compile Include="ViewModels\Dialogs\SubtitleDialogViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\Cast\CastViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\Genres\GenreViewModel.cs" />
@@ -663,9 +668,6 @@
     <Compile Include="Converters\UpdateLabelConverter.cs" />
     <Compile Include="Converters\ValueToBrushConverter.cs" />
     <Compile Include="Converters\WindowStateToBooleanConverter.cs" />
-    <Compile Include="Dialogs\AboutDialog.xaml.cs">
-      <DependentUpon>AboutDialog.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Dialogs\CastDialog.xaml.cs">
       <DependentUpon>CastDialog.xaml</DependentUpon>
     </Compile>
@@ -760,9 +762,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </None>
-    <EmbeddedResource Include="Markdown\About.md" />
+    <EmbeddedResource Include="Markdown\Project.md" />
     <EmbeddedResource Include="Markdown\License.md" />
-    <EmbeddedResource Include="Markdown\Versions.md" />
+    <EmbeddedResource Include="Markdown\Legal.md" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -857,10 +859,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Dialogs\AboutDialog.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Dialogs\CastDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -872,6 +870,10 @@
     <Page Include="Dialogs\DropTorrentDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Dialogs\LicenseDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Dialogs\SubtitleDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -888,6 +890,10 @@
     <Page Include="Resources\AnimatedScrollViewer.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resources\FlowDocumentScrollViewerCustomStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Resources\HomeTabControlStyle.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -912,10 +918,6 @@
     <Page Include="Resources\Markdown.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Resources\MetroComboBox.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Resources\Player.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -1035,7 +1037,9 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\Images\Logo.png" />
+  </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="xcopy /s /i /y $(SolutionDir)packages\ffmpegzeranoe\3.4.1.1\tools\net45\*.* $(OutDir)FFmpeg" />
     <Exec Command="xcopy /s /y $(SolutionDir)packages\libtorrent-net\4.1.0\tools\*.* $(OutDir)" />

@@ -41,11 +41,12 @@
         <TextBlock
             Grid.Row="0"
             HorizontalAlignment="Center"
-            FontSize="24"
-            FontWeight="Light"
-            Foreground="White"
+            FontSize="26"
+            FontWeight="Normal"
+            Foreground="{DynamicResource AccentColorBrush}"
             Text="{lex:LocText OptionsLabel}"
-            TextTrimming="CharacterEllipsis" />
+            TextTrimming="CharacterEllipsis"
+            Typography.Capitals="SmallCaps" />
         <Grid
             Grid.Row="1"
             Margin="0,20,0,0"
@@ -61,17 +62,23 @@
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="1" Orientation="Vertical">
                 <TextBlock
-                    HorizontalAlignment="Center"
+                    HorizontalAlignment="Right"
                     FontSize="24"
                     FontWeight="Light"
                     Foreground="White"
                     Text="{lex:LocText SubtitlesLabel}"
                     TextTrimming="CharacterEllipsis" />
                 <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
+                    <controls:ProgressRing
+                        Width="20"
+                        Height="20"
+                        VerticalAlignment="Center"
+                        IsActive="True"
+                        Visibility="{Binding LoadingSubtitles, Converter={StaticResource BoolToInverseVisibilityConverter}}" />
                     <controls:SplitButton
                         Width="130"
                         Height="35"
-                        Margin="0,0,10,0"
+                        Margin="10,0,0,0"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Center"
                         HorizontalContentAlignment="Left"
@@ -82,13 +89,6 @@
                             <iconPacks:PackIconMaterial Margin="6" Kind="Translate" />
                         </controls:SplitButton.Icon>
                     </controls:SplitButton>
-                    <controls:ProgressRing
-                        Width="20"
-                        Height="20"
-                        Margin="0,0,10,0"
-                        VerticalAlignment="Center"
-                        IsActive="True"
-                        Visibility="{Binding LoadingSubtitles, Converter={StaticResource BoolToInverseVisibilityConverter}}" />
                 </StackPanel>
             </StackPanel>
             <StackPanel Grid.Column="3" Orientation="Vertical">

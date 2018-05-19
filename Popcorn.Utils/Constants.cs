@@ -17,6 +17,11 @@ namespace Popcorn.Utils
         public const string AppVersion = "4.1.0";
 
         /// <summary>
+        /// Copyright
+        /// </summary>
+        public static string Copyright = "Copyright Popcorn © 2015-" + DateTime.Now.Year;
+
+        /// <summary>
         /// Endpoint to API
         /// </summary>
         public const string PopcornApi = "https://popcornapi.azurewebsites.net/api";
