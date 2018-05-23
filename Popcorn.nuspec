@@ -30,15 +30,15 @@
         <file src="es\Microsoft.Data.OData.resources.dll" target="lib\net45\es\Microsoft.Data.OData.resources.dll" />
         <file src="es\System.Spatial.resources.dll" target="lib\net45\es\System.Spatial.resources.dll" />
         <file src="fa\Humanizer.resources.dll" target="lib\net45\fa\Humanizer.resources.dll" />
-        <file src="FFmpeg\avcodec-57.dll" target="lib\net45\FFmpeg\avcodec-57.dll" />
-        <file src="FFmpeg\avdevice-57.dll" target="lib\net45\FFmpeg\avdevice-57.dll" />
-        <file src="FFmpeg\avfilter-6.dll" target="lib\net45\FFmpeg\avfilter-6.dll" />
-        <file src="FFmpeg\avformat-57.dll" target="lib\net45\FFmpeg\avformat-57.dll" />
-        <file src="FFmpeg\avutil-55.dll" target="lib\net45\FFmpeg\avutil-55.dll" />
-        <file src="FFmpeg\postproc-54.dll" target="lib\net45\FFmpeg\postproc-54.dll" />
+        <file src="FFmpeg\avcodec-57.dll" target="lib\net45\FFmpeg\avcodec-58.dll" />
+        <file src="FFmpeg\avdevice-57.dll" target="lib\net45\FFmpeg\avdevice-58.dll" />
+        <file src="FFmpeg\avfilter-6.dll" target="lib\net45\FFmpeg\avfilter-7.dll" />
+        <file src="FFmpeg\avformat-57.dll" target="lib\net45\FFmpeg\avformat-58.dll" />
+        <file src="FFmpeg\avutil-55.dll" target="lib\net45\FFmpeg\avutil-56.dll" />
+        <file src="FFmpeg\postproc-54.dll" target="lib\net45\FFmpeg\postproc-55.dll" />
         <file src="FFmpeg\SoundTouch.dll" target="lib\net45\FFmpeg\SoundTouch.dll" />
-        <file src="FFmpeg\swresample-2.dll" target="lib\net45\FFmpeg\swresample-2.dll" />
-        <file src="FFmpeg\swscale-4.dll" target="lib\net45\FFmpeg\swscale-4.dll" />
+        <file src="FFmpeg\swresample-2.dll" target="lib\net45\FFmpeg\swresample-3.dll" />
+        <file src="FFmpeg\swscale-4.dll" target="lib\net45\FFmpeg\swscale-5.dll" />
         <file src="fi-FI\Humanizer.resources.dll" target="lib\net45\fi-FI\Humanizer.resources.dll" />
         <file src="fr\Humanizer.resources.dll" target="lib\net45\fr\Humanizer.resources.dll" />
         <file src="fr\Popcorn.resources.dll" target="lib\net45\fr\Popcorn.resources.dll" />
