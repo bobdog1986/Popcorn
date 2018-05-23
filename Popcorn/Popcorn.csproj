@@ -36,8 +36,8 @@
     <Reference Include="Akavache.Sqlite3, Version=6.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\akavache.sqlite3.6.0.0-alpha0038\lib\netstandard1.1\Akavache.Sqlite3.dll</HintPath>
     </Reference>
-    <Reference Include="AsyncEnumerable, Version=2.1.1.0, Culture=neutral, PublicKeyToken=0426b068161bd1d1, processorArchitecture=MSIL">
-      <HintPath>..\packages\AsyncEnumerator.2.1.1\lib\net45\AsyncEnumerable.dll</HintPath>
+    <Reference Include="AsyncEnumerable, Version=2.2.0.0, Culture=neutral, PublicKeyToken=0426b068161bd1d1, processorArchitecture=MSIL">
+      <HintPath>..\packages\AsyncEnumerator.2.2.0\lib\net45\AsyncEnumerable.dll</HintPath>
     </Reference>
     <Reference Include="CommonServiceLocator, Version=2.0.3.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
       <HintPath>..\packages\CommonServiceLocator.2.0.3\lib\net47\CommonServiceLocator.dll</HintPath>
@@ -57,14 +57,14 @@
     <Reference Include="Enterwell.Clients.Wpf.Notifications, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Enterwell.Clients.Wpf.Notifications.1.3.0\lib\net451\Enterwell.Clients.Wpf.Notifications.dll</HintPath>
     </Reference>
-    <Reference Include="ffme.common, Version=3.4.2.240, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\FFME.Windows.3.4.240\lib\net461\ffme.common.dll</HintPath>
+    <Reference Include="ffme.common, Version=4.0.2.250, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FFME.Windows.4.0.250\lib\net461\ffme.common.dll</HintPath>
     </Reference>
-    <Reference Include="ffme.win, Version=2018.4.25.15528, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\FFME.Windows.3.4.240\lib\net461\ffme.win.dll</HintPath>
+    <Reference Include="ffme.win, Version=2018.5.20.30838, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FFME.Windows.4.0.250\lib\net461\ffme.win.dll</HintPath>
     </Reference>
-    <Reference Include="FFmpeg.AutoGen, Version=3.4.0.6, Culture=neutral, PublicKeyToken=9b7632533a381715, processorArchitecture=MSIL">
-      <HintPath>..\packages\FFmpeg.AutoGen.3.4.0.6\lib\net45\FFmpeg.AutoGen.dll</HintPath>
+    <Reference Include="FFmpeg.AutoGen, Version=4.0.0.2, Culture=neutral, PublicKeyToken=9b7632533a381715, processorArchitecture=MSIL">
+      <HintPath>..\packages\FFmpeg.AutoGen.4.0.0.2\lib\net45\FFmpeg.AutoGen.dll</HintPath>
     </Reference>
     <Reference Include="GalaSoft.MvvmLight, Version=5.4.1.0, Culture=neutral, PublicKeyToken=e7570ab207bcb616, processorArchitecture=MSIL">
       <HintPath>..\packages\MvvmLightLibs.5.4.1\lib\net45\GalaSoft.MvvmLight.dll</HintPath>
@@ -85,7 +85,7 @@
       <HintPath>..\packages\Humanizer.Core.2.2.0\lib\netstandard1.0\Humanizer.dll</HintPath>
     </Reference>
     <Reference Include="libvideo, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\VideoLibrary.1.3.7\lib\portable-net45+win+wpa81+MonoAndroid10+xamarinios10+MonoTouch10\libvideo.dll</HintPath>
+      <HintPath>..\packages\VideoLibrary.1.4.0\lib\portable-net45+win+wpa81+MonoAndroid10+xamarinios10+MonoTouch10\libvideo.dll</HintPath>
     </Reference>
     <Reference Include="LoadingIndicators.WPF, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\LoadingIndicators.WPF.0.0.1\lib\LoadingIndicators.WPF.dll</HintPath>
@@ -1041,7 +1041,7 @@
     <Resource Include="Resources\Images\Logo.png" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy /s /i /y $(SolutionDir)packages\ffmpegzeranoe\3.4.1.1\tools\net45\*.* $(OutDir)FFmpeg" />
+    <Exec Command="xcopy /s /i /y $(SolutionDir)packages\ffmpegzeranoe\4.0.0\tools\net45\*.* $(OutDir)FFmpeg" />
     <Exec Command="xcopy /s /y $(SolutionDir)packages\libtorrent-net\4.1.0\tools\*.* $(OutDir)" />
     <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
       <Output TaskParameter="Assemblies" ItemName="Popcorn" />
