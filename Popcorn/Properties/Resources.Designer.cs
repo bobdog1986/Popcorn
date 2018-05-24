@@ -1033,6 +1033,15 @@ namespace Popcorn.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Shortcuts.
+        /// </summary>
+        public static string ShortcutsLabel {
+            get {
+                return ResourceManager.GetString("ShortcutsLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Show license.
         /// </summary>
         public static string ShowLicenseLabel {

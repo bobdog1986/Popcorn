@@ -516,4 +516,7 @@
   <data name="ShowLicenseLabel" xml:space="preserve">
     <value>Ver la licencia</value>
   </data>
+  <data name="ShortcutsLabel" xml:space="preserve">
+    <value>Atajos</value>
+  </data>
 </root>

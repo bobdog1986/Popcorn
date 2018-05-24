@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Popcorn.Controls;
 
 namespace Popcorn.UserControls.Home.Settings.Help
 {
@@ -23,6 +24,16 @@ namespace Popcorn.UserControls.Home.Settings.Help
         public HelpUserControl()
         {
             InitializeComponent();
+        }
+
+        private void OnPreviewMouseWheelScroller(object sender, MouseWheelEventArgs e)
+        {
+            var scv = (AnimatedScrollViewer)sender;
+            if (scv.TargetHorizontalOffset - e.Delta >= -Math.Abs(e.Delta) &&
+                scv.TargetHorizontalOffset - e.Delta < scv.ScrollableWidth + Math.Abs(e.Delta))
+            {
+                scv.TargetHorizontalOffset -= e.Delta;
+            }
         }
     }
 }

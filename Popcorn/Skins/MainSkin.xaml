@@ -19,5 +19,7 @@
         <ResourceDictionary Source="../Resources/Player.xaml" />
         <ResourceDictionary Source="../Resources/Windows10ToggleSwitch.xaml" />
         <ResourceDictionary Source="../Resources/FlowDocumentScrollViewerCustomStyle.xaml" />
+        <ResourceDictionary Source="../Resources/HotKey.xaml" />
+        <ResourceDictionary Source="../Resources/CombiLabel.xaml" />
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>
