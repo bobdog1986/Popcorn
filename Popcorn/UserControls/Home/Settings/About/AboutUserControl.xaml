@@ -144,7 +144,8 @@
                     Document="{Binding Project, Converter={StaticResource TextToFlowDocumentConverter}}"
                     FontWeight="Light"
                     Foreground="White"
-                    Style="{StaticResource FlowDocumentScrollViewerCustomStyle}" />
+                    Style="{StaticResource FlowDocumentScrollViewerCustomStyle}"
+                    VerticalScrollBarVisibility="Hidden" />
             </StackPanel>
             <StackPanel Margin="20,10" Orientation="Vertical">
                 <Label
@@ -157,7 +158,8 @@
                     Document="{Binding Legal, Converter={StaticResource TextToFlowDocumentConverter}}"
                     FontWeight="Light"
                     Foreground="White"
-                    Style="{StaticResource FlowDocumentScrollViewerCustomStyle}" />
+                    Style="{StaticResource FlowDocumentScrollViewerCustomStyle}"
+                    VerticalScrollBarVisibility="Hidden" />
             </StackPanel>
         </controls:CustomWrapPanel>
     </controls:AnimatedScrollViewer>

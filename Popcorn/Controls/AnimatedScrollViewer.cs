@@ -163,6 +163,8 @@ namespace Popcorn.Controls
             {
                 thisScroller.TargetVerticalOffset = newVOffset;
             }
+
+            e.Handled = true;
         }
 
         void VScrollBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
