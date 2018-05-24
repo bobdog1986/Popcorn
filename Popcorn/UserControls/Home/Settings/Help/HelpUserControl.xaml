@@ -31,20 +31,60 @@
                     <Label
                         Margin="0,5,0,5"
                         HorizontalAlignment="Left"
-                        Content="&#x2193;"
+                        Content="&#x2191;"
                         Style="{StaticResource NormalKey}" />
-
-                    <!--<controls:CombiLabel
+                    <TextBlock
+                        Margin="30,0,0,0"
+                        VerticalAlignment="Center"
+                        Foreground="#E2E2E2"
+                        Text="Scroll up the movies/shows in the interface." />
+                </StackPanel>
+                <StackPanel
+                    Margin="5,10,0,5"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal">
+                    <Label
                         Margin="0,5,0,5"
                         HorizontalAlignment="Left"
-                        Content="Ctrl"
-                        Content2="&#x2193;"
-                        Style="{StaticResource Hotkey}" />-->
+                        Content="&#x2193;"
+                        Style="{StaticResource NormalKey}" />
                     <TextBlock
                         Margin="30,0,0,0"
                         VerticalAlignment="Center"
                         Foreground="#E2E2E2"
                         Text="Scroll down the movies/shows in the interface." />
+                </StackPanel>
+                <StackPanel
+                    Margin="5,10,0,5"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal">
+                    <controls:CombiLabel
+                        Margin="0,5,0,5"
+                        HorizontalAlignment="Left"
+                        Content="Ctrl"
+                        Content2="v"
+                        Style="{StaticResource Hotkey}" />
+                    <TextBlock
+                        Margin="30,0,0,0"
+                        VerticalAlignment="Center"
+                        Foreground="#E2E2E2"
+                        Text="Paste a magnet link to play the media." />
+                </StackPanel>
+                <StackPanel
+                    Margin="5,10,0,5"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal">
+                    <controls:CombiLabel
+                        Margin="0,5,0,5"
+                        HorizontalAlignment="Left"
+                        Content="Ctrl"
+                        Content2="f"
+                        Style="{StaticResource Hotkey}" />
+                    <TextBlock
+                        Margin="30,0,0,0"
+                        VerticalAlignment="Center"
+                        Foreground="#E2E2E2"
+                        Text="Search a movie/show." />
                 </StackPanel>
             </StackPanel>
         </controls:CustomWrapPanel>
