@@ -47,13 +47,20 @@ namespace Popcorn.UserControls.Home.Settings.About
             }
         }
 
-        private void OnPreviewMouseWheelScroller(object sender, MouseWheelEventArgs e)
+        private void OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            var scv = (AnimatedScrollViewer)sender;
-            if (scv.TargetHorizontalOffset - e.Delta >= -Math.Abs(e.Delta) &&
-                scv.TargetHorizontalOffset - e.Delta < scv.ScrollableWidth + Math.Abs(e.Delta))
+            var scv = (ScrollViewer)sender;
+            if (scv.HorizontalOffset - e.Delta >= -Math.Abs(e.Delta) &&
+                scv.HorizontalOffset - e.Delta < scv.ScrollableWidth + Math.Abs(e.Delta))
             {
-                scv.TargetHorizontalOffset -= e.Delta;
+                IInputElement focusedControl = FocusManager.GetFocusedElement(Window.GetWindow(this));
+                if (focusedControl is ComboBoxItem || focusedControl is Button)
+                {
+                    e.Handled = false;
+                    return;
+                }
+
+                scv.ScrollToHorizontalOffset(scv.HorizontalOffset - e.Delta);
             }
         }
     }

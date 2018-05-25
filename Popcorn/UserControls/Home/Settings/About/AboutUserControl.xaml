@@ -39,11 +39,10 @@
             Command="NavigationCommands.GoToPage"
             Executed="PerformGoToPage" />
     </UserControl.CommandBindings>
-    <controls:AnimatedScrollViewer
-        x:Name="Scroller"
+    <ScrollViewer
         Margin="15,20"
         HorizontalScrollBarVisibility="Auto"
-        PreviewMouseWheel="OnPreviewMouseWheelScroller"
+        PreviewMouseWheel="OnPreviewMouseWheel"
         VerticalScrollBarVisibility="Disabled">
         <controls:CustomWrapPanel Orientation="Vertical">
             <StackPanel Margin="20,10">
@@ -162,5 +161,5 @@
                     VerticalScrollBarVisibility="Hidden" />
             </StackPanel>
         </controls:CustomWrapPanel>
-    </controls:AnimatedScrollViewer>
+    </ScrollViewer>
 </UserControl>
