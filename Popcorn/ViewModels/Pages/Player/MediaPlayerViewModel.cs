@@ -200,8 +200,13 @@ namespace Popcorn.ViewModels.Pages.Player
             BufferProgress = bufferProgress;
             BandwidthRate = bandwidthRate;
             ShowSubtitleButton = MediaType != MediaType.Trailer;
-            _subtitles = new ObservableCollection<Subtitle>(subtitles);
             _playingProgress = playingProgress;
+            _subtitles = new ObservableCollection<Subtitle>();
+            if (subtitles != null)
+            {
+                _subtitles = new ObservableCollection<Subtitle>(subtitles);
+            }
+
             if (currentSubtitle != null && currentSubtitle.LanguageName != LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel") &&
                 !string.IsNullOrEmpty(currentSubtitle.FilePath))
             {
