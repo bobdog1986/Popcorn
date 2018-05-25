@@ -37,7 +37,7 @@
                         Margin="30,0,0,0"
                         VerticalAlignment="Center"
                         Foreground="#E2E2E2"
-                        Text="Scroll up the movies/shows in the interface." />
+                        Text="{lex:LocText ScrollUpShortcut}" />
                 </StackPanel>
                 <StackPanel
                     Margin="5,10,0,5"
@@ -52,7 +52,7 @@
                         Margin="30,0,0,0"
                         VerticalAlignment="Center"
                         Foreground="#E2E2E2"
-                        Text="Scroll down the movies/shows in the interface." />
+                        Text="{lex:LocText ScrollDownShortcut}" />
                 </StackPanel>
                 <StackPanel
                     Margin="5,10,0,5"
@@ -68,7 +68,7 @@
                         Margin="30,0,0,0"
                         VerticalAlignment="Center"
                         Foreground="#E2E2E2"
-                        Text="Paste a magnet link to play the media." />
+                        Text="{lex:LocText ParseMagnetShortcut}" />
                 </StackPanel>
                 <StackPanel
                     Margin="5,10,0,5"
@@ -84,7 +84,7 @@
                         Margin="30,0,0,0"
                         VerticalAlignment="Center"
                         Foreground="#E2E2E2"
-                        Text="Search a movie/show." />
+                        Text="{lex:LocText SearchShortcut}" />
                 </StackPanel>
             </StackPanel>
         </controls:CustomWrapPanel>

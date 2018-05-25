@@ -519,4 +519,16 @@
   <data name="ShortcutsLabel" xml:space="preserve">
     <value>Shortcuts</value>
   </data>
+  <data name="ParseMagnetShortcut" xml:space="preserve">
+    <value>Paste a magnet link to play the media</value>
+  </data>
+  <data name="ScrollDownShortcut" xml:space="preserve">
+    <value>Scroll down the movies/shows in the interface</value>
+  </data>
+  <data name="ScrollUpShortcut" xml:space="preserve">
+    <value>Scroll up the movies/shows in the interface</value>
+  </data>
+  <data name="SearchShortcut" xml:space="preserve">
+    <value>Search a movie/show</value>
+  </data>
 </root>

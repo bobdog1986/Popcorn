@@ -519,4 +519,16 @@
   <data name="ShortcutsLabel" xml:space="preserve">
     <value>Atajos</value>
   </data>
+  <data name="ParseMagnetShortcut" xml:space="preserve">
+    <value>Pegue un enlace de imán para reproducir los medios</value>
+  </data>
+  <data name="ScrollDownShortcut" xml:space="preserve">
+    <value>Desplácese hacia abajo de las películas / espectáculos en la interfaz</value>
+  </data>
+  <data name="ScrollUpShortcut" xml:space="preserve">
+    <value>Desplácese por las películas / espectáculos en la interfaz</value>
+  </data>
+  <data name="SearchShortcut" xml:space="preserve">
+    <value>Buscar una película</value>
+  </data>
 </root>

@@ -14,7 +14,6 @@ using Popcorn.Messaging;
 using Popcorn.Models.Localization;
 using Popcorn.Models.Movie;
 using Popcorn.Models.Shows;
-using Popcorn.Models.Subtitles;
 using Popcorn.Models.User;
 using Popcorn.Services.Movies.Movie;
 using Popcorn.Utils;
@@ -108,20 +107,6 @@ namespace Popcorn.Services.User
             if (User.CacheLocation == null)
             {
                 User.CacheLocation = Path.GetTempPath() + @"Popcorn";
-            }
-
-            if (User.DefaultSubtitleSize == null)
-            {
-                User.DefaultSubtitleSize = new SubtitleSize
-                {
-                    Size = 26,
-                    Label = LocalizationProviderHelper.GetLocalizedValue<string>("Normal")
-                };
-            }
-
-            if (string.IsNullOrEmpty(User.DefaultSubtitleColor))
-            {
-                User.DefaultSubtitleColor = "#FFFFFF";
             }
         }
 
@@ -366,24 +351,6 @@ namespace Popcorn.Services.User
         public void SetDefaultSubtitleLanguage(string englishName)
         {
             User.DefaultSubtitleLanguage = englishName;
-        }
-
-        /// <summary>
-        /// Set default subtitle color
-        /// </summary>
-        /// <param name="color"></param>
-        public void SetDefaultSubtitleColor(string color)
-        {
-            User.DefaultSubtitleColor = color;
-        }
-
-        /// <summary>
-        /// Set default subtitle size
-        /// </summary>
-        /// <param name="size"></param>
-        public void SetDefaultSubtitleSize(SubtitleSize size)
-        {
-            User.DefaultSubtitleSize = size;
         }
 
         public string GetCacheLocationPath()

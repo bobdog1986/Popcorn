@@ -853,6 +853,15 @@ namespace Popcorn.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Paste a magnet link to play the media.
+        /// </summary>
+        public static string ParseMagnetShortcut {
+            get {
+                return ResourceManager.GetString("ParseMagnetShortcut", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Password....
         /// </summary>
         public static string PasswordWatermark {
@@ -988,11 +997,38 @@ namespace Popcorn.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Scroll down the movies/shows in the interface.
+        /// </summary>
+        public static string ScrollDownShortcut {
+            get {
+                return ResourceManager.GetString("ScrollDownShortcut", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Scroll up the movies/shows in the interface.
+        /// </summary>
+        public static string ScrollUpShortcut {
+            get {
+                return ResourceManager.GetString("ScrollUpShortcut", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Search....
         /// </summary>
         public static string SearchBoxWatermark {
             get {
                 return ResourceManager.GetString("SearchBoxWatermark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Search a movie/show.
+        /// </summary>
+        public static string SearchShortcut {
+            get {
+                return ResourceManager.GetString("SearchShortcut", resourceCulture);
             }
         }
         

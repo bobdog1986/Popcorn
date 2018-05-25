@@ -137,8 +137,6 @@
         <file src="api-ms-win-crt-utility-l1-1-0.dll" target="lib\net45\api-ms-win-crt-utility-l1-1-0.dll" />
         <file src="ApplicationInsights.config" target="lib\net45\ApplicationInsights.config" />
         <file src="AsyncEnumerable.dll" target="lib\net45\AsyncEnumerable.dll" />
-        <file src="ColorPicker.dll" target="lib\net45\ColorPicker.dll" />
-        <file src="ColorPickerControls.dll" target="lib\net45\ColorPickerControls.dll" />
         <file src="CommonServiceLocator.dll" target="lib\net45\CommonServiceLocator.dll" />
         <file src="concrt140.dll" target="lib\net45\concrt140.dll" />
         <file src="ControlzEx.dll" target="lib\net45\ControlzEx.dll" />

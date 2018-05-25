@@ -39,7 +39,7 @@ namespace OSDB
 
         public async Task<string> DownloadSubtitleToPath(string path, Subtitle subtitle, bool remote = true)
         {
-            var destinationfile = Path.Combine(path, subtitle.SubFileName);
+            var destinationfile = Path.Combine(path, subtitle.IDSubtitleFile);
             if (remote)
             {
                 if (string.IsNullOrEmpty(path))

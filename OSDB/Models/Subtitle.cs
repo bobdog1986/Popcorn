@@ -4,8 +4,7 @@ namespace OSDB.Models
 {
     public class Subtitle
     {
-        public string SubtitleId { get; set; }
-        public string LanguageId { get; set; }
+        public string FilePath { get; set; }
         public string IDMovie { get; set; }
         public string IDMovieImdb { get; set; }
         public string IDSubMovieFile { get; set; }

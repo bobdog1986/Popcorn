@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows;
@@ -24,8 +23,6 @@ using System.ComponentModel;
 using GalaSoft.MvvmLight.CommandWpf;
 using Popcorn.Converters;
 using Popcorn.Models.Chromecast;
-using Popcorn.ViewModels.Pages.Home.Settings;
-using Popcorn.ViewModels.Pages.Home.Settings.ApplicationSettings;
 using Unosquare.FFME;
 using Unosquare.FFME.Events;
 using Unosquare.FFME.Shared;
@@ -186,7 +183,7 @@ namespace Popcorn.UserControls.Player
         /// <param name="routedEventArgs"></param>
         private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
         {
-            var window = System.Windows.Window.GetWindow(this);
+            var window = Window.GetWindow(this);
             if (window != null)
             {
                 window.Closing += async (s1, e1) => await Unload();
@@ -196,9 +193,8 @@ namespace Popcorn.UserControls.Player
             if (vm?.MediaPath == null)
                 return;
 
-            var applicationSettings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
-            Subtitles.SetFontSize(Media, applicationSettings.SelectedSubtitleSize?.Size ?? 22);
-            Subtitles.SetForeground(Media, new SolidColorBrush(applicationSettings.SubtitlesColor));
+            Subtitles.SetFontSize(Media, 22);
+            Subtitles.SetForeground(Media, Brushes.White);
             ActivityTimer =
                 new DispatcherTimer(DispatcherPriority.Background) {Interval = TimeSpan.FromSeconds(2)};
             ActivityTimer.Tick += OnInactivity;
@@ -225,6 +221,7 @@ namespace Popcorn.UserControls.Player
             vm.CastStarted += OnCastStarted;
             vm.CastStopped += OnCastStopped;
             vm.CastStatusChanged += OnCastStatusChanged;
+            vm.SubtitleChanged += OnSubtitleChanged;
             if (vm.BufferProgress != null)
             {
                 vm.BufferProgress.ProgressChanged += OnBufferProgressChanged;
@@ -235,7 +232,7 @@ namespace Popcorn.UserControls.Player
                 vm.BandwidthRate.ProgressChanged += OnBandwidthChanged;
             }
 
-            if (vm.MediaType == Popcorn.Utils.MediaType.Trailer)
+            if (vm.MediaType == Utils.MediaType.Trailer)
             {
                 DownloadProgress.Visibility = Visibility.Collapsed;
             }
@@ -244,7 +241,11 @@ namespace Popcorn.UserControls.Player
             Media.Source = new Uri(vm.MediaPath);
             Media.MediaOpening += OnMediaOpening;
         }
-        
+
+        private void OnSubtitleChanged(object sender, Events.SubtitleChangedEventArgs e)
+        {
+        }
+
         /// <summary>
         /// Handle keys when pressed
         /// </summary>
@@ -394,14 +395,14 @@ namespace Popcorn.UserControls.Player
                     return;
 
                 vm.MediaLength = e.Info.Duration.TotalSeconds;
-                if (string.IsNullOrEmpty(vm.SubtitleFilePath))
+                if (string.IsNullOrEmpty(vm.CurrentSubtitle.FilePath))
                     return;
 
-                var url = new Uri(vm.SubtitleFilePath);
+                var url = new Uri(vm.CurrentSubtitle.FilePath);
                 if (url.IsFile || url.IsUnc)
                 {
-                    if (System.IO.File.Exists(vm.SubtitleFilePath))
-                        e.Options.SubtitlesUrl = vm.SubtitleFilePath;
+                    if (System.IO.File.Exists(vm.CurrentSubtitle.FilePath))
+                        e.Options.SubtitlesUrl = vm.CurrentSubtitle.FilePath;
                 }
             }
             catch (Exception ex)
@@ -708,7 +709,7 @@ namespace Popcorn.UserControls.Player
         {
             if (InactiveMousePosition == Mouse.GetPosition(Container))
             {
-                var window = System.Windows.Window.GetWindow(this);
+                var window = Window.GetWindow(this);
                 if (window != null)
                 {
                     window.Cursor = Cursors.None;
@@ -782,7 +783,7 @@ namespace Popcorn.UserControls.Player
 
             PlayerStatusBar.BeginAnimation(OpacityProperty, opacityAnimation);
             UpperPanel.BeginAnimation(OpacityProperty, opacityAnimation);
-            var window = System.Windows.Window.GetWindow(this);
+            var window = Window.GetWindow(this);
             if (window != null)
             {
                 window.Cursor = Cursors.Arrow;
@@ -814,12 +815,12 @@ namespace Popcorn.UserControls.Player
         /// <param name="e">The <see cref="MediaLogMessageEventArgs"/> instance containing the event data.</param>
         private void OnMediaFFmpegMessageLogged(object sender, MediaLogMessageEventArgs e)
         {
-            if (e.MessageType != MediaLogMessageType.Warning && e.MessageType != MediaLogMessageType.Error)
-                return;
-
-            if (string.IsNullOrWhiteSpace(e.Message) == false && e.Message.Contains("Invalid data found when processing input"))
+            if (e.MessageType == MediaLogMessageType.Error)
             {
-                Media.Position = TimeSpan.FromSeconds(0);
+                DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                {
+                    Media.Position = TimeSpan.FromSeconds(0);
+                });
             }
         }
 
@@ -841,7 +842,7 @@ namespace Popcorn.UserControls.Player
                 Media.MediaEnded -= MediaPlayerEndReached;
                 Media.SeekingStarted -= OnSeekingStarted;
                 Media.SeekingEnded -= OnSeekingEnded;
-                var window = System.Windows.Window.GetWindow(this);
+                var window = Window.GetWindow(this);
                 if (window != null)
                 {
                     window.Cursor = Cursors.Arrow;
@@ -856,6 +857,7 @@ namespace Popcorn.UserControls.Player
                     vm.CastStarted -= OnCastStarted;
                     vm.CastStopped -= OnCastStopped;
                     vm.CastStatusChanged -= OnCastStatusChanged;
+                    vm.SubtitleChanged -= OnSubtitleChanged;
                 }
 
                 if (vm?.BandwidthRate != null)
@@ -868,7 +870,7 @@ namespace Popcorn.UserControls.Player
                     vm.BufferProgress.ProgressChanged -= OnBufferProgressChanged;
                 }
 
-                Unosquare.FFME.MediaElement.FFmpegMessageLogged -= OnMediaFFmpegMessageLogged;
+                MediaElement.FFmpegMessageLogged -= OnMediaFFmpegMessageLogged;
                 Messenger.Default.Unregister<KeyPressedMessage>(this);
                 _applicationService.SwitchConstantDisplayAndPower(false);
                 await Media.Close();

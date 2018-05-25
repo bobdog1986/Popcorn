@@ -82,7 +82,7 @@
                         HorizontalAlignment="Right"
                         VerticalAlignment="Center"
                         HorizontalContentAlignment="Left"
-                        DisplayMemberPath="Sub.LanguageName"
+                        DisplayMemberPath="LanguageName"
                         ItemsSource="{Binding Media.AvailableSubtitles}"
                         SelectedItem="{Binding Media.SelectedSubtitle, UpdateSourceTrigger=PropertyChanged}">
                         <controls:SplitButton.Icon>

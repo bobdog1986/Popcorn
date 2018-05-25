@@ -19,12 +19,12 @@ using GalaSoft.MvvmLight.Threading;
 using MahApps.Metro.Controls.Dialogs;
 using Microsoft.Win32;
 using NLog;
+using OSDB.Models;
 using Polly.Timeout;
 using Popcorn.Dialogs;
 using Popcorn.Extensions;
 using Popcorn.Helpers;
 using Popcorn.Messaging;
-using Popcorn.Models.Subtitles;
 using Popcorn.Services.Application;
 using Popcorn.Services.Cache;
 using Popcorn.Services.Chromecast;
@@ -32,12 +32,8 @@ using Popcorn.Services.User;
 using Popcorn.Utils;
 using Popcorn.Utils.Exceptions;
 using Popcorn.ViewModels.Dialogs;
-using Popcorn.ViewModels.Pages.Home;
-using Popcorn.ViewModels.Pages.Home.Movie;
-using Popcorn.ViewModels.Pages.Home.Show;
 using Popcorn.ViewModels.Pages.Player;
 using Popcorn.Services.Subtitles;
-using Popcorn.ViewModels.Pages.Home.Settings;
 using Popcorn.ViewModels.Pages.Home.Settings.ApplicationSettings;
 
 namespace Popcorn.ViewModels.Windows
@@ -56,11 +52,6 @@ namespace Popcorn.ViewModels.Windows
         /// Holds the async message relative to <see cref="ShowCustomSubtitleMessage"/>
         /// </summary>
         private IDisposable _customSubtitleMessage;
-
-        /// <summary>
-        /// Holds the async message relative to <see cref="ShowSubtitleDialogMessage"/>
-        /// </summary>
-        private IDisposable _showSubtitleDialogMessage;
 
         /// <summary>
         /// Holds the async message relative to <see cref="ShowLicenseDialogMessage"/>
@@ -352,23 +343,13 @@ namespace Popcorn.ViewModels.Windows
                     message.BandwidthRate, subtitles: new List<Subtitle>
                     {
                         new Subtitle
-                        {
-                            Sub = new OSDB.Models.Subtitle
                             {
-                                LanguageId = LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"),
                                 LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"),
-                                SubtitleId = "none"
-                            }
-                        },
+                            },
                         new Subtitle
-                        {
-                            Sub = new OSDB.Models.Subtitle
                             {
-                                LanguageId = LocalizationProviderHelper.GetLocalizedValue<string>("CustomLabel"),
                                 LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("CustomLabel"),
-                                SubtitleId = "custom"
                             }
-                        }
                     });
 
                 DispatcherHelper.CheckBeginInvokeOnUI(() =>
@@ -606,44 +587,6 @@ namespace Popcorn.ViewModels.Windows
                 }
             });
 
-            _showSubtitleDialogMessage = Messenger.Default.RegisterAsyncMessage<ShowSubtitleDialogMessage>(
-                async message =>
-                {
-                    var vm = new SubtitleDialogViewModel(message.Subtitles, message.CurrentSubtitle);
-                    var subtitleDialog = new SubtitleDialog
-                    {
-                        DataContext = vm
-                    };
-
-                    var cts = new TaskCompletionSource<object>();
-                    vm.OnCloseAction = async () =>
-                    {
-                        try
-                        {
-                            message.SelectedSubtitle = vm.SelectedSubtitle?.Sub;
-                            var dialog = await _dialogCoordinator.GetCurrentDialogAsync<SubtitleDialog>(
-                                this);
-                            if (dialog != null)
-                                await _dialogCoordinator.HideMetroDialogAsync(this, dialog);
-                            cts.TrySetResult(null);
-                        }
-                        catch (Exception ex)
-                        {
-                            cts.TrySetException(ex);
-                        }
-                    };
-
-                    try
-                    {
-                        await _dialogCoordinator.ShowMetroDialogAsync(this, subtitleDialog);
-                        await cts.Task;
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Error(ex);
-                    }
-                });
-
             _showLicenseDialogMessage = Messenger.Default.RegisterAsyncMessage<ShowLicenseDialogMessage>(async message =>
                 {
                     var vm = new LicenseDialogViewModel();
@@ -844,7 +787,11 @@ namespace Popcorn.ViewModels.Windows
                         var subtitleFile = files?.FirstOrDefault(a => a.Contains(".sub") || a.Contains(".srt") || a.Contains(".sbv"));
                         if (subtitleFile != null)
                         {
-                            MediaPlayer?.SelectSubtitlesCommand.Execute(subtitleFile);
+                            MediaPlayer?.ChangeSubtitle(new Subtitle
+                            {
+                                FilePath = subtitleFile,
+                                LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("CustomLabel")
+                            });
                         }
                     }
                     else

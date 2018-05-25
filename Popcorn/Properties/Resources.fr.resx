@@ -519,4 +519,16 @@
   <data name="ShortcutsLabel" xml:space="preserve">
     <value>Raccourcis clavier</value>
   </data>
+  <data name="ParseMagnetShortcut" xml:space="preserve">
+    <value>Coller un lien magnet</value>
+  </data>
+  <data name="ScrollDownShortcut" xml:space="preserve">
+    <value>Descendre dans la liste des films/séries TV</value>
+  </data>
+  <data name="ScrollUpShortcut" xml:space="preserve">
+    <value>Remonter dans la liste des films/séries TV</value>
+  </data>
+  <data name="SearchShortcut" xml:space="preserve">
+    <value>Rechercher un film/série TV</value>
+  </data>
 </root>

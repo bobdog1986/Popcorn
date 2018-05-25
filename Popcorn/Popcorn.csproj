@@ -465,8 +465,6 @@
     <Compile Include="Models\Shows\ShowLightJson.cs" />
     <Compile Include="Models\Shows\ShowLightResponse.cs" />
     <Compile Include="Models\Shows\ShowResponse.cs" />
-    <Compile Include="Models\Subtitles\Subtitle.cs" />
-    <Compile Include="Models\Subtitles\SubtitleSize.cs" />
     <Compile Include="Models\Torrent\ITorrent.cs" />
     <Compile Include="Models\Torrent\Movie\TorrentJson.cs" />
     <Compile Include="Models\Torrent\Show\TorrentShowJson.cs" />
@@ -566,7 +564,6 @@
     <Compile Include="ViewModels\Dialogs\DownloadSettingsDialogViewModel.cs" />
     <Compile Include="ViewModels\Dialogs\DropTorrentDialogViewModel.cs" />
     <Compile Include="ViewModels\Dialogs\LicenseDialogViewModel.cs" />
-    <Compile Include="ViewModels\Dialogs\SubtitleDialogViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\Cast\CastViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\Genres\GenreViewModel.cs" />
     <Compile Include="ViewModels\Pages\Home\IPageViewModel.cs" />
@@ -678,9 +675,6 @@
     <Compile Include="Dialogs\DropTorrentDialog.xaml.cs">
       <DependentUpon>DropTorrentDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\SubtitleDialog.xaml.cs">
-      <DependentUpon>SubtitleDialog.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Events\SelectedSeasonChangedEventArgs.cs" />
     <Compile Include="Events\SubtitleChangedEventArgs.cs" />
     <Compile Include="Events\TimeChangedEventArgs.cs" />
@@ -724,7 +718,6 @@
     <Compile Include="Messaging\ShowCastMediaMessage.cs" />
     <Compile Include="Messaging\ShowCustomSubtitleMessage.cs" />
     <Compile Include="Messaging\ShowDownloadSettingsDialogMessage.cs" />
-    <Compile Include="Messaging\ShowSubtitleDialogMessage.cs" />
     <Compile Include="Messaging\StopPlayingEpisodeMessage.cs" />
     <Compile Include="Messaging\StopPlayingMovieMessage.cs" />
     <Compile Include="Messaging\StopPlayingTrailerMessage.cs" />
@@ -798,14 +791,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ColorPickerControls\ColorPickerControls.csproj">
-      <Project>{5b28ec97-ee45-4cfc-a7e9-adcf4da7c1c7}</Project>
-      <Name>ColorPickerControls</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ColorPicker\ColorPicker.csproj">
-      <Project>{87024bdb-fb8e-449a-b50a-c9f83fd7bb24}</Project>
-      <Name>ColorPicker</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Markdown\Markdown.csproj">
       <Project>{173af8e7-966a-4519-a07c-b6db5fbab412}</Project>
       <Name>Markdown</Name>
@@ -875,10 +860,6 @@
     <Page Include="Dialogs\LicenseDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\SubtitleDialog.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Pages\HomePage.xaml">
       <Generator>MSBuild:Compile</Generator>

@@ -205,14 +205,14 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Download
                 try
                 {
                     if (message.Episode.SelectedSubtitle != null &&
-                        message.Episode.SelectedSubtitle.Sub.LanguageName !=
+                        message.Episode.SelectedSubtitle.LanguageName !=
                         LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"))
                     {
                         var path = Path.Combine(_cacheService.Subtitles + message.Episode.ImdbId);
                         Directory.CreateDirectory(path);
                         var subtitlePath =
                             await _subtitlesService.DownloadSubtitleToPath(path,
-                                message.Episode.SelectedSubtitle.Sub);
+                                message.Episode.SelectedSubtitle);
 
                         message.Episode.SelectedSubtitle.FilePath = subtitlePath;
                     }

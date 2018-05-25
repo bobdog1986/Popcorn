@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Popcorn.Models.Episode;
 using Popcorn.Models.Movie;
 using Popcorn.Models.Shows;
-using Popcorn.Models.Subtitles;
 using Popcorn.Models.User;
 
 namespace Popcorn.Services.User
@@ -118,18 +117,6 @@ namespace Popcorn.Services.User
         /// <param name="englishName"></param>
         /// <returns></returns>
         void SetDefaultSubtitleLanguage(string englishName);
-
-        /// <summary>
-        /// Set default subtitle color
-        /// </summary>
-        /// <returns></returns>
-        void SetDefaultSubtitleColor(string color);
-
-        /// <summary>
-        /// Set default subtitle size
-        /// </summary>
-        /// <returns></returns>
-        void SetDefaultSubtitleSize(SubtitleSize size);
 
         /// <summary>
         /// Get cache location

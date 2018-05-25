@@ -3,15 +3,11 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Input;
-using System.Windows.Media;
-using ColorPicker;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using NLog;
 using Popcorn.Helpers;
-using Popcorn.Models.Subtitles;
 using Popcorn.Models.User;
 using Popcorn.Services.Cache;
 using Popcorn.Services.Subtitles;
@@ -82,29 +78,9 @@ namespace Popcorn.ViewModels.Pages.Home.Settings.ApplicationSettings
         private string _defaultSubtitleLanguage;
 
         /// <summary>
-        /// Subtitles color
-        /// </summary>
-        private Color _subtitlesColor;
-
-        /// <summary>
         /// True if subtitles are loading
         /// </summary>
         private bool _loadingSubtitles;
-
-        /// <summary>
-        /// The available subtitle sizes
-        /// </summary>
-        private ObservableCollection<SubtitleSize> _subtitleSizes;
-
-        /// <summary>
-        /// The current subtitle size
-        /// </summary>
-        private SubtitleSize _selectedSubtitleSize;
-
-        /// <summary>
-        /// Command used to change subtitle color
-        /// </summary>
-        private ICommand _changeSubtitleColorCommand;
 
         /// <summary>
         /// The cache service
@@ -159,28 +135,6 @@ namespace Popcorn.ViewModels.Pages.Home.Settings.ApplicationSettings
                 Set(() => DefaultSubtitleLanguage, ref _defaultSubtitleLanguage, value);
                 _userService.SetDefaultSubtitleLanguage(_defaultSubtitleLanguage);
             }
-        }
-
-        /// <summary>
-        /// Selected subtitle size
-        /// </summary>
-        public SubtitleSize SelectedSubtitleSize
-        {
-            get => _selectedSubtitleSize;
-            set
-            {
-                Set(ref _selectedSubtitleSize, value);
-                _userService.SetDefaultSubtitleSize(value);
-            }
-        }
-
-        /// <summary>
-        /// Available subtitle sizes
-        /// </summary>
-        public ObservableCollection<SubtitleSize> SubtitleSizes
-        {
-            get => _subtitleSizes;
-            set => Set(ref _subtitleSizes, value);
         }
 
         /// <summary>
@@ -274,30 +228,6 @@ namespace Popcorn.ViewModels.Pages.Home.Settings.ApplicationSettings
         public RelayCommand UpdateCacheSizeCommand { get; private set; }
 
         /// <summary>
-        /// Change subtitle
-        /// </summary>
-        public ICommand ChangeSubtitleColorCommand
-        {
-            get => _changeSubtitleColorCommand;
-            set => Set(ref _changeSubtitleColorCommand, value);
-        }
-
-        /// <summary>
-        /// Subtitles color
-        /// </summary>
-        public Color SubtitlesColor
-        {
-            get => _subtitlesColor;
-            set
-            {
-                Set(ref _subtitlesColor, value);
-                _userService.SetDefaultSubtitleColor("#" + _subtitlesColor.R.ToString("X2") +
-                                                     _subtitlesColor.G.ToString("X2") +
-                                                     _subtitlesColor.B.ToString("X2"));
-            }
-        }
-
-        /// <summary>
         /// Load asynchronously the languages of the application
         /// </summary>
         public async Task InitializeAsync()
@@ -307,44 +237,10 @@ namespace Popcorn.ViewModels.Pages.Home.Settings.ApplicationSettings
                 var user = await _userService.GetUser();
                 FileHelper.CreateFolders();
                 RefreshCacheSize();
-                SubtitleSizes = new ObservableCollection<SubtitleSize>
-                {
-                    new SubtitleSize
-                    {
-                        Label = LocalizationProviderHelper.GetLocalizedValue<string>("Bigger"),
-                        Size = 34
-                    },
-                    new SubtitleSize
-                    {
-                        Label = LocalizationProviderHelper.GetLocalizedValue<string>("Big"),
-                        Size = 30
-                    },
-                    new SubtitleSize
-                    {
-                        Label = LocalizationProviderHelper.GetLocalizedValue<string>("Normal"),
-                        Size = 26
-                    },
-                    new SubtitleSize
-                    {
-                        Label = LocalizationProviderHelper.GetLocalizedValue<string>("Small"),
-                        Size = 22
-                    },
-                    new SubtitleSize
-                    {
-                        Label = LocalizationProviderHelper.GetLocalizedValue<string>("Smaller"),
-                        Size = 16
-                    }
-                };
-
                 DownloadLimit = user.DownloadLimit;
                 UploadLimit = user.UploadLimit;
                 var defaultSubtitleLanguage = user.DefaultSubtitleLanguage;
-                var subtitleSize = user.DefaultSubtitleSize;
                 DefaultHdQuality = user.DefaultHdQuality;
-                SelectedSubtitleSize = SubtitleSizes.FirstOrDefault(a => a.Size == subtitleSize.Size);
-                SubtitlesColor =
-                    (Color) ColorConverter.ConvertFromString(user.DefaultSubtitleColor);
-
                 LoadingSubtitles = true;
                 AvailableSubtitlesLanguages = new ObservableRangeCollection<string>();
                 var languages = (await _subtitlesService.GetSubLanguages())
@@ -384,8 +280,6 @@ namespace Popcorn.ViewModels.Pages.Home.Settings.ApplicationSettings
                 FileHelper.ClearFolders(true);
                 RefreshCacheSize();
             });
-
-            ChangeSubtitleColorCommand = new RelayCommand<EventArgs<Color>>(args => { SubtitlesColor = args.Value; });
 
             ChangeCacheLocationCommand = new RelayCommand(() =>
             {
