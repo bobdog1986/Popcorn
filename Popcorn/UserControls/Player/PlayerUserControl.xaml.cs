@@ -395,7 +395,7 @@ namespace Popcorn.UserControls.Player
                     return;
 
                 vm.MediaLength = e.Info.Duration.TotalSeconds;
-                if (string.IsNullOrEmpty(vm.CurrentSubtitle.FilePath))
+                if (string.IsNullOrEmpty(vm.CurrentSubtitle?.FilePath))
                     return;
 
                 var url = new Uri(vm.CurrentSubtitle.FilePath);
