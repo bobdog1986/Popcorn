@@ -939,6 +939,7 @@ namespace Popcorn.ViewModels.Windows
                 {
                     _applicationService.IsConnectionInError = true;
                     _manager.CreateMessage()
+                        .Animates(true)
                         .Accent("#E82C0C")
                         .Background("#333")
                         .HasBadge("Error")
@@ -951,6 +952,7 @@ namespace Popcorn.ViewModels.Windows
                 else if (exception is TrailerNotAvailableException)
                 {
                     _manager.CreateMessage()
+                        .Animates(true)
                         .Accent("#E0A030")
                         .Background("#333")
                         .HasBadge("Warning")
@@ -962,6 +964,7 @@ namespace Popcorn.ViewModels.Windows
                 else if (exception is NoDataInDroppedFileException)
                 {
                     _manager.CreateMessage()
+                        .Animates(true)
                         .Accent("#E0A030")
                         .Background("#333")
                         .HasBadge("Warning")
@@ -973,6 +976,7 @@ namespace Popcorn.ViewModels.Windows
                 else if (exception is PopcornException)
                 {
                     _manager.CreateMessage()
+                        .Animates(true)
                         .Accent("#E82C0C")
                         .Background("#333")
                         .HasBadge("Error")
