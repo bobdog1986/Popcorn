@@ -847,6 +847,8 @@ namespace Popcorn.ViewModels.Windows
 
             InitializeAsyncCommand = new RelayCommand(async () =>
             {
+                var settings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
+                await settings.InitializeAsync();
                 var cmd = Environment.GetCommandLineArgs();
                 if (cmd.Any())
                 {

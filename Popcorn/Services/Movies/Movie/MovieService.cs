@@ -631,7 +631,7 @@ namespace Popcorn.Services.Movies.Movie
         /// <returns>Task</returns>
         public async Task TranslateMovie(IMovie movieToTranslate)
         {
-            if ((await _tmdbService.GetClient).DefaultLanguage == "en" &&
+            if (movieToTranslate.TranslationLanguage == null || (await _tmdbService.GetClient).DefaultLanguage == "en" &&
                 movieToTranslate.TranslationLanguage == (await _tmdbService.GetClient).DefaultLanguage) return;
             _moviesToTranslateObservable.OnNext(movieToTranslate);
         }

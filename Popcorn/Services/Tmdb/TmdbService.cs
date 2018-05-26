@@ -20,6 +20,8 @@ namespace Popcorn.Services.Tmdb
                 {
                     var client = new TMDbClient(Constants.TmDbClientId, true);
                     client.GetConfig();
+                    if (string.IsNullOrEmpty(client.DefaultLanguage))
+                        client.DefaultLanguage = "en";
                     tcs.SetResult(client);
                 }
                 catch (Exception ex)
