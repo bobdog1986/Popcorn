@@ -32,8 +32,8 @@ namespace Popcorn.UserControls.Home.Settings.ApplicationSettings
             if (scv.HorizontalOffset - e.Delta >= -Math.Abs(e.Delta) &&
                 scv.HorizontalOffset - e.Delta < scv.ScrollableWidth + Math.Abs(e.Delta))
             {
-                IInputElement focusedControl = FocusManager.GetFocusedElement(Window.GetWindow(this));
-                if (focusedControl is ComboBoxItem || focusedControl is Button)
+                var element = Mouse.DirectlyOver;
+                if (!(element is ScrollViewer))
                 {
                     e.Handled = false;
                     return;

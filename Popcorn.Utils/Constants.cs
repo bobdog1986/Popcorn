@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Configuration;
-using System.IO;
 using System.Reflection;
 
 namespace Popcorn.Utils
@@ -14,12 +13,12 @@ namespace Popcorn.Utils
         /// <summary>
         /// App version
         /// </summary>
-        public const string AppVersion = "4.1.0";
+        public const string AppVersion = "5.0.0";
 
         /// <summary>
         /// Copyright
         /// </summary>
-        public static string Copyright = "Copyright Popcorn © 2015-" + DateTime.Now.Year;
+        public static readonly string Copyright = "Copyright Popcorn © 2015-" + DateTime.Now.Year;
 
         /// <summary>
         /// Endpoint to API

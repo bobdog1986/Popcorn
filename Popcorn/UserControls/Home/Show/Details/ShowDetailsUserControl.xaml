@@ -316,9 +316,9 @@
                             Margin="0,0,10,0"
                             VerticalAlignment="Center"
                             controls1:ControlsHelper.ContentCharacterCasing="Normal"
-                            Command="{Binding GoToImdbCommand}"
-                            CommandParameter="{Binding Show.ImdbId}"
-                            Content="IMDb"
+                            Command="{Binding GoToTMDbCommand}"
+                            CommandParameter="{Binding Show.TmdbId}"
+                            Content="TMDb"
                             Style="{DynamicResource SquareButtonStyle}" />
                         <Button
                             Width="100"

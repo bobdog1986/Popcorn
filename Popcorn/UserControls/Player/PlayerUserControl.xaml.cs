@@ -818,7 +818,6 @@ namespace Popcorn.UserControls.Player
             if (e.MessageType == MediaLogMessageType.Error)
             {
                 Logger.Error(e.Message);
-                EncounteredError(this, new EventArgs());
             }
         }
 
