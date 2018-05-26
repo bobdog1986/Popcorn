@@ -23,12 +23,10 @@ namespace Popcorn.UserControls.Home.Show.Tabs
 
         private async void OnLoaded(object sender, RoutedEventArgs e)
         {
-            var vm = DataContext as ShowTabsViewModel;
-            if (vm == null) return;
-            var split = "ShowTabViewModel";
+            if (!(DataContext is ShowTabsViewModel vm)) return;
+            const string split = "ShowTabViewModel";
             ApplicationInsightsHelper.TelemetryClient.TrackPageView(
                 $"Show Tab {vm.GetType().Name.Split(new[] { split }, StringSplitOptions.None).First()}");
-
 
             if (vm is PopularShowTabViewModel || vm is GreatestShowTabViewModel || vm is RecentShowTabViewModel ||
                 vm is UpdatedShowTabViewModel ||
@@ -40,13 +38,12 @@ namespace Popcorn.UserControls.Home.Show.Tabs
                     vm.NeedSync = false;
                 }
             }
-            else if (vm is SearchShowTabViewModel)
+            else if (vm is SearchShowTabViewModel searchVm)
             {
-                var searchVm = vm as SearchShowTabViewModel;
-                if (!searchVm.IsLoadingShows && vm.NeedSync)
+                if (!searchVm.IsLoadingShows && searchVm.NeedSync)
                 {
                     await searchVm.LoadShowsAsync(true);
-                    vm.NeedSync = false;
+                    searchVm.NeedSync = false;
                 }
             }
         }
@@ -70,25 +67,26 @@ namespace Popcorn.UserControls.Home.Show.Tabs
             }
 
             await _semaphore.WaitAsync();
-            var vm = DataContext as ShowTabsViewModel;
-            if (vm == null)
+            if (!(DataContext is ShowTabsViewModel vm))
             {
                 _semaphore.Release();
                 return;
             }
 
-            if (vm is PopularShowTabViewModel || vm is GreatestShowTabViewModel || vm is RecentShowTabViewModel ||
-                vm is UpdatedShowTabViewModel ||
-                vm is FavoritesShowTabViewModel)
+            switch (vm)
             {
-                if (!vm.IsLoadingShows)
-                    await vm.LoadShowsAsync();
-            }
-            else if (vm is SearchShowTabViewModel)
-            {
-                var searchVm = vm as SearchShowTabViewModel;
-                if (!searchVm.IsLoadingShows)
-                    await searchVm.LoadShowsAsync();
+                case PopularShowTabViewModel _:
+                case GreatestShowTabViewModel _:
+                case RecentShowTabViewModel _:
+                case UpdatedShowTabViewModel _:
+                case FavoritesShowTabViewModel _:
+                    if (!vm.IsLoadingShows)
+                        await vm.LoadShowsAsync();
+                    break;
+                case SearchShowTabViewModel searchVm:
+                    if (!searchVm.IsLoadingShows)
+                        await searchVm.LoadShowsAsync();
+                    break;
             }
 
             _semaphore.Release();

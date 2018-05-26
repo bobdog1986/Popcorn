@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight.Messaging;
+using GalaSoft.MvvmLight.Threading;
 using NuGet;
 using Popcorn.Comparers;
 using Popcorn.Helpers;
@@ -39,59 +40,69 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
         public override async Task LoadShowsAsync(bool reset = false)
         {
             await LoadingSemaphore.WaitAsync(CancellationLoadingShows.Token);
-            StopLoadingShows();
-            if (reset)
+            await Task.Run(async () =>
             {
-                Shows.Clear();
-                Page = 0;
-                VerticalScroll = 0d;
-            }
+                StopLoadingShows();
+                if (reset)
+                {
+                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                    {
+                        Shows.Clear();
+                        Page = 0;
+                        VerticalScroll = 0d;
+                    });
+                }
 
-            var watch = Stopwatch.StartNew();
-            Page++;
-            if (Page > 1 && Shows.Count == MaxNumberOfShows)
-            {
-                Page--;
-                LoadingSemaphore.Release();
-                return;
-            }
+                var watch = Stopwatch.StartNew();
+                Page++;
+                if (Page > 1 && Shows.Count == MaxNumberOfShows)
+                {
+                    Page--;
+                    LoadingSemaphore.Release();
+                    return;
+                }
 
-            Logger.Info(
-                $"Loading search page {Page} with criteria: {SearchFilter}");
-            HasLoadingFailed = false;
-            try
-            {
-                IsLoadingShows = true;
-                var result =
-                    await ShowService.SearchShowsAsync(SearchFilter,
-                        Page,
-                        MaxNumberOfShows,
-                        Genre,
-                        Rating * 10,
-                        CancellationLoadingShows.Token);
-                Shows.AddRange(result.shows.Except(Shows, new ShowLightComparer()));
-                IsLoadingShows = false;
-                IsShowFound = Shows.Any();
-                CurrentNumberOfShows = Shows.Count;
-                MaxNumberOfShows = result.nbShows;
-                UserService.SyncShowHistory(Shows);
-            }
-            catch (Exception exception)
-            {
-                Page--;
-                Logger.Error(
-                    $"Error while loading search page {Page} with criteria {SearchFilter}: {exception.Message}");
-                HasLoadingFailed = true;
-                Messenger.Default.Send(new ManageExceptionMessage(exception));
-            }
-            finally
-            {
-                watch.Stop();
-                var elapsedMs = watch.ElapsedMilliseconds;
                 Logger.Info(
-                    $"Loaded search page {Page} with criteria {SearchFilter} in {elapsedMs} milliseconds.");
-                LoadingSemaphore.Release();
-            }
+                    $"Loading search page {Page} with criteria: {SearchFilter}");
+                HasLoadingFailed = false;
+                try
+                {
+                    IsLoadingShows = true;
+                    var result =
+                        await ShowService.SearchShowsAsync(SearchFilter,
+                            Page,
+                            MaxNumberOfShows,
+                            Genre,
+                            Rating * 10,
+                            CancellationLoadingShows.Token);
+
+                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                    {
+                        Shows.AddRange(result.shows.Except(Shows, new ShowLightComparer()));
+                        IsLoadingShows = false;
+                        IsShowFound = Shows.Any();
+                        CurrentNumberOfShows = Shows.Count;
+                        MaxNumberOfShows = result.nbShows;
+                        UserService.SyncShowHistory(Shows);
+                    });
+                }
+                catch (Exception exception)
+                {
+                    Page--;
+                    Logger.Error(
+                        $"Error while loading search page {Page} with criteria {SearchFilter}: {exception.Message}");
+                    HasLoadingFailed = true;
+                    Messenger.Default.Send(new ManageExceptionMessage(exception));
+                }
+                finally
+                {
+                    watch.Stop();
+                    var elapsedMs = watch.ElapsedMilliseconds;
+                    Logger.Info(
+                        $"Loaded search page {Page} with criteria {SearchFilter} in {elapsedMs} milliseconds.");
+                    LoadingSemaphore.Release();
+                }
+            });
         }
     }
 }

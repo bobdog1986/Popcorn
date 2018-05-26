@@ -1,13 +1,22 @@
-﻿namespace Popcorn.Models.User
+﻿using GalaSoft.MvvmLight;
+
+namespace Popcorn.Models.User
 {
-    public class Language
+    public class Language : ObservableObject
     {
-        public string Culture
+        private string _name;
+
+        public string Culture { get; set; }
+
+        public string Name
         {
-            get;
-            set;
+            get => _name;
+            set { Set(() => Name, ref _name, value); }
         }
 
-        public string Name { get; set; }
+        public override string ToString()
+        {
+            return this.Name;
+        }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Async;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
@@ -277,69 +276,78 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
         public virtual async Task LoadMoviesAsync(bool reset = false)
         {
             await LoadingSemaphore.WaitAsync(CancellationLoadingMovies.Token);
-            if (reset)
+            await Task.Run(async () =>
             {
-                Movies.Clear();
-                Page = 0;
-                VerticalScroll = 0d;
-            }
-
-            var watch = Stopwatch.StartNew();
-            Page++;
-            if (Page > 1 && Movies.Count == MaxNumberOfMovies)
-            {
-                Page--;
-                LoadingSemaphore.Release();
-                return;
-            }
-
-            StopLoadingMovies();
-            Logger.Trace(
-                $"Loading page {Page}...");
-            HasLoadingFailed = false;
-            try
-            {
-                IsLoadingMovies = true;
-                var getMoviesWatcher = new Stopwatch();
-                getMoviesWatcher.Start();
-                var result =
-                    await MovieService.GetMoviesAsync(Page,
-                        MaxMoviesPerPage,
-                        Rating,
-                        SortBy,
-                        CancellationLoadingMovies.Token,
-                        Genre);
-                getMoviesWatcher.Stop();
-                var getMoviesEllapsedTime = getMoviesWatcher.ElapsedMilliseconds;
-                if (reset && getMoviesEllapsedTime < 500)
+                if (reset)
                 {
-                    // Wait for VerticalOffset to reach 0 (animation lasts 500ms)
-                    await Task.Delay(500 - (int) getMoviesEllapsedTime, CancellationLoadingMovies.Token);
+                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                    {
+                        Movies.Clear();
+                        Page = 0;
+                        VerticalScroll = 0d;
+                    });
                 }
 
-                Movies.AddRange(result.movies.Except(Movies, new MovieLightComparer()));
-                IsLoadingMovies = false;
-                IsMovieFound = Movies.Any();
-                CurrentNumberOfMovies = Movies.Count;
-                MaxNumberOfMovies = result.nbMovies == 0 ? Movies.Count : result.nbMovies;
-                UserService.SyncMovieHistory(Movies);
-            }
-            catch (Exception exception)
-            {
-                Page--;
-                Logger.Error(
-                    $"Error while loading page {Page}: {exception.Message}");
-                HasLoadingFailed = true;
-                Messenger.Default.Send(new ManageExceptionMessage(exception));
-            }
-            finally
-            {
-                watch.Stop();
-                var elapsedMs = watch.ElapsedMilliseconds;
+                var watch = Stopwatch.StartNew();
+                Page++;
+                if (Page > 1 && Movies.Count == MaxNumberOfMovies)
+                {
+                    Page--;
+                    LoadingSemaphore.Release();
+                    return;
+                }
+
+                StopLoadingMovies();
                 Logger.Trace(
-                    $"Loaded page {Page} in {elapsedMs} milliseconds.");
-                LoadingSemaphore.Release();
-            }
+                    $"Loading page {Page}...");
+                HasLoadingFailed = false;
+                try
+                {
+                    IsLoadingMovies = true;
+                    var getMoviesWatcher = new Stopwatch();
+                    getMoviesWatcher.Start();
+                    var result =
+                        await MovieService.GetMoviesAsync(Page,
+                            MaxMoviesPerPage,
+                            Rating,
+                            SortBy,
+                            CancellationLoadingMovies.Token,
+                            Genre);
+                    getMoviesWatcher.Stop();
+                    var getMoviesEllapsedTime = getMoviesWatcher.ElapsedMilliseconds;
+                    if (reset && getMoviesEllapsedTime < 500)
+                    {
+                        // Wait for VerticalOffset to reach 0 (animation lasts 500ms)
+                        await Task.Delay(500 - (int) getMoviesEllapsedTime, CancellationLoadingMovies.Token);
+                    }
+
+                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                    {
+                        Movies.AddRange(result.movies.Except(Movies, new MovieLightComparer()));
+                        IsLoadingMovies = false;
+                        IsMovieFound = Movies.Any();
+                        CurrentNumberOfMovies = Movies.Count;
+                        MaxNumberOfMovies = result.nbMovies == 0 ? Movies.Count : result.nbMovies;
+                        UserService.SyncMovieHistory(Movies);
+                    });
+                }
+                catch (Exception exception)
+                {
+                    Page--;
+                    Logger.Error(
+                        $"Error while loading page {Page}: {exception.Message}");
+                    HasLoadingFailed = true;
+                    Messenger.Default.Send(new ManageExceptionMessage(exception));
+                }
+                finally
+                {
+                    watch.Stop();
+                    var elapsedMs = watch.ElapsedMilliseconds;
+                    Logger.Trace(
+                        $"Loaded page {Page} in {elapsedMs} milliseconds.");
+                    LoadingSemaphore.Release();
+                }
+            });
         }
 
         /// <summary>
@@ -424,7 +432,10 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                     else if (this is FavoritesMovieTabViewModel && SelectedTab is FavoritesMovieTabViewModel ||
                              this is RecommendationsMovieTabViewModel &&
                              SelectedTab is RecommendationsMovieTabViewModel)
+                    {
+                        NeedSync = true;
                         await LoadMoviesAsync(this is RecommendationsMovieTabViewModel);
+                    }
                 });
 
             Messenger.Default.Register<ChangeSeenMovieMessage>(
@@ -438,7 +449,10 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                     else if (this is SeenMovieTabViewModel && SelectedTab is SeenMovieTabViewModel ||
                              this is RecommendationsMovieTabViewModel &&
                              SelectedTab is RecommendationsMovieTabViewModel)
+                    {
+                        NeedSync = true;
                         await LoadMoviesAsync(this is RecommendationsMovieTabViewModel);
+                    }
                 });
         }
 

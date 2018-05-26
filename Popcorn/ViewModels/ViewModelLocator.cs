@@ -18,10 +18,13 @@ using Popcorn.ViewModels.Pages.Home.Movie.Details;
 using Popcorn.ViewModels.Pages.Home.Show;
 using Popcorn.ViewModels.Pages.Home.Show.Details;
 using Popcorn.ViewModels.Windows;
-using Popcorn.ViewModels.Windows.Settings;
 using Popcorn.Services.Shows.Trailer;
 using Popcorn.Services.Tmdb;
 using Popcorn.ViewModels.Pages.Home.Cast;
+using Popcorn.ViewModels.Pages.Home.Settings;
+using Popcorn.ViewModels.Pages.Home.Settings.About;
+using Popcorn.ViewModels.Pages.Home.Settings.ApplicationSettings;
+using Popcorn.ViewModels.Pages.Home.Settings.Help;
 
 namespace Popcorn.ViewModels
 {
@@ -66,7 +69,10 @@ namespace Popcorn.ViewModels
 
             SimpleIoc.Default.Register<CastViewModel>();
 
+            SimpleIoc.Default.Register<SettingsPageViewModel>();
+            SimpleIoc.Default.Register<AboutViewModel>();
             SimpleIoc.Default.Register<ApplicationSettingsViewModel>();
+            SimpleIoc.Default.Register<HelpViewModel>();
 
             #endregion
         }
@@ -110,6 +116,33 @@ namespace Popcorn.ViewModels
             "CA1822:MarkMembersAsStatic",
             Justification = "This non-static member is needed for data binding purposes.")]
         public CastViewModel Cast => SimpleIoc.Default.GetInstance<CastViewModel>();
+
+        /// <summary>
+        /// Gets the SettingsPage property.
+        /// </summary>
+        [SuppressMessage("Microsoft.Performance",
+            "CA1822:MarkMembersAsStatic",
+            Justification = "This non-static member is needed for data binding purposes.")]
+        public SettingsPageViewModel SettingsPage
+            => SimpleIoc.Default.GetInstance<SettingsPageViewModel>();
+
+        /// <summary>
+        /// Gets the About property.
+        /// </summary>
+        [SuppressMessage("Microsoft.Performance",
+            "CA1822:MarkMembersAsStatic",
+            Justification = "This non-static member is needed for data binding purposes.")]
+        public AboutViewModel About
+            => SimpleIoc.Default.GetInstance<AboutViewModel>();
+
+        /// <summary>
+        /// Gets the About property.
+        /// </summary>
+        [SuppressMessage("Microsoft.Performance",
+            "CA1822:MarkMembersAsStatic",
+            Justification = "This non-static member is needed for data binding purposes.")]
+        public HelpViewModel Help
+            => SimpleIoc.Default.GetInstance<HelpViewModel>();
 
         /// <summary>
         /// Gets the ApplicationSettings property.

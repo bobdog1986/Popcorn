@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows;
@@ -19,17 +18,14 @@ using Popcorn.Models.Bandwidth;
 using Popcorn.Services.Application;
 using Popcorn.Utils;
 using Popcorn.Utils.Exceptions;
-using Popcorn.ViewModels.Windows.Settings;
 using System.Runtime.CompilerServices;
 using System.ComponentModel;
-using System.Linq;
-using System.Windows.Controls;
 using GalaSoft.MvvmLight.CommandWpf;
 using Popcorn.Converters;
-using Popcorn.Helpers;
 using Popcorn.Models.Chromecast;
-using Popcorn.Models.Download;
+using Unosquare.FFME;
 using Unosquare.FFME.Events;
+using Unosquare.FFME.Shared;
 
 namespace Popcorn.UserControls.Player
 {
@@ -42,6 +38,11 @@ namespace Popcorn.UserControls.Player
         /// Logger of the class
         /// </summary>
         private static Logger Logger { get; } = LogManager.GetCurrentClassLogger();
+
+        /// <summary>
+        /// Application service
+        /// </summary>
+        private readonly IApplicationService _applicationService;
 
         /// <summary>
         /// Used to update the activity mouse and mouse position.
@@ -58,135 +59,30 @@ namespace Popcorn.UserControls.Player
         /// </summary>
         private int SubtitleDelay { get; set; }
 
+        /// <summary>
+        /// <see cref="SetLowerSubtitleSizeCommand"/>
+        /// </summary>
         private ICommand _setLowerSubtitleSizeCommand;
 
+        /// <summary>
+        /// <see cref="SetHigherSubtitleSizeCommand"/>
+        /// </summary>
         private ICommand _setHigherSubtitleSizeCommand;
 
+        /// <summary>
+        /// <see cref="PauseCommand"/>
+        /// </summary>
         private ICommand _pauseCommand;
 
+        /// <summary>
+        /// <see cref="PlayCommand"/>
+        /// </summary>
         private ICommand _playCommand;
 
         /// <summary>
-        /// Application service
+        /// <see cref="BufferProgress"/>
         /// </summary>
-        private readonly IApplicationService _applicationService;
-
-        /// <summary>
-        /// Initializes a new instance of the MoviePlayer class.
-        /// </summary>
-        public PlayerUserControl()
-        {
-            _applicationService = SimpleIoc.Default.GetInstance<IApplicationService>();
-            InitializeComponent();
-            AddHandler(Keyboard.PreviewKeyDownEvent, new KeyEventHandler(OnPreviewKeyDownEvent));
-            PositionSlider.AddHandler
-            (
-                Slider.PreviewMouseLeftButtonDownEvent,
-                new MouseButtonEventHandler(OnSliderMouseLeftButtonDown),
-                true
-            );
-
-            Loaded += OnLoaded;
-            Media.MediaOpened += OnMediaOpened;
-            PauseCommand = new RelayCommand(async () =>
-            {
-                await PauseMedia();
-            }, MediaPlayerPauseCanExecute);
-
-            PlayCommand = new RelayCommand(async () =>
-            {
-                await PlayMedia();
-            }, MediaPlayerPlayCanExecute);
-        }
-
-        private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
-        {
-            var window = System.Windows.Window.GetWindow(this);
-            if (window != null)
-            {
-                window.KeyDown += OnKeyDown;
-                window.Closing += async (s1, e1) => await Unload();
-            }
-
-            var vm = DataContext as MediaPlayerViewModel;
-            if (vm?.MediaPath == null)
-                return;
-
-            var applicationSettings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
-            Subtitles.FontSize = applicationSettings.SelectedSubtitleSize?.Size ?? 22;
-            Subtitles.Foreground = new SolidColorBrush(applicationSettings.SubtitlesColor);
-            // start the activity timer used to manage visibility of the PlayerStatusBar
-            ActivityTimer = new DispatcherTimer(DispatcherPriority.Background) {Interval = TimeSpan.FromSeconds(2)};
-            ActivityTimer.Tick += OnInactivity;
-            ActivityTimer.Start();
-
-            InputManager.Current.PreProcessInput += OnActivity;
-
-            SetLowerSubtitleSizeCommand = new RelayCommand(() =>
-            {
-                Subtitles.FontSize--;
-            });
-
-            SetHigherSubtitleSizeCommand = new RelayCommand(() =>
-            {
-                Subtitles.FontSize++;
-            });
-
-            vm.StoppedMedia += OnStoppedMedia;
-            vm.PausedMedia += OnPausedMedia;
-            vm.ResumedMedia += OnResumedMedia;
-            vm.CastStarted += OnCastStarted;
-            vm.CastStopped += OnCastStopped;
-            vm.CastStatusChanged += OnCastStatusChanged;
-            if (vm.PieceAvailability != null)
-            {
-                vm.PieceAvailability.ProgressChanged += PieceAvailabilityOnProgressChanged;
-            }
-
-            if (vm.BandwidthRate != null)
-            {
-                vm.BandwidthRate.ProgressChanged += OnBandwidthChanged;
-            }
-
-            if (vm.MediaType == MediaType.Trailer)
-            {
-                DownloadProgress.Visibility = Visibility.Collapsed;
-            }
-
-            Title.Text = vm.MediaName;
-            Media.Source = new Uri(vm.MediaPath);
-        }
-
-        /// <summary>
-        /// Toggle playing media when space key is pressed
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private async void OnPreviewKeyDownEvent(object sender,
-            RoutedEventArgs e)
-        {
-            if (e is KeyEventArgs ke)
-            {
-                ke.Handled = true;
-                if (ke.Key == Key.Space)
-                {
-                    if (Media.IsPlaying)
-                        await PauseMedia();
-                    else
-                        await PlayMedia();
-                }
-
-                if (ke.Key == Key.Up)
-                {
-                    Media.Volume += 0.05;
-                }
-
-                if (ke.Key == Key.Down)
-                {
-                    Media.Volume -= 0.05;
-                }
-            }
-        }
+        private double _bufferProgress;
 
         /// <summary>
         /// Semaphore used to update mouse activity
@@ -198,181 +94,168 @@ namespace Popcorn.UserControls.Player
         /// </summary>
         private static readonly SemaphoreSlim SubtitleDelaySemaphore = new SemaphoreSlim(1, 1);
 
-        private PieceAvailability _pieceAvailability;
+        /// <summary>
+        /// Initializes a new instance of the MoviePlayer class.
+        /// </summary>
+        public PlayerUserControl()
+        {
+            _applicationService = SimpleIoc.Default.GetInstance<IApplicationService>();
+            Messenger.Default.Register<KeyPressedMessage>(this,
+                async message => { await OnKeyPressed(message.KeyPressedArgs); });
 
-        private bool _isPausedForBuffering;
+            InitializeComponent();
+            Loaded += OnLoaded;
+            Media.MediaOpened += OnMediaOpened;
+            MediaElement.FFmpegMessageLogged += OnMediaFFmpegMessageLogged;
+            PauseCommand = new RelayCommand(async () => { await PauseMedia(); }, MediaPlayerPauseCanExecute);
+            PlayCommand = new RelayCommand(async () => { await PlayMedia(); }, MediaPlayerPlayCanExecute);
+        }
 
         /// <summary>
-        /// Subscribe to events and play the movie when control has been loaded
+        /// Downloading buffer progress for movies/shows between 0 and 100
         /// </summary>
-        /// <param name="sender">Sender object</param>
-        /// <param name="e">EventArgs</param>
-        private async void OnMediaOpened(object sender, RoutedEventArgs e)
+        public double BufferProgress
         {
-            Media.RenderingVideo += OnRenderingVideo;
-            Media.MediaEnded += MediaPlayerEndReached;
-            Media.MediaFailed += EncounteredError;
-            await PlayMedia();
-        }
-
-        private void PieceAvailabilityOnProgressChanged(object sender, PieceAvailability pieceAvailability)
-        {
-            DispatcherHelper.CheckBeginInvokeOnUI(async () =>
+            get => _bufferProgress;
+            set
             {
-                if (!Media.NaturalDuration.HasTimeSpan)
-                    return;
-
-                if (!(DataContext is MediaPlayerViewModel vm))
-                    return;
-
-                double minBuffer;
-                switch (vm.MediaType)
-                {
-                    case MediaType.Movie:
-                        minBuffer = Constants.MinimumMovieBuffering / 100d;
-                        break;
-                    case MediaType.Show:
-                        minBuffer = Constants.MinimumShowBuffering / 100d;
-                        break;
-                    default:
-                        minBuffer = 0.03d;
-                        break;
-                }
-
-                vm.MediaLength = Media.NaturalDuration.TimeSpan.TotalSeconds;
-                vm.PlayerTime = PositionSlider.Value;
-                _pieceAvailability = pieceAvailability;
-                var startPieceAvailabilityPercentage =
-                    (double) _pieceAvailability.StartAvailablePiece / (double) _pieceAvailability.TotalPieces;
-                var endPieceAvailabilityPercentage =
-                    (double) _pieceAvailability.EndAvailablePiece / (double) _pieceAvailability.TotalPieces;
-                var playPercentage = PositionSlider.Value / Media.NaturalDuration.TimeSpan.TotalSeconds;
-                var end = 1 - endPieceAvailabilityPercentage <= minBuffer
-                    ? endPieceAvailabilityPercentage == 1d
-                    : playPercentage + minBuffer < endPieceAvailabilityPercentage;
-                if (_isPausedForBuffering && playPercentage > startPieceAvailabilityPercentage && end)
-                {
-                    _isPausedForBuffering = false;
-                    Buffering.Visibility = Visibility.Collapsed;
-                    Media.Position = TimeSpan.FromSeconds(PositionSlider.Value);
-                    await PlayMedia();
-                }
-                else if (!_isPausedForBuffering)
-                {
-                    PositionSlider.Value = Media.Position.TotalSeconds;
-                }
-            });
+                _bufferProgress = value;
+                OnPropertyChanged(nameof(BufferProgress));
+            }
         }
 
-        private void OnRenderingVideo(object sender, RenderingVideoEventArgs e)
+        /// <summary>
+        /// Command used to lower subtitle size
+        /// </summary>
+        public ICommand SetLowerSubtitleSizeCommand
         {
-            if (!(DataContext is MediaPlayerViewModel vm))
+            get => _setLowerSubtitleSizeCommand;
+            set
+            {
+                _setLowerSubtitleSizeCommand = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Command used to lower subtitle size
+        /// </summary>
+        public ICommand SetHigherSubtitleSizeCommand
+        {
+            get => _setHigherSubtitleSizeCommand;
+            set
+            {
+                _setHigherSubtitleSizeCommand = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Command used to pause media
+        /// </summary>
+        public ICommand PauseCommand
+        {
+            get => _pauseCommand;
+            set
+            {
+                _pauseCommand = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Command used to play media
+        /// </summary>
+        public ICommand PlayCommand
+        {
+            get => _playCommand;
+            set
+            {
+                _playCommand = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// When user control has loaded, initialize the media
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="routedEventArgs"></param>
+        private void OnLoaded(object sender, RoutedEventArgs routedEventArgs)
+        {
+            var window = Window.GetWindow(this);
+            if (window != null)
+            {
+                window.Closing += async (s1, e1) => await Unload();
+            }
+
+            var vm = DataContext as MediaPlayerViewModel;
+            if (vm?.MediaPath == null)
                 return;
 
-            if (vm.MediaType == MediaType.Trailer)
+            Subtitles.SetFontSize(Media, 22);
+            Subtitles.SetForeground(Media, Brushes.White);
+            ActivityTimer =
+                new DispatcherTimer(DispatcherPriority.Background) {Interval = TimeSpan.FromSeconds(2)};
+            ActivityTimer.Tick += OnInactivity;
+            ActivityTimer.Start();
+            InputManager.Current.PreProcessInput += OnActivity;
+            SetLowerSubtitleSizeCommand = new RelayCommand(() =>
             {
-                PositionSlider.Value = Media.Position.TotalSeconds;
-            }
-
-            if (vm.SubtitleItems.Any())
-            {
-                var subtitle = vm.SubtitleItems.FirstOrDefault(a =>
-                    a.StartTime <= Media.Position.TotalMilliseconds + SubtitleDelay &&
-                    a.EndTime > Media.Position.TotalMilliseconds + SubtitleDelay);
-                if (subtitle == null)
-                {
-                    Subtitles.Text = string.Empty;
-                    return;
-                }
-
-                var lines = subtitle.Lines;
-                var formattedLines = new List<string>();
-                foreach (var line in lines)
-                {
-                    formattedLines.Add(line.Replace("<b>", "").Replace("</b>", "")
-                        .Replace("<i>", "").Replace("</i>", "").Replace("<u>", "")
-                        .Replace("</u>", ""));
-                }
-
-                Subtitles.Text = string.Join(Environment.NewLine, formattedLines);
-            }
-            else
-            {
-                Subtitles.Text = string.Empty;
-            }
-        }
-
-        /// <summary>
-        /// When cast is being played
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnCastStatusChanged(object sender, MediaStatusEventArgs e)
-        {
-            DispatcherHelper.CheckBeginInvokeOnUI(async () =>
-            {
-                if (e.Status?.PlayerState == "PLAYING")
-                {
-                    Media.Position = TimeSpan.FromSeconds(e.Status.CurrentTime);
-                    if (!Media.IsPlaying)
-                        await PlayMedia();
-                }
+                var currentSize = Subtitles.GetFontSize(Media);
+                Subtitles.SetFontSize(Media, --currentSize);
             });
-        }
 
-        /// <summary>
-        /// Unmute media when cast has stopped
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnCastStopped(object sender, EventArgs e)
-        {
-            Media.IsMuted = false;
-        }
-
-        /// <summary>
-        /// Mute media when cast has started
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnCastStarted(object sender, EventArgs e)
-        {
-            Media.IsMuted = true;
-        }
-
-        /// <summary>
-        /// On player resumed
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnResumedMedia(object sender, EventArgs e)
-        {
-            DispatcherHelper.CheckBeginInvokeOnUI(async () => await PlayMedia());
-        }
-
-        /// <summary>
-        /// On pause player
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnPausedMedia(object sender, EventArgs e)
-        {
-            DispatcherHelper.CheckBeginInvokeOnUI(async () => await PauseMedia());
-        }
-
-        /// <summary>
-        /// On key down
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private async void OnKeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.F)
+            SetHigherSubtitleSizeCommand = new RelayCommand(() =>
             {
-                _applicationService.IsFullScreen = !_applicationService.IsFullScreen;
+                var currentSize = Subtitles.GetFontSize(Media);
+                Subtitles.SetFontSize(Media, ++currentSize);
+            });
+
+            Subtitles.SetFontFamily(Media, new FontFamily("Verdana"));
+            Subtitles.SetFontWeight(Media, FontWeights.Bold);
+            Subtitles.SetOutlineWidth(Media, new Thickness(0, 0, 0, 0));
+            vm.StoppedMedia += OnStoppedMedia;
+            vm.PausedMedia += OnPausedMedia;
+            vm.ResumedMedia += OnResumedMedia;
+            vm.CastStarted += OnCastStarted;
+            vm.CastStopped += OnCastStopped;
+            vm.CastStatusChanged += OnCastStatusChanged;
+            vm.SubtitleChanged += OnSubtitleChanged;
+            if (vm.BufferProgress != null)
+            {
+                vm.BufferProgress.ProgressChanged += OnBufferProgressChanged;
             }
 
-            if (e.Key == Key.Space)
+            if (vm.BandwidthRate != null)
+            {
+                vm.BandwidthRate.ProgressChanged += OnBandwidthChanged;
+            }
+
+            if (vm.MediaType == Utils.MediaType.Trailer)
+            {
+                DownloadProgress.Visibility = Visibility.Collapsed;
+            }
+
+            Title.Text = vm.MediaName;
+            Media.Source = new Uri(vm.MediaPath);
+            Media.MediaOpening += OnMediaOpening;
+        }
+
+        private void OnSubtitleChanged(object sender, Events.SubtitleChangedEventArgs e)
+        {
+        }
+
+        /// <summary>
+        /// Handle keys when pressed
+        /// </summary>
+        /// <param name="ke"></param>
+        private async Task OnKeyPressed(KeyPressedArgs ke)
+        {
+            FocusManager.SetIsFocusScope(this, true);
+            FocusManager.SetFocusedElement(this, this);
+
+            if (ke.KeyPressed == Key.Space)
             {
                 if (Media.IsPlaying)
                     await PauseMedia();
@@ -380,9 +263,25 @@ namespace Popcorn.UserControls.Player
                     await PlayMedia();
             }
 
-            if (!(DataContext is MediaPlayerViewModel vm) || !vm.SubtitleItems.Any())
+            if (ke.KeyPressed == Key.Up)
+            {
+                Media.Volume += 0.05;
+            }
+
+            if (ke.KeyPressed == Key.Down)
+            {
+                Media.Volume -= 0.05;
+            }
+
+            if (ke.KeyPressed == Key.F)
+            {
+                _applicationService.IsFullScreen = !_applicationService.IsFullScreen;
+            }
+
+            if (!Media.HasSubtitles)
                 return;
-            switch (e.Key)
+
+            switch (ke.KeyPressed)
             {
                 case Key.H:
                     if ((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
@@ -393,6 +292,7 @@ namespace Popcorn.UserControls.Player
                     {
                         SubtitleDelay += 1000;
                     }
+
                     break;
                 case Key.G:
                     if ((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
@@ -403,6 +303,7 @@ namespace Popcorn.UserControls.Player
                     {
                         SubtitleDelay -= 1000;
                     }
+
                     break;
                 default:
                     return;
@@ -455,7 +356,191 @@ namespace Popcorn.UserControls.Player
         }
 
         /// <summary>
-        /// When bandwidth rate has changed
+        /// On mouse left button up, play/pause the media accordingly
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void OnPreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (Media.IsPlaying)
+                await PauseMedia();
+            else
+                await PlayMedia();
+        }
+
+        /// <summary>
+        /// Subscribe to events and play the movie when control has been loaded
+        /// </summary>
+        /// <param name="sender">Sender object</param>
+        /// <param name="e">EventArgs</param>
+        private async void OnMediaOpened(object sender, RoutedEventArgs e)
+        {
+            Media.MediaEnded += MediaPlayerEndReached;
+            Media.MediaFailed += EncounteredError;
+            Media.SeekingStarted += OnSeekingStarted;
+            Media.SeekingEnded += OnSeekingEnded;
+            await PlayMedia();
+        }
+
+        /// <summary>
+        /// When a media is being opened, load the subtitles if any and initialize MediaLength property
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnMediaOpening(object sender, MediaOpeningRoutedEventArgs e)
+        {
+            try
+            {
+                if (!(DataContext is MediaPlayerViewModel vm))
+                    return;
+
+                vm.MediaLength = e.Info.Duration.TotalSeconds;
+                if (string.IsNullOrEmpty(vm.CurrentSubtitle?.FilePath))
+                    return;
+
+                var url = new Uri(vm.CurrentSubtitle.FilePath);
+                if (url.IsFile || url.IsUnc)
+                {
+                    if (System.IO.File.Exists(vm.CurrentSubtitle.FilePath))
+                        e.Options.SubtitlesUrl = vm.CurrentSubtitle.FilePath;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+        }
+
+        /// <summary>
+        /// When seeking has started, show buffering panel
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnSeekingStarted(object sender, RoutedEventArgs e)
+        {
+            if (!(DataContext is MediaPlayerViewModel vm))
+                return;
+
+            vm.IsSeeking = true;
+            Buffering.Visibility = Visibility.Visible;
+        }
+
+        /// <summary>
+        /// When seeking has ended, hide buffering panel
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnSeekingEnded(object sender, RoutedEventArgs e)
+        {
+            if (!(DataContext is MediaPlayerViewModel vm))
+                return;
+
+            vm.IsSeeking = false;
+            Buffering.Visibility = Visibility.Collapsed;
+        }
+
+        /// <summary>
+        /// When user has started dragging the media player slider, pause the media
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void OnDragStarted(object sender, DragStartedEventArgs e)
+        {
+            if (!(DataContext is MediaPlayerViewModel vm))
+                return;
+
+            vm.IsDragging = true;
+            await PauseMedia();
+        }
+
+        /// <summary>
+        /// When user has stopped dragging the media player slider, play the media
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void OnDragCompleted(object sender, DragCompletedEventArgs e)
+        {
+            if (!(DataContext is MediaPlayerViewModel vm))
+                return;
+
+            vm.IsDragging = false;
+            await PlayMedia();
+        }
+
+        /// <summary>
+        /// When downloading buffer progress has changed, report it
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="bufferProgress"></param>
+        private void OnBufferProgressChanged(object sender, double bufferProgress)
+        {
+            DispatcherHelper.CheckBeginInvokeOnUI(() =>
+            {
+                BufferProgress = bufferProgress;
+                BufferingSlider.Value = bufferProgress / 100d;
+            });
+        }
+
+        /// <summary>
+        /// When cast is being played, update the media position
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnCastStatusChanged(object sender, MediaStatusEventArgs e)
+        {
+            DispatcherHelper.CheckBeginInvokeOnUI(async () =>
+            {
+                if (e.Status?.PlayerState == "PLAYING")
+                {
+                    Media.Position = TimeSpan.FromSeconds(e.Status.CurrentTime);
+                    if (!Media.IsPlaying)
+                        await PlayMedia();
+                }
+            });
+        }
+
+        /// <summary>
+        /// Unmute media when cast has stopped
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnCastStopped(object sender, EventArgs e)
+        {
+            Media.IsMuted = false;
+        }
+
+        /// <summary>
+        /// Mute media when cast has started
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnCastStarted(object sender, EventArgs e)
+        {
+            Media.IsMuted = true;
+        }
+
+        /// <summary>
+        /// When media should be played, play it
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnResumedMedia(object sender, EventArgs e)
+        {
+            DispatcherHelper.CheckBeginInvokeOnUI(async () => await PlayMedia());
+        }
+
+        /// <summary>
+        /// When media should be paused, pause it
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnPausedMedia(object sender, EventArgs e)
+        {
+            DispatcherHelper.CheckBeginInvokeOnUI(async () => await PauseMedia());
+        }
+
+        /// <summary>
+        /// When bandwidth rate has changed, report it
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -470,7 +555,7 @@ namespace Popcorn.UserControls.Player
         }
 
         /// <summary>
-        /// Vlc encounters an error. Warn the user of this
+        /// When the player has encountered an error, inform the user
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -519,9 +604,6 @@ namespace Popcorn.UserControls.Player
         /// </summary>
         private async Task PlayMedia()
         {
-            if (_isPausedForBuffering)
-                return;
-
             try
             {
                 _applicationService.SwitchConstantDisplayAndPower(true);
@@ -534,6 +616,7 @@ namespace Popcorn.UserControls.Player
                     if (vm.IsCasting)
                         vm.PlayCastCommand.Execute(null);
                 }
+
                 await Media.Play();
             }
             catch (Exception ex)
@@ -595,7 +678,7 @@ namespace Popcorn.UserControls.Player
                 MediaPlayerStatusBarItemPause.Visibility = Visibility.Collapsed;
             }
 
-            return !Media.IsPlaying && !_isPausedForBuffering;
+            return !Media.IsPlaying;
         }
 
         /// <summary>
@@ -626,7 +709,7 @@ namespace Popcorn.UserControls.Player
         {
             if (InactiveMousePosition == Mouse.GetPosition(Container))
             {
-                var window = System.Windows.Window.GetWindow(this);
+                var window = Window.GetWindow(this);
                 if (window != null)
                 {
                     window.Cursor = Cursors.None;
@@ -671,6 +754,7 @@ namespace Popcorn.UserControls.Player
                 MouseActivitySemaphore.Release();
                 return;
             }
+
             var mouseEventArgs = e.StagingItem.Input as MouseEventArgs;
 
             // no button is pressed and the position is still the same as the application became inactive
@@ -699,7 +783,7 @@ namespace Popcorn.UserControls.Player
 
             PlayerStatusBar.BeginAnimation(OpacityProperty, opacityAnimation);
             UpperPanel.BeginAnimation(OpacityProperty, opacityAnimation);
-            var window = System.Windows.Window.GetWindow(this);
+            var window = Window.GetWindow(this);
             if (window != null)
             {
                 window.Cursor = Cursors.Arrow;
@@ -710,119 +794,11 @@ namespace Popcorn.UserControls.Player
         }
 
         /// <summary>
-        /// Command used to lower subtitle size
+        /// Seek the media for Chromecast
         /// </summary>
-        public ICommand SetLowerSubtitleSizeCommand
-        {
-            get => _setLowerSubtitleSizeCommand;
-            set
-            {
-                _setLowerSubtitleSizeCommand = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Command used to lower subtitle size
-        /// </summary>
-        public ICommand SetHigherSubtitleSizeCommand
-        {
-            get => _setHigherSubtitleSizeCommand;
-            set
-            {
-                _setHigherSubtitleSizeCommand = value;
-                OnPropertyChanged();
-            }
-        }
-        
-        /// <summary>
-        /// Command used to pause media
-        /// </summary>
-        public ICommand PauseCommand
-        {
-            get => _pauseCommand;
-            set
-            {
-                _pauseCommand = value;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Command used to play media
-        /// </summary>
-        public ICommand PlayCommand
-        {
-            get => _playCommand;
-            set
-            {
-                _playCommand = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        /// <summary>
-        /// Dispose the control
-        /// </summary>
-        private async Task Unload()
-        {
-            try
-            {
-                Loaded -= OnMediaOpened;
-                ActivityTimer.Tick -= OnInactivity;
-                ActivityTimer.Stop();
-
-                InputManager.Current.PreProcessInput -= OnActivity;
-
-                Media.MediaFailed -= EncounteredError;
-                Media.MediaEnded -= MediaPlayerEndReached;
-                var window = System.Windows.Window.GetWindow(this);
-                if (window != null)
-                {
-                    window.KeyDown -= OnKeyDown;
-                    window.Cursor = Cursors.Arrow;
-                }
-
-                var vm = DataContext as MediaPlayerViewModel;
-                if (vm != null)
-                {
-                    vm.StoppedMedia -= OnStoppedMedia;
-                    vm.ResumedMedia -= OnResumedMedia;
-                    vm.PausedMedia -= OnPausedMedia;
-                }
-
-                if (vm?.BandwidthRate != null)
-                {
-                    vm.BandwidthRate.ProgressChanged -= OnBandwidthChanged;
-                }
-
-                _applicationService.SwitchConstantDisplayAndPower(false);
-                RemoveHandler(Keyboard.PreviewKeyDownEvent, new KeyEventHandler(OnPreviewKeyDownEvent));
-                PositionSlider.RemoveHandler(Slider.PreviewMouseLeftButtonDownEvent,
-                    new MouseButtonEventHandler(OnSliderMouseLeftButtonDown));
-                await Media.Close();
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
-        }
-
-        private async void OnMediaSliderDragCompleted(object sender, DragCompletedEventArgs e)
-        {
-            await SeekMedia();
-        }
-
+        /// <returns></returns>
         private async Task SeekMedia()
         {
-            if (_isPausedForBuffering) return;
             Media.Position = TimeSpan.FromSeconds(PositionSlider.Value);
             if (DataContext is MediaPlayerViewModel vm && vm.IsCasting)
             {
@@ -832,61 +808,86 @@ namespace Popcorn.UserControls.Player
             await PlayMedia();
         }
 
-        private async void OnMediaSliderDragStarted(object sender, DragStartedEventArgs e)
+        /// <summary>
+        /// Handles the FFmpegMessageLogged event of the MediaElement control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MediaLogMessageEventArgs"/> instance containing the event data.</param>
+        private void OnMediaFFmpegMessageLogged(object sender, MediaLogMessageEventArgs e)
         {
-            await PauseMedia();
-        }
-
-        private async void OnSliderMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            await SeekMedia();
-        }
-
-        private async void OnPreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            if (Media.IsPlaying)
-                await PauseMedia();
-            else
-                await PlayMedia();
-        }
-
-        private async void OnSliderValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            if (_pieceAvailability == null || !Media.NaturalDuration.HasTimeSpan)
-                return;
-
-            if (!(DataContext is MediaPlayerViewModel vm))
-                return;
-
-            double minBuffer;
-            switch (vm.MediaType)
+            if (e.MessageType == MediaLogMessageType.Error)
             {
-                case MediaType.Movie:
-                    minBuffer = Constants.MinimumMovieBuffering / 100d;
-                    break;
-                case MediaType.Show:
-                    minBuffer = Constants.MinimumShowBuffering / 100d;
-                    break;
-                default:
-                    minBuffer = 0.03d;
-                    break;
-            }
-
-            double startPieceAvailabilityPercentage =
-                (double) _pieceAvailability.StartAvailablePiece / (double) _pieceAvailability.TotalPieces;
-            double endPieceAvailabilityPercentage =
-                (double) _pieceAvailability.EndAvailablePiece / (double) _pieceAvailability.TotalPieces;
-            var playPercentage = e.NewValue / Media.NaturalDuration.TimeSpan.TotalSeconds;
-            var end = 1 - playPercentage <= minBuffer
-                ? endPieceAvailabilityPercentage < 1d
-                : playPercentage + minBuffer > endPieceAvailabilityPercentage;
-            if (playPercentage < startPieceAvailabilityPercentage ||
-                end)
-            {
-                Buffering.Visibility = Visibility.Visible;
-                _isPausedForBuffering = true;
-                await PauseMedia();
+                Logger.Error(e.Message);
+                EncounteredError(this, new EventArgs());
             }
         }
+
+        /// <summary>
+        /// Dispose the control
+        /// </summary>
+        private async Task Unload()
+        {
+            try
+            {
+                Loaded -= OnLoaded;
+                ActivityTimer.Tick -= OnInactivity;
+                ActivityTimer.Stop();
+
+                InputManager.Current.PreProcessInput -= OnActivity;
+                Media.MediaOpened -= OnMediaOpened;
+                Media.MediaOpening -= OnMediaOpening;
+                Media.MediaFailed -= EncounteredError;
+                Media.MediaEnded -= MediaPlayerEndReached;
+                Media.SeekingStarted -= OnSeekingStarted;
+                Media.SeekingEnded -= OnSeekingEnded;
+                var window = Window.GetWindow(this);
+                if (window != null)
+                {
+                    window.Cursor = Cursors.Arrow;
+                }
+
+                var vm = DataContext as MediaPlayerViewModel;
+                if (vm != null)
+                {
+                    vm.StoppedMedia -= OnStoppedMedia;
+                    vm.ResumedMedia -= OnResumedMedia;
+                    vm.PausedMedia -= OnPausedMedia;
+                    vm.CastStarted -= OnCastStarted;
+                    vm.CastStopped -= OnCastStopped;
+                    vm.CastStatusChanged -= OnCastStatusChanged;
+                    vm.SubtitleChanged -= OnSubtitleChanged;
+                }
+
+                if (vm?.BandwidthRate != null)
+                {
+                    vm.BandwidthRate.ProgressChanged -= OnBandwidthChanged;
+                }
+
+                if (vm?.BufferProgress != null)
+                {
+                    vm.BufferProgress.ProgressChanged -= OnBufferProgressChanged;
+                }
+
+                MediaElement.FFmpegMessageLogged -= OnMediaFFmpegMessageLogged;
+                Messenger.Default.Unregister<KeyPressedMessage>(this);
+                _applicationService.SwitchConstantDisplayAndPower(false);
+                await Media.Close();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+        }
+        
+        #region Implementation of INotifyPropertyChanged
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        #endregion
     }
 }

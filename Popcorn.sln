@@ -1,21 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2036
+VisualStudioVersion = 15.0.27703.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Popcorn", "Popcorn\Popcorn.csproj", "{5BFADF51-CE11-45CF-8E36-DC9DC061C274}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Popcorn", "Popcorn\Popcorn.csproj", "{B4796033-A539-4A9E-B0BF-05A5217C769A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Popcorn.Tests", "Popcorn.Tests\Popcorn.Tests.csproj", "{A482F82D-8500-42C8-B433-2E21AF9B89F3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Popcorn.Utils", "Popcorn.Utils\Popcorn.Utils.csproj", "{5CA8B099-3924-46FA-829F-53250E4D6C56}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Popcorn.Utils", "Popcorn.Utils\Popcorn.Utils.csproj", "{094A69CE-C69E-4EF0-9321-BA16F7A89080}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSDB", "OSDB\OSDB.csproj", "{B3CDE803-4AD2-4EF9-A4E4-901F84A550DC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Popcorn.OSDB", "Popcorn.OSDB\Popcorn.OSDB.csproj", "{49C78F88-912B-49A2-935D-B9AEBE07011A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Markdown", "Markdown\Markdown.csproj", "{173AF8E7-966A-4519-A07C-B6DB5FBAB412}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Popcorn.Markdown", "Popcorn.Markdown\Popcorn.Markdown.csproj", "{34186C3B-C308-4CAE-B462-DB7B5F5E378C}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extras", "Extras", "{21BB550B-A1AF-411B-A446-F34BE3A71B14}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Popcorn.ColorPicker", "Popcorn.ColorPicker\Popcorn.ColorPicker.csproj", "{059DC6C7-59C6-4ADF-8960-976A02E7498E}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Popcorn.ColorPickerControls", "Popcorn.ColorPickerControls\Popcorn.ColorPickerControls.csproj", "{02E6C16F-757F-44AC-BE66-C0D79C0EBE0B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Popcorn.Tests", "Popcorn.Tests\Popcorn.Tests.csproj", "{4B32C184-79C8-4BD8-9D7A-29B4AF7021AC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,39 +21,35 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5BFADF51-CE11-45CF-8E36-DC9DC061C274}.Debug|x86.ActiveCfg = Debug|x86
-		{5BFADF51-CE11-45CF-8E36-DC9DC061C274}.Debug|x86.Build.0 = Debug|x86
-		{5BFADF51-CE11-45CF-8E36-DC9DC061C274}.Release|x86.ActiveCfg = Release|x86
-		{5BFADF51-CE11-45CF-8E36-DC9DC061C274}.Release|x86.Build.0 = Release|x86
-		{A482F82D-8500-42C8-B433-2E21AF9B89F3}.Debug|x86.ActiveCfg = Debug|x86
-		{A482F82D-8500-42C8-B433-2E21AF9B89F3}.Debug|x86.Build.0 = Debug|x86
-		{A482F82D-8500-42C8-B433-2E21AF9B89F3}.Release|x86.ActiveCfg = Release|x86
-		{A482F82D-8500-42C8-B433-2E21AF9B89F3}.Release|x86.Build.0 = Release|x86
-		{094A69CE-C69E-4EF0-9321-BA16F7A89080}.Debug|x86.ActiveCfg = Debug|x86
-		{094A69CE-C69E-4EF0-9321-BA16F7A89080}.Debug|x86.Build.0 = Debug|x86
-		{094A69CE-C69E-4EF0-9321-BA16F7A89080}.Release|x86.ActiveCfg = Release|x86
-		{094A69CE-C69E-4EF0-9321-BA16F7A89080}.Release|x86.Build.0 = Release|x86
-		{49C78F88-912B-49A2-935D-B9AEBE07011A}.Debug|x86.ActiveCfg = Debug|x86
-		{49C78F88-912B-49A2-935D-B9AEBE07011A}.Debug|x86.Build.0 = Debug|x86
-		{49C78F88-912B-49A2-935D-B9AEBE07011A}.Release|x86.ActiveCfg = Release|x86
-		{49C78F88-912B-49A2-935D-B9AEBE07011A}.Release|x86.Build.0 = Release|x86
-		{34186C3B-C308-4CAE-B462-DB7B5F5E378C}.Debug|x86.ActiveCfg = Debug|x86
-		{34186C3B-C308-4CAE-B462-DB7B5F5E378C}.Debug|x86.Build.0 = Debug|x86
-		{34186C3B-C308-4CAE-B462-DB7B5F5E378C}.Release|x86.ActiveCfg = Release|x86
-		{34186C3B-C308-4CAE-B462-DB7B5F5E378C}.Release|x86.Build.0 = Release|x86
-		{059DC6C7-59C6-4ADF-8960-976A02E7498E}.Debug|x86.ActiveCfg = Debug|x86
-		{059DC6C7-59C6-4ADF-8960-976A02E7498E}.Debug|x86.Build.0 = Debug|x86
-		{059DC6C7-59C6-4ADF-8960-976A02E7498E}.Release|x86.ActiveCfg = Release|x86
-		{059DC6C7-59C6-4ADF-8960-976A02E7498E}.Release|x86.Build.0 = Release|x86
-		{02E6C16F-757F-44AC-BE66-C0D79C0EBE0B}.Debug|x86.ActiveCfg = Debug|x86
-		{02E6C16F-757F-44AC-BE66-C0D79C0EBE0B}.Debug|x86.Build.0 = Debug|x86
-		{02E6C16F-757F-44AC-BE66-C0D79C0EBE0B}.Release|x86.ActiveCfg = Release|x86
-		{02E6C16F-757F-44AC-BE66-C0D79C0EBE0B}.Release|x86.Build.0 = Release|x86
+		{B4796033-A539-4A9E-B0BF-05A5217C769A}.Debug|x86.ActiveCfg = Debug|x86
+		{B4796033-A539-4A9E-B0BF-05A5217C769A}.Debug|x86.Build.0 = Debug|x86
+		{B4796033-A539-4A9E-B0BF-05A5217C769A}.Release|x86.ActiveCfg = Release|x86
+		{B4796033-A539-4A9E-B0BF-05A5217C769A}.Release|x86.Build.0 = Release|x86
+		{5CA8B099-3924-46FA-829F-53250E4D6C56}.Debug|x86.ActiveCfg = Debug|x86
+		{5CA8B099-3924-46FA-829F-53250E4D6C56}.Debug|x86.Build.0 = Debug|x86
+		{5CA8B099-3924-46FA-829F-53250E4D6C56}.Release|x86.ActiveCfg = Release|x86
+		{5CA8B099-3924-46FA-829F-53250E4D6C56}.Release|x86.Build.0 = Release|x86
+		{B3CDE803-4AD2-4EF9-A4E4-901F84A550DC}.Debug|x86.ActiveCfg = Debug|x86
+		{B3CDE803-4AD2-4EF9-A4E4-901F84A550DC}.Debug|x86.Build.0 = Debug|x86
+		{B3CDE803-4AD2-4EF9-A4E4-901F84A550DC}.Release|x86.ActiveCfg = Release|x86
+		{B3CDE803-4AD2-4EF9-A4E4-901F84A550DC}.Release|x86.Build.0 = Release|x86
+		{173AF8E7-966A-4519-A07C-B6DB5FBAB412}.Debug|x86.ActiveCfg = Debug|x86
+		{173AF8E7-966A-4519-A07C-B6DB5FBAB412}.Debug|x86.Build.0 = Debug|x86
+		{173AF8E7-966A-4519-A07C-B6DB5FBAB412}.Release|x86.ActiveCfg = Release|x86
+		{173AF8E7-966A-4519-A07C-B6DB5FBAB412}.Release|x86.Build.0 = Release|x86
+		{4B32C184-79C8-4BD8-9D7A-29B4AF7021AC}.Debug|x86.ActiveCfg = Debug|x86
+		{4B32C184-79C8-4BD8-9D7A-29B4AF7021AC}.Debug|x86.Build.0 = Debug|x86
+		{4B32C184-79C8-4BD8-9D7A-29B4AF7021AC}.Release|x86.ActiveCfg = Release|x86
+		{4B32C184-79C8-4BD8-9D7A-29B4AF7021AC}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B3CDE803-4AD2-4EF9-A4E4-901F84A550DC} = {21BB550B-A1AF-411B-A446-F34BE3A71B14}
+		{173AF8E7-966A-4519-A07C-B6DB5FBAB412} = {21BB550B-A1AF-411B-A446-F34BE3A71B14}
+	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {DE11272C-CAE5-46F2-8702-45817E411826}
+		SolutionGuid = {7129ABEC-9949-4849-BF32-18C3C06A6C55}
 	EndGlobalSection
 EndGlobal

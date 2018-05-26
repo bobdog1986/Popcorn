@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>FFmpegZeranoe</id>
+        <version>4.0.0.0</version>
+        <title>FFmpeg shared libs built by Zeranoe</title>
+        <authors>bbougot</authors>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>FFmpeg shared libs built by Zeranoe.</description>
+        <releaseNotes>Release 4.0.0.0 libs.</releaseNotes>
+    </metadata>
+    <files>
+        <file src="..\..\..\Downloads\ffmpeg-4.0-win32-shared\bin\avcodec-58.dll" target="tools\net45\avcodec-58.dll" />
+        <file src="..\..\..\Downloads\ffmpeg-4.0-win32-shared\bin\avdevice-58.dll" target="tools\net45\avdevice-58.dll" />
+        <file src="..\..\..\Downloads\ffmpeg-4.0-win32-shared\bin\avfilter-7.dll" target="tools\net45\avfilter-7.dll" />
+        <file src="..\..\..\Downloads\ffmpeg-4.0-win32-shared\bin\avformat-58.dll" target="tools\net45\avformat-58.dll" />
+        <file src="..\..\..\Downloads\ffmpeg-4.0-win32-shared\bin\avutil-56.dll" target="tools\net45\avutil-56.dll" />
+        <file src="..\..\..\Downloads\ffmpeg-4.0-win32-shared\bin\postproc-55.dll" target="tools\net45\postproc-55.dll" />
+        <file src="tools\net45\SoundTouch.dll" target="tools\net45\SoundTouch.dll" />
+        <file src="..\..\..\Downloads\ffmpeg-4.0-win32-shared\bin\swresample-3.dll" target="tools\net45\swresample-3.dll" />
+        <file src="..\..\..\Downloads\ffmpeg-4.0-win32-shared\bin\swscale-5.dll" target="tools\net45\swscale-5.dll" />
+    </files>
+</package>

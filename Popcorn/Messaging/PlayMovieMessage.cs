@@ -1,7 +1,6 @@
 ﻿using System;
 using GalaSoft.MvvmLight.Messaging;
 using Popcorn.Models.Bandwidth;
-using Popcorn.Models.Download;
 using Popcorn.Models.Movie;
 
 namespace Popcorn.Messaging
@@ -32,25 +31,18 @@ namespace Popcorn.Messaging
         public readonly IProgress<double> PlayingProgress;
 
         /// <summary>
-        /// The piece availability progress
-        /// </summary>
-        public readonly Progress<PieceAvailability> PieceAvailability;
-
-        /// <summary>
         /// Initialize a new instance of PlayMovieMessage class
         /// </summary>
         /// <param name="movie">The movie</param>
         /// <param name="bufferProgress">The buffer progress</param>
         /// <param name="bandwidthRate">The bandwidth rate</param>
         /// <param name="playingProgress">The playing progress</param>
-        /// <param name="pieceAvailability">The piece availability progress</param>
-        public PlayMovieMessage(MovieJson movie, Progress<double> bufferProgress, Progress<BandwidthRate> bandwidthRate, IProgress<double> playingProgress, Progress<PieceAvailability> pieceAvailability)
+        public PlayMovieMessage(MovieJson movie, Progress<double> bufferProgress, Progress<BandwidthRate> bandwidthRate, IProgress<double> playingProgress)
         {
             Movie = movie;
             BufferProgress = bufferProgress;
             BandwidthRate = bandwidthRate;
             PlayingProgress = playingProgress;
-            PieceAvailability = pieceAvailability;
         }
     }
 }

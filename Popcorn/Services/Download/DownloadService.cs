@@ -1,5 +1,6 @@
 ﻿using Popcorn.Utils;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -12,7 +13,6 @@ using Popcorn.Extensions;
 using Popcorn.Helpers;
 using Popcorn.Messaging;
 using Popcorn.Models.Bandwidth;
-using Popcorn.Models.Download;
 using Popcorn.Models.Media;
 using Popcorn.Services.Cache;
 using Popcorn.Utils.Exceptions;
@@ -44,10 +44,8 @@ namespace Popcorn.Services.Download
         /// <param name="reportDownloadProgress">Download progress</param>
         /// <param name="reportDownloadRate">The download rate</param>
         /// <param name="playingProgress">The playing progress</param>
-        /// <param name="reportPieceAvailability">Report the piece availability progress</param>
         protected virtual void BroadcastMediaBuffered(T media, Progress<double> reportDownloadProgress,
-            Progress<BandwidthRate> reportDownloadRate, IProgress<double> playingProgress,
-            Progress<PieceAvailability> reportPieceAvailability)
+            Progress<BandwidthRate> reportDownloadRate, IProgress<double> playingProgress)
         {
             throw new NotImplementedException();
         }
@@ -99,7 +97,8 @@ namespace Popcorn.Services.Download
                         })
                         using (var handle = session.add_torrent(addParams))
                         {
-                            await HandleDownload(media, mediaType, uploadLimit, downloadLimit, downloadProgress,
+                            await HandleDownload(media, savePath, mediaType, uploadLimit, downloadLimit,
+                                downloadProgress,
                                 bandwidthRate, nbSeeds, nbPeers, handle, session, buffered, cancelled, cts);
                         }
                     }
@@ -115,7 +114,8 @@ namespace Popcorn.Services.Download
                             magnet.parse_magnet_uri(torrentPath, addParams, error);
                             using (var handle = session.add_torrent(addParams))
                             {
-                                await HandleDownload(media, mediaType, uploadLimit, downloadLimit, downloadProgress,
+                                await HandleDownload(media, savePath, mediaType, uploadLimit, downloadLimit,
+                                    downloadProgress,
                                     bandwidthRate, nbSeeds, nbPeers, handle, session, buffered, cancelled, cts);
                             }
                         }
@@ -128,6 +128,7 @@ namespace Popcorn.Services.Download
         /// Download media
         /// </summary>
         /// <param name="media">Media file <see cref="IMediaFile"/></param>
+        /// <param name="savePath">Save path of the media</param>
         /// <param name="type">Media type <see cref="MediaType"/></param>
         /// <param name="uploadLimit">Upload limit</param>
         /// <param name="downloadLimit">Download limit</param>
@@ -141,7 +142,7 @@ namespace Popcorn.Services.Download
         /// <param name="cancelled">Action to execute when media download has been cancelled</param>
         /// <param name="cts"><see cref="CancellationTokenSource"/></param>
         /// <returns><see cref="Task"/></returns>
-        private async Task HandleDownload(T media, MediaType type, int uploadLimit, int downloadLimit,
+        private async Task HandleDownload(T media, string savePath, MediaType type, int uploadLimit, int downloadLimit,
             IProgress<double> downloadProgress, IProgress<BandwidthRate> bandwidthRate, IProgress<int> nbSeeds,
             IProgress<int> nbPeers,
             torrent_handle handle,
@@ -149,49 +150,58 @@ namespace Popcorn.Services.Download
         {
             handle.set_upload_limit(uploadLimit * 1024);
             handle.set_download_limit(downloadLimit * 1024);
+            handle.set_sequential_download(true);
             var alreadyBuffered = false;
             var bandwidth = new Progress<BandwidthRate>();
             var prog = new Progress<double>();
             var playingProgress = new Progress<double>();
-            var playingProgression = 0d;
-            playingProgress.ProgressChanged += (sender, d) =>
-            {
-                playingProgression = d;
-            };
-
-            IProgress<PieceAvailability> pieceAvailability = new Progress<PieceAvailability>();
-            Stopwatch sw = new Stopwatch();
+            var sw = new Stopwatch();
             sw.Start();
-
+            var mediaIndex = -1;
+            long maxSize = 0;
+            var filePath = string.Empty;
             while (!cts.IsCancellationRequested)
             {
                 using (var status = handle.status())
                 {
-                    var filePath = string.Empty;
-                    var progress = status.progress * 100d;
+                    var progress = 0d;
                     if (status.has_metadata)
                     {
+                        var numFiles = handle.torrent_file().files().num_files();
+                        var totalSizeExceptIgnoredFiles = handle.torrent_file().total_size();
+                        handle.flush_cache();
+                        if (mediaIndex == -1 || string.IsNullOrEmpty(filePath))
+                        {
+                            for (var i = 0; i < numFiles; i++)
+                            {
+                                var currentSize = handle.torrent_file().files().file_size(i);
+                                if (currentSize > maxSize)
+                                {
+                                    maxSize = currentSize;
+                                    mediaIndex = i;
+                                }
+                            }
+
+                            for (var i = 0; i < numFiles; i++)
+                            {
+                                if (i != mediaIndex)
+                                {
+                                    handle.file_priority(i, 0);
+                                    totalSizeExceptIgnoredFiles -= handle.torrent_file().files().file_size(i);
+                                }
+                            }
+
+                            filePath = handle.torrent_file().files().file_path(mediaIndex, savePath);
+                        }
+
+                        var fileProgressInBytes = handle.file_progress(1)[mediaIndex];
+                        progress = (double) fileProgressInBytes / (double) totalSizeExceptIgnoredFiles * 100d;
                         var downRate = Math.Round(status.download_rate / 1024d, 0);
                         var upRate = Math.Round(status.upload_rate / 1024d, 0);
-
                         nbSeeds.Report(status.num_seeds);
                         nbPeers.Report(status.num_peers);
                         downloadProgress.Report(progress);
-                        var numFiles = handle.torrent_file().num_files();
-                        var fileIndex = -1;
-                        for (var i = 0; i < numFiles; i++)
-                        {
-                            var path = handle.torrent_file().file_at(i);
-                            if (path.EndsWith(".mp4") || path.EndsWith(".mkv") ||
-                                path.EndsWith(".mov") || path.EndsWith(".avi"))
-                            {
-                                fileIndex = i;
-                                filePath = $@"{Directory.GetParent(status.save_path)}\{path}";
-                            }
-                        }
-
-                        var fileProgress = handle.file_progress(1)[fileIndex];
-                        var eta = sw.GetEta(fileProgress, handle.torrent_file().total_size());
+                        var eta = sw.GetEta(fileProgressInBytes, totalSizeExceptIgnoredFiles);
                         bandwidthRate.Report(new BandwidthRate
                         {
                             DownloadRate = downRate,
@@ -206,52 +216,7 @@ namespace Popcorn.Services.Download
                             UploadRate = upRate,
                             ETA = eta
                         });
-
-                        var numPieces = handle.torrent_file().num_pieces() - 1;
-                        double minBuffer;
-                        switch (type)
-                        {
-                            case MediaType.Movie:
-                                minBuffer = Constants.MinimumMovieBuffering / 100d;
-                                break;
-                            case MediaType.Show:
-                                minBuffer = Constants.MinimumShowBuffering / 100d;
-                                break;
-                            default:
-                                minBuffer = 0.03d;
-                                break;
-                        }
-                        var cursor = Math.Floor((numPieces - minBuffer * numPieces) * playingProgression);
-                        var pieces = handle.piece_priorities()
-                            .Select((piece, index) => new {Piece = piece, Index = index})
-                            .ToList();
-
-                        var lastPieceAvailableIndex = 0;
-                        foreach (var piece in pieces.Where(a => a.Index >= cursor))
-                        {
-                            if (!handle.have_piece(piece.Index))
-                            {
-                                handle.set_piece_deadline(piece.Index, 50);
-                                foreach (var otherPiece in pieces.Where(a => a.Index != piece.Index))
-                                {
-                                    handle.reset_piece_deadline(otherPiece.Index);
-                                }
-
-                                break;
-                            }
-
-                            lastPieceAvailableIndex = piece.Index;
-                            handle.reset_piece_deadline(piece.Index);
-                        }
-
-                        pieceAvailability.Report(new PieceAvailability(numPieces,
-                            pieces.First(a => a.Index >= cursor - minBuffer * numPieces).Index,
-                            lastPieceAvailableIndex));
                     }
-
-                    handle.flush_cache();
-                    if (handle.need_save_resume_data())
-                        handle.save_resume_data(1);
 
                     double minimumBuffering;
                     switch (type)
@@ -264,15 +229,14 @@ namespace Popcorn.Services.Download
                             break;
                     }
 
-                    if (progress >= minimumBuffering && !alreadyBuffered)
+                    if (mediaIndex != -1 && progress >= minimumBuffering && !alreadyBuffered)
                     {
                         buffered.Invoke();
                         if (!string.IsNullOrEmpty(filePath))
                         {
                             alreadyBuffered = true;
                             media.FilePath = filePath;
-                            BroadcastMediaBuffered(media, prog, bandwidth, playingProgress,
-                                (Progress<PieceAvailability>) pieceAvailability);
+                            BroadcastMediaBuffered(media, prog, bandwidth, playingProgress);
                         }
 
                         if (!alreadyBuffered)
@@ -314,6 +278,7 @@ namespace Popcorn.Services.Download
                         {
                             // ignored
                         }
+
                         break;
                     }
                 }

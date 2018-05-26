@@ -16,7 +16,6 @@
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:lex="http://wpflocalizeextension.codeplex.com"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:settings="clr-namespace:Popcorn.UserControls.Window.Settings"
     xmlns:windows="clr-namespace:Popcorn.ViewModels.Windows"
     Title="Popcorn"
     Width="{Binding Source={x:Static SystemParameters.PrimaryScreenWidth}, Converter={converters:RatioConverter}, ConverterParameter='0.8'}"
@@ -30,6 +29,7 @@
     lex:ResxLocalizationProvider.DefaultDictionary="Resources"
     Activated="OnActivated"
     AllowDrop="True"
+    Background="Black"
     DataContext="{Binding Window, Source={StaticResource Locator}}"
     Icon="../Resources/Images/icon.ico"
     IconBitmapScalingMode="HighQuality"
@@ -38,6 +38,7 @@
     KeyDown="OnKeyDown"
     NonActiveBorderBrush="{StaticResource AccentColorBrush}"
     NonActiveGlowBrush="{StaticResource AccentColorBrush}"
+    OverlayBrush="Black"
     ShowIconOnTitleBar="True"
     ShowTitleBar="False"
     WindowStartupLocation="CenterScreen"
@@ -48,7 +49,6 @@
         <ResourceDictionary>
             <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
             <converters:BoolToInverseVisibilityConverter x:Key="BoolToInverseVisibilityConverter" />
-
             <Style TargetType="{x:Type controls:WindowCommands}">
                 <Setter Property="Foreground" Value="White" />
             </Style>
@@ -88,27 +88,6 @@
     <controls:MetroWindow.RightWindowCommands>
         <controls:WindowCommands Visibility="{Binding ApplicationService.IsMediaPlaying, Converter={StaticResource BoolToVisibilityConverter}}">
             <StackPanel Orientation="Horizontal">
-                <Button
-                    Command="{Binding OpenSettingsCommand}"
-                    Content="{iconPacks:FontAwesome CogsSolid,
-                                                    Width=20,
-                                                    Height=20}"
-                    Foreground="White"
-                    ToolTip="{lex:LocText SettingsMenuTitle}" />
-                <Button
-                    Command="{Binding OpenAboutCommand}"
-                    Content="{iconPacks:Material Information,
-                                                 Width=20,
-                                                 Height=20}"
-                    Foreground="White"
-                    ToolTip="{lex:LocText AboutLabel}" />
-                <Button
-                    Command="{Binding GoToGitHubCommand}"
-                    Content="{iconPacks:Modern SocialGithubOctocat,
-                                               Width=20,
-                                               Height=20}"
-                    Foreground="White"
-                    ToolTip="Popcorn on GitHub" />
                 <Button
                     Command="{Binding SwitchFullScreenCommand}"
                     Content="{iconPacks:Modern WindowMaximize,
@@ -162,16 +141,6 @@
                 IsOpen="{Binding IsCastFlyoutOpen}"
                 Position="Right">
                 <cast:CastUserControl />
-            </controls:Flyout>
-            <controls:Flyout
-                Header="{lex:LocText SettingsMenuTitle}"
-                IsModal="True"
-                IsOpen="{Binding IsSettingsFlyoutOpen}"
-                IsPinned="False"
-                Opacity="0.9"
-                Position="Right"
-                Theme="Dark">
-                <settings:WindowSettingsUserControl />
             </controls:Flyout>
             <adorners:Overlay.Content>
                 <controls1:NotificationMessageContainer

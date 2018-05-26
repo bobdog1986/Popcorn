@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Messaging;
@@ -12,11 +11,12 @@ using Popcorn.Messaging;
 using Popcorn.Models.Movie;
 using Popcorn.Services.Subtitles;
 using Popcorn.Utils;
-using Popcorn.ViewModels.Windows.Settings;
 using Popcorn.Services.Download;
 using GalaSoft.MvvmLight.Ioc;
 using Popcorn.Models.Bandwidth;
 using Popcorn.Services.Cache;
+using Popcorn.ViewModels.Pages.Home.Settings;
+using Popcorn.ViewModels.Pages.Home.Settings.ApplicationSettings;
 
 namespace Popcorn.ViewModels.Pages.Home.Movie.Download
 {
@@ -207,23 +207,22 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Download
                 try
                 {
                     if (message.Movie.SelectedSubtitle != null &&
-                        message.Movie.SelectedSubtitle.Sub.LanguageName !=
+                        message.Movie.SelectedSubtitle.LanguageName !=
                         LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"))
                     {
                         var path = Path.Combine(_cacheService.Subtitles + message.Movie.ImdbId);
                         Directory.CreateDirectory(path);
                         var isRemote = true;
-                        if (message.Movie.SelectedSubtitle.Sub.SubtitleId == "custom")
+                        if (message.Movie.SelectedSubtitle.LanguageName == LocalizationProviderHelper.GetLocalizedValue<string>("CustomLabel"))
                         {
                             isRemote = false;
-                            message.Movie.SelectedSubtitle.Sub.SubtitleFileName = "custom";
-                            message.Movie.SelectedSubtitle.Sub.SubTitleDownloadLink =
-                                new Uri(message.Movie.SelectedSubtitle.FilePath);
+                            message.Movie.SelectedSubtitle.LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("CustomLabel");
+                            message.Movie.SelectedSubtitle.SubDownloadLink = message.Movie.SelectedSubtitle.FilePath;
                         }
 
                         var subtitlePath = await
                             _subtitlesService.DownloadSubtitleToPath(path,
-                                message.Movie.SelectedSubtitle.Sub, isRemote);
+                                message.Movie.SelectedSubtitle, isRemote);
                         message.Movie.SelectedSubtitle.FilePath = subtitlePath;
                     }
                 }

@@ -45,7 +45,7 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
 
             var watch = Stopwatch.StartNew();
             Page++;
-            if (Page > 1 && Movies.Count == MaxNumberOfMovies && reset)
+            if (Page > 1 && Movies.Count == MaxNumberOfMovies && !NeedSync)
             {
                 Page--;
                 LoadingSemaphore.Release();

@@ -6,9 +6,10 @@
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/FlatSlider.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Shared.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Red.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseDark.xaml" />
         <ResourceDictionary Source="../Resources/Icons.xaml" />
-        <ResourceDictionary Source="../Resources/CustomTabControl.xaml" />
+        <ResourceDictionary Source="../Resources/HomeTabControlStyle.xaml" />
+        <ResourceDictionary Source="../Resources/SettingsTabControlStyle.xaml" />
         <ResourceDictionary Source="../Resources/Shadows.xaml" />
         <ResourceDictionary Source="../Resources/AnimatedScrollViewer.xaml" />
         <ResourceDictionary Source="../Resources/Ripple.xaml" />
@@ -16,5 +17,9 @@
         <ResourceDictionary Source="../Resources/FlyoutHeader.xaml" />
         <ResourceDictionary Source="../Resources/Markdown.xaml" />
         <ResourceDictionary Source="../Resources/Player.xaml" />
+        <ResourceDictionary Source="../Resources/Windows10ToggleSwitch.xaml" />
+        <ResourceDictionary Source="../Resources/FlowDocumentScrollViewerCustomStyle.xaml" />
+        <ResourceDictionary Source="../Resources/HotKey.xaml" />
+        <ResourceDictionary Source="../Resources/CombiLabel.xaml" />
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

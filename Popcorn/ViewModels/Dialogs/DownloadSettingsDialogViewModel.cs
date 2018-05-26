@@ -12,15 +12,15 @@ using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Messaging;
 using ltnet;
 using NLog;
+using OSDB.Models;
 using Popcorn.Helpers;
 using Popcorn.Models.Episode;
 using Popcorn.Models.Media;
-using Popcorn.Models.Movie;
-using Popcorn.Models.Subtitles;
 using Popcorn.Models.Torrent;
 using Popcorn.Services.Subtitles;
 using Popcorn.Utils;
-using Popcorn.ViewModels.Windows.Settings;
+using Popcorn.ViewModels.Pages.Home.Settings;
+using Popcorn.ViewModels.Pages.Home.Settings.ApplicationSettings;
 
 namespace Popcorn.ViewModels.Dialogs
 {
@@ -135,10 +135,7 @@ namespace Popcorn.ViewModels.Dialogs
             _subtitlesService = subtitlesService;
             _computeHealthTokenSource = new CancellationTokenSource();
             Media = media;
-            LoadSubtitlesCommand = new RelayCommand(async () =>
-            {
-                await LoadSubtitles(Media);
-            });
+            LoadSubtitlesCommand = new RelayCommand(async () => { await LoadSubtitles(Media); });
 
             SdLabel = media.Type == MediaType.Movie ? "720p" : "480p";
             HdLabel = media.Type == MediaType.Movie ? "1080p" : "720p";
@@ -230,9 +227,13 @@ namespace Popcorn.ViewModels.Dialogs
 
             var applicationSettings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
             Media.WatchInFullHdQuality =
-                Media.AvailableTorrents.Any(torrent => (Media.Type == MediaType.Movie && torrent.Quality == "1080p") || (Media.Type == MediaType.Show && torrent.Quality == "720p")) &&
+                Media.AvailableTorrents.Any(torrent =>
+                    (Media.Type == MediaType.Movie && torrent.Quality == "1080p") ||
+                    (Media.Type == MediaType.Show && torrent.Quality == "720p")) &&
                 Media.AvailableTorrents.Count == 1 ||
-                Media.AvailableTorrents.Any(torrent => (Media.Type == MediaType.Movie && torrent.Quality == "1080p") || (Media.Type == MediaType.Show && torrent.Quality == "720p")) &&
+                Media.AvailableTorrents.Any(torrent =>
+                    (Media.Type == MediaType.Movie && torrent.Quality == "1080p") ||
+                    (Media.Type == MediaType.Show && torrent.Quality == "720p")) &&
                 applicationSettings.DefaultHdQuality;
         }
 
@@ -244,10 +245,16 @@ namespace Popcorn.ViewModels.Dialogs
             if (Media.AvailableTorrents == null) return;
 
             Media.FullHdAvailable = Media.AvailableTorrents.Count > 1 &&
-                                    Media.AvailableTorrents.Any(torrent => (Media.Type == MediaType.Movie && torrent.Quality == "1080p") || (Media.Type == MediaType.Show && torrent.Quality == "720p"));
+                                    Media.AvailableTorrents.Any(torrent =>
+                                        (Media.Type == MediaType.Movie && torrent.Quality == "1080p") ||
+                                        (Media.Type == MediaType.Show && torrent.Quality == "720p"));
             SelectedTorrent = Media.WatchInFullHdQuality
-                ? Media.AvailableTorrents.FirstOrDefault(torrent => (Media.Type == MediaType.Movie && torrent.Quality == "1080p") || (Media.Type == MediaType.Show && torrent.Quality == "720p"))
-                : Media.AvailableTorrents.FirstOrDefault(torrent => (Media.Type == MediaType.Movie && torrent.Quality == "720p") || (Media.Type == MediaType.Show && torrent.Quality == "480p"));
+                ? Media.AvailableTorrents.FirstOrDefault(torrent =>
+                    (Media.Type == MediaType.Movie && torrent.Quality == "1080p") ||
+                    (Media.Type == MediaType.Show && torrent.Quality == "720p"))
+                : Media.AvailableTorrents.FirstOrDefault(torrent =>
+                    (Media.Type == MediaType.Movie && torrent.Quality == "720p") ||
+                    (Media.Type == MediaType.Show && torrent.Quality == "480p"));
             if (SelectedTorrent == null)
                 SelectedTorrent = Media.AvailableTorrents.Where(torrent => !string.IsNullOrWhiteSpace(torrent.Url))
                     .Aggregate((torrent1, torrent2) => torrent1.Seeds > torrent2.Seeds ? torrent1 : torrent2);
@@ -306,6 +313,7 @@ namespace Popcorn.ViewModels.Dialogs
             Logger.Info(
                 $"Load subtitles for media: {media.Title}");
             Media = media;
+            media.AvailableSubtitles = new ObservableCollection<Subtitle>();
             LoadingSubtitles = true;
             try
             {
@@ -321,47 +329,33 @@ namespace Popcorn.ViewModels.Dialogs
 
                     media.AvailableSubtitles =
                         new ObservableCollection<Subtitle>(subtitles.OrderBy(a => a.LanguageName)
-                            .Select(sub => new Subtitle
-                            {
-                                Sub = sub
-                            })
-                            .GroupBy(x => x.Sub.LanguageName,
+                            .GroupBy(x => x.LanguageName,
                                 (k, g) =>
                                     g.Aggregate(
                                         (a, x) =>
-                                            (Convert.ToDouble(x.Sub.Rating, CultureInfo.InvariantCulture) >=
-                                             Convert.ToDouble(a.Sub.Rating, CultureInfo.InvariantCulture))
+                                            (Convert.ToDouble(x.Score, CultureInfo.InvariantCulture) >=
+                                             Convert.ToDouble(a.Score, CultureInfo.InvariantCulture))
                                                 ? x
                                                 : a)));
 
                     media.AvailableSubtitles.Insert(0, new Subtitle
                     {
-                        Sub = new OSDB.Subtitle
-                        {
-                            LanguageId = LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"),
-                            LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"),
-                            SubtitleId = "none"
-                        }
+                        LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"),
                     });
 
                     media.AvailableSubtitles.Insert(1, new Subtitle
                     {
-                        Sub = new OSDB.Subtitle
-                        {
-                            LanguageId = LocalizationProviderHelper.GetLocalizedValue<string>("CustomLabel"),
-                            LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("CustomLabel"),
-                            SubtitleId = "custom"
-                        }
+                        LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("CustomLabel"),
                     });
 
                     var applicationSettings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
                     if (!string.IsNullOrEmpty(applicationSettings.DefaultSubtitleLanguage) &&
                         media.AvailableSubtitles.Any(
-                            a => a.Sub.LanguageName == applicationSettings.DefaultSubtitleLanguage))
+                            a => a.LanguageName == applicationSettings.DefaultSubtitleLanguage))
                     {
                         media.SelectedSubtitle =
                             media.AvailableSubtitles.FirstOrDefault(
-                                a => a.Sub.LanguageName == applicationSettings.DefaultSubtitleLanguage);
+                                a => a.LanguageName == applicationSettings.DefaultSubtitleLanguage);
                     }
                     else
                     {
@@ -378,11 +372,7 @@ namespace Popcorn.ViewModels.Dialogs
                 LoadingSubtitles = false;
                 media.AvailableSubtitles.Insert(0, new Subtitle
                 {
-                    Sub = new OSDB.Subtitle
-                    {
-                        LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"),
-                        SubtitleId = "none"
-                    }
+                    LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"),
                 });
 
                 media.SelectedSubtitle = media.AvailableSubtitles.FirstOrDefault();

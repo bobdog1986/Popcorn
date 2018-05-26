@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:command="http://www.galasoft.ch/mvvmlight"
     xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:controls1="clr-namespace:Popcorn.Controls"
     xmlns:converters="clr-namespace:Popcorn.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:dialogs="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
@@ -40,11 +41,12 @@
         <TextBlock
             Grid.Row="0"
             HorizontalAlignment="Center"
-            FontSize="24"
-            FontWeight="Light"
-            Foreground="White"
+            FontSize="26"
+            FontWeight="Normal"
+            Foreground="{DynamicResource AccentColorBrush}"
             Text="{lex:LocText OptionsLabel}"
-            TextTrimming="CharacterEllipsis" />
+            TextTrimming="CharacterEllipsis"
+            Typography.Capitals="SmallCaps" />
         <Grid
             Grid.Row="1"
             Margin="0,20,0,0"
@@ -60,34 +62,33 @@
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="1" Orientation="Vertical">
                 <TextBlock
-                    HorizontalAlignment="Center"
+                    HorizontalAlignment="Right"
                     FontSize="24"
                     FontWeight="Light"
                     Foreground="White"
                     Text="{lex:LocText SubtitlesLabel}"
                     TextTrimming="CharacterEllipsis" />
                 <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
+                    <controls:ProgressRing
+                        Width="20"
+                        Height="20"
+                        VerticalAlignment="Center"
+                        IsActive="True"
+                        Visibility="{Binding LoadingSubtitles, Converter={StaticResource BoolToInverseVisibilityConverter}}" />
                     <controls:SplitButton
                         Width="130"
                         Height="35"
-                        Margin="0,0,10,0"
+                        Margin="10,0,0,0"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Center"
                         HorizontalContentAlignment="Left"
-                        DisplayMemberPath="Sub.LanguageName"
+                        DisplayMemberPath="LanguageName"
                         ItemsSource="{Binding Media.AvailableSubtitles}"
                         SelectedItem="{Binding Media.SelectedSubtitle, UpdateSourceTrigger=PropertyChanged}">
                         <controls:SplitButton.Icon>
                             <iconPacks:PackIconMaterial Margin="6" Kind="Translate" />
                         </controls:SplitButton.Icon>
                     </controls:SplitButton>
-                    <controls:ProgressRing
-                        Width="20"
-                        Height="20"
-                        Margin="0,0,10,0"
-                        VerticalAlignment="Center"
-                        IsActive="True"
-                        Visibility="{Binding LoadingSubtitles, Converter={StaticResource BoolToInverseVisibilityConverter}}" />
                 </StackPanel>
             </StackPanel>
             <StackPanel Grid.Column="3" Orientation="Vertical">
@@ -98,17 +99,15 @@
                     Foreground="White"
                     Text="{lex:LocText QualityLabel}"
                     TextTrimming="CharacterEllipsis" />
-                <controls:ToggleSwitch
+                <controls1:Windows10ToggleSwitch
                     Margin="0,10,0,0"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Center"
                     Foreground="White"
                     IsChecked="{Binding Media.WatchInFullHdQuality}"
                     IsEnabled="{Binding Media.FullHdAvailable}"
-                    OffLabel="{Binding SdLabel}"
-                    OffSwitchBrush="GhostWhite"
-                    OnLabel="{Binding HdLabel}"
-                    Style="{StaticResource MahApps.Metro.Styles.ToggleSwitch.Win10}" />
+                    OffLabel="{Binding HdLabel}"
+                    OnLabel="{Binding SdLabel}" />
             </StackPanel>
             <StackPanel Grid.Column="5" Orientation="Vertical">
                 <TextBlock

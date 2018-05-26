@@ -11,11 +11,12 @@ using Popcorn.Messaging;
 using Popcorn.Models.Episode;
 using Popcorn.Services.Subtitles;
 using Popcorn.Utils;
-using Popcorn.ViewModels.Windows.Settings;
 using GalaSoft.MvvmLight.Ioc;
 using Popcorn.Models.Bandwidth;
 using Popcorn.Services.Cache;
 using Popcorn.Services.Download;
+using Popcorn.ViewModels.Pages.Home.Settings;
+using Popcorn.ViewModels.Pages.Home.Settings.ApplicationSettings;
 
 namespace Popcorn.ViewModels.Pages.Home.Show.Download
 {
@@ -204,14 +205,14 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Download
                 try
                 {
                     if (message.Episode.SelectedSubtitle != null &&
-                        message.Episode.SelectedSubtitle.Sub.LanguageName !=
+                        message.Episode.SelectedSubtitle.LanguageName !=
                         LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"))
                     {
                         var path = Path.Combine(_cacheService.Subtitles + message.Episode.ImdbId);
                         Directory.CreateDirectory(path);
                         var subtitlePath =
                             await _subtitlesService.DownloadSubtitleToPath(path,
-                                message.Episode.SelectedSubtitle.Sub);
+                                message.Episode.SelectedSubtitle);
 
                         message.Episode.SelectedSubtitle.FilePath = subtitlePath;
                     }

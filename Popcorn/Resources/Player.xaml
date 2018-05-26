@@ -59,7 +59,6 @@
                         ClipToBounds="True"
                         Visibility="Visible">
                         <Rectangle
-                            Margin="10,0,-10,0"
                             Fill="{DynamicResource AccentColorBrush}"
                             RadiusX="1"
                             RadiusY="1" />
@@ -67,9 +66,9 @@
                     <Border
                         Height="3"
                         ClipToBounds="True"
-                        Visibility="Visible">
+                        Visibility="Hidden">
                         <Rectangle
-                            Margin="20,0,10,0"
+                            x:Name="PART_NegativeSelection"
                             Fill="{StaticResource CustomSliderBackgroundBrush}"
                             RadiusX="1"
                             RadiusY="1" />
@@ -207,6 +206,79 @@
         <Setter Property="SelectionStart" Value="{Binding Path=Minimum, RelativeSource={RelativeSource Self}}" />
         <Setter Property="SelectionEnd" Value="{Binding Path=Value, RelativeSource={RelativeSource Self}}" />
         <Setter Property="Template" Value="{StaticResource CustomSliderTemplate}" />
+    </Style>
+
+    <ControlTemplate x:Key="BufferingSliderTemplate" TargetType="{x:Type Slider}">
+        <Border
+            x:Name="border"
+            Background="Transparent"
+            SnapsToDevicePixels="True">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="{TemplateBinding MinHeight}" />
+                </Grid.RowDefinitions>
+                <DockPanel LastChildFill="True">
+                    <Border
+                        x:Name="PART_SelectionRange"
+                        Height="3"
+                        ClipToBounds="True"
+                        Visibility="Visible">
+                        <Rectangle
+                            Fill="#375D81"
+                            RadiusX="1"
+                            RadiusY="1" />
+                    </Border>
+                    <Border
+                        Height="3"
+                        ClipToBounds="True"
+                        Visibility="Visible">
+                        <Rectangle
+                            x:Name="PART_NegativeSelection"
+                            Fill="{StaticResource CustomSliderBackgroundBrush}"
+                            RadiusX="1"
+                            RadiusY="1" />
+                    </Border>
+                </DockPanel>
+                <Track x:Name="PART_Track">
+                    <Track.Thumb>
+                        <Thumb
+                            x:Name="Thumb"
+                            Width="8"
+                            Height="{TemplateBinding MinHeight}"
+                            VerticalAlignment="Center"
+                            Focusable="False"
+                            OverridesDefaultStyle="True"
+                            Visibility="Collapsed" />
+                    </Track.Thumb>
+                </Track>
+            </Grid>
+        </Border>
+
+        <ControlTemplate.Triggers>
+            <DataTrigger Binding="{Binding ElementName=Thumb, Path=IsDragging}" Value="True">
+                <Setter TargetName="PART_NegativeSelection" Property="Fill" Value="{StaticResource CustomSliderHighlightBrush}" />
+            </DataTrigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <Style x:Key="BufferingSliderStyle" TargetType="{x:Type Slider}">
+        <Setter Property="Stylus.IsPressAndHoldEnabled" Value="false" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="MinHeight" Value="26" />
+        <Setter Property="MaxHeight" Value="26" />
+        <Setter Property="Height" Value="26" />
+        <Setter Property="Minimum" Value="0" />
+        <Setter Property="IsSnapToTickEnabled" Value="True" />
+        <Setter Property="SmallChange" Value="0.01" />
+        <Setter Property="LargeChange" Value="0.01" />
+        <Setter Property="TickFrequency" Value="0.01" />
+        <Setter Property="AutoToolTipPlacement" Value="None" />
+        <Setter Property="IsMoveToPointEnabled" Value="True" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="SelectionStart" Value="{Binding Path=Minimum, RelativeSource={RelativeSource Self}}" />
+        <Setter Property="SelectionEnd" Value="{Binding Path=Value, RelativeSource={RelativeSource Self}}" />
+        <Setter Property="Template" Value="{StaticResource BufferingSliderTemplate}" />
     </Style>
 
     <Style x:Key="NetworkProgressBarStyle" TargetType="{x:Type ProgressBar}">

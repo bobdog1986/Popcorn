@@ -54,18 +54,14 @@ Popcorn.Tests/Bin
 Popcorn.Tests/Obj
 Popcorn.Utils/Bin
 Popcorn.Utils/Obj
-Popcorn.OSDB/Bin
-Popcorn.OSDB/Obj
-Popcorn.Markdown/Bin
-Popcorn.Markdown/Obj
-Popcorn.ColorPicker/Bin
-Popcorn.ColorPicker/Obj
-Popcorn.ColorPickerControls/Bin
-Popcorn.ColorPickerControls/Obj
-Unosquare.FFME.Common/Bin
-Unosquare.FFME.Common/Obj
-Unosquare.FFME.Windows/Bin
-Unosquare.FFME.Windows/Obj
+OSDB/Bin
+OSDB/Obj
+Markdown/Bin
+Markdown/Obj
+ColorPicker/Bin
+ColorPicker/Obj
+ColorPickerControls/Bin
+ColorPickerControls/Obj
 
 # User files
 *.suo

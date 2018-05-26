@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Popcorn.Models.Subtitles;
-using RestSharp.Deserializers;
 
 namespace Popcorn.Models.User
 {
@@ -14,10 +12,6 @@ namespace Popcorn.Models.User
         public bool DefaultHdQuality { get; set; }
 
         public string DefaultSubtitleLanguage { get; set; }
-
-        public string DefaultSubtitleColor { get; set; }
-
-        public SubtitleSize DefaultSubtitleSize { get; set; }
 
         public Language Language { get; set; }
 

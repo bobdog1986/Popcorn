@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -19,12 +18,12 @@ using GalaSoft.MvvmLight.Threading;
 using MahApps.Metro.Controls.Dialogs;
 using Microsoft.Win32;
 using NLog;
+using OSDB.Models;
 using Polly.Timeout;
 using Popcorn.Dialogs;
 using Popcorn.Extensions;
 using Popcorn.Helpers;
 using Popcorn.Messaging;
-using Popcorn.Models.Subtitles;
 using Popcorn.Services.Application;
 using Popcorn.Services.Cache;
 using Popcorn.Services.Chromecast;
@@ -32,12 +31,9 @@ using Popcorn.Services.User;
 using Popcorn.Utils;
 using Popcorn.Utils.Exceptions;
 using Popcorn.ViewModels.Dialogs;
-using Popcorn.ViewModels.Pages.Home;
-using Popcorn.ViewModels.Pages.Home.Movie;
-using Popcorn.ViewModels.Pages.Home.Show;
 using Popcorn.ViewModels.Pages.Player;
-using Popcorn.ViewModels.Windows.Settings;
 using Popcorn.Services.Subtitles;
+using Popcorn.ViewModels.Pages.Home.Settings.ApplicationSettings;
 
 namespace Popcorn.ViewModels.Windows
 {
@@ -57,9 +53,9 @@ namespace Popcorn.ViewModels.Windows
         private IDisposable _customSubtitleMessage;
 
         /// <summary>
-        /// Holds the async message relative to <see cref="ShowSubtitleDialogMessage"/>
+        /// Holds the async message relative to <see cref="ShowLicenseDialogMessage"/>
         /// </summary>
-        private IDisposable _showSubtitleDialogMessage;
+        private IDisposable _showLicenseDialogMessage;
 
         /// <summary>
         /// Holds the async message relative to <see cref="ShowCastMediaMessage"/>
@@ -90,16 +86,6 @@ namespace Popcorn.ViewModels.Windows
         /// Specify if show flyout is open
         /// </summary>
         private bool _isShowFlyoutOpen;
-
-        /// <summary>
-        /// Specify if settings flyout is open
-        /// </summary>
-        private bool _isSettingsFlyoutOpen;
-
-        /// <summary>
-        /// Specify if about dialog is open
-        /// </summary>
-        private bool _canOpenAboutDialog = true;
 
         /// <summary>
         /// If an update is available
@@ -198,15 +184,6 @@ namespace Popcorn.ViewModels.Windows
             get => _ignoreTaskbarOnMaximize;
             set { Set(() => IgnoreTaskbarOnMaximize, ref _ignoreTaskbarOnMaximize, value); }
         }
-
-        /// <summary>
-        /// Specify if settings flyout is open
-        /// </summary>
-        public bool IsSettingsFlyoutOpen
-        {
-            get => _isSettingsFlyoutOpen;
-            set { Set(() => IsSettingsFlyoutOpen, ref _isSettingsFlyoutOpen, value); }
-        }
         
         /// <summary>
         /// Specify if movie flyout is open
@@ -269,24 +246,9 @@ namespace Popcorn.ViewModels.Windows
         public ICommand MainWindowClosingCommand { get; private set; }
 
         /// <summary>
-        /// Command used to open application settings
-        /// </summary>
-        public ICommand OpenSettingsCommand { get; private set; }
-
-        /// <summary>
-        /// Command used to open about dialog
-        /// </summary>
-        public ICommand OpenAboutCommand { get; private set; }
-
-        /// <summary>
         /// Command used to switch fullscreen mode
         /// </summary>
         public ICommand SwitchFullScreenCommand { get; private set; }
-
-        /// <summary>
-        /// Command used to open Github
-        /// </summary>
-        public ICommand GoToGitHubCommand { get; private set; }
 
         /// <summary>
         /// Command used to load tabs
@@ -339,7 +301,6 @@ namespace Popcorn.ViewModels.Windows
                     },
                     message.PlayingProgress,
                     message.BufferProgress,
-                    message.PieceAvailability,
                     message.BandwidthRate,
                     message.Episode.SelectedSubtitle,
                     message.Episode.AvailableSubtitles);
@@ -378,27 +339,16 @@ namespace Popcorn.ViewModels.Windows
                     },
                     message.PlayingProgress,
                     message.BufferProgress,
-                    message.PieceAvailability,
                     message.BandwidthRate, subtitles: new List<Subtitle>
                     {
                         new Subtitle
-                        {
-                            Sub = new OSDB.Subtitle
                             {
-                                LanguageId = LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"),
                                 LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"),
-                                SubtitleId = "none"
-                            }
-                        },
+                            },
                         new Subtitle
-                        {
-                            Sub = new OSDB.Subtitle
                             {
-                                LanguageId = LocalizationProviderHelper.GetLocalizedValue<string>("CustomLabel"),
                                 LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("CustomLabel"),
-                                SubtitleId = "custom"
                             }
-                        }
                     });
 
                 DispatcherHelper.CheckBeginInvokeOnUI(() =>
@@ -437,7 +387,6 @@ namespace Popcorn.ViewModels.Windows
                     },
                     message.PlayingProgress,
                     message.BufferProgress,
-                    message.PieceAvailability,
                     message.BandwidthRate,
                     message.Movie.SelectedSubtitle,
                     message.Movie.AvailableSubtitles);
@@ -585,24 +534,6 @@ namespace Popcorn.ViewModels.Windows
                     IsMovieFlyoutOpen = true;
                 });
 
-            Messenger.Default.Register<ChangeLanguageMessage>(
-                this,
-                message =>
-                {
-                    var pages = SimpleIoc.Default.GetInstance<PagesViewModel>();
-                    foreach (var page in pages.Pages)
-                    {
-                        if (page is MoviePageViewModel)
-                        {
-                            page.Caption = LocalizationProviderHelper.GetLocalizedValue<string>("MoviesLabel");
-                        }
-                        else if (page is ShowPageViewModel)
-                        {
-                            page.Caption = LocalizationProviderHelper.GetLocalizedValue<string>("ShowsLabel");
-                        }
-                    }
-                });
-
             Messenger.Default.Register<UnhandledExceptionMessage>(this, message => ManageException(message.Exception));
 
             Messenger.Default.Register<UpdateAvailableMessage>(this, message =>
@@ -655,11 +586,10 @@ namespace Popcorn.ViewModels.Windows
                 }
             });
 
-            _showSubtitleDialogMessage = Messenger.Default.RegisterAsyncMessage<ShowSubtitleDialogMessage>(
-                async message =>
+            _showLicenseDialogMessage = Messenger.Default.RegisterAsyncMessage<ShowLicenseDialogMessage>(async message =>
                 {
-                    var vm = new SubtitleDialogViewModel(message.Subtitles, message.CurrentSubtitle);
-                    var subtitleDialog = new SubtitleDialog
+                    var vm = new LicenseDialogViewModel();
+                    var licenseDialog = new LicenseDialog
                     {
                         DataContext = vm
                     };
@@ -669,8 +599,7 @@ namespace Popcorn.ViewModels.Windows
                     {
                         try
                         {
-                            message.SelectedSubtitle = vm.SelectedSubtitle?.Sub;
-                            var dialog = await _dialogCoordinator.GetCurrentDialogAsync<SubtitleDialog>(
+                            var dialog = await _dialogCoordinator.GetCurrentDialogAsync<LicenseDialog>(
                                 this);
                             if (dialog != null)
                                 await _dialogCoordinator.HideMetroDialogAsync(this, dialog);
@@ -684,7 +613,10 @@ namespace Popcorn.ViewModels.Windows
 
                     try
                     {
-                        await _dialogCoordinator.ShowMetroDialogAsync(this, subtitleDialog);
+                        await _dialogCoordinator.ShowMetroDialogAsync(this, licenseDialog, new MetroDialogSettings
+                        {
+                            ColorScheme = MetroDialogColorScheme.Accented
+                        });
                         await cts.Task;
                     }
                     catch (Exception ex)
@@ -722,7 +654,10 @@ namespace Popcorn.ViewModels.Windows
 
                     try
                     {
-                        await _dialogCoordinator.ShowMetroDialogAsync(this, subtitleDialog);
+                        await _dialogCoordinator.ShowMetroDialogAsync(this, subtitleDialog, new MetroDialogSettings
+                        {
+                            ColorScheme = MetroDialogColorScheme.Accented
+                        });
                         await cts.Task;
                     }
                     catch (Exception ex)
@@ -797,8 +732,6 @@ namespace Popcorn.ViewModels.Windows
                 }
             });
 
-            OpenSettingsCommand = new RelayCommand(() => IsSettingsFlyoutOpen = !IsSettingsFlyoutOpen);
-
             DropFileCommand = new RelayCommand<DragEventArgs>(async e =>
             {
                 try
@@ -853,7 +786,11 @@ namespace Popcorn.ViewModels.Windows
                         var subtitleFile = files?.FirstOrDefault(a => a.Contains(".sub") || a.Contains(".srt") || a.Contains(".sbv"));
                         if (subtitleFile != null)
                         {
-                            MediaPlayer?.SelectSubtitlesCommand.Execute(subtitleFile);
+                            MediaPlayer?.ChangeSubtitle(new Subtitle
+                            {
+                                FilePath = subtitleFile,
+                                LanguageName = LocalizationProviderHelper.GetLocalizedValue<string>("CustomLabel")
+                            });
                         }
                     }
                     else
@@ -897,38 +834,7 @@ namespace Popcorn.ViewModels.Windows
                     ApplicationService.IsFullScreen = true;
                 }
             });
-
-            OpenAboutCommand = new RelayCommand(async () =>
-            {
-                _canOpenAboutDialog = false;
-
-                var aboutDialog = new AboutDialog();
-                var vm = new AboutDialogViewModel(async () =>
-                {
-                    try
-                    {
-                        _canOpenAboutDialog = true;
-
-                        var dialog = await _dialogCoordinator.GetCurrentDialogAsync<AboutDialog>(
-                            this);
-                        if (dialog != null)
-                            await _dialogCoordinator.HideMetroDialogAsync(this, dialog);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Error(ex);
-                    }
-                });
-
-                aboutDialog.DataContext = vm;
-                await _dialogCoordinator.ShowMetroDialogAsync(this, aboutDialog);
-            }, () => _canOpenAboutDialog);
-
-            GoToGitHubCommand = new RelayCommand(() =>
-            {
-                Process.Start(new ProcessStartInfo("https://github.com/bbougot/Popcorn"));
-            });
-
+            
             DragEnterFileCommand = new RelayCommand<DragEventArgs>(e =>
             {
                 Messenger.Default.Send(new DropFileMessage(DropFileMessage.DropFileEvent.Enter));
@@ -941,12 +847,14 @@ namespace Popcorn.ViewModels.Windows
 
             InitializeAsyncCommand = new RelayCommand(async () =>
             {
+                var settings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
+                await settings.InitializeAsync();
                 var cmd = Environment.GetCommandLineArgs();
                 if (cmd.Any())
                 {
                     if (cmd.Contains("updated"))
                     {
-                        OpenAboutCommand.Execute(null);
+                        // TODO: show info about new update
                     }
                     else if (cmd.Length == 2 && (cmd[1].StartsWith("magnet") || cmd[1].EndsWith("torrent")))
                     {
@@ -959,22 +867,7 @@ namespace Popcorn.ViewModels.Windows
 
         private async Task HandleTorrentDownload(string path)
         {
-            var filePath = string.Empty;
-            //if (path.StartsWith("magnet"))
-            //{
-            //    filePath = $"{_cacheService.DropFilesDownloads}{Guid.NewGuid()}.torrent";
-            //    using (var file = File.Create(filePath))
-            //    using (var stream = new StreamWriter(file))
-            //    {
-            //        await stream.WriteLineAsync(path);
-            //    }
-            //}
-            //else if (path.EndsWith("torrent"))
-            //{
-            //    filePath = path;
-            //}
-
-            filePath = path;
+            var filePath = path;
             var vm = new DropTorrentDialogViewModel(_cacheService, filePath);
             var dropTorrentDialog = new DropTorrentDialog
             {

@@ -115,6 +115,15 @@ namespace Popcorn.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Bandwidth limit.
+        /// </summary>
+        public static string BandwidthLimitLabel {
+            get {
+                return ResourceManager.GetString("BandwidthLimitLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Big.
         /// </summary>
         public static string Big {
@@ -142,7 +151,7 @@ namespace Popcorn.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Cache size (in MB).
+        ///   Recherche une chaîne localisée semblable à Cache size.
         /// </summary>
         public static string CacheSizeLabel {
             get {
@@ -214,6 +223,33 @@ namespace Popcorn.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Choose default quality.
+        /// </summary>
+        public static string ChooseDefaultQualityLabel {
+            get {
+                return ResourceManager.GetString("ChooseDefaultQualityLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Choose default subtitles language.
+        /// </summary>
+        public static string ChooseDefaultSubtitleLanguageLabel {
+            get {
+                return ResourceManager.GetString("ChooseDefaultSubtitleLanguageLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Choose a language.
+        /// </summary>
+        public static string ChooseLanguageLabel {
+            get {
+                return ResourceManager.GetString("ChooseLanguageLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Choose a subtitle.
         /// </summary>
         public static string ChooseSubtitleLabel {
@@ -223,11 +259,38 @@ namespace Popcorn.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Choose default subtitles color.
+        /// </summary>
+        public static string ChooseSubtitlesColorLabel {
+            get {
+                return ResourceManager.GetString("ChooseSubtitlesColorLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Choose default subtitles size.
+        /// </summary>
+        public static string ChooseSubtitlesSizeLabel {
+            get {
+                return ResourceManager.GetString("ChooseSubtitlesSizeLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Clear.
         /// </summary>
         public static string ClearButton {
             get {
                 return ResourceManager.GetString("ClearButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Clear application cache.
+        /// </summary>
+        public static string ClearCacheLabel {
+            get {
+                return ResourceManager.GetString("ClearCacheLabel", resourceCulture);
             }
         }
         
@@ -376,11 +439,11 @@ namespace Popcorn.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Download limit (kB/s).
+        ///   Recherche une chaîne localisée semblable à Choose the maximum download limit in kB/s.
         /// </summary>
-        public static string DownloadLimitLabel {
+        public static string DownloadLimit {
             get {
-                return ResourceManager.GetString("DownloadLimitLabel", resourceCulture);
+                return ResourceManager.GetString("DownloadLimit", resourceCulture);
             }
         }
         
@@ -781,11 +844,20 @@ namespace Popcorn.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à OPTIONS.
+        ///   Recherche une chaîne localisée semblable à Options.
         /// </summary>
         public static string OptionsLabel {
             get {
                 return ResourceManager.GetString("OptionsLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Paste a magnet link to play the media.
+        /// </summary>
+        public static string ParseMagnetShortcut {
+            get {
+                return ResourceManager.GetString("ParseMagnetShortcut", resourceCulture);
             }
         }
         
@@ -925,11 +997,38 @@ namespace Popcorn.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Scroll down the movies/shows in the interface.
+        /// </summary>
+        public static string ScrollDownShortcut {
+            get {
+                return ResourceManager.GetString("ScrollDownShortcut", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Scroll up the movies/shows in the interface.
+        /// </summary>
+        public static string ScrollUpShortcut {
+            get {
+                return ResourceManager.GetString("ScrollUpShortcut", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Search....
         /// </summary>
         public static string SearchBoxWatermark {
             get {
                 return ResourceManager.GetString("SearchBoxWatermark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Search a movie/show.
+        /// </summary>
+        public static string SearchShortcut {
+            get {
+                return ResourceManager.GetString("SearchShortcut", resourceCulture);
             }
         }
         
@@ -963,9 +1062,27 @@ namespace Popcorn.Properties {
         /// <summary>
         ///   Recherche une chaîne localisée semblable à Settings.
         /// </summary>
-        public static string SettingsMenuTitle {
+        public static string SettingsLabel {
             get {
-                return ResourceManager.GetString("SettingsMenuTitle", resourceCulture);
+                return ResourceManager.GetString("SettingsLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Shortcuts.
+        /// </summary>
+        public static string ShortcutsLabel {
+            get {
+                return ResourceManager.GetString("ShortcutsLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Show license.
+        /// </summary>
+        public static string ShowLicenseLabel {
+            get {
+                return ResourceManager.GetString("ShowLicenseLabel", resourceCulture);
             }
         }
         
@@ -1123,11 +1240,11 @@ namespace Popcorn.Properties {
         }
         
         /// <summary>
-        ///   Recherche une chaîne localisée semblable à Upload limit (kB/s).
+        ///   Recherche une chaîne localisée semblable à Choose the maximum upload limit in kB/s.
         /// </summary>
-        public static string UploadLimitLabel {
+        public static string UploadLimit {
             get {
-                return ResourceManager.GetString("UploadLimitLabel", resourceCulture);
+                return ResourceManager.GetString("UploadLimit", resourceCulture);
             }
         }
         
@@ -1146,6 +1263,15 @@ namespace Popcorn.Properties {
         public static string VersionHistoryLabel {
             get {
                 return ResourceManager.GetString("VersionHistoryLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Version.
+        /// </summary>
+        public static string VersionLabel {
+            get {
+                return ResourceManager.GetString("VersionLabel", resourceCulture);
             }
         }
         

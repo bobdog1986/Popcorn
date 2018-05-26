@@ -138,8 +138,8 @@
   <data name="DirectorsLabel" xml:space="preserve">
     <value>Directors</value>
   </data>
-  <data name="DownloadLimitLabel" xml:space="preserve">
-    <value>Download limit (kB/s)</value>
+  <data name="BandwidthLimitLabel" xml:space="preserve">
+    <value>Bandwidth limit</value>
   </data>
   <data name="EmptyMovieSearchLabel" xml:space="preserve">
     <value>No movie found</value>
@@ -177,14 +177,11 @@
   <data name="SearchTitleTab" xml:space="preserve">
     <value>Search</value>
   </data>
-  <data name="SettingsMenuTitle" xml:space="preserve">
+  <data name="SettingsLabel" xml:space="preserve">
     <value>Settings</value>
   </data>
   <data name="TrailerButton" xml:space="preserve">
     <value>Trailer</value>
-  </data>
-  <data name="UploadLimitLabel" xml:space="preserve">
-    <value>Upload limit (kB/s)</value>
   </data>
   <data name="WatchButton" xml:space="preserve">
     <value>Watch</value>
@@ -340,7 +337,7 @@
     <value>(kB/s)</value>
   </data>
   <data name="CacheSizeLabel" xml:space="preserve">
-    <value>Cache size (in MB)</value>
+    <value>Cache size</value>
   </data>
   <data name="ClearButton" xml:space="preserve">
     <value>Clear</value>
@@ -481,12 +478,57 @@
     <value>Loading...</value>
   </data>
   <data name="OptionsLabel" xml:space="preserve">
-    <value>OPTIONS</value>
+    <value>Options</value>
   </data>
   <data name="InformationsLabel" xml:space="preserve">
     <value>Informations</value>
   </data>
   <data name="QualityLabel" xml:space="preserve">
     <value>Quality</value>
+  </data>
+  <data name="ChooseDefaultQualityLabel" xml:space="preserve">
+    <value>Choose default quality</value>
+  </data>
+  <data name="ChooseDefaultSubtitleLanguageLabel" xml:space="preserve">
+    <value>Choose default subtitles language</value>
+  </data>
+  <data name="ChooseLanguageLabel" xml:space="preserve">
+    <value>Choose a language</value>
+  </data>
+  <data name="ChooseSubtitlesColorLabel" xml:space="preserve">
+    <value>Choose default subtitles color</value>
+  </data>
+  <data name="ChooseSubtitlesSizeLabel" xml:space="preserve">
+    <value>Choose default subtitles size</value>
+  </data>
+  <data name="ClearCacheLabel" xml:space="preserve">
+    <value>Clear application cache</value>
+  </data>
+  <data name="DownloadLimitLabel" xml:space="preserve">
+    <value>Choose the maximum download limit in kB/s</value>
+  </data>
+  <data name="UploadLimitLabel" xml:space="preserve">
+    <value>Choose the maximum upload limit in kB/s</value>
+  </data>
+  <data name="VersionLabel" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="ShowLicenseLabel" xml:space="preserve">
+    <value>Show license</value>
+  </data>
+  <data name="ShortcutsLabel" xml:space="preserve">
+    <value>Shortcuts</value>
+  </data>
+  <data name="ParseMagnetShortcut" xml:space="preserve">
+    <value>Paste a magnet link to play the media</value>
+  </data>
+  <data name="ScrollDownShortcut" xml:space="preserve">
+    <value>Scroll down the movies/shows in the interface</value>
+  </data>
+  <data name="ScrollUpShortcut" xml:space="preserve">
+    <value>Scroll up the movies/shows in the interface</value>
+  </data>
+  <data name="SearchShortcut" xml:space="preserve">
+    <value>Search a movie/show</value>
   </data>
 </root>

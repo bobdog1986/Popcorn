@@ -90,6 +90,7 @@ namespace Popcorn.Windows
 
         private void OnKeyPressed(object sender, KeyPressedArgs e)
         {
+            Messenger.Default.Send(new KeyPressedMessage(e));
             if (e.KeyPressed == Key.Down || e.KeyPressed == Key.Up)
             {
                 var movieScrollviewer =
@@ -118,12 +119,7 @@ namespace Popcorn.Windows
         {
             var searchBox =
                 this.FindChild<TextBox>("SearchBox");
-            if (e.Key == Key.I && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control && !searchBox.IsFocused)
-            {
-                var vm = DataContext as WindowViewModel;
-                vm?.OpenAboutCommand.Execute(null);
-            }
-            else if (e.Key == Key.F3 || (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift &&
+            if (e.Key == Key.F3 || (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift &&
                      e.Key == Key.F)
             {
                 searchBox.Focus();

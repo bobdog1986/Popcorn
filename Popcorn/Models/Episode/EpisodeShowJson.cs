@@ -3,9 +3,10 @@ using System.Runtime.Serialization;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
+using OSDB.Models;
 using Popcorn.Extensions;
+using Popcorn.Helpers;
 using Popcorn.Messaging;
-using Popcorn.Models.Subtitles;
 using Popcorn.Models.Torrent.Show;
 using Popcorn.Models.Media;
 using Popcorn.Models.Torrent;
@@ -121,7 +122,7 @@ namespace Popcorn.Models.Episode
             set
             {
                 Set(() => SelectedSubtitle, ref _selectedSubtitle, value);
-                if (SelectedSubtitle != null && SelectedSubtitle.Sub.SubtitleId == "custom")
+                if (SelectedSubtitle != null && SelectedSubtitle.LanguageName == LocalizationProviderHelper.GetLocalizedValue<string>("CustomLabel"))
                 {
                     DispatcherHelper.CheckBeginInvokeOnUI(async () =>
                     {

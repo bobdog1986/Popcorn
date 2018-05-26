@@ -9,10 +9,7 @@ using System.Windows.Threading;
 using Akavache;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Threading;
-using Ignite.SharpNetSH;
-using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
-using Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel.Implementation;
 using Microsoft.Owin.Hosting;
 using NetFwTypeLib;
 using NLog;
@@ -21,7 +18,7 @@ using Popcorn.Initializers;
 using Popcorn.Services.Server;
 using Popcorn.Services.User;
 using Popcorn.Utils;
-using Popcorn.ViewModels;
+using Popcorn.Utils.Actions;
 using Popcorn.ViewModels.Windows;
 using Popcorn.Windows;
 using WPFLocalizeExtension.Engine;
@@ -82,10 +79,7 @@ namespace Popcorn
         protected override async void OnStartup(StartupEventArgs e)
         {
             TelemetryConfiguration.Active.TelemetryInitializers.Add(new PopcornApplicationInsightsInitializer());
-            var builder = TelemetryConfiguration.Active.TelemetryProcessorChainBuilder;
-            builder.UseAdaptiveSampling(1);
-            builder.Build();
-            await ApplicationInsightsHelper.Initialize();
+            ApplicationInsightsHelper.Initialize();
             base.OnStartup(e);
             WatchStart = Stopwatch.StartNew();
             Logger.Info(
@@ -98,7 +92,7 @@ namespace Popcorn
                 await userService.GetUser();
                 await Task.Run(async () =>
                 {
-                    var netsh = new NetSH(new Utils.CommandLineHarness());
+                    var netsh = new NetSH(new CommandLineHarness());
                     var showResponse = netsh.Http.Show.UrlAcl(Constants.ServerUrl);
                     if (showResponse.ResponseObject.Count == 0)
                     {
@@ -281,12 +275,6 @@ namespace Popcorn
             {
                 Logger.Fatal(ex);
             }
-        }
-
-        protected override void OnExit(ExitEventArgs e)
-        {
-            base.OnExit(e);
-            _localServer?.Dispose();
         }
 
         private void OnStartup(object sender, StartupEventArgs e)

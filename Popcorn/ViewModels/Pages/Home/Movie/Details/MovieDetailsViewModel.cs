@@ -26,7 +26,8 @@ using Popcorn.Services.Cache;
 using Popcorn.Services.Download;
 using Popcorn.Services.User;
 using Popcorn.Utils.Exceptions;
-using Popcorn.ViewModels.Windows.Settings;
+using Popcorn.ViewModels.Pages.Home.Settings;
+using Popcorn.ViewModels.Pages.Home.Settings.ApplicationSettings;
 
 namespace Popcorn.ViewModels.Pages.Home.Movie.Details
 {

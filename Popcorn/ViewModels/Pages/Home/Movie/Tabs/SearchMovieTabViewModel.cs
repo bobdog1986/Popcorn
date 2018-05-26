@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight.Messaging;
+using GalaSoft.MvvmLight.Threading;
 using NuGet;
 using Popcorn.Comparers;
 using Popcorn.Helpers;
@@ -42,60 +43,69 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
         public override async Task LoadMoviesAsync(bool reset = false)
         {
             await LoadingSemaphore.WaitAsync(CancellationLoadingMovies.Token);
-            StopLoadingMovies();
-            if (reset)
+            await Task.Run(async () =>
             {
-                Movies.Clear();
-                Page = 0;
-                VerticalScroll = 0d;
-            }
+                StopLoadingMovies();
+                if (reset)
+                {
+                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                    {
+                        Movies.Clear();
+                        Page = 0;
+                        VerticalScroll = 0d;
+                    });
+                }
 
-            var watch = Stopwatch.StartNew();
-            Page++;
-            if (Page > 1 && Movies.Count == MaxNumberOfMovies)
-            {
-                Page--;
-                LoadingSemaphore.Release();
-                return;
-            }
+                var watch = Stopwatch.StartNew();
+                Page++;
+                if (Page > 1 && Movies.Count == MaxNumberOfMovies)
+                {
+                    Page--;
+                    LoadingSemaphore.Release();
+                    return;
+                }
 
-            Logger.Info(
-                $"Loading search page {Page} with criteria: {SearchFilter}");
-            HasLoadingFailed = false;
-            try
-            {
-                IsLoadingMovies = true;
-                var result =
-                    await MovieService.SearchMoviesAsync(SearchFilter,
-                        Page,
-                        MaxMoviesPerPage,
-                        Genre,
-                        Rating,
-                        CancellationLoadingMovies.Token);
-
-                Movies.AddRange(result.movies.Except(Movies, new MovieLightComparer()));
-                IsLoadingMovies = false;
-                IsMovieFound = Movies.Any();
-                CurrentNumberOfMovies = Movies.Count;
-                MaxNumberOfMovies = result.nbMovies;
-                UserService.SyncMovieHistory(Movies);
-            }
-            catch (Exception exception)
-            {
-                Page--;
-                Logger.Error(
-                    $"Error while loading search page {Page} with criteria {SearchFilter}: {exception.Message}");
-                HasLoadingFailed = true;
-                Messenger.Default.Send(new ManageExceptionMessage(exception));
-            }
-            finally
-            {
-                watch.Stop();
-                var elapsedMs = watch.ElapsedMilliseconds;
                 Logger.Info(
-                    $"Loaded search page {Page} with criteria {SearchFilter} in {elapsedMs} milliseconds.");
-                LoadingSemaphore.Release();
-            }
+                    $"Loading search page {Page} with criteria: {SearchFilter}");
+                HasLoadingFailed = false;
+                try
+                {
+                    IsLoadingMovies = true;
+                    var result =
+                        await MovieService.SearchMoviesAsync(SearchFilter,
+                            Page,
+                            MaxMoviesPerPage,
+                            Genre,
+                            Rating,
+                            CancellationLoadingMovies.Token);
+
+                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                    {
+                        Movies.AddRange(result.movies.Except(Movies, new MovieLightComparer()));
+                        IsLoadingMovies = false;
+                        IsMovieFound = Movies.Any();
+                        CurrentNumberOfMovies = Movies.Count;
+                        MaxNumberOfMovies = result.nbMovies;
+                        UserService.SyncMovieHistory(Movies);
+                    });
+                }
+                catch (Exception exception)
+                {
+                    Page--;
+                    Logger.Error(
+                        $"Error while loading search page {Page} with criteria {SearchFilter}: {exception.Message}");
+                    HasLoadingFailed = true;
+                    Messenger.Default.Send(new ManageExceptionMessage(exception));
+                }
+                finally
+                {
+                    watch.Stop();
+                    var elapsedMs = watch.ElapsedMilliseconds;
+                    Logger.Info(
+                        $"Loaded search page {Page} with criteria {SearchFilter} in {elapsedMs} milliseconds.");
+                    LoadingSemaphore.Release();
+                }
+            });
         }
     }
 }

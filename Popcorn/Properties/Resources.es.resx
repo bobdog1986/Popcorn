@@ -138,8 +138,8 @@
   <data name="DirectorsLabel" xml:space="preserve">
     <value>Directores</value>
   </data>
-  <data name="DownloadLimitLabel" xml:space="preserve">
-    <value>Límite de descarga (kB/s)</value>
+  <data name="BandwidthLimitLabel" xml:space="preserve">
+    <value>Límite de descarga</value>
   </data>
   <data name="EmptyMovieSearchLabel" xml:space="preserve">
     <value>No se ha encontrado ninguna película</value>
@@ -177,14 +177,14 @@
   <data name="SearchTitleTab" xml:space="preserve">
     <value>Búsqueda</value>
   </data>
-  <data name="SettingsMenuTitle" xml:space="preserve">
+  <data name="SettingsLabel" xml:space="preserve">
     <value>Ajustes</value>
   </data>
   <data name="TrailerButton" xml:space="preserve">
     <value>Trailer</value>
   </data>
   <data name="UploadLimitLabel" xml:space="preserve">
-    <value>Límite de subida (kB/s)</value>
+    <value>Límite de subida en kB/s</value>
   </data>
   <data name="WatchButton" xml:space="preserve">
     <value>Ver</value>
@@ -340,7 +340,7 @@
     <value>(kB/s)</value>
   </data>
   <data name="CacheSizeLabel" xml:space="preserve">
-    <value>Tamaño de cache (en MB)</value>
+    <value>Tamaño de cache</value>
   </data>
   <data name="ClearButton" xml:space="preserve">
     <value>Limpiar</value>
@@ -481,12 +481,54 @@
     <value>Cargando...</value>
   </data>
   <data name="OptionsLabel" xml:space="preserve">
-    <value>OPCIONES</value>
+    <value>Opciones</value>
   </data>
   <data name="InformationsLabel" xml:space="preserve">
     <value>Informaciones</value>
   </data>
   <data name="QualityLabel" xml:space="preserve">
     <value>Calidad</value>
+  </data>
+  <data name="ChooseDefaultQualityLabel" xml:space="preserve">
+    <value>Elige la calidad por defecto</value>
+  </data>
+  <data name="ChooseDefaultSubtitleLanguageLabel" xml:space="preserve">
+    <value>Elige el idioma de subtítulo predeterminado</value>
+  </data>
+  <data name="ChooseLanguageLabel" xml:space="preserve">
+    <value>Elige un idioma</value>
+  </data>
+  <data name="ChooseSubtitlesColorLabel" xml:space="preserve">
+    <value>Elige el color de subtítulo predeterminado</value>
+  </data>
+  <data name="ChooseSubtitlesSizeLabel" xml:space="preserve">
+    <value>Elige el tamaño de los subtítulos predeterminados</value>
+  </data>
+  <data name="ClearCacheLabel" xml:space="preserve">
+    <value>Eliminar la memoria del application</value>
+  </data>
+  <data name="DownloadLimitLabel" xml:space="preserve">
+    <value>Límite de descarga en kB/s</value>
+  </data>
+  <data name="VersionLabel" xml:space="preserve">
+    <value>Versión</value>
+  </data>
+  <data name="ShowLicenseLabel" xml:space="preserve">
+    <value>Ver la licencia</value>
+  </data>
+  <data name="ShortcutsLabel" xml:space="preserve">
+    <value>Atajos</value>
+  </data>
+  <data name="ParseMagnetShortcut" xml:space="preserve">
+    <value>Pegue un enlace de imán para reproducir los medios</value>
+  </data>
+  <data name="ScrollDownShortcut" xml:space="preserve">
+    <value>Desplácese hacia abajo de las películas / espectáculos en la interfaz</value>
+  </data>
+  <data name="ScrollUpShortcut" xml:space="preserve">
+    <value>Desplácese por las películas / espectáculos en la interfaz</value>
+  </data>
+  <data name="SearchShortcut" xml:space="preserve">
+    <value>Buscar una película</value>
   </data>
 </root>

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Popcorn.OSDB;
+using OSDB;
 using SubtitlesParser.Classes;
 
 namespace Popcorn.Services.Subtitles
@@ -14,7 +14,7 @@ namespace Popcorn.Services.Subtitles
         /// Get subtitles languages
         /// </summary>
         /// <returns>Languages</returns>
-        Task<IEnumerable<Language>> GetSubLanguages();
+        Task<IEnumerable<OSDB.Models.Language>> GetSubLanguages();
 
         /// <summary>
         /// Search subtitles by imdb code and languages
@@ -24,7 +24,7 @@ namespace Popcorn.Services.Subtitles
         /// <param name="season">Season number</param>
         /// <param name="episode">Episode number</param>
         /// <returns></returns>
-        Task<IList<Subtitle>> SearchSubtitlesFromImdb(string languages, string imdbId, int? season, int? episode);
+        Task<IList<OSDB.Models.Subtitle>> SearchSubtitlesFromImdb(string languages, string imdbId, int? season, int? episode);
 
         /// <summary>
         /// Download a subtitle to a path
@@ -33,7 +33,7 @@ namespace Popcorn.Services.Subtitles
         /// <param name="subtitle">Subtitle to download</param>
         /// <param name="remote">Is remote download path</param>
         /// <returns>Downloaded subtitle path</returns>
-        Task<string> DownloadSubtitleToPath(string path, Subtitle subtitle, bool remote = true);
+        Task<string> DownloadSubtitleToPath(string path, OSDB.Models.Subtitle subtitle, bool remote = true);
 
         /// <summary>
         /// Convert a .srt file to a .vtt file
@@ -47,6 +47,6 @@ namespace Popcorn.Services.Subtitles
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns></returns>
-        IEnumerable<SubtitleItem> LoadCaptions(string filePath);
+        string LoadCaptions(string filePath);
     }
 }
