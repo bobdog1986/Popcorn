@@ -34,20 +34,23 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
         /// </summary>
         public override async Task LoadMoviesAsync(bool reset = false)
         {
+            await LoadingSemaphore.WaitAsync(CancellationLoadingMovies.Token);
             await Task.Run(async () =>
             {
-                await LoadingSemaphore.WaitAsync(CancellationLoadingMovies.Token);
                 StopLoadingMovies();
                 if (reset)
                 {
-                    Movies.Clear();
-                    Page = 0;
-                    VerticalScroll = 0d;
+                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                    {
+                        Movies.Clear();
+                        Page = 0;
+                        VerticalScroll = 0d;
+                    });
                 }
 
                 var watch = Stopwatch.StartNew();
                 Page++;
-                if (Page > 1 && Movies.Count == MaxNumberOfMovies && reset)
+                if (Page > 1 && Movies.Count == MaxNumberOfMovies)
                 {
                     Page--;
                     LoadingSemaphore.Release();

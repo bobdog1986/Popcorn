@@ -275,14 +275,17 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
         /// </summary>
         public virtual async Task LoadMoviesAsync(bool reset = false)
         {
+            await LoadingSemaphore.WaitAsync(CancellationLoadingMovies.Token);
             await Task.Run(async () =>
             {
-                await LoadingSemaphore.WaitAsync(CancellationLoadingMovies.Token);
                 if (reset)
                 {
-                    Movies.Clear();
-                    Page = 0;
-                    VerticalScroll = 0d;
+                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                    {
+                        Movies.Clear();
+                        Page = 0;
+                        VerticalScroll = 0d;
+                    });
                 }
 
                 var watch = Stopwatch.StartNew();
@@ -429,7 +432,10 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                     else if (this is FavoritesMovieTabViewModel && SelectedTab is FavoritesMovieTabViewModel ||
                              this is RecommendationsMovieTabViewModel &&
                              SelectedTab is RecommendationsMovieTabViewModel)
+                    {
+                        NeedSync = true;
                         await LoadMoviesAsync(this is RecommendationsMovieTabViewModel);
+                    }
                 });
 
             Messenger.Default.Register<ChangeSeenMovieMessage>(
@@ -443,7 +449,10 @@ namespace Popcorn.ViewModels.Pages.Home.Movie.Tabs
                     else if (this is SeenMovieTabViewModel && SelectedTab is SeenMovieTabViewModel ||
                              this is RecommendationsMovieTabViewModel &&
                              SelectedTab is RecommendationsMovieTabViewModel)
+                    {
+                        NeedSync = true;
                         await LoadMoviesAsync(this is RecommendationsMovieTabViewModel);
+                    }
                 });
         }
 

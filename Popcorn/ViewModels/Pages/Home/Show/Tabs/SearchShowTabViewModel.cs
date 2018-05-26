@@ -39,15 +39,18 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
         /// </summary>
         public override async Task LoadShowsAsync(bool reset = false)
         {
+            await LoadingSemaphore.WaitAsync(CancellationLoadingShows.Token);
             await Task.Run(async () =>
             {
-                await LoadingSemaphore.WaitAsync(CancellationLoadingShows.Token);
                 StopLoadingShows();
                 if (reset)
                 {
-                    Shows.Clear();
-                    Page = 0;
-                    VerticalScroll = 0d;
+                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                    {
+                        Shows.Clear();
+                        Page = 0;
+                        VerticalScroll = 0d;
+                    });
                 }
 
                 var watch = Stopwatch.StartNew();

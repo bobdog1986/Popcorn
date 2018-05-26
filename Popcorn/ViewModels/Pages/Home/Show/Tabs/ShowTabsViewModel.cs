@@ -270,14 +270,17 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
         /// </summary>
         public virtual async Task LoadShowsAsync(bool reset = false)
         {
+            await LoadingSemaphore.WaitAsync(CancellationLoadingShows.Token);
             await Task.Run(async () =>
             {
-                await LoadingSemaphore.WaitAsync(CancellationLoadingShows.Token);
                 if (reset)
                 {
-                    Shows.Clear();
-                    Page = 0;
-                    VerticalScroll = 0d;
+                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                    {
+                        Shows.Clear();
+                        Page = 0;
+                        VerticalScroll = 0d;
+                    });
                 }
 
                 var watch = Stopwatch.StartNew();
@@ -373,7 +376,10 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
                     if (this is FavoritesShowTabViewModel && !(SelectedTab is FavoritesShowTabViewModel))
                         NeedSync = true;
                     else if (this is FavoritesShowTabViewModel && SelectedTab is FavoritesShowTabViewModel)
+                    {
+                        NeedSync = true;
                         await LoadShowsAsync();
+                    }
                 });
 
             Messenger.Default.Register<ChangeLanguageMessage>(
