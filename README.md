@@ -20,34 +20,37 @@
   </a>
 </div>
 
+# Popcorn
+Popcorn is a simple application which lets you watch any movie or TV show instantly.
+
 ## Features
 
-**Huge database**: The API collects most of known movies (6000+) and shows (3000+)
+* Huge database
+    * The API collects most of known movies (7000+) and shows (3000+)
 
-**Performance**: A strong effort has been made to get the best performance from UI navigation and downloading
+* Performance
+    * A strong effort has been made to get the best performance from UI navigation and downloading
 
-**Capabilities**: Popcorn offers a wide set of functionalities (Trailer, subtitles, Chromecast support, filtering by genre and rating, ...)
+* Capabilities
+    * Popcorn offers a wide set of functionalities (Trailer, subtitles, Chromecast support, filtering by genre and rating, ...)
 
 ## How does it work
 
 ### Frontend
-#### Framework
-The app is a .NET 4.7.1 application using WPF framework. 
+* Framework
+    * The app is a .NET 4.7.1 application using WPF framework. 
 
-#### Basics
-It communicates with its own [API](https://github.com/bbougot/PopcornAPI) to query movies, shows, trailers, cast, assets and torrents.
-The app includes a video player ([ffmediaelement](https://github.com/unosquare/ffmediaelement)) and a torrent handler ([libtorrent](https://github.com/bbougot/libtorrent-net)). It is also able to cast to a Chromecast device.
+* Basics
+    * It communicates with its own [API](https://github.com/bbougot/PopcornAPI) to query movies, shows, trailers, cast, assets and torrents. The app includes a video player ([ffmediaelement](https://github.com/unosquare/ffmediaelement)) and a torrent handler ([libtorrent](https://github.com/bbougot/libtorrent-net)) and is also able to cast to a Chromecast device.
 
-#### Advanced
-The app can update by itself automatically using an incremental update system.
-
-Popcorn also sends usage data to Azure Application Insights.
+* Advanced
+    * The app can update by itself automatically using an incremental update system.
+    * Popcorn also sends usage data to Azure Application Insights.
 
 ### Backend
-The [API](https://github.com/bbougot/PopcornAPI) is a ASP.NET Core app which serves movies and shows from SQL Server database.
-It also supports caching using Redis database.
-
-The assets (images and torrent files) are stored on Azure Blob Storage.
+* The backend is powered by a Microsoft stack
+    * The [API](https://github.com/bbougot/PopcornAPI) is a ASP.NET Core app which serves movies and shows from SQL Server database. It also supports caching using Redis database.
+    * The assets (images and torrent files) are stored on Azure Blob Storage.
 
 ## Supported platforms
 Windows 7+ is supported (Windows 7, 8, 8.1, 10).
