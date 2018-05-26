@@ -57,6 +57,9 @@ namespace Popcorn.Services.Movies.Movie
                 _moviesToTranslateObservable.Drain(s => Observable.Return(s).Delay(TimeSpan.FromMilliseconds(250)))
                     .Subscribe(async movieToTranslate =>
                     {
+                        if (movieToTranslate == null)
+                            return;
+
                         var timeoutPolicy =
                             Policy.TimeoutAsync(Utils.Constants.DefaultRequestTimeoutInSecond,
                                 TimeoutStrategy.Pessimistic);
