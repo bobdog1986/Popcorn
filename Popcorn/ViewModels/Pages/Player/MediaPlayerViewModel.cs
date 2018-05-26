@@ -127,6 +127,11 @@ namespace Popcorn.ViewModels.Pages.Player
         private MediaType _mediaType;
 
         /// <summary>
+        /// <see cref="IsSubtitleChosen"/>
+        /// </summary>
+        private bool _isSubtitleChosen;
+
+        /// <summary>
         /// Subtitles
         /// </summary>
         private ObservableCollection<Subtitle> _subtitles;
@@ -350,6 +355,16 @@ namespace Popcorn.ViewModels.Pages.Player
             private set => Set(ref _stopCastCommand, value);
         }
 
+        
+        /// <summary>
+        /// True if subtitle has been chosen
+        /// </summary>
+        public bool IsSubtitleChosen
+        {
+            get => _isSubtitleChosen;
+            set => Set(ref _isSubtitleChosen, value);
+        }
+
         /// <summary>
         /// Current subtitle for the media
         /// </summary>
@@ -543,7 +558,7 @@ namespace Popcorn.ViewModels.Pages.Player
                     var subtitlePath = await
                         _subtitlesService.DownloadSubtitleToPath(path, subtitle);
                     subtitle.FilePath = _subtitlesService.LoadCaptions(subtitlePath);
-                    OnSubtitleChosen(new SubtitleChangedEventArgs(subtitlePath, subtitle));
+                    OnSubtitleChosen(new SubtitleChangedEventArgs(subtitle));
                 }
                 else if (subtitle.LanguageName == LocalizationProviderHelper.GetLocalizedValue<string>("CustomLabel"))
                 {
@@ -551,14 +566,15 @@ namespace Popcorn.ViewModels.Pages.Player
                     await Messenger.Default.SendAsync(subMessage);
                     if (!subMessage.Error && !string.IsNullOrEmpty(subMessage.FileName))
                     {
+                        subtitle.FilePath = subMessage.FileName;
                         OnSubtitleChosen(
-                            new SubtitleChangedEventArgs(subMessage.FileName, subtitle));
+                            new SubtitleChangedEventArgs(subtitle));
                     }
                 }
                 else if (subtitle.LanguageName ==
                          LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"))
                 {
-                    OnSubtitleChosen(new SubtitleChangedEventArgs(string.Empty, subtitle));
+                    OnSubtitleChosen(new SubtitleChangedEventArgs(subtitle));
                 }
             }
             catch (Exception ex)
@@ -748,6 +764,7 @@ namespace Popcorn.ViewModels.Pages.Player
             Logger.Debug(
                 "Subtitle chosen");
 
+            IsSubtitleChosen = !string.IsNullOrEmpty(e.Subtitle.FilePath);
             var handler = SubtitleChanged;
             handler?.Invoke(this, e);
         }

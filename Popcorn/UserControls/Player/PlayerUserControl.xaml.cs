@@ -817,10 +817,8 @@ namespace Popcorn.UserControls.Player
         {
             if (e.MessageType == MediaLogMessageType.Error)
             {
-                DispatcherHelper.CheckBeginInvokeOnUI(() =>
-                {
-                    Media.Position = TimeSpan.FromSeconds(0);
-                });
+                Logger.Error(e.Message);
+                EncounteredError(this, new EventArgs());
             }
         }
 

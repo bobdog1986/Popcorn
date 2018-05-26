@@ -270,69 +270,75 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Tabs
         /// </summary>
         public virtual async Task LoadShowsAsync(bool reset = false)
         {
-            await LoadingSemaphore.WaitAsync(CancellationLoadingShows.Token);
-            if (reset)
+            await Task.Run(async () =>
             {
-                Shows.Clear();
-                Page = 0;
-                VerticalScroll = 0d;
-            }
-
-            var watch = Stopwatch.StartNew();
-            Page++;
-            if (Page > 1 && Shows.Count == MaxNumberOfShows)
-            {
-                Page--;
-                LoadingSemaphore.Release();
-                return;
-            }
-
-            StopLoadingShows();
-            Logger.Trace(
-                $"Loading page {Page}...");
-            HasLoadingFailed = false;
-            try
-            {
-                IsLoadingShows = true;
-                var getShowWatcher = new Stopwatch();
-                var result =
-                    await ShowService.GetShowsAsync(Page,
-                        MaxShowsPerPage,
-                        Rating * 10,
-                        SortBy,
-                        CancellationLoadingShows.Token,
-                        Genre);
-                getShowWatcher.Stop();
-                var getShowEllapsedTime = getShowWatcher.ElapsedMilliseconds;
-                if (reset && getShowEllapsedTime < 500)
+                await LoadingSemaphore.WaitAsync(CancellationLoadingShows.Token);
+                if (reset)
                 {
-                    // Wait for VerticalOffset to reach 0 (animation lasts 500ms)
-                    await Task.Delay(500 - (int) getShowEllapsedTime);
+                    Shows.Clear();
+                    Page = 0;
+                    VerticalScroll = 0d;
                 }
 
-                Shows.AddRange(result.shows.Except(Shows, new ShowLightComparer()));
-                IsLoadingShows = false;
-                IsShowFound = Shows.Any();
-                CurrentNumberOfShows = Shows.Count;
-                MaxNumberOfShows = result.nbShows == 0 ? Shows.Count : result.nbShows;
-                UserService.SyncShowHistory(Shows);
-            }
-            catch (Exception exception)
-            {
-                Page--;
-                Logger.Error(
-                    $"Error while loading page {Page}: {exception.Message}");
-                HasLoadingFailed = true;
-                Messenger.Default.Send(new ManageExceptionMessage(exception));
-            }
-            finally
-            {
-                watch.Stop();
-                var elapsedMs = watch.ElapsedMilliseconds;
+                var watch = Stopwatch.StartNew();
+                Page++;
+                if (Page > 1 && Shows.Count == MaxNumberOfShows)
+                {
+                    Page--;
+                    LoadingSemaphore.Release();
+                    return;
+                }
+
+                StopLoadingShows();
                 Logger.Trace(
-                    $"Loaded page {Page} in {elapsedMs} milliseconds.");
-                LoadingSemaphore.Release();
-            }
+                    $"Loading page {Page}...");
+                HasLoadingFailed = false;
+                try
+                {
+                    IsLoadingShows = true;
+                    var getShowWatcher = new Stopwatch();
+                    var result =
+                        await ShowService.GetShowsAsync(Page,
+                            MaxShowsPerPage,
+                            Rating * 10,
+                            SortBy,
+                            CancellationLoadingShows.Token,
+                            Genre);
+                    getShowWatcher.Stop();
+                    var getShowEllapsedTime = getShowWatcher.ElapsedMilliseconds;
+                    if (reset && getShowEllapsedTime < 500)
+                    {
+                        // Wait for VerticalOffset to reach 0 (animation lasts 500ms)
+                        await Task.Delay(500 - (int) getShowEllapsedTime);
+                    }
+
+                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                    {
+                        Shows.AddRange(result.shows.Except(Shows, new ShowLightComparer()));
+                        IsLoadingShows = false;
+                        IsShowFound = Shows.Any();
+                        CurrentNumberOfShows = Shows.Count;
+                        MaxNumberOfShows = result.nbShows == 0 ? Shows.Count : result.nbShows;
+                        UserService.SyncShowHistory(Shows);
+                    });
+                }
+                catch (Exception exception)
+                {
+                    Page--;
+                    Logger.Error(
+                        $"Error while loading page {Page}: {exception.Message}");
+                    HasLoadingFailed = true;
+                    Messenger.Default.Send(new ManageExceptionMessage(exception));
+                }
+                finally
+                {
+                    watch.Stop();
+                    var elapsedMs = watch.ElapsedMilliseconds;
+                    Logger.Trace(
+                        $"Loaded page {Page} in {elapsedMs} milliseconds.");
+                    LoadingSemaphore.Release();
+                }
+            });
         }
 
         /// <summary>

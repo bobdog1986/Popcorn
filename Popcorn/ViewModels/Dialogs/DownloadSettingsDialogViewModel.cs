@@ -313,6 +313,7 @@ namespace Popcorn.ViewModels.Dialogs
             Logger.Info(
                 $"Load subtitles for media: {media.Title}");
             Media = media;
+            media.AvailableSubtitles = new ObservableCollection<Subtitle>();
             LoadingSubtitles = true;
             try
             {

@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using Popcorn.Helpers;
 using Popcorn.ViewModels.Pages.Home.Movie.Tabs;
 
@@ -28,7 +27,7 @@ namespace Popcorn.UserControls.Home.Movie.Tabs
         private async void OnLoaded(object sender, RoutedEventArgs e)
         {
             if (!(DataContext is MovieTabsViewModel vm)) return;
-            var split = "MovieTabViewModel";
+            const string split = "MovieTabViewModel";
             ApplicationInsightsHelper.TelemetryClient.TrackPageView(
                 $"Movie Tab {vm.GetType().Name.Split(new[] {split}, StringSplitOptions.None).First()}");
 
@@ -42,14 +41,10 @@ namespace Popcorn.UserControls.Home.Movie.Tabs
                     vm.NeedSync = false;
                 }
             }
-            else if (vm is SearchMovieTabViewModel)
+            else if (vm is SearchMovieTabViewModel searchVm && !searchVm.IsLoadingMovies && searchVm.NeedSync)
             {
-                var searchVm = vm as SearchMovieTabViewModel;
-                if (!searchVm.IsLoadingMovies && vm.NeedSync)
-                {
-                    await searchVm.LoadMoviesAsync(true);
-                    vm.NeedSync = false;
-                }
+                await searchVm.LoadMoviesAsync(true);
+                searchVm.NeedSync = false;
             }
         }
 
@@ -78,18 +73,21 @@ namespace Popcorn.UserControls.Home.Movie.Tabs
                 return;
             }
 
-            if (vm is PopularMovieTabViewModel || vm is GreatestMovieTabViewModel || vm is RecentMovieTabViewModel ||
-                vm is FavoritesMovieTabViewModel || vm is SeenMovieTabViewModel ||
-                vm is RecommendationsMovieTabViewModel)
+            switch (vm)
             {
-                if (!vm.IsLoadingMovies)
-                    await vm.LoadMoviesAsync();
-            }
-            else if (vm is SearchMovieTabViewModel)
-            {
-                var searchVm = vm as SearchMovieTabViewModel;
-                if (!searchVm.IsLoadingMovies)
-                    await searchVm.LoadMoviesAsync();
+                case PopularMovieTabViewModel _:
+                case GreatestMovieTabViewModel _:
+                case RecentMovieTabViewModel _:
+                case FavoritesMovieTabViewModel _:
+                case SeenMovieTabViewModel _:
+                case RecommendationsMovieTabViewModel _:
+                    if (!vm.IsLoadingMovies)
+                        await vm.LoadMoviesAsync();
+                    break;
+                case SearchMovieTabViewModel searchVm:
+                    if (!searchVm.IsLoadingMovies)
+                        await searchVm.LoadMoviesAsync();
+                    break;
             }
 
             _semaphore.Release();

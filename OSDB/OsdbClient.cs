@@ -12,6 +12,7 @@ using NChardet;
 using NetBike.Xml;
 using OSDB.Backend;
 using OSDB.Models;
+using Popcorn.Utils;
 using RestSharp;
 
 namespace OSDB
@@ -82,19 +83,21 @@ namespace OSDB
 
         public async Task<IEnumerable<Language>> GetSubLanguages()
         {
-            var client = new HttpClient();
-            var response =
-                await client.SendAsync(
-                    new HttpRequestMessage(HttpMethod.Post, "https://api.opensubtitles.org:443/xml-rpc")
-                    {
-                        Content = new StringContent(
-                            @"<?xml version=""1.0"" encoding=""UTF-8""?><methodCall><methodName>GetSubLanguages</methodName></methodCall>")
-                    },
-                    CancellationToken.None);
-            using (var stream = await response.Content.ReadAsStreamAsync())
+            using (var client = new HttpClient())
             {
-                var serializer = new XmlSerializer();
-                return BuildLanguageObject(serializer.Deserialize<Response>(stream));
+                var response =
+                    await client.SendAsync(
+                        new HttpRequestMessage(HttpMethod.Post, Constants.OpenSubtitlesXmlRpcEndpoint)
+                        {
+                            Content = new StringContent(
+                                @"<?xml version=""1.0"" encoding=""UTF-8""?><methodCall><methodName>GetSubLanguages</methodName></methodCall>")
+                        },
+                        CancellationToken.None);
+                using (var stream = await response.Content.ReadAsStreamAsync())
+                {
+                    var serializer = new XmlSerializer();
+                    return BuildLanguageObject(serializer.Deserialize<Response>(stream));
+                }
             }
         }
         
@@ -112,7 +115,7 @@ namespace OSDB
 
         private async Task<IList<Subtitle>> SearchSubtitlesInternal(SearchSubtitlesRequest request)
         {
-            var client = new RestClient("https://rest.opensubtitles.org") {UserAgent = Popcorn.Utils.Constants.OsdbUa};
+            var client = new RestClient(Constants.OpenSubtitlesRestApiEndpoint) {UserAgent = Constants.OsdbUa};
             var segment = "search/{imdbid}";
             if (request.Episode.HasValue)
                 segment += "/{episode}";

@@ -2,12 +2,14 @@
 using System.IO;
 using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using GalaSoft.MvvmLight.Ioc;
+using GalaSoft.MvvmLight.Threading;
 using Popcorn.Services.Cache;
 
 namespace Popcorn.AttachedProperties
@@ -87,171 +89,192 @@ namespace Popcorn.AttachedProperties
                     {
                         var image = (Image) obj;
                         var imageType = GetType(obj);
-                        var resourceDictionary = new ResourceDictionary
+                        await Task.Run(async () =>
                         {
-                            Source = new Uri("Popcorn;component/Resources/ImageLoading.xaml", UriKind.Relative)
-                        };
-
-                        try
-                        {
-                            var path = e.NewValue as string;
-                            if (string.IsNullOrEmpty(path))
+                            var resourceDictionary = new ResourceDictionary
                             {
-                                if (imageType == ImageType.Thumbnail)
-                                {
-                                    var errorThumbnail = resourceDictionary["ImageError"] as DrawingImage;
-                                    errorThumbnail.Freeze();
-                                    image.RenderTransformOrigin = new Point(0.5d, 0.5d);
-                                    image.Stretch = Stretch.None;
-                                    image.Source = errorThumbnail;
-                                }
-                                else
-                                {
-                                    image.Source = new BitmapImage();
-                                }
-
-                                return;
-                            }
-
-                            var hash = Convert.ToBase64String(Encoding.UTF8.GetBytes(path));
-                            var mustDownload = false;
-                            var cacheService = SimpleIoc.Default.GetInstance<ICacheService>();
-                            var localFile = cacheService.Assets + hash;
-                            if (!File.Exists(localFile))
-                            {
-                                mustDownload = true;
-                                if (imageType == ImageType.Thumbnail)
-                                {
-                                    var loadingImage = resourceDictionary["ImageLoading"] as DrawingImage;
-                                    loadingImage.Freeze();
-
-                                    #region Create Loading Animation
-
-                                    var scaleTransform = new ScaleTransform(0.5, 0.5);
-                                    var rotateTransform = new RotateTransform(0);
-
-                                    var group = new TransformGroup();
-                                    group.Children.Add(scaleTransform);
-                                    group.Children.Add(rotateTransform);
-
-                                    var doubleAnimation =
-                                        new DoubleAnimation(0, 359, new TimeSpan(0, 0, 0, 1))
-                                        {
-                                            RepeatBehavior = RepeatBehavior.Forever
-                                        };
-
-                                    rotateTransform.BeginAnimation(RotateTransform.AngleProperty, doubleAnimation);
-
-                                    var loadingAnimationTransform = group;
-
-                                    #endregion
-
-                                    image.Source = loadingImage;
-                                    image.Stretch = Stretch.Uniform;
-                                    image.RenderTransformOrigin = new Point(0.5, 0.5);
-                                    image.RenderTransform = loadingAnimationTransform;
-                                }
-                            }
-
+                                Source = new Uri("Popcorn;component/Resources/ImageLoading.xaml", UriKind.Relative)
+                            };
 
                             try
                             {
-                                if (mustDownload)
+                                var path = e.NewValue as string;
+                                if (string.IsNullOrEmpty(path))
                                 {
-                                    using (var client = new HttpClient())
+                                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
                                     {
-                                        using (var ms = await client.GetStreamAsync(path))
+                                        if (imageType == ImageType.Thumbnail)
                                         {
-                                            using (var stream = new MemoryStream())
-                                            {
-                                                await ms.CopyToAsync(stream);
-                                                if (!File.Exists(cacheService.Assets + hash))
+                                            var errorThumbnail = resourceDictionary["ImageError"] as DrawingImage;
+                                            errorThumbnail.Freeze();
+                                            image.RenderTransformOrigin = new Point(0.5d, 0.5d);
+                                            image.Stretch = Stretch.None;
+                                            image.Source = errorThumbnail;
+                                        }
+                                        else
+                                        {
+                                            image.Source = new BitmapImage();
+                                        }
+                                    });
+
+                                    return;
+                                }
+
+                                var hash = Convert.ToBase64String(Encoding.UTF8.GetBytes(path));
+                                var mustDownload = false;
+                                var cacheService = SimpleIoc.Default.GetInstance<ICacheService>();
+                                var localFile = cacheService.Assets + hash;
+                                if (!File.Exists(localFile))
+                                {
+                                    mustDownload = true;
+                                    if (imageType == ImageType.Thumbnail)
+                                    {
+                                        DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                                        {
+                                            var loadingImage = resourceDictionary["ImageLoading"] as DrawingImage;
+                                            loadingImage.Freeze();
+
+                                            #region Create Loading Animation
+
+                                            var scaleTransform = new ScaleTransform(0.5, 0.5);
+                                            var rotateTransform = new RotateTransform(0);
+
+                                            var group = new TransformGroup();
+                                            group.Children.Add(scaleTransform);
+                                            group.Children.Add(rotateTransform);
+
+                                            var doubleAnimation =
+                                                new DoubleAnimation(0, 359, new TimeSpan(0, 0, 0, 1))
                                                 {
-                                                    using (var fs =
-                                                        new FileStream(localFile, FileMode.Create,
-                                                            FileAccess.ReadWrite, FileShare.ReadWrite, 4096, true))
+                                                    RepeatBehavior = RepeatBehavior.Forever
+                                                };
+
+                                            rotateTransform.BeginAnimation(RotateTransform.AngleProperty,
+                                                doubleAnimation);
+
+                                            var loadingAnimationTransform = group;
+
+                                            #endregion
+
+
+                                            image.Source = loadingImage;
+                                            image.Stretch = Stretch.Uniform;
+                                            image.RenderTransformOrigin = new Point(0.5, 0.5);
+                                            image.RenderTransform = loadingAnimationTransform;
+                                        });
+                                    }
+                                }
+
+                                try
+                                {
+                                    if (mustDownload)
+                                    {
+                                        using (var client = new HttpClient())
+                                        {
+                                            using (var ms = await client.GetStreamAsync(path))
+                                            {
+                                                using (var stream = new MemoryStream())
+                                                {
+                                                    await ms.CopyToAsync(stream);
+                                                    if (!File.Exists(cacheService.Assets + hash))
                                                     {
-                                                        var writeAsync = stream.ToArray();
-                                                        await fs.WriteAsync(writeAsync, 0, writeAsync.Length);
+                                                        using (var fs =
+                                                            new FileStream(localFile, FileMode.Create,
+                                                                FileAccess.ReadWrite, FileShare.ReadWrite, 4096, true))
+                                                        {
+                                                            var writeAsync = stream.ToArray();
+                                                            await fs.WriteAsync(writeAsync, 0, writeAsync.Length);
+                                                        }
                                                     }
                                                 }
                                             }
                                         }
                                     }
+
+                                    using (var fs = new FileStream(localFile, FileMode.Open, FileAccess.Read))
+                                    {
+                                        var bitmapImage = new BitmapImage();
+                                        bitmapImage.BeginInit();
+                                        bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                                        if (imageType == ImageType.Thumbnail)
+                                        {
+                                            bitmapImage.DecodePixelWidth = 400;
+                                            bitmapImage.DecodePixelHeight = 600;
+                                        }
+                                        else if (imageType == ImageType.Poster)
+                                        {
+                                            bitmapImage.DecodePixelWidth = 500;
+                                            bitmapImage.DecodePixelHeight = 750;
+                                        }
+                                        else if (imageType != ImageType.None)
+                                        {
+                                            bitmapImage.DecodePixelWidth = 1920;
+                                            bitmapImage.DecodePixelHeight = 1080;
+                                        }
+
+                                        bitmapImage.StreamSource = fs;
+                                        bitmapImage.EndInit();
+                                        bitmapImage.Freeze();
+                                        DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                                        {
+                                            image.RenderTransformOrigin = new Point(0, 0);
+                                            if (imageType != ImageType.Poster)
+                                            {
+                                                image.Stretch = Stretch.UniformToFill;
+                                            }
+
+                                            image.RenderTransform = new TransformGroup();
+                                            RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.HighQuality);
+                                            image.Source = bitmapImage;
+                                        });
+                                    }
                                 }
-
-                                using (var fs = new FileStream(localFile, FileMode.Open, FileAccess.Read))
+                                catch (Exception)
                                 {
-                                    var bitmapImage = new BitmapImage();
-                                    bitmapImage.BeginInit();
-                                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                                    if (imageType == ImageType.Thumbnail)
+                                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
                                     {
-                                        bitmapImage.DecodePixelWidth = 400;
-                                        bitmapImage.DecodePixelHeight = 600;
-                                    }
-                                    else if (imageType == ImageType.Poster)
-                                    {
-                                        bitmapImage.DecodePixelWidth = 500;
-                                        bitmapImage.DecodePixelHeight = 750;
-                                    }
-                                    else if (imageType != ImageType.None)
-                                    {
-                                        bitmapImage.DecodePixelWidth = 1920;
-                                        bitmapImage.DecodePixelHeight = 1080;
-                                    }
+                                        if (imageType == ImageType.Thumbnail)
+                                        {
+                                            var errorThumbnail = resourceDictionary["ImageError"] as DrawingImage;
+                                            errorThumbnail.Freeze();
 
-                                    bitmapImage.StreamSource = fs;
-                                    bitmapImage.EndInit();
-                                    bitmapImage.Freeze();
-                                    image.RenderTransformOrigin = new Point(0, 0);
-                                    if (imageType != ImageType.Poster)
-                                    {
-                                        image.Stretch = Stretch.UniformToFill;
-                                    }
-
-                                    image.RenderTransform = new TransformGroup();
-                                    RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.HighQuality);
-                                    image.Source = bitmapImage;
+                                            image.RenderTransformOrigin = new Point(0.5d, 0.5d);
+                                            image.RenderTransform = new TransformGroup();
+                                            image.Stretch = Stretch.None;
+                                            image.Source = errorThumbnail;
+                                        }
+                                        else
+                                        {
+                                            image.RenderTransformOrigin = new Point(0, 0);
+                                            image.RenderTransform = new TransformGroup();
+                                            image.Source = new BitmapImage();
+                                        }
+                                    });
                                 }
                             }
                             catch (Exception)
                             {
-                                if (imageType == ImageType.Thumbnail)
+                                DispatcherHelper.CheckBeginInvokeOnUI(() =>
                                 {
-                                    var errorThumbnail = resourceDictionary["ImageError"] as DrawingImage;
-                                    errorThumbnail.Freeze();
-                                    image.RenderTransformOrigin = new Point(0.5d, 0.5d);
-                                    image.RenderTransform = new TransformGroup();
-                                    image.Stretch = Stretch.None;
-                                    image.Source = errorThumbnail;
-                                }
-                                else
-                                {
-                                    image.RenderTransformOrigin = new Point(0, 0);
-                                    image.RenderTransform = new TransformGroup();
-                                    image.Source = new BitmapImage();
-                                }
+                                    if (imageType == ImageType.Thumbnail)
+                                    {
+                                        var errorThumbnail = resourceDictionary["ImageError"] as DrawingImage;
+                                        errorThumbnail.Freeze();
+
+                                        image.RenderTransformOrigin = new Point(0.5d, 0.5d);
+                                        image.RenderTransform = new TransformGroup();
+                                        image.Stretch = Stretch.None;
+                                        image.Source = errorThumbnail;
+                                    }
+                                    else
+                                    {
+                                        image.RenderTransformOrigin = new Point(0, 0);
+                                        image.RenderTransform = new TransformGroup();
+                                        image.Source = new BitmapImage();
+                                    }
+                                });
                             }
-                        }
-                        catch (Exception)
-                        {
-                            if (imageType == ImageType.Thumbnail)
-                            {
-                                var errorThumbnail = resourceDictionary["ImageError"] as DrawingImage;
-                                errorThumbnail.Freeze();
-                                image.RenderTransformOrigin = new Point(0.5d, 0.5d);
-                                image.RenderTransform = new TransformGroup();
-                                image.Stretch = Stretch.None;
-                                image.Source = errorThumbnail;
-                            }
-                            else
-                            {
-                                image.RenderTransformOrigin = new Point(0, 0);
-                                image.RenderTransform = new TransformGroup();
-                                image.Source = new BitmapImage();
-                            }
-                        }
+                        });
                     }
                 }
             );
