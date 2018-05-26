@@ -107,9 +107,9 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Details
         {
             LoadShowCommand = new RelayCommand<ShowLightJson>(async show =>
                 await LoadShow(show, CancellationLoadingToken.Token));
-            GoToImdbCommand = new RelayCommand<string>(e =>
+            GoToTMDbCommand = new RelayCommand<string>(e =>
             {
-                Process.Start($"http://www.imdb.com/title/{e}");
+                Process.Start($"https://www.themoviedb.org/tv/{e}");
             });
 
             PlayTrailerCommand = new RelayCommand(async () =>
@@ -164,7 +164,7 @@ namespace Popcorn.ViewModels.Pages.Home.Show.Details
         /// <summary>
         /// Command used to browse Imdb
         /// </summary>
-        public RelayCommand<string> GoToImdbCommand { get; private set; }
+        public RelayCommand<string> GoToTMDbCommand { get; private set; }
 
         /// <summary>
         /// Command used to load the show

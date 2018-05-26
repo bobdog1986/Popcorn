@@ -75,6 +75,26 @@ namespace Popcorn.Services.Shows.Show
                             throw response.ErrorException;
 
                         show = JsonSerializer.Deserialize<ShowJson>(response.RawBytes);
+                        var shows = await (await _tmdbService.GetClient).SearchTvShowAsync(show.Title);
+                        if (shows.Results.Any())
+                        {
+                            foreach (var tvShow in shows.Results)
+                            {
+                                try
+                                {
+                                    var result =
+                                        await (await _tmdbService.GetClient).GetTvShowExternalIdsAsync(tvShow.Id);
+                                    if (result.ImdbId == show.ImdbId)
+                                    {
+                                        show.TmdbId = result.Id;
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    Logger.Error(ex);
+                                }
+                            }
+                        }
                     }
                     catch (Exception exception) when (exception is TaskCanceledException)
                     {
@@ -168,7 +188,8 @@ namespace Popcorn.Services.Shows.Show
         /// <param name="imdbIds">The imdbIds of the shows, split by comma</param>
         /// <param name="ct">Cancellation token</param>
         /// <returns>Shows</returns>
-        public async Task<(IEnumerable<ShowLightJson> movies, int nbMovies)> GetShowsByIds(IEnumerable<string> imdbIds, CancellationToken ct)
+        public async Task<(IEnumerable<ShowLightJson> movies, int nbMovies)> GetShowsByIds(IEnumerable<string> imdbIds,
+            CancellationToken ct)
         {
             var timeoutPolicy =
                 Policy.TimeoutAsync(Utils.Constants.DefaultRequestTimeoutInSecond, TimeoutStrategy.Pessimistic);
@@ -372,7 +393,7 @@ namespace Popcorn.Services.Shows.Show
                     return (result, nbResult);
                 }, ct);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Logger.Error(ex);
                 throw;
@@ -397,55 +418,32 @@ namespace Popcorn.Services.Shows.Show
                     var uri = string.Empty;
                     try
                     {
-                        var shows = await (await _tmdbService.GetClient).SearchTvShowAsync(show.Title);
-                        if (shows.Results.Any())
+                        var tmdbVideos = await (await _tmdbService.GetClient).GetTvShowVideosAsync(show.TmdbId);
+                        if (tmdbVideos != null && tmdbVideos.Results.Any())
                         {
-                            Video trailer = null;
-                            foreach (var tvShow in shows.Results)
+                            var trailer = tmdbVideos.Results.FirstOrDefault();
+                            using (var service = Client.For(YouTube.Default))
                             {
-                                try
+                                var videos = (await service
+                                        .GetAllVideosAsync("https://youtube.com/watch?v=" + trailer.Key))
+                                    .ToList();
+                                if (videos.Any())
                                 {
-                                    var result = await (await _tmdbService.GetClient).GetTvShowExternalIdsAsync(tvShow.Id);
-                                    if (result.ImdbId == show.ImdbId)
-                                    {
-                                        var videos = await (await _tmdbService.GetClient).GetTvShowVideosAsync(result.Id);
-                                        if (videos != null && videos.Results.Any())
-                                        {
-                                            trailer = videos.Results.FirstOrDefault();
-                                        }
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    Logger.Error(ex);
-                                }
-                            }
-
-                            if (trailer != null)
-                            {
-                                using (var service = Client.For(YouTube.Default))
-                                {
-                                    var videos = (await service
-                                            .GetAllVideosAsync("https://youtube.com/watch?v=" + trailer.Key))
-                                        .ToList();
-                                    if (videos.Any())
-                                    {
-                                        var settings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
-                                        var maxRes = settings.DefaultHdQuality ? 1080 : 720;
-                                        uri =
-                                            await videos
-                                                .Where(a => !a.Is3D && a.Resolution <= maxRes &&
-                                                            a.Format == VideoFormat.Mp4 &&
-                                                            a.AudioBitrate > 0)
-                                                .Aggregate((i1, i2) => i1.Resolution > i2.Resolution ? i1 : i2)
-                                                .GetUriAsync();
-                                    }
+                                    var settings = SimpleIoc.Default.GetInstance<ApplicationSettingsViewModel>();
+                                    var maxRes = settings.DefaultHdQuality ? 1080 : 720;
+                                    uri =
+                                        await videos
+                                            .Where(a => !a.Is3D && a.Resolution <= maxRes &&
+                                                        a.Format == VideoFormat.Mp4 &&
+                                                        a.AudioBitrate > 0)
+                                            .Aggregate((i1, i2) => i1.Resolution > i2.Resolution ? i1 : i2)
+                                            .GetUriAsync();
                                 }
                             }
-                            else
-                            {
-                                throw new PopcornException("No trailer found.");
-                            }
+                        }
+                        else
+                        {
+                            throw new PopcornException("No trailer found.");
                         }
                     }
                     catch (Exception exception) when (exception is TaskCanceledException ||

@@ -17,6 +17,8 @@ namespace Popcorn.Models.Shows
 
         private string _imdbId;
 
+        private int _tmdbId;
+
         private string _tvdbId;
 
         private string _title;
@@ -52,6 +54,12 @@ namespace Popcorn.Models.Shows
         private RatingJson _rating;
 
         private List<string> _similars;
+
+        public int TmdbId
+        {
+            get => _tmdbId;
+            set => Set(ref _tmdbId, value);
+        }
 
         [DataMember(Name = "imdb_id")]
         public string ImdbId
