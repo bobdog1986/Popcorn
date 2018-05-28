@@ -31,8 +31,8 @@
     <OutputPath>bin\x86\Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AutoFixture, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b24654c590009d4f, processorArchitecture=MSIL">
-      <HintPath>..\packages\AutoFixture.4.3.0\lib\net452\AutoFixture.dll</HintPath>
+    <Reference Include="AutoFixture, Version=4.4.0.0, Culture=neutral, PublicKeyToken=b24654c590009d4f, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoFixture.4.4.0\lib\net452\AutoFixture.dll</HintPath>
     </Reference>
     <Reference Include="Fare, Version=2.1.0.0, Culture=neutral, PublicKeyToken=ea68d375bf33a7c8, processorArchitecture=MSIL">
       <HintPath>..\packages\Fare.2.1.1\lib\net35\Fare.dll</HintPath>
