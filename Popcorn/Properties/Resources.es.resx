@@ -531,4 +531,7 @@
   <data name="SearchShortcut" xml:space="preserve">
     <value>Buscar una película</value>
   </data>
+  <data name="OpenSubtitlesNotAvailable" xml:space="preserve">
+    <value>OpenSubtitles está desconectado en este momento, los subtítulos no están disponibles.</value>
+  </data>
 </root>
