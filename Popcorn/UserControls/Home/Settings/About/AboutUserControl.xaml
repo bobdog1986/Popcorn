@@ -94,25 +94,31 @@
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
                         Orientation="Horizontal">
-                        <StackPanel Orientation="Vertical" Visibility="{Binding UpdateDownloading, Converter={StaticResource BoolToInverseVisibilityConverter}}">
-                            <TextBlock Text="{Binding UpdateDownloadProgress, Converter={StaticResource UpdateLabelConverter}, ConverterParameter=DownloadingUpdate}" />
+                        <StackPanel Orientation="Horizontal" Visibility="{Binding UpdateDownloading, Converter={StaticResource BoolToInverseVisibilityConverter}}">
                             <mah:MetroProgressBar
-                                Margin="0,2.5,0,0"
+                                VerticalAlignment="Center"
                                 Foreground="{DynamicResource AccentColorBrush}"
                                 IsIndeterminate="False"
                                 Maximum="100"
                                 Minimum="0"
                                 Value="{Binding UpdateDownloadProgress}" />
+                            <TextBlock
+                                Margin="5,0,0,0"
+                                VerticalAlignment="Center"
+                                Text="{Binding UpdateDownloadProgress, Converter={StaticResource UpdateLabelConverter}, ConverterParameter=DownloadingUpdate}" />
                         </StackPanel>
-                        <StackPanel Orientation="Vertical" Visibility="{Binding UpdateApplying, Converter={StaticResource BoolToInverseVisibilityConverter}}">
-                            <TextBlock Text="{Binding UpdateApplyProgress, Converter={StaticResource UpdateLabelConverter}, ConverterParameter=ApplyingUpdate}" />
+                        <StackPanel Orientation="Horizontal" Visibility="{Binding UpdateApplying, Converter={StaticResource BoolToInverseVisibilityConverter}}">
                             <mah:MetroProgressBar
-                                Margin="0,2.5,0,0"
+                                VerticalAlignment="Center"
                                 Foreground="{DynamicResource AccentColorBrush}"
                                 IsIndeterminate="False"
                                 Maximum="100"
                                 Minimum="0"
                                 Value="{Binding UpdateApplyProgress}" />
+                            <TextBlock
+                                Margin="5,0,0,0"
+                                VerticalAlignment="Center"
+                                Text="{Binding UpdateApplyProgress, Converter={StaticResource UpdateLabelConverter}, ConverterParameter=ApplyingUpdate}" />
                         </StackPanel>
                     </StackPanel>
                 </StackPanel>

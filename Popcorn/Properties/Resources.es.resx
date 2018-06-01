@@ -259,7 +259,7 @@
     <value>Apellidos...</value>
   </data>
   <data name="LaterLabel" xml:space="preserve">
-    <value>Etiqueta</value>
+    <value>Luego</value>
   </data>
   <data name="NowLabel" xml:space="preserve">
     <value>Ahora</value>
