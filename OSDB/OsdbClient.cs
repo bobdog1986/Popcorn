@@ -85,6 +85,7 @@ namespace OSDB
         {
             using (var client = new HttpClient())
             {
+                client.Timeout = TimeSpan.FromSeconds(5);
                 var response =
                     await client.SendAsync(
                         new HttpRequestMessage(HttpMethod.Post, Constants.OpenSubtitlesXmlRpcEndpoint)
@@ -93,6 +94,7 @@ namespace OSDB
                                 @"<?xml version=""1.0"" encoding=""UTF-8""?><methodCall><methodName>GetSubLanguages</methodName></methodCall>")
                         },
                         CancellationToken.None);
+                response.EnsureSuccessStatusCode();
                 using (var stream = await response.Content.ReadAsStreamAsync())
                 {
                     var serializer = new XmlSerializer();

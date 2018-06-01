@@ -531,4 +531,7 @@
   <data name="SearchShortcut" xml:space="preserve">
     <value>Search a movie/show</value>
   </data>
+  <data name="OpenSubtitlesNotAvailable" xml:space="preserve">
+    <value>OpenSubtitles is offline at the moment, subtitles are not available.</value>
+  </data>
 </root>

@@ -4,10 +4,14 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using GalaSoft.MvvmLight.Messaging;
 using NLog;
 using Polly;
 using OSDB;
+using Popcorn.Helpers;
+using Popcorn.Messaging;
 using Popcorn.Utils;
+using Popcorn.Utils.Exceptions;
 using SubtitlesParser.Classes;
 
 namespace Popcorn.Services.Subtitles
@@ -37,7 +41,7 @@ namespace Popcorn.Services.Subtitles
         {
             var retryGetSubLanguagesPolicy = Policy
                 .Handle<Exception>()
-                .WaitAndRetryAsync(5, retryAttempt =>
+                .WaitAndRetryAsync(2, retryAttempt =>
                     TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))
                 );
 
@@ -51,6 +55,7 @@ namespace Popcorn.Services.Subtitles
             }
             catch (Exception)
             {
+                Messenger.Default.Send(new ManageExceptionMessage(new PopcornException(LocalizationProviderHelper.GetLocalizedValue<string>("OpenSubtitlesNotAvailable"))));
                 return new List<OSDB.Models.Language>();
             }
         }
@@ -67,7 +72,7 @@ namespace Popcorn.Services.Subtitles
         {
             var retrySearchSubtitlesFromImdbPolicy = Policy
                 .Handle<Exception>()
-                .WaitAndRetryAsync(5, retryAttempt =>
+                .WaitAndRetryAsync(2, retryAttempt =>
                     TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))
                 );
 
@@ -85,7 +90,7 @@ namespace Popcorn.Services.Subtitles
         {
             var retryDownloadSubtitleToPathPolicy = Policy
                 .Handle<Exception>()
-                .WaitAndRetryAsync(5, retryAttempt =>
+                .WaitAndRetryAsync(2, retryAttempt =>
                     TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))
                 );
 

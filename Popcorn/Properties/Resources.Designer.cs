@@ -844,6 +844,15 @@ namespace Popcorn.Properties {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à OpenSubtitles is offline at the moment, subtitles are not available..
+        /// </summary>
+        public static string OpenSubtitlesNotAvailable {
+            get {
+                return ResourceManager.GetString("OpenSubtitlesNotAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Options.
         /// </summary>
         public static string OptionsLabel {

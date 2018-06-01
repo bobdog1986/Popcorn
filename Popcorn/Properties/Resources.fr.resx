@@ -531,4 +531,7 @@
   <data name="SearchShortcut" xml:space="preserve">
     <value>Rechercher un film/série TV</value>
   </data>
+  <data name="OpenSubtitlesNotAvailable" xml:space="preserve">
+    <value>OpenSubtitles n'est actuellement pas en ligne, les sous-titres ne seront pas disponibles.</value>
+  </data>
 </root>

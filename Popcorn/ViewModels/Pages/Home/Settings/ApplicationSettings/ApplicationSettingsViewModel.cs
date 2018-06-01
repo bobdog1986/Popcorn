@@ -241,6 +241,8 @@ namespace Popcorn.ViewModels.Pages.Home.Settings.ApplicationSettings
                 UploadLimit = user.UploadLimit;
                 var defaultSubtitleLanguage = user.DefaultSubtitleLanguage;
                 DefaultHdQuality = user.DefaultHdQuality;
+                AvailableLanguages = new ObservableCollection<Language>(_userService.GetAvailableLanguages());
+                SelectedLanguage = _userService.GetCurrentLanguage();
                 LoadingSubtitles = true;
                 AvailableSubtitlesLanguages = new ObservableRangeCollection<string>();
                 var languages = (await _subtitlesService.GetSubLanguages())
@@ -264,9 +266,6 @@ namespace Popcorn.ViewModels.Pages.Home.Settings.ApplicationSettings
                     LocalizationProviderHelper.GetLocalizedValue<string>("NoneLabel"));
                 DefaultSubtitleLanguage = AvailableSubtitlesLanguages.FirstOrDefault();
             }
-
-            AvailableLanguages = new ObservableCollection<Language>(_userService.GetAvailableLanguages());
-            SelectedLanguage = _userService.GetCurrentLanguage();
         }
 
         /// <summary>
