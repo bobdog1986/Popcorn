@@ -456,6 +456,7 @@
     <Compile Include="Models\Localization\CustomLanguage.cs" />
     <Compile Include="Models\Localization\EnglishLanguage.cs" />
     <Compile Include="Models\Localization\FrenchLanguage.cs" />
+    <Compile Include="Models\Localization\GermanLanguage.cs" />
     <Compile Include="Models\Localization\ILanguage.cs" />
     <Compile Include="Models\Localization\SpanishLanguage.cs" />
     <Compile Include="Models\Media\IMedia.cs" />
@@ -773,6 +774,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.de-DE.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.es.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.es.Designer.cs</LastGenOutput>
