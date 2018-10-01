@@ -381,6 +381,7 @@ namespace Popcorn.Services.User
             {
                 new EnglishLanguage(),
                 new FrenchLanguage(),
+                new GermanLanguage(),
                 new SpanishLanguage()
             };
             watch.Stop();
@@ -410,6 +411,9 @@ namespace Popcorn.Services.User
                             break;
                         case "es":
                             currentLanguage = new SpanishLanguage();
+                            break;
+                        case "de":
+                            currentLanguage = new GermanLanguage();
                             break;
                         default:
                             currentLanguage = new EnglishLanguage();
