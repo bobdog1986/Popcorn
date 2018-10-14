@@ -41,7 +41,7 @@ namespace Popcorn.Services.Chromecast
             await InvokeAsync<TChannel>(condition ? action : otherwise);
         }
 
-        public async Task<IEnumerable<MediaStatus>> GetStatus()
+        public async Task<MediaStatus> GetStatus()
         {
             try
             {
@@ -49,7 +49,7 @@ namespace Popcorn.Services.Chromecast
             }
             catch (Exception)
             {
-                return new List<MediaStatus>();
+                return new MediaStatus();
             }
         }
 

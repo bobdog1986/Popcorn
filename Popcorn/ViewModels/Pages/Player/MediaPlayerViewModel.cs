@@ -205,6 +205,7 @@ namespace Popcorn.ViewModels.Pages.Player
             BufferProgress = bufferProgress;
             BandwidthRate = bandwidthRate;
             ShowSubtitleButton = MediaType != MediaType.Trailer;
+            Volume = 1d;
             _playingProgress = playingProgress;
             _subtitles = new ObservableCollection<Subtitle>();
             if (subtitles != null)
@@ -665,7 +666,7 @@ namespace Popcorn.ViewModels.Pages.Player
             var videoPath = MediaPath.Split(new[] {"Popcorn\\"}, StringSplitOptions.RemoveEmptyEntries).Last()?
                 .Replace("\\", "/");
             var mediaPath = $"http://{Helper.GetLocalIpAddress()}:{Constants.ServerPort}/{videoPath}";
-            var subtitle = CurrentSubtitle.FilePath;
+            var subtitle = CurrentSubtitle?.FilePath;
             if (!string.IsNullOrEmpty(subtitle))
             {
                 subtitle = _subtitlesService.ConvertSrtToVtt(subtitle);

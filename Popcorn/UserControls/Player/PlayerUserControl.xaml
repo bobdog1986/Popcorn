@@ -287,9 +287,9 @@
                         x:Name="PositionSlider"
                         Focusable="False"
                         IsEnabled="{Binding ElementName=Media, Path=IsOpen}"
-                        LargeChange="{Binding ElementName=Media, Path=FrameStepDuration, Converter={StaticResource TimeSpanToSecondsConverter}}"
+                        LargeChange="{Binding ElementName=Media, Path=FramePosition, Converter={StaticResource TimeSpanToSecondsConverter}}"
                         Maximum="{Binding ElementName=Media, Path=NaturalDuration, Converter={StaticResource TimeSpanToSecondsConverter}}"
-                        SmallChange="{Binding ElementName=Media, Path=FrameStepDuration, Converter={StaticResource TimeSpanToSecondsConverter}}"
+                        SmallChange="{Binding ElementName=Media, Path=FramePosition, Converter={StaticResource TimeSpanToSecondsConverter}}"
                         Style="{DynamicResource PositionSliderStyle}"
                         Thumb.DragCompleted="OnDragCompleted"
                         Thumb.DragStarted="OnDragStarted">

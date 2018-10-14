@@ -240,10 +240,47 @@ namespace Popcorn.UserControls.Player
             Title.Text = vm.MediaName;
             Media.Source = new Uri(vm.MediaPath);
             Media.MediaOpening += OnMediaOpening;
+            Media.MediaChanging += OnMediaChanging;
+            Media.MediaChanged += OnMediaChanged;
         }
 
-        private void OnSubtitleChanged(object sender, Events.SubtitleChangedEventArgs e)
+        private void OnMediaChanged(object sender, MediaOpenedRoutedEventArgs e)
         {
+        }
+
+        private void OnMediaChanging(object sender, MediaOpeningEventArgs e)
+        {
+            DispatcherHelper.CheckBeginInvokeOnUI(() =>
+            {
+                try
+                {
+                    if (!(DataContext is MediaPlayerViewModel vm))
+                        return;
+
+                    e.Options.SubtitlesDelay = TimeSpan.FromMilliseconds(SubtitleDelay);
+                    if (string.IsNullOrEmpty(vm.CurrentSubtitle?.FilePath))
+                    {
+                        e.Options.SubtitlesUrl = string.Empty;
+                        return;
+                    }
+
+                    var url = new Uri(vm.CurrentSubtitle.FilePath);
+                    if (url.IsFile || url.IsUnc)
+                    {
+                        if (System.IO.File.Exists(vm.CurrentSubtitle.FilePath))
+                            e.Options.SubtitlesUrl = vm.CurrentSubtitle.FilePath;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                }
+            });
+        }
+
+        private async void OnSubtitleChanged(object sender, Events.SubtitleChangedEventArgs e)
+        {
+            await Media.ChangeMedia();
         }
 
         /// <summary>
@@ -286,22 +323,22 @@ namespace Popcorn.UserControls.Player
                 case Key.H:
                     if ((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
                     {
-                        SubtitleDelay += 1000;
+                        SubtitleDelay += 100;
                     }
                     else
                     {
-                        SubtitleDelay += 1000;
+                        SubtitleDelay += 100;
                     }
 
                     break;
                 case Key.G:
                     if ((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
                     {
-                        SubtitleDelay -= 1000;
+                        SubtitleDelay -= 100;
                     }
                     else
                     {
-                        SubtitleDelay -= 1000;
+                        SubtitleDelay -= 100;
                     }
 
                     break;
@@ -310,6 +347,7 @@ namespace Popcorn.UserControls.Player
             }
 
             Delay.Text = $"Subtitle delay: {SubtitleDelay} ms";
+            await Media.ChangeMedia();
             if (SubtitleDelaySemaphore.CurrentCount == 0) return;
             await SubtitleDelaySemaphore.WaitAsync();
             var increasedPanelOpacityAnimation = new DoubleAnimationUsingKeyFrames
@@ -387,28 +425,31 @@ namespace Popcorn.UserControls.Player
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void OnMediaOpening(object sender, MediaOpeningRoutedEventArgs e)
+        private void OnMediaOpening(object sender, MediaOpeningEventArgs e)
         {
-            try
+            DispatcherHelper.CheckBeginInvokeOnUI(() =>
             {
-                if (!(DataContext is MediaPlayerViewModel vm))
-                    return;
-
-                vm.MediaLength = e.Info.Duration.TotalSeconds;
-                if (string.IsNullOrEmpty(vm.CurrentSubtitle?.FilePath))
-                    return;
-
-                var url = new Uri(vm.CurrentSubtitle.FilePath);
-                if (url.IsFile || url.IsUnc)
+                try
                 {
-                    if (System.IO.File.Exists(vm.CurrentSubtitle.FilePath))
-                        e.Options.SubtitlesUrl = vm.CurrentSubtitle.FilePath;
+                    if (!(DataContext is MediaPlayerViewModel vm))
+                        return;
+
+                    vm.MediaLength = e.Info.Duration.TotalSeconds;
+                    if (string.IsNullOrEmpty(vm.CurrentSubtitle?.FilePath))
+                        return;
+
+                    var url = new Uri(vm.CurrentSubtitle.FilePath);
+                    if (url.IsFile || url.IsUnc)
+                    {
+                        if (System.IO.File.Exists(vm.CurrentSubtitle.FilePath))
+                            e.Options.SubtitlesUrl = vm.CurrentSubtitle.FilePath;
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
-            }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                }
+            });
         }
 
         /// <summary>
@@ -839,6 +880,7 @@ namespace Popcorn.UserControls.Player
                 Media.MediaEnded -= MediaPlayerEndReached;
                 Media.SeekingStarted -= OnSeekingStarted;
                 Media.SeekingEnded -= OnSeekingEnded;
+                Media.MediaChanging -= OnMediaChanging;
                 var window = Window.GetWindow(this);
                 if (window != null)
                 {
