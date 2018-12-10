@@ -58,6 +58,11 @@ Windows 7+ is supported (Windows 7, 8, 8.1, 10).
 ## Installation
 Download installer [here](https://github.com/bbougot/Popcorn/releases/download/v5.0.1/PopcornInstaller.exe) 
 
+## Donations
+Donations are greatly appreciated and a motivation to keep improving.
+
+BTC: 377ME7sjLnKezdThgJ8JkwuibAoVEDDb5H
+
 ## Todos
 See the [roadmap](https://github.com/bbougot/Popcorn/projects/1) for the full list.
 
