@@ -95,7 +95,7 @@
         <file src="zh-Hant\Microsoft.Data.Edm.resources.dll" target="lib\net45\zh-Hant\Microsoft.Data.Edm.resources.dll" />
         <file src="zh-Hant\Microsoft.Data.OData.resources.dll" target="lib\net45\zh-Hant\Microsoft.Data.OData.resources.dll" />
         <file src="zh-Hant\System.Spatial.resources.dll" target="lib\net45\zh-Hant\System.Spatial.resources.dll" /> 
-        <file src="Akavache.dll" target="lib\net45\Akavache.dll" />
+        <file src="Akavache.Core.dll" target="lib\net45\Akavache.Core.dll" />
         <file src="Akavache.Sqlite3.dll" target="lib\net45\Akavache.Sqlite3.dll" />
         <file src="api-ms-win-core-console-l1-1-0.dll" target="lib\net45\api-ms-win-core-console-l1-1-0.dll" />
         <file src="api-ms-win-core-datetime-l1-1-0.dll" target="lib\net45\api-ms-win-core-datetime-l1-1-0.dll" />
