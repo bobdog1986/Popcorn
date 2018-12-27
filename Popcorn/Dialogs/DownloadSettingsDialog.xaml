@@ -43,7 +43,7 @@
             HorizontalAlignment="Center"
             FontSize="26"
             FontWeight="Normal"
-            Foreground="{DynamicResource AccentColorBrush}"
+            Foreground="White"
             Text="{lex:LocText OptionsLabel}"
             TextTrimming="CharacterEllipsis"
             Typography.Capitals="SmallCaps" />
