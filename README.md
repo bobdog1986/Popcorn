@@ -38,7 +38,7 @@ Popcorn is a simple application which lets you watch any movie or TV show instan
 
 ### Frontend
 * Framework
-    * The app is a .NET 4.7.1 application using WPF framework. 
+    * The app is a .NET 4.7.2 application using WPF framework. 
 
 * Basics
     * It communicates with its own [API](https://github.com/bbougot/PopcornAPI) to query movies, shows, trailers, cast, assets and torrents. The app includes a video player ([ffmediaelement](https://github.com/unosquare/ffmediaelement)) and a torrent handler ([libtorrent](https://github.com/bbougot/libtorrent-net)) and is also able to cast to a Chromecast device.
@@ -56,7 +56,7 @@ Popcorn is a simple application which lets you watch any movie or TV show instan
 Windows 7+ is supported (Windows 7, 8, 8.1, 10).
 
 ## Installation
-Download installer [here](https://github.com/bbougot/Popcorn/releases/download/v5.0.2/PopcornInstaller.exe) 
+Download installer [here](https://github.com/bbougot/Popcorn/releases/download/v5.0.1/PopcornInstaller.exe) 
 
 ## Donations
 Donations are greatly appreciated and a motivation to keep improving.

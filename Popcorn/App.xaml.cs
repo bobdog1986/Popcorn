@@ -85,9 +85,9 @@ namespace Popcorn
             Logger.Info(
                 "Popcorn starting...");
             Unosquare.FFME.MediaElement.FFmpegDirectory = Constants.FFmpegPath;
-
             try
             {
+                SQLitePCL.Batteries.Init();
                 var userService = SimpleIoc.Default.GetInstance<IUserService>();
                 await userService.GetUser();
                 await Task.Run(async () =>
@@ -96,7 +96,7 @@ namespace Popcorn
                     var showResponse = netsh.Http.Show.UrlAcl(Constants.ServerUrl);
                     if (showResponse.ResponseObject.Count == 0)
                     {
-                        if (!Helper.IsAdministrator())
+                        if (!Utils.Helper.IsAdministrator())
                         {
                             RestartAsAdmin();
                         }
@@ -108,7 +108,7 @@ namespace Popcorn
 
                     if (!await FirewallRuleExists("Popcorn Server"))
                     {
-                        if (!Helper.IsAdministrator())
+                        if (!Utils.Helper.IsAdministrator())
                         {
                             RestartAsAdmin();
                         }
@@ -305,6 +305,7 @@ namespace Popcorn
                     {
                         vm.InitializeAsyncCommand.Execute(null);
                     }
+
                     WatchStart.Stop();
                     var elapsedStartMs = WatchStart.ElapsedMilliseconds;
                     Logger.Info(

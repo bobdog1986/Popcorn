@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>Popcorn</id>
-        <version>5.0.1</version>
+        <version>5.0.2</version>
         <title>Popcorn</title>
         <authors>Benjamin Bougot</authors>
         <projectUrl>https://github.com/bbougot/Popcorn</projectUrl>
@@ -83,7 +83,9 @@
         <file src="uz-Latn-UZ\Humanizer.resources.dll" target="lib\net45\uz-Latn-UZ\Humanizer.resources.dll" />
         <file src="vi\Humanizer.resources.dll" target="lib\net45\vi\Humanizer.resources.dll" />
         <file src="x64\e_sqlite3.dll" target="lib\net45\x64\e_sqlite3.dll" />
+		<file src="x64\SQLite.Interop.dll" target="lib\net45\x64\SQLite.Interop.dll" />
         <file src="x86\e_sqlite3.dll" target="lib\net45\x86\e_sqlite3.dll" />
+		<file src="x86\SQLite.Interop.dll" target="lib\net45\x86\SQLite.Interop.dll" />
         <file src="zh-CN\Humanizer.resources.dll" target="lib\net45\zh-CN\Humanizer.resources.dll" />
         <file src="zh-Hans\Humanizer.resources.dll" target="lib\net45\zh-Hans\Humanizer.resources.dll" />
         <file src="zh-Hans\Microsoft.Data.Edm.resources.dll" target="lib\net45\zh-Hans\Microsoft.Data.Edm.resources.dll" />
@@ -144,6 +146,8 @@
         <file src="DeltaCompressionDotNet.MsDelta.dll" target="lib\net45\DeltaCompressionDotNet.MsDelta.dll" />
         <file src="DeltaCompressionDotNet.PatchApi.dll" target="lib\net45\DeltaCompressionDotNet.PatchApi.dll" />
         <file src="Enterwell.Clients.Wpf.Notifications.dll" target="lib\net45\Enterwell.Clients.Wpf.Notifications.dll" />
+		<file src="EntityFramework.dll" target="lib\net45\EntityFramework.dll" />
+		<file src="EntityFramework.SqlServer.dll" target="lib\net45\EntityFramework.SqlServer.dll" />
         <file src="ffme.common.dll" target="lib\net45\ffme.common.dll" />
         <file src="ffme.win.dll" target="lib\net45\ffme.win.dll" />
         <file src="FFmpeg.AutoGen.dll" target="lib\net45\FFmpeg.AutoGen.dll" />
@@ -168,6 +172,7 @@
         <file src="Microsoft.ApplicationInsights.dll" target="lib\net45\Microsoft.ApplicationInsights.dll" />
         <file src="Microsoft.ApplicationInsights.NLogTarget.dll" target="lib\net45\Microsoft.ApplicationInsights.NLogTarget.dll" />
         <file src="Microsoft.AspNet.TelemetryCorrelation.dll" target="lib\net45\Microsoft.AspNet.TelemetryCorrelation.dll" />
+		<file src="Microsoft.Azure.KeyVault.Core.dll" target="lib\net45\Microsoft.Azure.KeyVault.Core.dll" />
         <file src="Microsoft.Data.Edm.dll" target="lib\net45\Microsoft.Data.Edm.dll" />
         <file src="Microsoft.Data.OData.dll" target="lib\net45\Microsoft.Data.OData.dll" />
         <file src="Microsoft.Extensions.DependencyInjection.Abstractions.dll" target="lib\net45\Microsoft.Extensions.DependencyInjection.Abstractions.dll" />
@@ -185,6 +190,7 @@
         <file src="Microsoft.WindowsAPICodePack.dll" target="lib\net45\Microsoft.WindowsAPICodePack.dll" />
         <file src="Microsoft.WindowsAPICodePack.Shell.dll" target="lib\net45\Microsoft.WindowsAPICodePack.Shell.dll" />
         <file src="Microsoft.WindowsAPICodePack.ShellExtensions.dll" target="lib\net45\Microsoft.WindowsAPICodePack.ShellExtensions.dll" />
+		<file src="Microsoft.WindowsAzure.Storage.dll" target="lib\net45\Microsoft.WindowsAzure.Storage.dll" />
         <file src="Mono.Cecil.dll" target="lib\net45\Mono.Cecil.dll" />
         <file src="Mono.Cecil.Mdb.dll" target="lib\net45\Mono.Cecil.Mdb.dll" />
         <file src="Mono.Cecil.Pdb.dll" target="lib\net45\Mono.Cecil.Pdb.dll" />
@@ -212,32 +218,27 @@
         <file src="SQLitePCLRaw.provider.e_sqlite3.dll" target="lib\net45\SQLitePCLRaw.provider.e_sqlite3.dll" />
         <file src="Squirrel.dll" target="lib\net45\Squirrel.dll" />
         <file src="SubtitlesParser.dll" target="lib\net45\SubtitlesParser.dll" />
-        <file src="System.Data.Common.dll" target="lib\net45\System.Data.Common.dll" />
+		<file src="System.Data.SQLite.dll" target="lib\net45\System.Data.SQLite.dll" />
+		<file src="System.Data.SQLite.dll.config" target="lib\net45\System.Data.SQLite.dll.config" />
+		<file src="System.Data.SQLite.EF6.dll" target="lib\net45\System.Data.SQLite.EF6.dll" />
+		<file src="System.Data.SQLite.Linq.dll" target="lib\net45\System.Data.SQLite.Linq.dll" />
         <file src="System.Diagnostics.DiagnosticSource.dll" target="lib\net45\System.Diagnostics.DiagnosticSource.dll" />
-        <file src="System.Diagnostics.StackTrace.dll" target="lib\net45\System.Diagnostics.StackTrace.dll" />
-        <file src="System.Diagnostics.Tracing.dll" target="lib\net45\System.Diagnostics.Tracing.dll" />
-        <file src="System.Globalization.Extensions.dll" target="lib\net45\System.Globalization.Extensions.dll" />
-        <file src="System.IO.Compression.dll" target="lib\net45\System.IO.Compression.dll" />
-        <file src="System.Net.Http.dll" target="lib\net45\System.Net.Http.dll" />
         <file src="System.Net.Http.Formatting.dll" target="lib\net45\System.Net.Http.Formatting.dll" />
-        <file src="System.Net.Sockets.dll" target="lib\net45\System.Net.Sockets.dll" />
         <file src="System.Reactive.Core.dll" target="lib\net45\System.Reactive.Core.dll" />
+		<file src="System.Reactive.dll" target="lib\net45\System.Reactive.dll" />
         <file src="System.Reactive.Interfaces.dll" target="lib\net45\System.Reactive.Interfaces.dll" />
         <file src="System.Reactive.Linq.dll" target="lib\net45\System.Reactive.Linq.dll" />
         <file src="System.Reactive.PlatformServices.dll" target="lib\net45\System.Reactive.PlatformServices.dll" />
         <file src="System.Reactive.Windows.Threading.dll" target="lib\net45\System.Reactive.Windows.Threading.dll" />
-        <file src="System.Runtime.Serialization.Primitives.dll" target="lib\net45\System.Runtime.Serialization.Primitives.dll" />
-        <file src="System.Security.Cryptography.Algorithms.dll" target="lib\net45\System.Security.Cryptography.Algorithms.dll" />
-        <file src="System.Security.SecureString.dll" target="lib\net45\System.Security.SecureString.dll" />
+		<file src="System.Runtime.CompilerServices.Unsafe.dll" target="lib\net45\System.Runtime.CompilerServices.Unsafe.dll" />
+		<file src="System.Security.Cryptography.ProtectedData.dll" target="lib\net45\System.Security.Cryptography.ProtectedData.dll" />
         <file src="System.Spatial.dll" target="lib\net45\System.Spatial.dll" />
-        <file src="System.Threading.Overlapped.dll" target="lib\net45\System.Threading.Overlapped.dll" />
         <file src="System.Threading.Tasks.Extensions.dll" target="lib\net45\System.Threading.Tasks.Extensions.dll" />
         <file src="System.ValueTuple.dll" target="lib\net45\System.ValueTuple.dll" />
         <file src="System.Web.Cors.dll" target="lib\net45\System.Web.Cors.dll" />
         <file src="System.Web.Http.dll" target="lib\net45\System.Web.Http.dll" />
         <file src="System.Web.Http.Owin.dll" target="lib\net45\System.Web.Http.Owin.dll" />
         <file src="System.Windows.Interactivity.dll" target="lib\net45\System.Windows.Interactivity.dll" />
-        <file src="System.Xml.XPath.XDocument.dll" target="lib\net45\System.Xml.XPath.XDocument.dll" />
         <file src="TMDbLib.dll" target="lib\net45\TMDbLib.dll" />
         <file src="ucrtbase.dll" target="lib\net45\ucrtbase.dll" />
         <file src="Utf8Json.dll" target="lib\net45\Utf8Json.dll" />
