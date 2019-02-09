@@ -13,7 +13,7 @@ namespace Popcorn.Utils
         /// <summary>
         /// App version
         /// </summary>
-        public const string AppVersion = "5.0.3";
+        public const string AppVersion = "5.0.5";
 
         /// <summary>
         /// Copyright
