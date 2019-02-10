@@ -272,7 +272,7 @@
                                         CommandParameter="{Binding Mode=OneTime}"
                                         IsChecked="{Binding HasBeenSeen}"
                                         Opacity="0.0"
-                                        Style="{StaticResource MetroCircleToggleButtonStyle}"
+                                        Style="{DynamicResource MetroCircleToggleButtonStyle}"
                                         Visibility="Collapsed">
                                         <iconPacks:PackIconModern
                                             Width="30"
@@ -290,7 +290,7 @@
                                         CommandParameter="{Binding Mode=OneTime}"
                                         IsChecked="{Binding IsFavorite}"
                                         Opacity="0.0"
-                                        Style="{StaticResource MetroCircleToggleButtonStyle}"
+                                        Style="{DynamicResource MetroCircleToggleButtonStyle}"
                                         Visibility="Collapsed">
                                         <Rectangle
                                             Width="20"

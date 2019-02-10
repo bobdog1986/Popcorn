@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>Popcorn</id>
-        <version>5.0.5</version>
+        <version>5.0.6</version>
         <title>Popcorn</title>
         <authors>Benjamin Bougot</authors>
         <projectUrl>https://github.com/bbougot/Popcorn</projectUrl>
@@ -22,6 +22,7 @@
         <file src="de\Microsoft.Data.Edm.resources.dll" target="lib\net45\de\Microsoft.Data.Edm.resources.dll" />
         <file src="de\Microsoft.Data.OData.resources.dll" target="lib\net45\de\Microsoft.Data.OData.resources.dll" />
         <file src="de\System.Spatial.resources.dll" target="lib\net45\de\System.Spatial.resources.dll" />
+        <file src="de-DE\Popcorn.resources.dll" target="lib\net45\de-DE\Popcorn.resources.dll" />
         <file src="el\Humanizer.resources.dll" target="lib\net45\el\Humanizer.resources.dll" />
         <file src="en\Popcorn.resources.dll" target="lib\net45\en\Popcorn.resources.dll" />
         <file src="es\Humanizer.resources.dll" target="lib\net45\es\Humanizer.resources.dll" />
@@ -62,6 +63,8 @@
         <file src="ko\Microsoft.Data.OData.resources.dll" target="lib\net45\ko\Microsoft.Data.OData.resources.dll" />
         <file src="ko\System.Spatial.resources.dll" target="lib\net45\ko\System.Spatial.resources.dll" />
         <file src="lv\Humanizer.resources.dll" target="lib\net45\lv\Humanizer.resources.dll" />
+        <file src="ms-MY\Humanizer.resources.dll" target="lib\net45\ms-MY\Humanizer.resources.dll" />
+        <file src="mt\Humanizer.resources.dll" target="lib\net45\mt\Humanizer.resources.dll" />
         <file src="nb\Humanizer.resources.dll" target="lib\net45\nb\Humanizer.resources.dll" />
         <file src="nb-NO\Humanizer.resources.dll" target="lib\net45\nb-NO\Humanizer.resources.dll" />
         <file src="nl\Humanizer.resources.dll" target="lib\net45\nl\Humanizer.resources.dll" />
@@ -143,8 +146,7 @@
         <file src="concrt140.dll" target="lib\net45\concrt140.dll" />
         <file src="ControlzEx.dll" target="lib\net45\ControlzEx.dll" />
         <file src="DeltaCompressionDotNet.dll" target="lib\net45\DeltaCompressionDotNet.dll" />
-        <file src="DeltaCompressionDotNet.MsDelta.dll" target="lib\net45\DeltaCompressionDotNet.MsDelta.dll" />
-        <file src="DeltaCompressionDotNet.PatchApi.dll" target="lib\net45\DeltaCompressionDotNet.PatchApi.dll" />
+        <file src="e_sqlite3.dll" target="lib\net45\e_sqlite3.dll" />
         <file src="Enterwell.Clients.Wpf.Notifications.dll" target="lib\net45\Enterwell.Clients.Wpf.Notifications.dll" />
 		<file src="EntityFramework.dll" target="lib\net45\EntityFramework.dll" />
 		<file src="EntityFramework.SqlServer.dll" target="lib\net45\EntityFramework.SqlServer.dll" />
@@ -157,12 +159,14 @@
         <file src="GoogleCast.dll" target="lib\net45\GoogleCast.dll" />
         <file src="Gu.Wpf.Adorners.dll" target="lib\net45\Gu.Wpf.Adorners.dll" />
         <file src="Humanizer.dll" target="lib\net45\Humanizer.dll" />
+        <file src="Interop.NetFwTypeLib.dll" target="lib\net45\Interop.NetFwTypeLib.dll" />
         <file src="libvideo.dll" target="lib\net45\libvideo.dll" />
         <file src="LoadingIndicators.WPF.dll" target="lib\net45\LoadingIndicators.WPF.dll" />
         <file src="ltnet.dll" target="lib\net45\ltnet.dll" />
         <file src="MahApps.Metro.dll" target="lib\net45\MahApps.Metro.dll" />
         <file src="MahApps.Metro.IconPacks.dll" target="lib\net45\MahApps.Metro.IconPacks.dll" />
         <file src="Markdown.dll" target="lib\net45\Markdown.dll" />
+        <file src="McStreamy.NetStandard10.dll" target="lib\net45\McStreamy.NetStandard10.dll" />
         <file src="Microsoft.AI.Agent.Intercept.dll" target="lib\net45\Microsoft.AI.Agent.Intercept.dll" />
         <file src="Microsoft.AI.DependencyCollector.dll" target="lib\net45\Microsoft.AI.DependencyCollector.dll" />
         <file src="Microsoft.AI.PerfCounterCollector.dll" target="lib\net45\Microsoft.AI.PerfCounterCollector.dll" />
@@ -199,6 +203,7 @@
         <file src="msvcp140_1.dll" target="lib\net45\msvcp140_1.dll" />
         <file src="NChardet.dll" target="lib\net45\NChardet.dll" />
         <file src="NetBike.Xml.dll" target="lib\net45\NetBike.Xml.dll" />
+        <file src="Newtonsoft.Json.Bson.dll" target="lib\net45\Newtonsoft.Json.Bson.dll" />
         <file src="Newtonsoft.Json.dll" target="lib\net45\Newtonsoft.Json.dll" />
         <file src="NLog.dll" target="lib\net45\NLog.dll" />
         <file src="NuGet.Squirrel.dll" target="lib\net45\NuGet.Squirrel.dll" />
@@ -212,6 +217,7 @@
         <file src="RestSharp.dll" target="lib\net45\RestSharp.dll" />
         <file src="SharpCompress.dll" target="lib\net45\SharpCompress.dll" />
         <file src="Splat.dll" target="lib\net45\Splat.dll" />
+        <file src="SQLite.Interop.dll" target="lib\net45\SQLite.Interop.dll" />
         <file src="SQLitePCLRaw.batteries_e_sqlite3.dll" target="lib\net45\SQLitePCLRaw.batteries_e_sqlite3.dll" />
         <file src="SQLitePCLRaw.batteries_v2.dll" target="lib\net45\SQLitePCLRaw.batteries_v2.dll" />
         <file src="SQLitePCLRaw.core.dll" target="lib\net45\SQLitePCLRaw.core.dll" />
@@ -219,17 +225,12 @@
         <file src="Squirrel.dll" target="lib\net45\Squirrel.dll" />
         <file src="SubtitlesParser.dll" target="lib\net45\SubtitlesParser.dll" />
 		<file src="System.Data.SQLite.dll" target="lib\net45\System.Data.SQLite.dll" />
-		<file src="System.Data.SQLite.dll.config" target="lib\net45\System.Data.SQLite.dll.config" />
 		<file src="System.Data.SQLite.EF6.dll" target="lib\net45\System.Data.SQLite.EF6.dll" />
 		<file src="System.Data.SQLite.Linq.dll" target="lib\net45\System.Data.SQLite.Linq.dll" />
         <file src="System.Diagnostics.DiagnosticSource.dll" target="lib\net45\System.Diagnostics.DiagnosticSource.dll" />
         <file src="System.Net.Http.Formatting.dll" target="lib\net45\System.Net.Http.Formatting.dll" />
         <file src="System.Reactive.Core.dll" target="lib\net45\System.Reactive.Core.dll" />
 		<file src="System.Reactive.dll" target="lib\net45\System.Reactive.dll" />
-        <file src="System.Reactive.Interfaces.dll" target="lib\net45\System.Reactive.Interfaces.dll" />
-        <file src="System.Reactive.Linq.dll" target="lib\net45\System.Reactive.Linq.dll" />
-        <file src="System.Reactive.PlatformServices.dll" target="lib\net45\System.Reactive.PlatformServices.dll" />
-        <file src="System.Reactive.Windows.Threading.dll" target="lib\net45\System.Reactive.Windows.Threading.dll" />
 		<file src="System.Runtime.CompilerServices.Unsafe.dll" target="lib\net45\System.Runtime.CompilerServices.Unsafe.dll" />
 		<file src="System.Security.Cryptography.ProtectedData.dll" target="lib\net45\System.Security.Cryptography.ProtectedData.dll" />
         <file src="System.Spatial.dll" target="lib\net45\System.Spatial.dll" />

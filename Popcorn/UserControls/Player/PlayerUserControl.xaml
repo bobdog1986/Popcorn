@@ -323,7 +323,7 @@
                     Maximum="1"
                     Minimum="0"
                     SmallChange="0.05"
-                    Style="{StaticResource FlatSlider}"
+                    Style="{DynamicResource FlatSlider}"
                     Value="{Binding Path=Volume, ElementName=Media}" />
             </StatusBarItem>
             <StatusBarItem
@@ -335,7 +335,7 @@
                         Width="39"
                         Height="39"
                         Command="{Binding SetLowerSubtitleSizeCommand, ElementName=PlayerUc}"
-                        Style="{StaticResource MetroCircleButtonStyle}"
+                        Style="{DynamicResource MetroCircleButtonStyle}"
                         Visibility="{Binding IsSubtitleChosen, Converter={StaticResource BoolToInverseVisibilityConverter}}">
                         <iconPacks:PackIconFontAwesome
                             Width="12"
@@ -347,7 +347,7 @@
                         Height="39"
                         Margin="5,0,0,0"
                         Command="{Binding SetHigherSubtitleSizeCommand, ElementName=PlayerUc}"
-                        Style="{StaticResource MetroCircleButtonStyle}"
+                        Style="{DynamicResource MetroCircleButtonStyle}"
                         Visibility="{Binding IsSubtitleChosen, Converter={StaticResource BoolToInverseVisibilityConverter}}">
                         <iconPacks:PackIconFontAwesome
                             Width="18"
@@ -382,7 +382,7 @@
                     Height="39"
                     Command="{Binding CastCommand}"
                     IsChecked="{Binding IsCasting}"
-                    Style="{StaticResource MetroCircleToggleButtonStyle}"
+                    Style="{DynamicResource MetroCircleToggleButtonStyle}"
                     Visibility="Collapsed">
                     <Viewbox Width="20" Height="20">
                         <Canvas Width="24" Height="24">
@@ -397,7 +397,7 @@
                     Width="39"
                     Height="39"
                     Command="{Binding StopPlayingMediaCommand}"
-                    Style="{StaticResource MetroCircleToggleButtonStyle}">
+                    Style="{DynamicResource MetroCircleToggleButtonStyle}">
                     <Canvas Width="15" Height="15">
                         <Path
                             Width="15"
@@ -414,7 +414,7 @@
                     Width="48"
                     Height="48"
                     IsChecked="{Binding Window.ApplicationService.IsFullScreen, Source={StaticResource Locator}}"
-                    Style="{StaticResource MetroCircleToggleButtonStyle}">
+                    Style="{DynamicResource MetroCircleToggleButtonStyle}">
                     <Viewbox Width="22" Height="22">
                         <Canvas Width="15" Height="15">
                             <Path

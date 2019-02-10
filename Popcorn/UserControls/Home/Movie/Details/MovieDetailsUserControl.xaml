@@ -206,7 +206,7 @@
                                         Command="{Binding SetWatchedMovieCommand}"
                                         CommandParameter="{Binding Movie.HasBeenSeen}"
                                         IsChecked="{Binding Movie.HasBeenSeen}"
-                                        Style="{StaticResource MetroCircleToggleButtonStyle}"
+                                        Style="{DynamicResource MetroCircleToggleButtonStyle}"
                                         ToolTip="Seen">
                                         <iconPacks:PackIconModern
                                             Width="30"
@@ -224,7 +224,7 @@
                                         Command="{Binding SetFavoriteMovieCommand}"
                                         CommandParameter="{Binding Movie.IsFavorite}"
                                         IsChecked="{Binding Movie.IsFavorite}"
-                                        Style="{StaticResource MetroCircleToggleButtonStyle}"
+                                        Style="{DynamicResource MetroCircleToggleButtonStyle}"
                                         ToolTip="Liked">
                                         <Rectangle
                                             Width="20"
