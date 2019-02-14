@@ -166,7 +166,7 @@
     <PackageReference Include="Newtonsoft.Json.Bson" Version="1.0.2" />
     <PackageReference Include="NLog" Version="4.5.11" />
     <PackageReference Include="Owin" Version="1.0" />
-    <PackageReference Include="Polly" Version="7.0.1" />
+    <PackageReference Include="Polly" Version="7.0.2" />
     <PackageReference Include="protobuf-net" Version="2.4.0" />
     <PackageReference Include="RestSharp" Version="106.6.7" />
     <PackageReference Include="SharpCompress" Version="0.22.0" />
@@ -213,9 +213,9 @@
     <PackageReference Include="System.Reflection.Extensions" Version="4.3.0" />
     <PackageReference Include="System.Reflection.Primitives" Version="4.3.0" />
     <PackageReference Include="System.Resources.ResourceManager" Version="4.3.0" />
-    <PackageReference Include="System.Runtime" Version="4.3.0" />
+    <PackageReference Include="System.Runtime" Version="4.3.1" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.2" />
-    <PackageReference Include="System.Runtime.Extensions" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
     <PackageReference Include="System.Runtime.Handles" Version="4.3.0" />
     <PackageReference Include="System.Runtime.InteropServices" Version="4.3.0" />
     <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
