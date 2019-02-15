@@ -32,11 +32,7 @@ deploy:
   description: 'Various improvements & fixes'
   provider: GitHub
   auth_token: 1gvZRwqsRGWm1ceuynEv1qbN7yfYJLRkcq34hHdvKiC0JGw9ZyzgeoW7c04xn5Lg
-  artifacts: 
-  - path: '*.exe'
-    name: Popcorn
-  - path: '*.msi'
-    name: Popcorn
+  artifact: /.*\.exe/, /.*\.msi/
   draft: false
   prerelease: false
   on:
