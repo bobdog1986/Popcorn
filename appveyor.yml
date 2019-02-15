@@ -1,6 +1,12 @@
 configuration: Release
 image: Visual Studio 2017
 
+branches:
+  only:
+    - master
+  except:
+    - development
+    
 assembly_info:
   patch: true
   file: '**\AssemblyInfo.*'
@@ -28,18 +34,24 @@ test_script:
     & $coveralls --opencover -i opencoverCoverage.xml --repoToken $env:COVERALLS_REPO_TOKEN --useRelativePaths --commitId $env:APPVEYOR_REPO_COMMIT --commitBranch $env:APPVEYOR_REPO_BRANCH --commitAuthor $env:APPVEYOR_REPO_COMMIT_AUTHOR --commitEmail $env:APPVEYOR_REPO_COMMIT_AUTHOR_EMAIL --commitMessage $env:APPVEYOR_REPO_COMMIT_MESSAGE --jobId $env:APPVEYOR_BUILD_NUMBER --serviceName appveyor
 
 deploy:
-  release: v$(appveyor_build_version)
-  description: 'Various improvements & fixes'
-  provider: GitHub
-  auth_token: 1gvZRwqsRGWm1ceuynEv1qbN7yfYJLRkcq34hHdvKiC0JGw9ZyzgeoW7c04xn5Lg
-  artifact: /.*\.exe/, /.*\.msi/
-  draft: false
-  prerelease: false
-  on:
-    branch: master
-    APPVEYOR_REPO_TAG: true
+  - provider: GitHub
+    release: v$(appveyor_build_version)
+    description: 'Various improvements & fixes'
+    auth_token: 1gvZRwqsRGWm1ceuynEv1qbN7yfYJLRkcq34hHdvKiC0JGw9ZyzgeoW7c04xn5Lg
+    artifact: /.*\.exe/, /.*\.msi/
+    draft: false
+    prerelease: false
+    on:
+      branch: master
+      APPVEYOR_REPO_TAG: true
+      
+  - provider: Environment
+    name: Popcorn Chocolatey
+    on:
+      branch: master
+      APPVEYOR_REPO_TAG: true
 
 after_build:
 - cmd: >-
-    if defined APPVEYOR_REPO_TAG_NAME choco pack .\chocolatey-popcorn.nuspec --version %APPVEYOR_BUILD_VERSION%
-    if defined APPVEYOR_REPO_TAG_NAME appveyor PushArtifact %APPVEYOR_REPO_TAG_NAME%.nupkg
+    choco pack .\chocolatey-popcorn.nuspec version=%APPVEYOR_BUILD_VERSION%
+    appveyor PushArtifact popcorn.%APPVEYOR_BUILD_VERSION%.nupkg -DeploymentName Popcorn
