@@ -45,7 +45,14 @@ deploy:
     branch: master
     APPVEYOR_REPO_TAG: true
 
+deploy:
+- provider: Environment
+  name: Popcorn Chocolatey
+  on:
+    branch: master
+    APPVEYOR_REPO_TAG: true
+
 after_build:
 - cmd: >-
     choco pack .\chocolatey-popcorn.nuspec version=%APPVEYOR_BUILD_VERSION%
-    appveyor PushArtifact %APPVEYOR_REPO_TAG_NAME%.nupkg
+    appveyor PushArtifact popcorn.%APPVEYOR_BUILD_VERSION%.nupkg -DeploymentName Popcorn
