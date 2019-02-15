@@ -1,8 +1,6 @@
 configuration: Release
 image: Visual Studio 2017
 
-version: {appveyor_build_version}
-
 assembly_info:
   patch: true
   file: '**\AssemblyInfo.*'
@@ -48,5 +46,5 @@ deploy:
 
 after_build:
 - cmd: >-
-    if defined APPVEYOR_REPO_TAG_NAME choco pack .\chocolatey-popcorn.nuspec --version %APPVEYOR_REPO_TAG_NAME%
+    if defined APPVEYOR_REPO_TAG_NAME choco pack .\chocolatey-popcorn.nuspec --version %APPVEYOR_BUILD_VERSION%
     if defined APPVEYOR_REPO_TAG_NAME appveyor PushArtifact %APPVEYOR_REPO_TAG_NAME%.nupkg
