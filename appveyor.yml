@@ -1,5 +1,8 @@
 configuration: Release
 image: Visual Studio 2017
+environment:
+  github_token:
+    secure: 1gvZRwqsRGWm1ceuynEv1qbN7yfYJLRkcq34hHdvKiC0JGw9ZyzgeoW7c04xn5Lg
 
 assembly_info:
   patch: true
@@ -32,7 +35,7 @@ deploy:
   description: 'Various improvements & fixes'
   provider: GitHub
   auth_token:
-    secure: $(GITHUB_TOKEN)
+    secure: $(github_token)
   artifacts: 
   - path: '*.exe'
     name: Popcorn
