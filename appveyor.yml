@@ -32,7 +32,7 @@ deploy:
   description: 'Various improvements & fixes'
   provider: GitHub
   auth_token:
-    secure: '%GITHUB_TOKEN%'
+    secure: $(GITHUB_TOKEN)
   artifacts: 
   - path: '*.exe'
     name: Popcorn
