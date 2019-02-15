@@ -1,6 +1,14 @@
 configuration: Release
 image: Visual Studio 2017
 
+branches:
+  only:
+    - master
+    
+branches:
+  except:
+    - /dev.*/
+    
 assembly_info:
   patch: true
   file: '**\AssemblyInfo.*'
@@ -40,6 +48,12 @@ deploy:
     APPVEYOR_REPO_TAG: true
 
 after_build:
+- ps: >-
+    $doc = New-Object System.Xml.XmlDocument
+    $doc.Load(".\chocolatey-popcorn.nuspec")
+    $book = $doc.SelectSingleNode("//version")
+    $book.InnerText = %APPVEYOR_BUILD_VERSION%
+    $doc.Save(".\chocolatey-popcorn.nuspec")
 - cmd: >-
     choco pack .\chocolatey-popcorn.nuspec --version %APPVEYOR_BUILD_VERSION%
     appveyor PushArtifact %APPVEYOR_REPO_TAG_NAME%.nupkg
