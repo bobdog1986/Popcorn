@@ -41,8 +41,8 @@
       <Revision Include="$(Version.Split('.')[3])" />
     </ItemGroup>
     <Exec Condition="'$(Configuration)' == 'Release'" Command="$(SolutionDir)\NuGet.exe pack $(SolutionDir)\Popcorn.nuspec -Version @(Major).@(Minor).@(Build) -Properties Configuration=Release -OutputDirectory $(OutDir) -BasePath $(OutDir)" />
-    <Exec Condition="'$(Configuration)' == 'Release'" Command="$(SolutionDir)\packages\squirrel.windows.updated\0.0.1\tools\Squirrel.exe --framework-version net472 --releasify $(OutDir)Popcorn.@(Major).@(Minor).@(Build).nupkg -g $(SolutionDir)\Popcorn\InstallLoader.gif --no-msi --setupIcon $(SolutionDir)\Popcorn\icon.ico" />
-    <Move Condition="'$(Configuration)' == 'Release'" SourceFiles="$(SolutionDir)\Popcorn\Releases\Setup.exe" DestinationFiles="$(SolutionDir)\Popcorn\Releases\PopcornInstaller.exe" />
+    <Exec Condition="'$(Configuration)' == 'Release'" Command="$(SolutionDir)\packages\squirrel.windows.updated\0.0.1\tools\Squirrel.exe --framework-version net472 --releasify $(OutDir)Popcorn.@(Major).@(Minor).@(Build).nupkg -g $(SolutionDir)\Popcorn\InstallLoader.gif --setupIcon $(SolutionDir)\Popcorn\icon.ico" />
+    <Move Condition="'$(Configuration)' == 'Release'" SourceFiles="$(SolutionDir)\Popcorn\Releases\Setup.exe" DestinationFiles="$(SolutionDir)\Popcorn\Releases\Popcorn.exe" />
   </Target>
   <ItemGroup>
     <Resource Remove="Resources\AnimatedScrollViewer.xaml" />

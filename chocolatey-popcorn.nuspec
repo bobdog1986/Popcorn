@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>popcorn</id>
+    <version>VERSION</version>
+    <title>Popcorn</title>
+    <authors>bbougot</authors>
+    <owners>bbougot</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <projectUrl>https://github.com/bbougot/Popcorn</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/bbougot/Popcorn/master/Logo.png</iconUrl>
+    <description>## Features
+
+**Huge database**: The API collects most of known movies (6000+) and shows (3000+)
+
+**Performance**: A strong effort has been made to get the best performance from UI navigation and downloading
+
+**Capabilities**: Popcorn offers a wide set of functionalities (Trailer, subtitles, Chromecast support, filtering by genre and rating, ...)</description>
+    <summary>A Powerful and Fast Popcorn Time Client</summary>
+    <tags>popcorn time movies shows chromecast open source .net gpl wpf</tags>
+    <dependencies>
+      <dependency id="dotnet4.7.2" version="4.7.2.20180712" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="tools\chocolateyinstall.ps1" target="tools\chocolateyinstall.ps1" />
+  </files>
+</package>
