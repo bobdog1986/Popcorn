@@ -19,6 +19,8 @@ before_build:
 
       $version = "$env:APPVEYOR_BUILD_VERSION"
 
+      $version
+
       (Get-Content .\Popcorn\Properties\AssemblyInfo.cs).replace('Constants.AppVersion', $version) | Set-Content .\Popcorn\Properties\AssemblyInfo.cs
 
 build_script:
