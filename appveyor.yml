@@ -17,7 +17,7 @@ before_build:
 
       $xml.save(".\Popcorn.nuspec")
 
-      $version = '"$env:APPVEYOR_BUILD_VERSION"'
+      $version = """$env:APPVEYOR_BUILD_VERSION"""
 
       $version
 
