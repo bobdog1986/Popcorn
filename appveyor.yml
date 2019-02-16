@@ -26,13 +26,13 @@ build_script:
 artifacts:
   - path: popcorn.%APPVEYOR_BUILD_VERSION%.nupkg
     name: Popcorn.Chocolatey.nupkg
-  - path: /.Popcorn-*\.nupkg/
+  - path: Popcorn\**\*.nupkg
     name: Popcorn.Github.nupkg
-  - path: /.Popcorn*\.exe/
+  - path: Popcorn\**\*.exe
     name: Popcorn.Github.exe
-  - path: /.Popcorn*\.msi/
+  - path: Popcorn\**\*.msi
     name: Popcorn.Github.msi
-  - path: /.RELEASES/
+  - path: Popcorn\**\RELEASES
     name: Popcorn.Github.releases
 
 after_build:
