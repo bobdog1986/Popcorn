@@ -13,9 +13,15 @@ before_build:
   - ps: >-
       $xml = [xml](Get-Content -Path .\Popcorn.nuspec)
 
-      $xml.package.metadata.version = "%APPVEYOR_BUILD_VERSION%"
+      $xml.package.metadata.version = $env:APPVEYOR_BUILD_VERSION
 
       $xml.save(".\Popcorn.nuspec")
+
+      $version = """$env:APPVEYOR_BUILD_VERSION"""
+
+      $version
+
+      ((Get-Content -path .\Popcorn\Properties\AssemblyInfo.cs -Raw) -replace 'Constants.AppVersion',$version) | Set-Content -Path .\Popcorn\Properties\AssemblyInfo.cs
 
 build_script:
   - choco install "msbuild-sonarqube-runner" -y
@@ -26,13 +32,13 @@ build_script:
 artifacts:
   - path: popcorn.%APPVEYOR_BUILD_VERSION%.nupkg
     name: Popcorn.Chocolatey.nupkg
-  - path: Popcorn\**\*.nupkg
+  - path: Popcorn\Releases\**\*.nupkg
     name: Popcorn.Github.nupkg
-  - path: Popcorn\**\*.exe
+  - path: Popcorn\Releases\**\*.exe
     name: Popcorn.Github.exe
-  - path: Popcorn\**\*.msi
+  - path: Popcorn\Releases\**\*.msi
     name: Popcorn.Github.msi
-  - path: Popcorn\**\RELEASES
+  - path: Popcorn\Releases\**\RELEASES
     name: Popcorn.Github.releases
 
 after_build:
