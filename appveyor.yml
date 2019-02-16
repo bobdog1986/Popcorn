@@ -13,7 +13,7 @@ before_build:
   - ps: >-
       $xml = [xml](Get-Content -Path .\Popcorn.nuspec)
       $xml.package.metadata.version = %APPVEYOR_BUILD_VERSION%
-      $xml.save(.\Popcorn.nuspec)
+      $xml.save(".\Popcorn.nuspec")
 
 build_script:
   - choco install "msbuild-sonarqube-runner" -y
