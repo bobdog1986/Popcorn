@@ -1,11 +1,5 @@
 configuration: Release
 image: Visual Studio 2017
-
-branches:
-  only:
-    - master
-  except:
-    - development
     
 assembly_info:
   patch: true
@@ -16,6 +10,10 @@ assembly_info:
 
 before_build:
   - nuget restore
+  - ps: >-
+      $xml = [xml](Get-Content -Path .\Popcorn.nuspec)
+      $xml.package.metadata.version = %APPVEYOR_BUILD_VERSION%
+      $xml.save(.\Popcorn.nuspec)
 
 build_script:
   - choco install "msbuild-sonarqube-runner" -y
