@@ -1,11 +1,5 @@
 configuration: Release
 image: Visual Studio 2017
-
-branches:
-  only:
-    - master
-  except:
-    - development
     
 assembly_info:
   patch: true
@@ -16,12 +10,39 @@ assembly_info:
 
 before_build:
   - nuget restore
+  - ps: >-
+      $xml = [xml](Get-Content -Path .\Popcorn.nuspec)
+
+      $xml.package.metadata.version = "%APPVEYOR_BUILD_VERSION%"
+
+      $xml.save(".\Popcorn.nuspec")
 
 build_script:
   - choco install "msbuild-sonarqube-runner" -y
   - MSBuild.SonarQube.Runner.exe begin /k:"%APPVEYOR_PROJECT_NAME%" /d:"sonar.host.url=https://sonarqube.com" /d:"sonar.organization=%SONAR_ORGANIZATION%" /d:"sonar.login=%SONAR_TOKEN%"
   - msbuild "Popcorn.sln"
   - MSBuild.SonarQube.Runner.exe end /d:"sonar.login=%SONAR_TOKEN%"
+
+artifacts:
+  - path: popcorn.%APPVEYOR_BUILD_VERSION%.nupkg
+    name: Popcorn.Chocolatey.nupkg
+  - path: Popcorn\**\*.nupkg
+    name: Popcorn.Github.nupkg
+  - path: Popcorn\**\*.exe
+    name: Popcorn.Github.exe
+  - path: Popcorn\**\*.msi
+    name: Popcorn.Github.msi
+  - path: Popcorn\**\RELEASES
+    name: Popcorn.Github.releases
+
+after_build:
+- cmd: >-
+    choco pack .\chocolatey-popcorn.nuspec version=%APPVEYOR_BUILD_VERSION%
+    appveyor PushArtifact Popcorn.Chocolatey.nupkg -DeploymentName Popcorn
+    appveyor PushArtifact Popcorn.Github.nupkg -DeploymentName Popcorn
+    appveyor PushArtifact Popcorn.Github.exe -DeploymentName Popcorn
+    appveyor PushArtifact Popcorn.Github.msi -DeploymentName Popcorn
+    appveyor PushArtifact Popcorn.Github.releases -DeploymentName Popcorn
 
 test_script:
 - ps: >-
@@ -39,18 +60,13 @@ deploy:
     description: 'Various improvements & fixes'
     auth_token:
       secure: 1gvZRwqsRGWm1ceuynEv1qbN7yfYJLRkcq34hHdvKiC0JGw9ZyzgeoW7c04xn5Lg
-    artifact: /.*\.exe/, /.*\.msi/
+    artifact: Popcorn.Github.nupkg,Popcorn.Github.exe,Popcorn.Github.msi,Popcorn.Github.releases
     draft: false
     prerelease: false
     on:
       branch: master
       
-  - provider: NuGet
-    artifact: /.popcorn.*\.nupkg/
+  - provider: Popcorn Chocolatey
+    artifact: Popcorn.Chocolatey.nupkg
     on:
       branch: master
-
-after_build:
-- cmd: >-
-    choco pack .\chocolatey-popcorn.nuspec version=%APPVEYOR_BUILD_VERSION%
-    appveyor PushArtifact popcorn.%APPVEYOR_BUILD_VERSION%.nupkg -DeploymentName Popcorn
