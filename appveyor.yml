@@ -17,6 +17,8 @@ before_build:
 
       $xml.save(".\Popcorn.nuspec")
 
+      (Get-Content .\Popcorn\Properties\AssemblyInfo.cs).replace('Constants.AppVersion', '%APPVEYOR_BUILD_VERSION%') | Set-Content .\Popcorn\Properties\AssemblyInfo.cs
+
 build_script:
   - choco install "msbuild-sonarqube-runner" -y
   - MSBuild.SonarQube.Runner.exe begin /k:"%APPVEYOR_PROJECT_NAME%" /d:"sonar.host.url=https://sonarqube.com" /d:"sonar.organization=%SONAR_ORGANIZATION%" /d:"sonar.login=%SONAR_TOKEN%"
