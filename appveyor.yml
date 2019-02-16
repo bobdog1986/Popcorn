@@ -21,7 +21,7 @@ before_build:
 
       $version
 
-      (Get-Content .\Popcorn\Properties\AssemblyInfo.cs).replace('Constants.AppVersion', $version) | Set-Content .\Popcorn\Properties\AssemblyInfo.cs
+      ((Get-Content -path .\Popcorn\Properties\AssemblyInfo.cs -Raw) -replace 'Constants.AppVersion',$version) | Set-Content -Path .\Popcorn\Properties\AssemblyInfo.cs
 
 build_script:
   - choco install "msbuild-sonarqube-runner" -y
