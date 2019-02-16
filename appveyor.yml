@@ -37,15 +37,16 @@ deploy:
   - provider: GitHub
     release: v$(appveyor_build_version)
     description: 'Various improvements & fixes'
-    auth_token: 1gvZRwqsRGWm1ceuynEv1qbN7yfYJLRkcq34hHdvKiC0JGw9ZyzgeoW7c04xn5Lg
+    auth_token:
+      secure: 1gvZRwqsRGWm1ceuynEv1qbN7yfYJLRkcq34hHdvKiC0JGw9ZyzgeoW7c04xn5Lg
     artifact: /.*\.exe/, /.*\.msi/
     draft: false
     prerelease: false
     on:
       branch: master
       
-  - provider: Environment
-    name: Popcorn Chocolatey
+  - provider: NuGet
+    artifact: /.popcorn.*\.nupkg/
     on:
       branch: master
 
