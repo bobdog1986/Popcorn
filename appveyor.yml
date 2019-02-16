@@ -13,11 +13,11 @@ before_build:
   - ps: >-
       $xml = [xml](Get-Content -Path .\Popcorn.nuspec)
 
-      $xml.package.metadata.version = "%APPVEYOR_BUILD_VERSION%"
+      $xml.package.metadata.version = "$env:APPVEYOR_BUILD_VERSION"
 
       $xml.save(".\Popcorn.nuspec")
 
-      $version = "%APPVEYOR_BUILD_VERSION%"
+      $version = "$env:APPVEYOR_BUILD_VERSION"
 
       (Get-Content .\Popcorn\Properties\AssemblyInfo.cs).replace('Constants.AppVersion', $version) | Set-Content .\Popcorn\Properties\AssemblyInfo.cs
 
